@@ -10,7 +10,7 @@
 
 ---
 
-**A rule reference is a contract — keep it resolvable, documented, and next to the code that uses it.**
+**Stop writing analyzer suppressions as magic 🪄 strings.**
 
 ## 🚨 The problem
 
@@ -38,20 +38,22 @@ Declare each rule once, as a static class of compile-time constants, and referen
 constants everywhere else:
 
 ```csharp
-// Fails the build instead, the day the rule is renamed or retired.
+// Misspell this and the compiler says so, instead of the suppression going quiet.
 [SuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.Id, Justification = "...")]
 ```
 
-A renamed rule becomes a build error. A rule the vendor retires is kept and marked
-`[Obsolete]`, so an upgrade tells you to drop the suppression instead of breaking the
-build outright. And the category has exactly one published source of truth, read from the
-analyzer's own `DiagnosticDescriptor` rather than retyped from memory.
+A mistyped reference stops the build, where a mistyped string compiles happily into a
+suppression that does nothing. A rule the vendor retires is kept and marked `[Obsolete]`,
+so an upgrade warns you to drop the suppression rather than breaking recompilation
+([ADR-0010](doc/adr/0010-carry-a-retired-rule-forward-as-obsolete.md)). And the category
+has exactly one published source of truth, read from the analyzer's own
+`DiagnosticDescriptor` rather than retyped from memory.
 
 ## 📦 What is in the box
 
 | Package | What it gives you |
 | --- | --- |
-| **`DiagnosticCatalog`** | The `[DiagnosticRule]` and `[assembly: CatalogSource]` markers. This is what you reference to declare a catalogue **of your own** — for your analyzers, or for an internal ruleset. |
+| **`DiagnosticCatalog`** | The `[DiagnosticRule]`, `[DiagnosticCategory]` and `[assembly: CatalogSource]` markers. This is what you reference to declare a catalogue **of your own** — for your analyzers, or for an internal ruleset. |
 | **`DiagnosticCatalog.Sonar`** | The [SonarAnalyzer.CSharp](https://github.com/SonarSource/sonar-dotnet) rules, ids and categories read from the analyzers' own descriptors. |
 | **`DiagnosticCatalog.NetAnalyzers`** | The .NET code analysis (`CAxxxx`) rules, same treatment. |
 | **`DiagnosticCatalog.StyleCop`** | The [StyleCop.Analyzers](https://github.com/DotNetAnalyzers/StyleCopAnalyzers) (`SAxxxx`) rules, same treatment. |
@@ -63,12 +65,14 @@ release moves an id or a category. Only facts are redistributed — ids, categor
 links. Rule titles and descriptions are the vendors' authored prose and are deliberately
 left out ([ADR-0011](doc/adr/0011-redistribute-rule-facts-only-never-the-vendors-prose.md)).
 
-They are unofficial, and affiliated with none of those projects.
+These catalogues are unofficial. They are not affiliated with, endorsed by, or supported
+by SonarSource, Microsoft, or the StyleCop.Analyzers project. "Sonar" and "SonarQube" are
+trademarks of SonarSource S.A.
 
 ## 🚧 Project status
 
-**Nothing is published on nuget.org yet.** The install snippets below describe the shape
-of the thing, not something you can restore today.
+**Nothing is published on nuget.org yet.** The reference below shows what consuming the
+foundation will look like; it does not restore today.
 
 The foundation ships first, on its own: the catalogue packages carry a project reference
 to it, and turning that into a package reference requires a published version to point at
@@ -86,40 +90,54 @@ the analyzer package, and it does not exist yet.
 
 ## 🏁 Getting started
 
-Add the foundation:
+**Using a ready-made catalogue** — the common case. Reference the vendor catalogue you
+already run:
+
+```xml
+<PackageReference Include="DiagnosticCatalog.Sonar" Version="..." />
+```
+
+Then suppress against its constants instead of strings:
+
+```csharp
+using System.Diagnostics.CodeAnalysis;
+using DiagnosticCatalog.Sonar;
+
+public sealed class ReportSerializer
+{
+    [SuppressMessage(
+        SonarRule.S1144.Category,
+        SonarRule.S1144.Id,
+        Justification = "Invoked by the serializer through reflection.")]
+    private ReportSerializer()
+    {
+    }
+}
+```
+
+**Declaring a catalogue of your own** — for your analyzers, or an internal ruleset.
+Reference the foundation:
 
 ```xml
 <PackageReference Include="DiagnosticCatalog" Version="0.1.0" />
 ```
 
-Declare a rule as a static, non-generic class marked `[DiagnosticRule]`, with two
-mandatory public constants:
+A rule is a static, non-generic class marked `[DiagnosticRule]`, with two mandatory
+public constants:
 
 ```csharp
 using DiagnosticCatalog;
 
-namespace JustDummies.Analyzers.Suppressions;
+namespace Contoso.Analyzers.Suppressions;
 
-public static class Dummies
+public static class Rules
 {
     [DiagnosticRule]
-    public static class JD0007
+    public static class CT0001
     {
-        public const string Id = nameof(JD0007);
+        public const string Id = nameof(CT0001);
         public const string Category = "Usage";
     }
-}
-```
-
-Then reference it at the use site:
-
-```csharp
-[SuppressMessage(
-    Dummies.JD0007.Category,
-    Dummies.JD0007.Id,
-    Justification = "This member is instantiated by the test infrastructure.")]
-public sealed class DummyFactory
-{
 }
 ```
 
@@ -150,9 +168,9 @@ A handful of suppressions in one project does not need any of this.
 
 ## 🛠️ Supported platforms
 
-The libraries target **`netstandard2.0`** and **`net10.0`**. The `netstandard2.0` floor is
-not a compile-time claim only: CI runs the test suite on the real .NET Framework 4.7.2
-CLR ([ADR-0001](doc/adr/0001-floor-the-libraries-on-net-framework-4-7-2.md)).
+The libraries target **`netstandard2.0`** and **`net10.0`**. That floor is more than a
+compile-time claim: CI runs the test suite on the real .NET Framework 4.7.2 CLR
+([ADR-0001](doc/adr/0001-floor-the-libraries-on-net-framework-4-7-2.md)).
 
 Applying `[DiagnosticRule]` introduces no runtime behaviour. The runtime materialises
 custom attributes lazily, so `DiagnosticCatalog.dll` is never actually loaded unless
