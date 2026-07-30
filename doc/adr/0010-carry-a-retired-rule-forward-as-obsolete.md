@@ -1,7 +1,8 @@
 # ADR-0010 | Carry a retired rule forward as obsolete, never delete its constant
 
-**Status:** Proposed
+**Status:** Accepted
 **Proposed:** 2026-07-30
+**Accepted:** 2026-07-30
 **Decision Makers:** Reefact
 
 ## Context
