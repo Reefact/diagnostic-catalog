@@ -1,0 +1,28 @@
+<Project>
+
+  <!-- Enable Central Package Management. Kept first, and as the ONLY place this property name appears in the
+       file, so a static analyzer (e.g. OpenSSF Scorecard's Pinned-Dependencies parser) reads the intended
+       "true" and never a value mentioned in prose below. -->
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+
+  <!--
+    Central Package Management (CPM). One source of truth for every NuGet version in the repository: projects
+    declare <PackageReference Include="..." /> WITHOUT a Version, and the version is resolved from the matching
+    <PackageVersion> below. This keeps versions consistent across the projects and makes the `dotnet restore`
+    steps in CI reproducible — which is also what OpenSSF Scorecard's Pinned-Dependencies check rewards (an
+    unpinned restore otherwise caps that check below 10, via "nugetCommand not pinned").
+  -->
+
+  <ItemGroup>
+    <!-- Consumed by the .NET Framework 4.7.2 floor: build/Net472TestFloor.props adds this reference on the
+         net472 inner build, version-less, so the version has to resolve from here. Reference assemblies only
+         (PrivateAssets=all), so net472 compiles on a box without the 4.7.2 targeting pack installed. -->
+    <PackageVersion Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" />
+    <!-- Drives the "XPlat Code Coverage" collector configured in coverage.runsettings; every test project
+         references it. -->
+    <PackageVersion Include="coverlet.collector" Version="10.0.1" />
+  </ItemGroup>
+
+</Project>
