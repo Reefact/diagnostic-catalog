@@ -1,0 +1,124 @@
+#!/bin/sh
+# Single source of truth for the release trains.
+#
+# The published trains version independently and each owns a tag prefix, a set of
+# Conventional Commit scopes, and a package label. That mapping lives here, once;
+# the packaging and release-notes scripts SOURCE this file, so what a release
+# publishes and what its notes describe can never drift apart.
+#
+# This file is meant to be SOURCED (`. tools/trains.sh`), not executed — it only
+# defines functions and mutates nothing.
+#
+# ── Which PROJECTS a train publishes ─────────────────────────────────────────
+# Not listed here. A project joins a train by declaring it in its own .csproj:
+#
+#     <PropertyGroup>
+#       <ReleaseTrain>sonar</ReleaseTrain>
+#     </PropertyGroup>
+#
+# and `projects_of` below discovers it. Membership therefore lives in the one file
+# that cannot be forgotten when the project is created, moved or renamed — the
+# same reason the .NET Framework floor is joined by an import rather than by a
+# list in a workflow (CONTRIBUTING.md, "The .NET Framework floor"). Declaring the
+# train is also what makes a project packable and what gives it an embedded SBOM;
+# see Directory.Build.props.
+#
+# ── Adding a train ───────────────────────────────────────────────────────────
+# 1. add one row to trains_rows() below;
+# 2. add its scope to SCOPES in tools/commit-lint/lint-commit-message.sh, and to
+#    the scope and train tables in CONTRIBUTING.md;
+# 3. add its tag pattern to the `on: push: tags:` list and its id to the
+#    workflow_dispatch choice in .github/workflows/release.yml — GitHub requires
+#    both to be literal, so they cannot be derived from this file.
+# A tag whose prefix is unknown here is rejected by the release workflow, so a
+# missed step 1 fails the release rather than publishing something unrouted.
+#
+# Row format (pipe-separated, no spaces around the pipes except inside the label):
+#   <id>|<tag-prefix>|<scopes csv>|<package label>
+# Keep the scopes a subset of the closed SCOPES list in
+# tools/commit-lint/lint-commit-message.sh.
+trains_rows() {
+  cat <<'ROWS'
+lib|lib-v|analyzers,cli,core,testing|the DiagnosticCatalog foundation, its analyzers, its CLI and its test-support package
+sonar|sonar-v|sonar|the SonarQube rule catalog
+netanalyzers|netanalyzers-v|netanalyzers|the Microsoft .NET analyzer rule catalog
+stylecop|stylecop-v|stylecop|the StyleCop rule catalog
+ROWS
+}
+
+# _train_field <id> <field-name> — echo one field of a train's row, or nothing if
+# the id is unknown. Fields: prefix | scopes | package.
+_train_field() {
+  _tf_id="$1"; _tf_field="$2"
+  trains_rows | while IFS='|' read -r id prefix scopes package; do
+    [ "$id" = "$_tf_id" ] || continue
+    case "$_tf_field" in
+      prefix)  printf '%s\n' "$prefix" ;;
+      scopes)  printf '%s\n' "$scopes" ;;
+      package) printf '%s\n' "$package" ;;
+      # A caller asking for a field this row format does not carry is a bug in the caller, not a
+      # missing value: say so on stderr rather than returning the empty string an unknown TRAIN
+      # returns, which require_train reads as "no such train".
+      *)       printf 'trains.sh: unknown field "%s"\n' "$_tf_field" >&2 ;;
+    esac
+  done
+}
+
+train_ids()  { trains_rows | cut -d'|' -f1; }
+prefix_of()  { _train_field "$1" prefix; }
+scopes_of()  { _train_field "$1" scopes; }
+package_of() { _train_field "$1" package; }
+
+# require_train <id> — succeed if <id> is a known train, else print the known ids
+# to stderr and return 1. Callers decide the exit code.
+require_train() {
+  if [ -n "$(prefix_of "$1")" ]; then
+    return 0
+  fi
+  printf 'unknown train "%s" (known: %s)\n' \
+    "$1" "$(train_ids | tr '\n' ' ' | sed 's/ *$//')" >&2
+  return 1
+}
+
+# train_of_tag <tag> — echo the train id a release tag belongs to, or nothing.
+# Matches the tag against every known prefix rather than a hardcoded case, so a
+# train added to trains_rows is routed without touching the release workflow's
+# script. The longest matching prefix wins, so a prefix that is a prefix of
+# another can never shadow it.
+train_of_tag() {
+  _tot_tag="$1"; _tot_best=''; _tot_len=0
+  for _tot_id in $(train_ids); do
+    _tot_prefix="$(prefix_of "$_tot_id")"
+    case "$_tot_tag" in
+      "${_tot_prefix}"*)
+        if [ "${#_tot_prefix}" -gt "$_tot_len" ]; then
+          _tot_best="$_tot_id"; _tot_len="${#_tot_prefix}"
+        fi
+        ;;
+      *) ;; # this train's prefix does not match the tag
+    esac
+  done
+  # Always succeed, even when nothing matched: callers read the RESULT through a
+  # command substitution, and an assignment inheriting a non-zero status would
+  # abort a `set -e` caller before it could print its own diagnostic.
+  if [ -n "$_tot_best" ]; then printf '%s\n' "$_tot_best"; fi
+  return 0
+}
+
+# projects_of <id> — echo the .csproj paths that declare this train, one per line.
+# Empty output means the train publishes nothing yet, which is a normal state for
+# a train whose project has not been created.
+projects_of() {
+  grep -rl -E "<ReleaseTrain>[[:space:]]*$1[[:space:]]*</ReleaseTrain>" \
+    --include='*.csproj' . 2>/dev/null | sed 's|^\./||' | sort || true
+}
+
+# declared_trains — echo every train id declared by a .csproj anywhere in the
+# tree, one per line, deduplicated. Used to catch a value that matches no train:
+# such a project would simply never be packed, silently, and a typo in a property
+# nothing validates is exactly the kind of mistake that surfaces at release time.
+declared_trains() {
+  grep -rho -E "<ReleaseTrain>[^<]*</ReleaseTrain>" --include='*.csproj' . 2>/dev/null \
+    | sed -E 's|.*<ReleaseTrain>[[:space:]]*([^<[:space:]]*)[[:space:]]*</ReleaseTrain>.*|\1|' \
+    | sort -u || true
+}
