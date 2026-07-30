@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Build-time tool, never shipped. It reads the DiagnosticDescriptor instances of an
+    upstream analyzer package and emits a catalogue as C# source. It is not referenced
+    by anything that ships, and it is deliberately excluded from packing.
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <!--
+      CA1305 (specify IFormatProvider) does not apply: every value interpolated into the
+      emitted source is already a string, so no culture-sensitive formatting occurs. The
+      one date is passed in pre-formatted as ISO 8601 by the caller.
+    -->
+    <NoWarn>$(NoWarn);CA1305</NoWarn>
+  </PropertyGroup>
+
+  <!--
+    Roslyn is needed to resolve DiagnosticAnalyzer and DiagnosticDescriptor when the
+    upstream analyzer assembly is loaded reflectively. Workspaces is needed because some
+    analyzers derive from types that reference it.
+  -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
+  </ItemGroup>
+
+</Project>
