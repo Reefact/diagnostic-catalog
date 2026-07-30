@@ -1,7 +1,8 @@
 # ADR-0005 | Require an enforcing check before any automation merges
 
-**Status:** Proposed
+**Status:** Accepted
 **Proposed:** 2026-07-30
+**Accepted:** 2026-07-30
 **Decision Makers:** Reefact
 
 ## Context

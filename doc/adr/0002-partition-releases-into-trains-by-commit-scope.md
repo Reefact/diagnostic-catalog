@@ -1,7 +1,8 @@
 # ADR-0002 | Partition releases into trains by commit scope
 
-**Status:** Proposed
+**Status:** Accepted
 **Proposed:** 2026-07-30
+**Accepted:** 2026-07-30
 **Decision Makers:** Reefact
 
 ## Context

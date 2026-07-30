@@ -1,7 +1,8 @@
 # ADR-0006 | Publish through trusted publishing, with signed provenance and an embedded SBOM
 
-**Status:** Proposed
+**Status:** Accepted
 **Proposed:** 2026-07-30
+**Accepted:** 2026-07-30
 **Decision Makers:** Reefact
 
 ## Context
