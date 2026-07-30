@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/eng/">
+    <Project Path="eng/CatalogGen/CatalogGen.csproj" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="src/DiagnosticCatalog/DiagnosticCatalog.csproj" />
   </Folder>

@@ -30,6 +30,12 @@
          public member into a build error, which is what makes §23's "renaming the attribute is
          a major version" a mechanical check rather than a review habit. -->
     <PackageVersion Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="5.6.0" />
+    <!-- Used by eng/CatalogGen to resolve DiagnosticAnalyzer and DiagnosticDescriptor when it
+         loads an upstream analyzer assembly reflectively. Build-time tooling only: the shipped
+         catalogs carry no Roslyn dependency. Workspaces is needed because some upstream
+         analyzers derive from types that reference it. -->
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.14.0" />
   </ItemGroup>
 
 </Project>
