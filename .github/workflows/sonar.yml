@@ -102,6 +102,29 @@ jobs:
       # shapes would register as duplication that no edit could ever resolve. Excluding them keeps
       # every metric about the code a human actually wrote. Coverage is unaffected either way —
       # a `const` compiles to no IL, so those files contribute nothing to cover.
+      #
+      # Three of the shell rules are switched off for the scripts, and only those three. They
+      # assume bash. Every script in this repository is `#!/bin/sh` and is run by /bin/sh — dash
+      # on the runner images — which is what `sh tools/tests/run.sh` executes and what the lint
+      # workflow checks in shellcheck's POSIX dialect, at a bar of zero findings at every
+      # severity. Each of the three asks for something that bar or that shell rejects:
+      #
+      #   S7679  "assign this positional parameter to a LOCAL variable" — POSIX does not define
+      #          `local`; shellcheck reports SC3043 for it in the sh dialect, so the lint job
+      #          would fail the fix. Where naming a parameter earns its keep these scripts
+      #          already do it the portable way, with a prefixed variable (`_tot_tag="$1"`).
+      #
+      #   S7682  "add an explicit return at the end of the function" — a shell function returns
+      #          its LAST COMMAND's status. Append `return 0` to
+      #          `train_ids() { trains_rows | cut -d'|' -f1; }` and a broken pipeline reports
+      #          success. These scripts decide which projects a release publishes, and silent
+      #          success is precisely the failure they exist to prevent (tools/trains.sh).
+      #
+      #   S7688  "use '[[' instead of '['" — `[[` is a bash keyword. dash answers `[[: not
+      #          found`, so taking this advice turns the shell test suite red.
+      #
+      # This narrows the dialect, not the scrutiny: every other finding on these files still
+      # counts, and the C# analysis is untouched.
       - name: Begin the analysis
         if: steps.guard.outputs.present == 'true'
         env:
@@ -114,6 +137,13 @@ jobs:
           /d:sonar.host.url="https://sonarcloud.io"
           /d:sonar.cs.opencover.reportsPaths="artifacts/coverage/**/coverage.opencover.xml"
           /d:sonar.exclusions="**/*.g.cs"
+          /d:sonar.issue.ignore.multicriteria="bashism1,bashism2,bashism3"
+          /d:sonar.issue.ignore.multicriteria.bashism1.ruleKey="shelldre:S7679"
+          /d:sonar.issue.ignore.multicriteria.bashism1.resourceKey="**/*.sh"
+          /d:sonar.issue.ignore.multicriteria.bashism2.ruleKey="shelldre:S7682"
+          /d:sonar.issue.ignore.multicriteria.bashism2.resourceKey="**/*.sh"
+          /d:sonar.issue.ignore.multicriteria.bashism3.ruleKey="shelldre:S7688"
+          /d:sonar.issue.ignore.multicriteria.bashism3.resourceKey="**/*.sh"
 
       # No solution is named, here or anywhere else: `dotnet` resolves the single solution at the
       # repository root, so this keeps working as projects are added and the day the solution is
