@@ -62,16 +62,89 @@ has exactly one published source of truth, read from the analyzer's own
 | **`DiagnosticCatalog.NetAnalyzers`** | The .NET code analysis (`CAxxxx`) rules, same treatment. |
 | **`DiagnosticCatalog.StyleCop`** | The [StyleCop.Analyzers](https://github.com/DotNetAnalyzers/StyleCopAnalyzers) (`SAxxxx`) rules, same treatment. |
 
-The three vendor catalogues are **generated**, never hand-written: `eng/CatalogGen` reads
-the `DiagnosticDescriptor` instances the upstream analyzers actually declare, and a
-[nightly job](.github/workflows/nightly-catalogs.yml) opens a pull request when an upstream
-release moves an id or a category. Only facts are redistributed — ids, categories, help
-links. Rule titles and descriptions are the vendors' authored prose and are deliberately
-left out ([ADR-0011](doc/adr/0011-redistribute-rule-facts-only-never-the-vendors-prose.md)).
+The three vendor catalogues are **generated**, never hand-written, and only facts are
+redistributed — ids, categories, help links. Rule titles and descriptions are the vendors'
+authored prose and are deliberately left out
+([ADR-0011](doc/adr/0011-redistribute-rule-facts-only-never-the-vendors-prose.md)). How
+that generation works, and what keeps it honest, is the next section.
 
 These catalogues are unofficial. They are not affiliated with, endorsed by, or supported
 by SonarSource, Microsoft, or the StyleCop.Analyzers project. "Sonar" and "SonarQube" are
 trademarks of SonarSource S.A.
+
+## ⚙️ How a catalogue is built and kept current
+
+No rule in this repository was typed by hand. Every step, from the analyzer's own source of
+truth to a signed package, is a script or a workflow you can read.
+
+```mermaid
+sequenceDiagram
+    participant U as Upstream analyzer package
+    participant G as CatalogGen
+    participant R as This repository
+    participant M as Maintainer
+    participant N as nuget.org
+
+    Note over U,R: Nightly at 03:17 UTC — automated
+    G->>U: load the package, construct every DiagnosticAnalyzer
+    U-->>G: the DiagnosticDescriptor instances they declare
+    G->>G: compare against the previously generated file
+    alt nothing moved upstream
+        G-->>R: no change — the file is left untouched
+    else a rule added, recategorised or retired
+        G->>R: open a pull request carrying the rules diff
+    end
+
+    Note over R,M: Review — deliberately human
+    R->>M: a published contract changed — read the diff
+    M->>R: merge, or reject
+
+    Note over M,N: Release — on a tag
+    M->>R: push a train tag, such as sonar-v1.2.3
+    R->>R: pack, embed the SPDX SBOM, attest build provenance
+    R->>N: publish through Trusted Publishing, no API key
+```
+
+**Read the descriptors, not the documentation.** `eng/CatalogGen` loads the upstream
+analyzer package, constructs every `DiagnosticAnalyzer` it contains, and reads the
+`DiagnosticDescriptor` instances they actually declare. Rule metadata published as JSON or
+as prose drifts from what the analyzer really does, and since nothing in the platform
+validates a category, a value copied from documentation that had gone stale would produce
+no symptom anywhere
+([ADR-0009](doc/adr/0009-generate-catalog-content-from-analyzer-descriptors.md)).
+
+**Detect drift every night.** A [scheduled workflow](.github/workflows/nightly-catalogs.yml)
+regenerates every catalogue at 03:17 UTC and opens a pull request when something actually
+moved — a rule added, recategorised, or retired upstream. Nights where upstream has not
+moved produce nothing at all: the generator compares its own previous output and leaves the
+file untouched, its `generatedOn` stamp included.
+
+**Let a person read the diff.** That workflow publishes nothing, and that is a decision
+rather than an omission. An id or a category that moved upstream is a change to a *published
+contract*, and because nothing validates a suppression's category, a wrong value merged
+unreviewed would stay invisible for as long as it existed. Automation finds the change; a
+human accepts it.
+
+**Never delete a constant.** A rule the vendor retires is kept and marked `[Obsolete]`,
+naming the release that dropped it. A consumer gets a warning telling them to remove the
+suppression, instead of a build broken by a member that vanished — consumers inline constant
+values at their own compile time
+([ADR-0010](doc/adr/0010-carry-a-retired-rule-forward-as-obsolete.md)).
+
+**Publish on a tag, with receipts.** Each catalogue rides its own
+[release train](CONTRIBUTING.md) and versions independently, so following SonarSource's pace
+never drags the foundation's version along. Pushing a train tag runs the release workflow,
+which packs, embeds an SPDX SBOM, and publishes through
+[Trusted Publishing](https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing)
+with signed build provenance
+([ADR-0006](doc/adr/0006-publish-through-trusted-publishing-with-provenance-and-an-sbom.md)) —
+there is no long-lived API key anywhere to leak.
+
+The packaging half of that pipeline — build, pack, SBOM, and the packaging guards — is
+[rehearsed on every pull request](.github/workflows/release-dryrun.yml), for every train, so
+a release never exercises it for the first time on a tag. What the rehearsal deliberately
+skips is everything with a side effect: no provenance is attested, nothing is pushed to
+nuget.org, no release is created. A dry run that faked those would prove nothing.
 
 ## 🚧 Project status
 

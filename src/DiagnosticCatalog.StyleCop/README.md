@@ -146,6 +146,17 @@ To regenerate every catalogue at once:
 dotnet run --project eng/CatalogGen -- --manifest eng/catalogs.json
 ```
 
+## How it reaches nuget.org
+
+This catalogue rides the `stylecop` [release train](https://github.com/Reefact/diagnostic-catalog/blob/main/CONTRIBUTING.md) and versions independently of
+the foundation, so it can follow StyleCop.Analyzers' releases without dragging anything else along.
+
+Publishing is not part of the nightly. A maintainer pushes a `stylecop-vX.Y.Z` tag, and the
+release workflow packs the package, embeds an SPDX SBOM, and publishes through NuGet
+[Trusted Publishing](https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing) with signed build provenance — no long-lived API key exists
+anywhere to leak. The packaging half of that pipeline is rehearsed on every pull request, so
+a release never exercises it for the first time on a tag.
+
 ## Limits
 
 `[SuppressMessage]` cannot suppress **compiler** warnings — `CS0219` and friends need
