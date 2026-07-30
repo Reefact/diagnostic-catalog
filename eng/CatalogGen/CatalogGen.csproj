@@ -29,4 +29,13 @@
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
   </ItemGroup>
 
+  <!--
+    The generator's parsing, naming and emitting logic is internal: it is a tool's implementation,
+    not an API. Exposing it to its own test project is what lets those parts be exercised without
+    widening the surface anyone else could take a dependency on.
+  -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="CatalogGen.UnitTests" />
+  </ItemGroup>
+
 </Project>
