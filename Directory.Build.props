@@ -62,6 +62,21 @@
   </PropertyGroup>
 
   <!--
+    A netstandard2.0 project defaults to C# 7.3, because the SDK derives the language version from
+    the target framework. Every source file in this repository would then be rejected for using
+    file-scoped namespaces, and the shipped libraries target netstandard2.0 by design (ADR-0001).
+    Set here rather than per project so a new catalog cannot forget it and fail for a reason that
+    has nothing to do with what it changed.
+
+    Nullable is repo-wide for the same reason: the alternative is each project opting in, and the
+    one that forgets is the one that ships a null-reference bug.
+  -->
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <!--
     Central Package Management is configured in Directory.Packages.props (ManagePackageVersionsCentrally plus
     the <PackageVersion> list). The property is repeated here for a TOOLING reason, not an MSBuild one:
     OpenSSF Scorecard's Pinned-Dependencies check inspects every Directory.*.props file and keeps only the
