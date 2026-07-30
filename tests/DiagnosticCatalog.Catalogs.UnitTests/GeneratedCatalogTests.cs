@@ -29,7 +29,7 @@ public sealed class GeneratedCatalogTests
         // Referenced at compile time, so a plain Load resolves against the copied output.
         Assembly.Load(new AssemblyName(name));
 
-    private static IReadOnlyList<Type> RuleTypesOf(Assembly assembly) =>
+    private static List<Type> RuleTypesOf(Assembly assembly) =>
         assembly.GetTypes()
             .Where(t => t.GetCustomAttributes().Any(a =>
                 a.GetType().FullName == "DiagnosticCatalog.DiagnosticRuleAttribute"))
@@ -42,7 +42,7 @@ public sealed class GeneratedCatalogTests
     [MemberData(nameof(Catalogs))]
     public void Every_rule_exposes_a_non_empty_id_and_category(string assemblyName)
     {
-        IReadOnlyList<Type> rules = RuleTypesOf(Load(assemblyName));
+        List<Type> rules = RuleTypesOf(Load(assemblyName));
 
         Assert.NotEmpty(rules);
         foreach (Type rule in rules)
@@ -76,7 +76,7 @@ public sealed class GeneratedCatalogTests
     [MemberData(nameof(Catalogs))]
     public void Rule_identifiers_are_unique_and_match_their_type_name(string assemblyName)
     {
-        IReadOnlyList<Type> rules = RuleTypesOf(Load(assemblyName));
+        List<Type> rules = RuleTypesOf(Load(assemblyName));
 
         foreach (Type rule in rules)
         {
