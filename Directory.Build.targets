@@ -52,10 +52,23 @@
   -->
   <PropertyGroup Condition="'$(ReleaseTrain)' != ''">
     <PackageIcon>icon.png</PackageIcon>
+    <!--
+      A project may carry its own icon.png beside its .csproj, and the catalogues do: each shows the
+      family mark with its rule prefix — S, CA, SA — so a consumer scanning nuget.org can tell them
+      apart at the 128px the listing renders.
+
+      Falling back to the repository's own icon rather than requiring one keeps the property this
+      file exists to protect: a catalogue project joining its train later ships with the family mark
+      rather than with nuget.org's blank placeholder, and gains its own the day somebody draws it.
+    -->
+    <PackageIconSource Condition="Exists('$(MSBuildProjectDirectory)/icon.png')">$(MSBuildProjectDirectory)/icon.png</PackageIconSource>
+    <PackageIconSource Condition="'$(PackageIconSource)' == ''">$(MSBuildThisFileDirectory)icon.png</PackageIconSource>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(ReleaseTrain)' != ''">
-    <None Include="$(MSBuildThisFileDirectory)icon.png" Pack="true" PackagePath="/" />
+    <!-- PackagePath="/" puts it at the package root as icon.png whichever file was chosen, which is
+         where <PackageIcon> above resolves it. -->
+    <None Include="$(PackageIconSource)" Pack="true" PackagePath="/" />
   </ItemGroup>
 
 </Project>
