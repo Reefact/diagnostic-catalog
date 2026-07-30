@@ -1,0 +1,51 @@
+name: codeql
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  schedule:
+    # Weekly re-scan so newly shipped CodeQL queries run against unchanged code.
+    - cron: '17 6 * * 1'
+  workflow_dispatch:
+
+# Cancel superseded runs on the same branch / PR.
+concurrency:
+  group: codeql-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    name: CodeQL analyze (C#)
+    runs-on: ubuntu-latest
+    # Buildless CodeQL is ~2 min; cap a stuck analysis well above that.
+    timeout-minutes: 20
+    permissions:
+      # Required to upload results to the code-scanning dashboard.
+      security-events: write
+      # Needed by the action on private repositories; harmless on public ones.
+      actions: read
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@e4fba868fa4b1b91e1fdab776edc8cfbe6e9fb81 # v4
+        with:
+          languages: csharp
+          # Buildless extraction: no .NET SDK or build step is needed, and it sidesteps
+          # compiler-tracing issues on a very new SDK. Switch to `manual` (with a
+          # dotnet build step) later if deeper data-flow analysis is ever wanted.
+          build-mode: none
+
+      - name: Perform CodeQL analysis
+        uses: github/codeql-action/analyze@e4fba868fa4b1b91e1fdab776edc8cfbe6e9fb81 # v4
+        with:
+          category: "/language:csharp"

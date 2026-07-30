@@ -1,0 +1,147 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+# Cancel superseded runs on the same branch / PR.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Least privilege: this workflow only checks out and builds/tests, so the token
+# needs nothing beyond read access to the repository contents.
+permissions:
+  contents: read
+
+env:
+  DOTNET_NOLOGO: 'true'
+  DOTNET_CLI_TELEMETRY_OPTOUT: 'true'
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 'true'
+
+jobs:
+  build-test:
+    name: Build & test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    # Fail a hung run fast instead of holding a runner to the 6-hour default.
+    timeout-minutes: 15
+    strategy:
+      # Run both legs to completion so a platform-specific failure is always visible.
+      fail-fast: false
+      matrix:
+        # The library ships netstandard2.0 assemblies that .NET Framework consumers load on
+        # Windows and .NET consumers load everywhere, so both platforms are exercised.
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          dotnet-version: '10.0.x'
+
+      # The solution is DISCOVERED, never named. A hardcoded file name would have to be edited
+      # the day the solution is created or renamed, and the workflow would fail with a path error
+      # rather than a useful message. `dotnet` itself resolves the single solution in the working
+      # directory, so the steps below pass no solution argument at all; this step only decides
+      # whether there is anything to build yet, so the repository can carry its CI before it
+      # carries its first project.
+      - name: Locate the solution
+        id: solution
+        shell: bash
+        run: |
+          set -euo pipefail
+          count="$(find . -maxdepth 1 \( -name '*.sln' -o -name '*.slnx' \) | wc -l)"
+          if [ "$count" -eq 0 ]; then
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::No solution at the repository root yet; build and test are skipped."
+          elif [ "$count" -gt 1 ]; then
+            echo "::error::Found $count solutions at the repository root; 'dotnet build' cannot pick one."
+            exit 1
+          else
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Restore
+        if: steps.solution.outputs.present == 'true'
+        run: dotnet restore
+
+      - name: Build
+        if: steps.solution.outputs.present == 'true'
+        run: dotnet build -c Release --no-restore
+
+      - name: Test
+        if: steps.solution.outputs.present == 'true'
+        # Collect OpenCover coverage via coverlet.collector (configured in coverage.runsettings).
+        # Reports land under artifacts/coverage/<guid>/coverage.opencover.xml, ready for a Sonar scan.
+        run: >-
+          dotnet test -c Release --no-build
+          --collect:"XPlat Code Coverage"
+          --settings coverage.runsettings
+          --results-directory artifacts/coverage
+          --logger "console;verbosity=normal"
+
+      - name: Upload coverage report
+        if: steps.solution.outputs.present == 'true'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          # Per-OS name so the two matrix legs do not clash when uploading.
+          name: coverage-${{ matrix.os }}
+          path: artifacts/coverage/**/coverage.opencover.xml
+          # `error`, not `warn`: coverage that silently stops being produced is exactly the
+          # failure this artifact exists to make visible. A solution whose test projects do not
+          # collect coverage turns this red on purpose.
+          if-no-files-found: error
+
+  # build-test above runs the suite on the LATEST .NET (10). This job proves the library's OTHER
+  # supported runtime: that the netstandard2.0 assemblies actually load and pass their tests on
+  # .NET Framework 4.7.2. netstandard2.0 is only a COMPILE contract; running on the real .NET
+  # Framework CLR (NLS globalization, the netstandard.dll facade, its reflection stack) is what
+  # proves the library behaves there, and the ordinary net10 build cannot. .NET Framework tests run
+  # on Windows only (there is no Mono on the Linux legs), and the net472 inner build is gated behind
+  # EnableNet472Floor (build/Net472TestFloor.props) so it never touches build-test.
+  framework-floor:
+    name: Library on the .NET Framework 4.7.2 floor
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      # global.json pins the .NET 10 SDK; that SDK compiles the net472 target. The .NET Framework
+      # runtime that RUNS net472 assemblies ships on the windows-latest image, and the net472
+      # targeting pack for COMPILATION is supplied hermetically by the
+      # Microsoft.NETFramework.ReferenceAssemblies package — so no extra install.
+      - name: Setup .NET (build SDK)
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          dotnet-version: '10.0.x'
+
+      # Membership is declared by each project, not listed here. A project joins the floor by
+      # importing build/Net472TestFloor.props (CONTRIBUTING.md, "The .NET Framework floor"), so a
+      # new test project is enrolled by its own csproj and this job needs no edit — and a project
+      # that leaves the floor cannot be forgotten in a list here.
+      #
+      # A per-project loop, not a solution-wide `-f net472`: the latter would force the TFM onto
+      # the net10-only projects and fail.
+      - name: Test the netstandard2.0 libraries on .NET Framework 4.7.2
+        shell: bash
+        run: |
+          set -euo pipefail
+          projects="$(grep -rl 'Net472TestFloor\.props' --include='*.csproj' . || true)"
+          if [ -z "$projects" ]; then
+            echo "::notice::No project imports build/Net472TestFloor.props yet; the floor has nothing to run."
+            exit 0
+          fi
+          for proj in $projects; do
+            echo "::group::$proj (net472)"
+            dotnet test "$proj" -c Release -f net472 -p:EnableNet472Floor=true \
+              --logger "console;verbosity=normal"
+            echo "::endgroup::"
+          done
