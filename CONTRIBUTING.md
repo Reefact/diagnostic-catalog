@@ -501,7 +501,11 @@ Ordered as the rules are: type, scope, description, body, breaking, issue.
 ### Adoption
 
 This guide is the rule for commits in this repository. Deviating from it
-requires a justification — and an update to this guide.
+requires a justification — an ADR under [`doc/adr/`](doc/adr/), or an update to
+this guide. The convention itself is recorded as
+[ADR-0003](doc/adr/0003-adopt-and-enforce-a-conventional-commits-convention.md),
+and the release trains that make the scope load-bearing as
+[ADR-0002](doc/adr/0002-partition-releases-into-trains-by-commit-scope.md).
 
 It applies from its adoption on, to every commit created after. Prior history is
 not rewritten.

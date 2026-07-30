@@ -39,6 +39,38 @@ record, which is why `commit-lint` rejects it. See `CONTRIBUTING.md`, "Scope" �
 note in particular that `analyzers` means *analyzers this repository publishes*,
 while `netanalyzers` means *the catalog of Microsoft's CA rules*.
 
+## Architecture decisions (code changes)
+
+Before finalizing a pull request, check it against the ADR base under
+[`doc/adr/`](doc/adr/) (format and conventions:
+[`doc/adr/README.md`](doc/adr/README.md)). An ADR records a **significant,
+lasting decision** — one a future maintainer would ask "why did they do it this
+way?" about — not every change. Apply the README's test: *if the implementation
+changed but the decision stood, the ADR should not need editing.* Most pull
+requests embark no such decision; the **check** is mandatory, the **ADR** is not.
+
+The check has three outcomes — state the result in the pull request description:
+
+- **Create** — the pull request embarks a new lasting decision (a public API
+  contract, a cross-cutting invariant, a supported-platform floor, a dependency
+  or security/compatibility policy, and the like). Draft one ADR per decision
+  from `template.md` with **`Status: Proposed`**, add it to the index in
+  `README.md`, and link it from the pull request.
+- **Supersede** — the decision replaces one already recorded. Never edit the
+  existing ADR in place or change its status yourself: name it in the pull
+  request, draft the successor as `Proposed`, and leave the status flip to the
+  maintainer. Accepted ADRs are immutable historical records.
+- **Alert** — the pull request contradicts an accepted ADR. Do not proceed
+  silently: flag it in the description — `⚠️ Conflicts with ADR-NNNN (<title>)` —
+  with the precise conflict, and let the maintainer decide (accept it as a
+  supersession, or change the code).
+
+An agent **drafts and proposes**; it never accepts, supersedes, or deprecates an
+ADR on its own authority — that is the maintainer's call, exactly as no agent
+merges a pull request. When it is genuinely unclear whether a change is
+significant enough, or whether it supersedes an existing ADR, say so in the pull
+request and let `@reefact` judge rather than guessing.
+
 ## Tidying history before a pull request (acting agent)
 
 This governs the agent that *prepares* a branch for review, not the reviewer.

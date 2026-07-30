@@ -66,6 +66,17 @@
 * [ ] README / documentation updated
 * [ ] No documentation change required
 
+## Architecture decisions
+
+<!-- Every pull request is checked against the ADR base (doc/adr/). Most embark no
+     architectural decision — tick the first box. Agents draft ADRs as `Proposed`;
+     the maintainer accepts or supersedes. See doc/adr/README.md. -->
+
+* [ ] No architectural decision in this pull request
+* [ ] New decision recorded — ADR drafted as `Proposed`: ADR-____
+* [ ] Supersedes an existing ADR — successor proposed, status not flipped: ADR-____
+* [ ] ⚠️ Conflicts with an existing ADR — flagged for the maintainer: ADR-____
+
 ## Related issues
 
 <!-- e.g. Closes #123 -->
