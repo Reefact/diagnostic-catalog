@@ -14,71 +14,124 @@ internal static class CatalogEmitter
         SortedDictionary<string, RuleInfo>? upstream, Previous? previous, string? dateOverride)
     {
         SortedDictionary<string, RuleInfo> accepted = new(upstream!, StringComparer.Ordinal);
+        List<string> retired = CarryForwardRetired(accepted, previous);
+        Catalogue catalogue = new(job, packageId, version, accepted);
 
-        // §23.1: a constant is never deleted. Consumers inline const values at their own
-        // compile time, so removing one breaks their recompilation. A rule that upstream has
-        // retired is carried forward and marked [Obsolete] instead — a warning they can act
-        // on, rather than a missing member they cannot.
+        int liveCount = accepted.Count(r => !r.Value.Retired);
+        CategoryLayout categories = LayOutCategories(job.Container, accepted, previous);
+        Changes changes = DescribeChanges(accepted, previous, version, retired);
+
+        // The date only moves when something else did. Bumping it on every run would make the
+        // scheduled job open a pull request every night whose only content was a new date.
+        if (previous is not null && !changes.VersionChanged && !changes.Any)
+        {
+            Console.WriteLine($"unchanged: {packageId} {version}, {liveCount} rules — file left untouched");
+            return new GenerateResult(Changed: false, Summary: string.Empty);
+        }
+
+        string date = dateOverride ?? DateTime.UtcNow.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+
+        Directory.CreateDirectory(Path.GetDirectoryName(job.Output)!);
+        File.WriteAllText(job.Output, RenderSource(catalogue, date, categories), new UTF8Encoding(false));
+        Console.WriteLine($"wrote {liveCount} live rules " +
+                          $"({accepted.Count - liveCount} retired) to {job.Output}");
+
+        string summary = RenderSummary(catalogue, previous, changes, liveCount, categories.Ordered.Count);
+
+        return new GenerateResult(Changed: true, Summary: summary);
+    }
+
+    // §23.1: a constant is never deleted. Consumers inline const values at their own
+    // compile time, so removing one breaks their recompilation. A rule that upstream has
+    // retired is carried forward and marked [Obsolete] instead — a warning they can act
+    // on, rather than a missing member they cannot.
+    //
+    // Echoes the carried-forward rules into <paramref name="accepted"/> and returns the ids
+    // retired by THIS run: one an earlier run already carried forward is not news, and reporting
+    // it again would have the scheduled job open the same pull request every night.
+    private static List<string> CarryForwardRetired(
+        SortedDictionary<string, RuleInfo> accepted, Previous? previous)
+    {
         List<string> retired = [];
-        if (previous is not null)
+        if (previous is null) return retired;
+
+        foreach ((string id, RuleInfo info) in previous.Rules)
         {
-            foreach ((string id, RuleInfo info) in previous.Rules)
-            {
-                if (accepted.ContainsKey(id)) continue;
-                accepted[id] = info with { Retired = true };
-                if (!info.Retired) retired.Add(id);
-            }
+            if (accepted.ContainsKey(id)) continue;
+            accepted[id] = info with { Retired = true };
+            if (!info.Retired) retired.Add(id);
         }
 
-        List<KeyValuePair<string, RuleInfo>> live = accepted.Where(r => !r.Value.Retired).ToList();
-        List<string> categories = accepted.Values.Select(v => v.Category).Distinct()
+        return retired;
+    }
+
+    // A catalogue repeats very few distinct categories across very many rules — Sonar spends
+    // 456 declarations on 13 values. Declare each once and have the rules refer to it: a
+    // const initialised from another const is still a compile-time constant, so the rules
+    // stay usable as attribute arguments and still fold to the literal in metadata.
+    private static CategoryLayout LayOutCategories(
+        string container, SortedDictionary<string, RuleInfo> accepted, Previous? previous)
+    {
+        List<string> ordered = accepted.Values.Select(v => v.Category).Distinct()
             .OrderBy(c => c, StringComparer.Ordinal).ToList();
-        Console.WriteLine($"distinct categories ({categories.Count}): {string.Join(", ", categories)}");
+        Console.WriteLine($"distinct categories ({ordered.Count}): {string.Join(", ", ordered)}");
 
-        // A catalogue repeats very few distinct categories across very many rules — Sonar spends
-        // 456 declarations on 13 values. Declare each once and have the rules refer to it: a
-        // const initialised from another const is still a compile-time constant, so the rules
-        // stay usable as attribute arguments and still fold to the literal in metadata.
-        string categoryContainer = job.Container.EndsWith("Rule", StringComparison.Ordinal)
-            ? job.Container[..^"Rule".Length] + "Category"
-            : job.Container + "Category";
+        string containerName = container.EndsWith("Rule", StringComparison.Ordinal)
+            ? container[..^"Rule".Length] + "Category"
+            : container + "Category";
 
-        Dictionary<string, string> categoryNames = new(StringComparer.Ordinal);
-        HashSet<string> usedNames = new(StringComparer.Ordinal);
+        Dictionary<string, string> names = new(StringComparer.Ordinal);
+        HashSet<string> used = new(StringComparer.Ordinal);
+        ReservePublishedNames(ordered, previous, names, used);
 
-        // A category constant is a member consumers reference by hand, so its name is part of the
-        // published contract and must never move under them. Names are otherwise assigned in ordinal
-        // order, which makes that fragile: the day upstream adds a category that flattens to the same
-        // identifier as an existing one AND sorts before it, the newcomer would take the base name and
-        // push the EXISTING constant onto a numbered suffix. Every project referencing it would stop
-        // compiling, from an unattended nightly run.
-        //
-        // So already-published names are RESERVED first, and only then are new categories fitted
-        // around them. Stability wins over prettiness: a category published as MajorCodeSmell2 keeps
-        // that name even once whatever collided with it is gone, because renaming it back would break
-        // exactly the consumers this pass exists to protect.
-        if (previous is not null)
+        foreach (string c in ordered)
         {
-            foreach (string c in categories)
-            {
-                if (previous.CategoryNames.TryGetValue(c, out string? published) && usedNames.Add(published))
-                    categoryNames[c] = published;
-            }
-        }
-
-        foreach (string c in categories)
-        {
-            if (categoryNames.ContainsKey(c)) continue;   // reserved above
+            if (names.ContainsKey(c)) continue;   // reserved above
             string baseName = Naming.ToIdentifier(c);
             string name = baseName;
             // Deterministic disambiguation: two categories differing only in punctuation would
             // otherwise silently collapse onto one constant.
-            for (int n = 2; !usedNames.Add(name); n++) name = baseName + n.ToString(CultureInfo.InvariantCulture);
+            int suffix = 2;
+            while (!used.Add(name))
+            {
+                name = baseName + suffix.ToString(CultureInfo.InvariantCulture);
+                suffix++;
+            }
+
             if (name != baseName) Console.WriteLine($"  note: category '{c}' named {name} to avoid a collision");
-            categoryNames[c] = name;
+            names[c] = name;
         }
 
-        // --- what actually changed -------------------------------------------------
+        return new CategoryLayout(ordered, names, containerName);
+    }
+
+    // ADR-0012: a category constant is a member consumers reference by hand, so its name is part of
+    // the published contract and must never move under them. Names are otherwise assigned in ordinal
+    // order, which makes that fragile: the day upstream adds a category that flattens to the same
+    // identifier as an existing one AND sorts before it, the newcomer would take the base name and
+    // push the EXISTING constant onto a numbered suffix. Every project referencing it would stop
+    // compiling, from an unattended nightly run.
+    //
+    // So already-published names are RESERVED here, before any new category is fitted around them.
+    // Stability wins over prettiness: a category published as MajorCodeSmell2 keeps that name even
+    // once whatever collided with it is gone, because renaming it back would break exactly the
+    // consumers this pass exists to protect.
+    private static void ReservePublishedNames(
+        List<string> ordered, Previous? previous, Dictionary<string, string> names, HashSet<string> used)
+    {
+        if (previous is null) return;
+
+        foreach (string c in ordered)
+        {
+            if (previous.CategoryNames.TryGetValue(c, out string? published) && used.Add(published))
+                names[c] = published;
+        }
+    }
+
+    // --- what actually changed -------------------------------------------------
+    private static Changes DescribeChanges(
+        SortedDictionary<string, RuleInfo> accepted, Previous? previous, string version, List<string> retired)
+    {
         List<string> added = accepted.Keys.Where(id => previous is null || !previous.Rules.ContainsKey(id)).ToList();
         List<(string Id, string From, string To)> recategorised = previous is null
             ? []
@@ -87,27 +140,23 @@ internal static class CatalogEmitter
                       .Select(r => (Id: r.Key, From: previous.Rules[r.Key].Category, To: r.Value.Category))
                       .ToList();
 
-        bool versionChanged = previous is null || !string.Equals(previous.SourceVersion, version, StringComparison.Ordinal);
-        bool rulesChanged = added.Count > 0 || retired.Count > 0 || recategorised.Count > 0;
+        bool versionChanged = previous is null
+                              || !string.Equals(previous.SourceVersion, version, StringComparison.Ordinal);
 
-        // The date only moves when something else did. Bumping it on every run would make the
-        // scheduled job open a pull request every night whose only content was a new date.
-        if (previous is not null && !versionChanged && !rulesChanged)
-        {
-            Console.WriteLine($"unchanged: {packageId} {version}, {live.Count} rules — file left untouched");
-            return new GenerateResult(Changed: false, Summary: string.Empty);
-        }
+        return new Changes(added, recategorised, retired, versionChanged);
+    }
 
-        string date = dateOverride ?? DateTime.UtcNow.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-
-        // ---------------------------------------------------------------------------
-        // Emit. Output is ordered deterministically so a regeneration produces a diff that
-        // shows only genuine upstream change.
-        // ---------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
+    // Emit. Output is ordered deterministically so a regeneration produces a diff that
+    // shows only genuine upstream change.
+    // ---------------------------------------------------------------------------
+    private static string RenderSource(Catalogue catalogue, string date, CategoryLayout categories)
+    {
+        Job job = catalogue.Job;
         StringBuilder sb = new();
         sb.AppendLine("// <auto-generated>");
         sb.AppendLine("//     Generated by eng/CatalogGen from the DiagnosticDescriptor instances declared by");
-        sb.AppendLine($"//     {packageId} {version} (language: {job.Language}).");
+        sb.AppendLine($"//     {catalogue.PackageId} {catalogue.Version} (language: {job.Language}).");
         sb.AppendLine("//     Do not edit by hand: rerun the generator.");
         sb.AppendLine("//");
         sb.AppendLine("//     Only Id, Category and HelpLinkUri are emitted, and only when the descriptor");
@@ -120,118 +169,171 @@ internal static class CatalogEmitter
         // unconditionally leaves an unused directive in every catalogue that has retired nothing,
         // which is all of them today — and it made the generator disagree with its own committed
         // output, so a regeneration would have produced a diff carrying no upstream change at all.
-        if (accepted.Values.Any(r => r.Retired)) sb.AppendLine("using System;");
+        if (catalogue.Rules.Values.Any(r => r.Retired)) sb.AppendLine("using System;");
         sb.AppendLine("using DiagnosticCatalog;");
         sb.AppendLine();
         sb.AppendLine("[assembly: CatalogSource(");
-        sb.AppendLine($"    source:        \"{packageId}\",");
-        sb.AppendLine($"    sourceVersion: \"{version}\",");
+        sb.AppendLine($"    source:        \"{catalogue.PackageId}\",");
+        sb.AppendLine($"    sourceVersion: \"{catalogue.Version}\",");
         sb.AppendLine($"    generatedOn:   \"{date}\")]");
         sb.AppendLine();
         sb.AppendLine($"namespace {job.Namespace};");
         sb.AppendLine();
         sb.AppendLine("/// <summary>");
-        sb.AppendLine($"/// The diagnostic categories used by {packageId}, declared once each.");
+        sb.AppendLine($"/// The diagnostic categories used by {catalogue.PackageId}, declared once each.");
         sb.AppendLine("/// </summary>");
         sb.AppendLine("[DiagnosticCategory]");
-        sb.AppendLine($"public static class {categoryContainer}");
+        sb.AppendLine($"public static class {categories.ContainerName}");
         sb.AppendLine("{");
         bool firstCategory = true;
-        foreach (string c in categories)
+        foreach (string c in categories.Ordered)
         {
             if (!firstCategory) sb.AppendLine();
             firstCategory = false;
             sb.AppendLine($"    /// <summary>The <c>{Naming.Escape(c)}</c> category.</summary>");
-            sb.AppendLine($"    public const string {categoryNames[c]} = \"{Naming.Escape(c)}\";");
+            sb.AppendLine($"    public const string {categories.Names[c]} = \"{Naming.Escape(c)}\";");
         }
+
         sb.AppendLine("}");
         sb.AppendLine();
         sb.AppendLine("/// <summary>");
-        sb.AppendLine($"/// The {packageId} diagnostic rules, as declared by that package's analyzers.");
+        sb.AppendLine($"/// The {catalogue.PackageId} diagnostic rules, as declared by that package's analyzers.");
         sb.AppendLine("/// </summary>");
         sb.AppendLine($"public static class {job.Container}");
         sb.AppendLine("{");
 
         bool first = true;
-        foreach ((string id, RuleInfo info) in accepted)
+        foreach ((string id, RuleInfo info) in catalogue.Rules)
         {
             if (!first) sb.AppendLine();
             first = false;
-            bool hasHelp = !string.IsNullOrWhiteSpace(info.HelpLinkUri);
-            sb.AppendLine("    /// <summary>");
-            sb.AppendLine($"    /// Rule <c>{id}</c>, category <c>{Naming.Escape(info.Category)}</c>.");
-            if (info.Retired)
-                sb.AppendLine($"    /// No longer declared by {packageId} as of {version}.");
-            if (hasHelp) sb.AppendLine($"    /// See <see href=\"{Naming.Escape(info.HelpLinkUri)}\"/>.");
-            sb.AppendLine("    /// </summary>");
-            if (info.Retired)
-                sb.AppendLine($"    [Obsolete(\"{Naming.Escape(id)} is no longer declared by {packageId} as of {version}. " +
-                              "Kept so that removing it does not break recompilation; remove your suppression.\")]");
-            sb.AppendLine("    [DiagnosticRule]");
-            sb.AppendLine($"    public static class {id}");
-            sb.AppendLine("    {");
-            sb.AppendLine("        /// <summary>The canonical identifier of this diagnostic.</summary>");
-            sb.AppendLine($"        public const string Id = nameof({id});");
-            sb.AppendLine();
-            sb.AppendLine("        /// <summary>The category declared by the analyzer's DiagnosticDescriptor.</summary>");
-            sb.AppendLine($"        public const string Category = {categoryContainer}.{categoryNames[info.Category]};");
-            if (hasHelp)
-            {
-                sb.AppendLine();
-                sb.AppendLine("        /// <summary>The help link declared by the analyzer's DiagnosticDescriptor.</summary>");
-                sb.AppendLine($"        public const string HelpLinkUri = \"{Naming.Escape(info.HelpLinkUri)}\";");
-            }
-            sb.AppendLine("    }");
+            AppendRule(sb, catalogue, id, info, categories);
         }
 
         sb.AppendLine("}");
 
-        Directory.CreateDirectory(Path.GetDirectoryName(job.Output)!);
-        File.WriteAllText(job.Output, sb.ToString().ReplaceLineEndings("\n"), new UTF8Encoding(false));
-        Console.WriteLine($"wrote {live.Count} live rules " +
-                          $"({accepted.Count - live.Count} retired) to {job.Output}");
+        return sb.ToString().ReplaceLineEndings("\n");
+    }
 
-        // --- human-readable summary for the pull request ---------------------------
+    private static void AppendRule(
+        StringBuilder sb, Catalogue catalogue, string id, RuleInfo info, CategoryLayout categories)
+    {
+        bool hasHelp = !string.IsNullOrWhiteSpace(info.HelpLinkUri);
+        sb.AppendLine("    /// <summary>");
+        sb.AppendLine($"    /// Rule <c>{id}</c>, category <c>{Naming.Escape(info.Category)}</c>.");
+        if (info.Retired)
+            sb.AppendLine($"    /// No longer declared by {catalogue.PackageId} as of {catalogue.Version}.");
+        if (hasHelp) sb.AppendLine($"    /// See <see href=\"{Naming.Escape(info.HelpLinkUri)}\"/>.");
+        sb.AppendLine("    /// </summary>");
+        if (info.Retired)
+            sb.AppendLine($"    [Obsolete(\"{Naming.Escape(id)} is no longer declared by {catalogue.PackageId} " +
+                          $"as of {catalogue.Version}. " +
+                          "Kept so that removing it does not break recompilation; remove your suppression.\")]");
+        sb.AppendLine("    [DiagnosticRule]");
+        sb.AppendLine($"    public static class {id}");
+        sb.AppendLine("    {");
+        sb.AppendLine("        /// <summary>The canonical identifier of this diagnostic.</summary>");
+        sb.AppendLine($"        public const string Id = nameof({id});");
+        sb.AppendLine();
+        sb.AppendLine("        /// <summary>The category declared by the analyzer's DiagnosticDescriptor.</summary>");
+        sb.AppendLine($"        public const string Category = {categories.ContainerName}.{categories.Names[info.Category]};");
+        if (hasHelp)
+        {
+            sb.AppendLine();
+            sb.AppendLine("        /// <summary>The help link declared by the analyzer's DiagnosticDescriptor.</summary>");
+            sb.AppendLine($"        public const string HelpLinkUri = \"{Naming.Escape(info.HelpLinkUri)}\";");
+        }
+
+        sb.AppendLine("    }");
+    }
+
+    // --- human-readable summary for the pull request ---------------------------
+    private static string RenderSummary(
+        Catalogue catalogue, Previous? previous, Changes changes, int liveCount, int categoryCount)
+    {
         StringBuilder md = new();
-        string fromTo = previous is null
-            ? version
-            : versionChanged ? $"{previous.SourceVersion} → {version}" : version;
-        md.AppendLine($"#### {job.Namespace} — {packageId} {fromTo}");
+        string fromTo = previous is not null && changes.VersionChanged
+            ? $"{previous.SourceVersion} → {catalogue.Version}"
+            : catalogue.Version;
+        md.AppendLine($"#### {catalogue.Job.Namespace} — {catalogue.PackageId} {fromTo}");
         md.AppendLine();
-        if (!rulesChanged)
+        if (!changes.Any)
         {
             md.AppendLine("No rule changes. Only the mirrored upstream version moved.");
         }
         else
         {
-            if (added.Count > 0)
-            {
-                md.AppendLine($"**Added ({added.Count}):**");
-                foreach (string id in added.Take(50))
-                    md.AppendLine($"- `{id}` — {accepted[id].Category}");
-                if (added.Count > 50) md.AppendLine($"- …and {added.Count - 50} more");
-                md.AppendLine();
-            }
-            if (recategorised.Count > 0)
-            {
-                md.AppendLine($"**Recategorised ({recategorised.Count}):**");
-                foreach ((string Id, string From, string To) r in recategorised)
-                    md.AppendLine($"- `{r.Id}` — {r.From} → {r.To}");
-                md.AppendLine();
-            }
-            if (retired.Count > 0)
-            {
-                md.AppendLine($"**Retired upstream ({retired.Count}) — kept and marked `[Obsolete]`:**");
-                foreach (string id in retired)
-                    md.AppendLine($"- `{id}`");
-                md.AppendLine();
-                md.AppendLine("> Constants are never deleted: consumers inline them, so removing one breaks " +
-                              "their recompilation. Deleting these is a major version (§23.1).");
-                md.AppendLine();
-            }
+            AppendAdded(md, changes.Added, catalogue.Rules);
+            AppendRecategorised(md, changes.Recategorised);
+            AppendRetired(md, changes.Retired);
         }
-        md.AppendLine($"{live.Count} live rules, {categories.Count} categories.");
 
-        return new GenerateResult(Changed: true, Summary: md.ToString().TrimEnd() + "\n");
+        md.AppendLine($"{liveCount} live rules, {categoryCount} categories.");
+
+        return md.ToString().TrimEnd() + "\n";
+    }
+
+    private static void AppendAdded(
+        StringBuilder md, List<string> added, SortedDictionary<string, RuleInfo> rules)
+    {
+        if (added.Count == 0) return;
+
+        md.AppendLine($"**Added ({added.Count}):**");
+        foreach (string id in added.Take(50))
+            md.AppendLine($"- `{id}` — {rules[id].Category}");
+        if (added.Count > 50) md.AppendLine($"- …and {added.Count - 50} more");
+        md.AppendLine();
+    }
+
+    private static void AppendRecategorised(
+        StringBuilder md, List<(string Id, string From, string To)> recategorised)
+    {
+        if (recategorised.Count == 0) return;
+
+        md.AppendLine($"**Recategorised ({recategorised.Count}):**");
+        foreach ((string Id, string From, string To) r in recategorised)
+            md.AppendLine($"- `{r.Id}` — {r.From} → {r.To}");
+        md.AppendLine();
+    }
+
+    private static void AppendRetired(StringBuilder md, List<string> retired)
+    {
+        if (retired.Count == 0) return;
+
+        md.AppendLine($"**Retired upstream ({retired.Count}) — kept and marked `[Obsolete]`:**");
+        foreach (string id in retired)
+            md.AppendLine($"- `{id}`");
+        md.AppendLine();
+        md.AppendLine("> Constants are never deleted: consumers inline them, so removing one breaks " +
+                      "their recompilation. Deleting these is a major version (§23.1).");
+        md.AppendLine();
+    }
+
+    /// <summary>
+    /// One catalogue as this run resolved it. <see cref="Version"/> is the upstream release
+    /// actually mirrored, which is not <c>Job.Version</c> once "latest" has been resolved, and
+    /// <see cref="Rules"/> is what will be written — rules carried forward as retired included.
+    /// </summary>
+    private sealed record Catalogue(
+        Job Job, string PackageId, string Version, SortedDictionary<string, RuleInfo> Rules);
+
+    /// <summary>
+    /// The category constants a catalogue declares: the distinct categories in emission order, the
+    /// identifier chosen for each, and the name of the class that holds them.
+    /// </summary>
+    private sealed record CategoryLayout(
+        List<string> Ordered, Dictionary<string, string> Names, string ContainerName);
+
+    /// <summary>
+    /// What this run found to have moved since the previous one. <see cref="Any"/> is what decides
+    /// whether the file is rewritten at all, so the three lists and the version are read together.
+    /// </summary>
+    private sealed record Changes(
+        List<string> Added,
+        List<(string Id, string From, string To)> Recategorised,
+        List<string> Retired,
+        bool VersionChanged)
+    {
+        internal bool Any => Added.Count > 0 || Retired.Count > 0 || Recategorised.Count > 0;
     }
 }
