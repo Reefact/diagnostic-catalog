@@ -52,6 +52,13 @@
 * [ ] `dotnet test -c Release`
 * [ ] .NET Framework 4.7.2 floor exercised (`-p:EnableNet472Floor=true -f net472`, Windows only)
 
+<!-- `fix` only. Tick the first box, or the second and say how the fix was verified.
+     A test that was never red cannot tell a fixed bug from one that was never
+     reproduced. See CLAUDE.md -> "Proving a fix". -->
+
+* [ ] Regression test observed failing against the unfixed code
+* [ ] A failing test was impractical here — verification described above
+
 ## Compatibility
 
 <!-- A rule identifier or a catalog entry key that a consumer references symbolically

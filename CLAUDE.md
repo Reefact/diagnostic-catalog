@@ -28,6 +28,27 @@ documented, and close to the code that uses it.
 * Only report tests as passing if you actually ran the corresponding command.
 * If you did not run a relevant command, say so explicitly.
 
+### Proving a fix
+
+* **A `fix` ships with a test that was seen failing against the unfixed code.**
+  This constrains the **evidence**, not the order of work: write the test first,
+  or write the fix and stash it to watch the test go red — either satisfies it.
+  A test that was never red cannot tell a fixed bug from one that was never
+  reproduced, and a test written after the fix, in the same breath, tends to
+  encode what the code does rather than what it should do. Report the failure you
+  observed; never assert it from memory.
+* When a failing test is genuinely impractical — a race, a fix inside a workflow,
+  a defect only reachable through a third-party service — **say so in the pull
+  request and describe how you verified the fix instead.** Skipping the proof is
+  allowed; skipping it silently is not.
+* Scope: this binds the `fix` type, which per CONTRIBUTING.md means the
+  correction of a defective *behaviour*. A documentation or tooling change takes
+  another type and carries no such obligation.
+* When adding behaviour whose contract is not obvious, write the assertions that
+  define it before implementing. This one is advice, not a rule. Its value is the
+  moment it creates: if you cannot decide what to assert, that is the point to
+  ask — not to settle the question silently inside the implementation.
+
 ## Release trains
 
 Commits are partitioned into **release trains by scope**, and each train
