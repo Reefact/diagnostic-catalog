@@ -29,6 +29,16 @@ public sealed class RetiredRuleTests : IDisposable
         return map;
     }
 
+    // A Previous as a real prior run would have left it: the rules, plus the identifier each
+    // category was published under. Emit reads that second map to keep a published constant's name
+    // stable, so a test that omitted it would exercise the first-ever-run path by accident.
+    private static Previous Before(string version, SortedDictionary<string, RuleInfo> rules)
+    {
+        SortedDictionary<string, string> categories = new(StringComparer.Ordinal);
+        foreach (RuleInfo info in rules.Values) categories[info.Category] = Naming.ToIdentifier(info.Category);
+        return new Previous(version, rules, categories);
+    }
+
     private GenerateResult Emit(
         SortedDictionary<string, RuleInfo> upstream, Previous? previous, out string emitted)
     {
@@ -45,7 +55,7 @@ public sealed class RetiredRuleTests : IDisposable
     [Fact]
     public void A_rule_dropped_upstream_is_kept_and_marked_obsolete()
     {
-        Previous before = new("1.0.0", Rules(("X0001", "Usage"), ("X0002", "Usage")));
+        Previous before = Before("1.0.0", Rules(("X0001", "Usage"), ("X0002", "Usage")));
 
         GenerateResult result = Emit(Rules(("X0001", "Usage")), before, out string emitted);
 
@@ -61,7 +71,7 @@ public sealed class RetiredRuleTests : IDisposable
     [Fact]
     public void A_rule_still_declared_upstream_carries_no_obsolete_marker()
     {
-        Previous before = new("1.0.0", Rules(("X0001", "Usage"), ("X0002", "Usage")));
+        Previous before = Before("1.0.0", Rules(("X0001", "Usage"), ("X0002", "Usage")));
 
         Emit(Rules(("X0001", "Usage")), before, out string emitted);
 
@@ -78,7 +88,7 @@ public sealed class RetiredRuleTests : IDisposable
         // The night after a retirement, the generator parses its own output again. If the parser
         // missed the [Obsolete] marker the rule would look live, and the run after that would
         // report it as retired all over again — a pull request every night, forever.
-        Previous before = new("1.0.0", Rules(("X0001", "Usage"), ("X0002", "Usage")));
+        Previous before = Before("1.0.0", Rules(("X0001", "Usage"), ("X0002", "Usage")));
 
         string output = Path.Combine(_temp, "readback.g.cs");
         Job job = new(Package, "2.0.0", "Vendor.Catalog", "VendorRule", output, "cs");
@@ -104,7 +114,7 @@ public sealed class RetiredRuleTests : IDisposable
             ["X0002"] = new("Usage", string.Empty, Retired: true),
         };
 
-        GenerateResult result = Emit(Rules(("X0001", "Usage")), new Previous("2.0.0", settled), out string emitted);
+        GenerateResult result = Emit(Rules(("X0001", "Usage")), Before("2.0.0", settled), out string emitted);
 
         Assert.False(result.Changed);
         Assert.Equal(string.Empty, result.Summary);

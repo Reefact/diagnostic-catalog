@@ -45,9 +45,16 @@ internal static class CatalogParser
                                      Retired: b.Groups["obsolete"].Success);
         }
 
+        // Inverted, because the emitter asks the question the other way round: given a category's
+        // literal, what identifier was it published under? Recovering that is what lets an existing
+        // constant keep its name when a new category would otherwise claim it.
+        SortedDictionary<string, string> categoryNames = new(StringComparer.Ordinal);
+        foreach (KeyValuePair<string, string> declared in categoryLiterals) categoryNames[declared.Value] = declared.Key;
+
         Console.WriteLine($"previous: {packageOrEmpty(sourceVersion)}{rules.Count} rules " +
-                          $"({rules.Count(r => r.Value.Retired)} already retired)");
-        return new Previous(sourceVersion, rules);
+                          $"({rules.Count(r => r.Value.Retired)} already retired), " +
+                          $"{categoryNames.Count} categories");
+        return new Previous(sourceVersion, rules, categoryNames);
 
         static string packageOrEmpty(string v) => string.IsNullOrEmpty(v) ? "" : $"{v}, ";
     }
