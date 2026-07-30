@@ -188,7 +188,7 @@ Optional supporting material:
 | [ADR-0005](0005-require-an-enforcing-check-before-any-automation-merges.md) | Require an enforcing check before any automation merges | Accepted |
 | [ADR-0006](0006-publish-through-trusted-publishing-with-provenance-and-an-sbom.md) | Publish through trusted publishing, with signed provenance and an embedded SBOM | Accepted |
 | [ADR-0007](0007-depend-across-trains-through-published-packages.md) | Depend across trains through published packages, never project references | Accepted |
-| [ADR-0008](0008-express-a-rule-as-a-marked-static-class-of-constants.md) | Express a rule as a marked static class of constants, never an interface | Proposed |
-| [ADR-0009](0009-generate-catalog-content-from-analyzer-descriptors.md) | Generate catalog content from analyzer descriptors, never from documentation | Proposed |
-| [ADR-0010](0010-carry-a-retired-rule-forward-as-obsolete.md) | Carry a retired rule forward as obsolete, never delete its constant | Proposed |
-| [ADR-0011](0011-redistribute-rule-facts-only-never-the-vendors-prose.md) | Redistribute rule facts only, never the vendor's rule prose | Proposed |
+| [ADR-0008](0008-express-a-rule-as-a-marked-static-class-of-constants.md) | Express a rule as a marked static class of constants, never an interface | Accepted |
+| [ADR-0009](0009-generate-catalog-content-from-analyzer-descriptors.md) | Generate catalog content from analyzer descriptors, never from documentation | Accepted |
+| [ADR-0010](0010-carry-a-retired-rule-forward-as-obsolete.md) | Carry a retired rule forward as obsolete, never delete its constant | Accepted |
+| [ADR-0011](0011-redistribute-rule-facts-only-never-the-vendors-prose.md) | Redistribute rule facts only, never the vendor's rule prose | Accepted |

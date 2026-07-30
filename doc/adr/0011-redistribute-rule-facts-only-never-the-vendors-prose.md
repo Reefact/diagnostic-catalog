@@ -1,7 +1,8 @@
 # ADR-0011 | Redistribute rule facts only, never the vendor's rule prose
 
-**Status:** Proposed
+**Status:** Accepted
 **Proposed:** 2026-07-30
+**Accepted:** 2026-07-30
 **Decision Makers:** Reefact
 
 ## Context
