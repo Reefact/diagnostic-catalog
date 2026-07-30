@@ -148,18 +148,15 @@ nuget.org, no release is created. A dry run that faked those would prove nothing
 
 ## 🚧 Project status
 
-**Nothing is published on nuget.org yet.** The reference below shows what consuming the
-foundation will look like; it does not restore today.
-
-The foundation ships first, on its own: the catalogue packages carry a project reference
-to it, and turning that into a package reference requires a published version to point at
-([ADR-0007](doc/adr/0007-depend-across-trains-through-published-packages.md)). Until that
-first release, the catalogues build and are tested, but publish nothing.
+The foundation shipped first, on its own, because it had to: a catalogue cannot depend on
+it through a package reference until a version of it exists
+([ADR-0007](doc/adr/0007-depend-across-trains-through-published-packages.md)). That release
+is what unblocked the three vendor catalogues, which now ride their own trains.
 
 | | Status |
 | --- | --- |
-| `DiagnosticCatalog` | Built and tested; **first to ship**, on the `lib` train. |
-| `DiagnosticCatalog.Sonar` / `.NetAnalyzers` / `.StyleCop` | Built and tested; unblocked by the first `lib` release. |
+| `DiagnosticCatalog` | **Published**, on the `lib` train. |
+| `DiagnosticCatalog.Sonar` / `.NetAnalyzers` / `.StyleCop` | On their own trains, each versioning at its vendor's pace. |
 | `DiagnosticCatalog.Analyzers` | **Specified, not built yet** — the diagnostics that validate declarations and use sites. |
 
 Referencing the foundation alone declares rules; it performs **no checking**. That part is
