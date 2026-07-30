@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using CatalogGen;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -597,15 +598,21 @@ static Cli? ParseArgs(string[] args)
     return new Cli(package, version, ns, container, output, date, language ?? "cs", manifest, summary);
 }
 
-internal sealed record Cli(
-    string? Package, string? Version, string? Namespace, string? Container, string? Output,
-    string? Date, string Language, string? Manifest, string? Summary);
+// Top-level statements place every type declared after them in the global namespace, where
+// nothing can reference them explicitly and anything the build pulls in can collide with
+// them. A named namespace costs one indent and settles the question.
+namespace CatalogGen
+{
+    internal sealed record Cli(
+        string? Package, string? Version, string? Namespace, string? Container, string? Output,
+        string? Date, string Language, string? Manifest, string? Summary);
 
-internal sealed record Job(
-    string Package, string Version, string Namespace, string Container, string Output, string Language);
+    internal sealed record Job(
+        string Package, string Version, string Namespace, string Container, string Output, string Language);
 
-internal sealed record RuleInfo(string Category, string HelpLinkUri, bool Retired);
+    internal sealed record RuleInfo(string Category, string HelpLinkUri, bool Retired);
 
-internal sealed record Previous(string SourceVersion, SortedDictionary<string, RuleInfo> Rules);
+    internal sealed record Previous(string SourceVersion, SortedDictionary<string, RuleInfo> Rules);
 
-internal sealed record GenerateResult(bool Changed, string Summary);
+    internal sealed record GenerateResult(bool Changed, string Summary);
+}
