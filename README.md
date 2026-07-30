@@ -10,7 +10,7 @@
 
 ---
 
-**A rule reference is a contract — keep it resolvable, documented, and next to the code that uses it.**
+**Stop writing analyzer suppressions as magic 🪄 strings.**
 
 ## 🚨 The problem
 
