@@ -1,7 +1,8 @@
 # ADR-0001 | Floor the libraries' .NET Framework support at 4.7.2
 
-**Status:** Proposed
+**Status:** Accepted
 **Proposed:** 2026-07-30
+**Accepted:** 2026-07-30
 **Decision Makers:** Reefact
 
 ## Context

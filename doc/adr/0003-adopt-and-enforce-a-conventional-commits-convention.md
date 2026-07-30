@@ -1,7 +1,8 @@
 # ADR-0003 | Adopt and enforce a Conventional Commits convention
 
-**Status:** Proposed
+**Status:** Accepted
 **Proposed:** 2026-07-30
+**Accepted:** 2026-07-30
 **Decision Makers:** Reefact
 
 ## Context
