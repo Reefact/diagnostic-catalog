@@ -8,25 +8,14 @@
   </PropertyGroup>
 
   <!--
-    NO <ReleaseTrain> yet, deliberately, and this is the one thing to fix before this catalog
-    can ship.
-
-    It belongs on the 'stylecop' train, but joining it now would make the project packable while it
-    still carries a ProjectReference to DiagnosticCatalog on the 'lib' train — the construct
-    ADR-0007 forbids, because `dotnet pack` would stamp a dependency on a lib version that was
-    never published and every consumer's restore would fail with NU1102 on an immutable artifact.
-
-    The foundation has no published version to reference yet, so the release order ADR-0007
-    implies has not run its first step. Once lib ships, this project swaps the ProjectReference
-    below for a versionless PackageReference to DiagnosticCatalog and declares
-    declares its release train as 'stylecop'. Until then it builds and is testable, but
-    publishes nothing — which is honest rather than convenient.
-
-    The train name is spelled in prose above, never as the XML element: tools/trains.sh
-    discovers membership with a line-oriented sed that does not parse XML, so the element
-    written inside this comment would be read as a real declaration and this project would
-    be packed after all.
+    This catalogue ships on the 'stylecop' train, which versions independently of the foundation so it
+    can follow StyleCop.Analyzers' releases without dragging anything else along. Declaring the train here is the
+    whole membership (Directory.Build.targets); it is also what makes the project packable, what gives
+    it an embedded SBOM, and what puts the icon on the package.
   -->
+  <PropertyGroup>
+    <ReleaseTrain>stylecop</ReleaseTrain>
+  </PropertyGroup>
   <PropertyGroup Label="Package">
     <PackageId>DiagnosticCatalog.StyleCop</PackageId>
     <DevelopmentDependency>false</DevelopmentDependency>
@@ -44,8 +33,21 @@
     <None Include="README.md" Pack="true" PackagePath="/" />
   </ItemGroup>
 
+  <!--
+    A PACKAGE reference, not a project one. The foundation rides the 'lib' train and this catalogue
+    rides its own, so packing against the project would stamp a dependency on a lib version that was
+    never published, and every consumer's restore would fail with NU1102 on an immutable artifact
+    (ADR-0007).
+
+    Version-less, so it resolves from Directory.Packages.props — where moving every catalogue onto a
+    new foundation is one deliberate edit rather than three.
+
+    NOT PrivateAssets="all": the foundation must reach whoever consumes this catalogue. They need
+    [DiagnosticRule] resolvable to declare rules of their own, and present at run time for reflection
+    over a catalogue to work (specification §16.1).
+  -->
   <ItemGroup>
-    <ProjectReference Include="../DiagnosticCatalog/DiagnosticCatalog.csproj" />
+    <PackageReference Include="DiagnosticCatalog" />
   </ItemGroup>
 
 </Project>
