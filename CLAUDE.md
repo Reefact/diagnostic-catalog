@@ -45,6 +45,17 @@ one matches no train and is silently dropped from the release notes and the
 changelog. The full table, with the `analyzers` / `netanalyzers` distinction, is
 in [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
+Two rules follow, and both are checked on every pull request by the release
+rehearsal:
+
+* A project joins a train by declaring `<ReleaseTrain>` in its own `.csproj`.
+  That declaration is the whole membership — it also makes the project packable
+  and gives it an embedded SBOM. Never add a project to a list somewhere else.
+* A project on one train MUST NOT carry a `<ProjectReference>` to a project on
+  another: `dotnet pack` would stamp a dependency on a version of the other train
+  that was never published. Depend on another train through a `PackageReference`
+  to a released version (ADR-0007).
+
 ## Change guidelines
 
 * Keep changes small, focused, and aligned with the requested task.

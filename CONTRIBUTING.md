@@ -36,6 +36,61 @@ every project carrying that import and runs each with
 
 Test projects that cover `net10.0`-only tooling must **not** import it.
 
+## Releasing
+
+The trains described under *Scope* below version, tag and publish independently.
+The mapping — train id, tag prefix, the scopes it collects, the package label —
+lives in [`tools/trains.sh`](tools/trains.sh) and nowhere else.
+
+### How a project joins a train
+
+By declaring it in its own `.csproj`:
+
+```xml
+<PropertyGroup>
+  <ReleaseTrain>sonar</ReleaseTrain>
+</PropertyGroup>
+```
+
+That single declaration is the whole membership. It makes the project packable,
+gives it an embedded SPDX SBOM (both wired in `Directory.Build.targets`), and is
+what `tools/packaging/pack.sh` discovers when it packs the train — nothing lists
+the projects a second time, so a renamed or moved project cannot silently drop
+out of its own release. A value matching no train fails the pack, on every pull
+request, rather than at release time.
+
+### Cross-train dependencies
+
+A project on one train MUST NOT carry a `<ProjectReference>` to a project on
+another. The trains publish independently, and `dotnet pack` stamps a
+`ProjectReference` at the version being packed — so the reference would declare a
+dependency on a version of the other train that was never published, and the
+package would be unresolvable for every consumer. Depend on another train through
+a `PackageReference` to a version that is actually on nuget.org. The rule is
+checked on every pack; decision:
+[ADR-0007](doc/adr/0007-depend-across-trains-through-published-packages.md).
+
+### Cutting a release
+
+Push a train-prefixed SemVer tag — `lib-v1.2.3`, `sonar-v4.0.0`. The release
+workflow resolves the train from the prefix, builds and tests, packs only that
+train, attests the artifacts, publishes to NuGet through OIDC trusted publishing,
+and creates a GitHub Release whose notes contain only that train's commits.
+
+Two things are worth knowing before the first one:
+
+* **Rehearse it.** `release-dryrun` already packs every train on every pull
+  request, and the release workflow itself can be dispatched with `dry_run`
+  ticked — which runs everything up to and including the OIDC login and the
+  provenance attestation, and skips only the two steps that publish.
+* **Build metadata is rejected.** `lib-v1.2.3+build5` is valid SemVer but NuGet
+  drops the `+...` from the package identity, so the push would silently become a
+  no-op against an already-published `1.2.3`. The workflow fails on it instead.
+
+Adding a train is four edits: a row in `tools/trains.sh`, its scope in the commit
+linter and in the tables below, and its tag pattern plus dispatch option in
+`.github/workflows/release.yml` — GitHub requires those last two to be literal.
+
 ## Enabling the commit-message hook
 
 A `commit-msg` hook checks every message against the convention below before it

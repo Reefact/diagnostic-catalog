@@ -186,3 +186,5 @@ Optional supporting material:
 | [ADR-0003](0003-adopt-and-enforce-a-conventional-commits-convention.md) | Adopt and enforce a Conventional Commits convention | Proposed |
 | [ADR-0004](0004-state-the-coding-rules-where-an-agent-can-act-on-them.md) | State the coding rules where an agent can act on them | Proposed |
 | [ADR-0005](0005-require-an-enforcing-check-before-any-automation-merges.md) | Require an enforcing check before any automation merges | Proposed |
+| [ADR-0006](0006-publish-through-trusted-publishing-with-provenance-and-an-sbom.md) | Publish through trusted publishing, with signed provenance and an embedded SBOM | Proposed |
+| [ADR-0007](0007-depend-across-trains-through-published-packages.md) | Depend across trains through published packages, never project references | Proposed |
