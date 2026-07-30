@@ -1,0 +1,147 @@
+name: sonar
+
+# SonarQube Cloud analysis: the quality gate and the coverage figure the README badges read.
+#
+# ci.yml already produces an OpenCover report (coverage.runsettings) and uploads it as an
+# artifact. That report is not reused here: the SonarScanner for .NET hooks MSBuild to observe
+# the compilation itself, so it needs its own build and its own test run in the same job. The
+# runsettings file is shared, so both workflows measure the same thing the same way.
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+# Cancel superseded runs on the same branch / PR.
+concurrency:
+  group: sonar-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Least privilege: the analysis only reads the repository. Pull request decoration is delivered
+# by the SonarQube Cloud GitHub App, not by this workflow's token.
+permissions:
+  contents: read
+
+env:
+  DOTNET_NOLOGO: 'true'
+  DOTNET_CLI_TELEMETRY_OPTOUT: 'true'
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 'true'
+
+jobs:
+  analyze:
+    name: SonarQube Cloud analysis
+    runs-on: ubuntu-latest
+    # Scanner, build, test and coverage complete in a few minutes; the cap only guards a hung run.
+    timeout-minutes: 20
+    # A pull request opened from a fork cannot read SONAR_TOKEN. Skip the analysis there rather
+    # than fail it — branches in this repository, the normal case, run as usual.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      # The analysis depends on something this repository cannot provision for itself: a project on
+      # SonarQube Cloud and the SONAR_TOKEN secret that writes to it. Until both exist, every step
+      # below is skipped and the job succeeds, on the same principle as ci.yml's "Locate the
+      # solution" — a workflow committed before its prerequisite must report "nothing to do", not a
+      # red cross that trains everyone to ignore it. The moment the secret is configured, the
+      # analysis starts running with no edit here.
+      - name: Check the analysis credentials
+        id: guard
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          set -eu
+          if [ -z "${SONAR_TOKEN:-}" ]; then
+            echo 'present=false' >> "$GITHUB_OUTPUT"
+            echo '::notice::SONAR_TOKEN is not configured; the SonarQube Cloud analysis is skipped.'
+          else
+            echo 'present=true' >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout
+        if: steps.guard.outputs.present == 'true'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          # Full history lets Sonar attribute issues through git blame and identify new code.
+          fetch-depth: 0
+
+      - name: Setup .NET
+        if: steps.guard.outputs.present == 'true'
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Setup Java
+        # The SonarScanner for .NET runs on the JVM; SonarQube Cloud requires Java 17 or later.
+        if: steps.guard.outputs.present == 'true'
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Cache the SonarQube Cloud packages
+        if: steps.guard.outputs.present == 'true'
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: Install the SonarScanner for .NET
+        if: steps.guard.outputs.present == 'true'
+        run: |
+          set -eu
+          dotnet tool install --global dotnet-sonarscanner
+          echo "$HOME/.dotnet/tools" >> "$GITHUB_PATH"
+
+      # The generated catalogues are excluded from analysis, not merely from coverage. They are
+      # ~15 000 lines of machine-emitted `const` declarations, regenerated wholesale by
+      # eng/CatalogGen: nobody can act on an issue reported there, and their three near-identical
+      # shapes would register as duplication that no edit could ever resolve. Excluding them keeps
+      # every metric about the code a human actually wrote. Coverage is unaffected either way —
+      # a `const` compiles to no IL, so those files contribute nothing to cover.
+      - name: Begin the analysis
+        if: steps.guard.outputs.present == 'true'
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: >-
+          dotnet-sonarscanner begin
+          /k:"reefact_diagnostic-catalog"
+          /o:"reefact"
+          /d:sonar.token="$SONAR_TOKEN"
+          /d:sonar.host.url="https://sonarcloud.io"
+          /d:sonar.cs.opencover.reportsPaths="artifacts/coverage/**/coverage.opencover.xml"
+          /d:sonar.exclusions="**/*.g.cs"
+
+      # No solution is named, here or anywhere else: `dotnet` resolves the single solution at the
+      # repository root, so this keeps working as projects are added and the day the solution is
+      # renamed (see the "Locate the solution" note in ci.yml).
+      #
+      # The CI warning ratchet (Directory.Build.props) is disabled for this build alone. The
+      # scanner needs the compilation to COMPLETE in order to collect the SonarAnalyzer diagnostics
+      # and upload them in `end`; it neutralises TreatWarningsAsErrors by itself, but not
+      # MSBuildTreatWarningsAsErrors, so a single Sonar rule warning would fail the build before any
+      # result was reported. The ratchet stays fully enforced by ci.yml on both operating systems —
+      # that is the gate, and this analysis leg is not.
+      - name: Build
+        if: steps.guard.outputs.present == 'true'
+        run: dotnet build -c Release -p:TreatWarningsAsErrors=false -p:MSBuildTreatWarningsAsErrors=false
+
+      - name: Test with coverage
+        if: steps.guard.outputs.present == 'true'
+        # Same runsettings as ci.yml, so the OpenCover report Sonar reads matches the one CI
+        # publishes as an artifact.
+        run: >-
+          dotnet test -c Release --no-build
+          --collect:"XPlat Code Coverage"
+          --settings coverage.runsettings
+          --results-directory artifacts/coverage
+          --logger "console;verbosity=normal"
+
+      - name: End the analysis
+        if: steps.guard.outputs.present == 'true'
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: dotnet-sonarscanner end /d:sonar.token="$SONAR_TOKEN"
