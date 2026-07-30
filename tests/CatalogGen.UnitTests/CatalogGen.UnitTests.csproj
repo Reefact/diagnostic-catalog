@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Deliberately does NOT import build/Net472TestFloor.props. That file enrols a project in the
+    .NET Framework 4.7.2 floor, which exists to prove that a SHIPPED netstandard2.0 assembly behaves
+    on the real .NET Framework CLR. CatalogGen ships nothing and targets net10.0 only, so there is
+    no such assembly here and the floor would be running a build-time tool on a runtime it never
+    meets. See CONTRIBUTING.md, "The .NET Framework floor".
+  -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="coverlet.collector" />
+  </ItemGroup>
+
+  <!--
+    The real generated catalogues are copied beside the test binary. The round-trip test reads one
+    back with the parser, regenerates it with the emitter, and asserts the bytes match — which is a
+    stronger check than any hand-written fixture, because the input is exactly what ships. Copying
+    rather than resolving a repository path at run time keeps it working under the deterministic CI
+    build, which rewrites compile-time source paths.
+  -->
+  <ItemGroup>
+    <Content Include="..\..\src\**\*.g.cs" Link="catalogs\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\eng\CatalogGen\CatalogGen.csproj" />
+  </ItemGroup>
+
+</Project>
