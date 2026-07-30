@@ -45,14 +45,36 @@ internal static class CatalogEmitter
 
         Dictionary<string, string> categoryNames = new(StringComparer.Ordinal);
         HashSet<string> usedNames = new(StringComparer.Ordinal);
+
+        // A category constant is a member consumers reference by hand, so its name is part of the
+        // published contract and must never move under them. Names are otherwise assigned in ordinal
+        // order, which makes that fragile: the day upstream adds a category that flattens to the same
+        // identifier as an existing one AND sorts before it, the newcomer would take the base name and
+        // push the EXISTING constant onto a numbered suffix. Every project referencing it would stop
+        // compiling, from an unattended nightly run.
+        //
+        // So already-published names are RESERVED first, and only then are new categories fitted
+        // around them. Stability wins over prettiness: a category published as MajorCodeSmell2 keeps
+        // that name even once whatever collided with it is gone, because renaming it back would break
+        // exactly the consumers this pass exists to protect.
+        if (previous is not null)
+        {
+            foreach (string c in categories)
+            {
+                if (previous.CategoryNames.TryGetValue(c, out string? published) && usedNames.Add(published))
+                    categoryNames[c] = published;
+            }
+        }
+
         foreach (string c in categories)
         {
+            if (categoryNames.ContainsKey(c)) continue;   // reserved above
             string baseName = Naming.ToIdentifier(c);
             string name = baseName;
             // Deterministic disambiguation: two categories differing only in punctuation would
             // otherwise silently collapse onto one constant.
             for (int n = 2; !usedNames.Add(name); n++) name = baseName + n.ToString(CultureInfo.InvariantCulture);
-            if (name != baseName) Console.WriteLine($"  note: category '{c}' renamed to {name} to avoid a collision");
+            if (name != baseName) Console.WriteLine($"  note: category '{c}' named {name} to avoid a collision");
             categoryNames[c] = name;
         }
 
