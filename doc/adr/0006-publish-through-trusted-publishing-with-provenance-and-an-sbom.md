@@ -156,7 +156,7 @@ ever wanted in addition.
 ## Follow-up Actions
 
 * Create a trusted-publishing policy on nuget.org for each published package, and
-  set the `NUGET_USER` secret.
+  set the `NUGET_USER` repository variable to the nuget.org account username.
 * Dispatch a dry run before the first real release of every new package.
 * Document, for consumers, that provenance is verified against the GitHub Release
   asset.
