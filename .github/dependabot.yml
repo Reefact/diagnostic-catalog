@@ -1,0 +1,33 @@
+version: 2
+
+updates:
+  - package-ecosystem: "nuget"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    # `build` is the Conventional Commits type for dependency and packaging changes
+    # (CONTRIBUTING.md, "Types"). Dependabot's own headers are exempt from the length
+    # rule in commit-lint.yml — a long package name alone can overrun 72 characters and
+    # the bot cannot amend its message.
+    commit-message:
+      prefix: "build"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "ci"
+    # codeql-action ships init/analyze/upload-sarif as separate actions that MUST run the same version: the
+    # analyze step aborts on a database created by a different version ("Loaded a configuration file for
+    # version 'X', but running version 'Y'"), so a lone init or analyze bump leaves codeql.yml mismatched and
+    # fails the "CodeQL analyze (C#)" job. scorecard.yml uses upload-sarif from the same family, so it moves
+    # with them. Group them into one pull request so every step moves in lockstep.
+    groups:
+      codeql-action:
+        patterns:
+          - "github/codeql-action*"

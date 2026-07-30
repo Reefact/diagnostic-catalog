@@ -1,0 +1,11 @@
+#!/bin/sh
+# DiagnosticCatalog commit-message hook.
+#
+# Delegates to the shared linter so the local check and the CI check can never
+# diverge. Enable it once per clone with:
+#
+#     git config core.hooksPath .githooks
+#
+# See CONTRIBUTING.md.
+root="$(git rev-parse --show-toplevel)"
+exec "${root}/tools/commit-lint/lint-commit-message.sh" "$1"

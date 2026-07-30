@@ -1,0 +1,40 @@
+<Project>
+
+  <!--
+    Everything that has to READ a property the project itself sets lives here rather than in
+    Directory.Build.props. The SDK imports the .props file at the TOP of a project, before the
+    project's own PropertyGroups have been evaluated, so a condition on $(ReleaseTrain) there
+    would always see an empty value. This file is imported at the BOTTOM, after the project body,
+    which is the only place the declaration below can be observed.
+  -->
+
+  <!--
+    <ReleaseTrain> is how a project joins a release train, and it is the ONLY place that membership
+    is recorded: tools/trains.sh discovers the projects of a train by reading this property out of the
+    project files, and tools/packaging/pack.sh packs exactly what it finds. See CONTRIBUTING.md,
+    "Releasing", and ADR-0002 for why the trains are partitioned at all.
+
+    Declaring a train is therefore a statement that the project SHIPS, which is what makes it packable.
+    Stating it here rather than in each project keeps the two facts from disagreeing — a project
+    declaring a train but left unpackable would be silently absent from its own release.
+  -->
+  <PropertyGroup Condition="'$(ReleaseTrain)' != ''">
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <!--
+    Microsoft.Sbom.Targets is what makes -p:GenerateSBOM=true embed an SPDX inventory
+    (_manifest/spdx_2.2/manifest.spdx.json) in the produced package; pack.sh asserts the manifest is
+    present in every .nupkg it builds, so a project that shipped without this reference would fail the
+    pack rather than publish an inventory-less package.
+
+    Attached to the train declaration rather than repeated in every publishable project: the two always
+    go together, and a new catalog project would otherwise ship without an SBOM until somebody noticed.
+    Build-time only (PrivateAssets=all): it never reaches a consumer's dependency graph. The version is
+    pinned centrally in Directory.Packages.props.
+  -->
+  <ItemGroup Condition="'$(ReleaseTrain)' != ''">
+    <PackageReference Include="Microsoft.Sbom.Targets" PrivateAssets="all" />
+  </ItemGroup>
+
+</Project>

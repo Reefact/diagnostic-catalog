@@ -1,0 +1,42 @@
+name: dependency-review
+
+# Reviews dependency changes on pull requests: it diffs the base vs head dependency graph and fails the PR
+# if a change introduces a known-vulnerable package (or, if configured, a disallowed licence). This is the
+# PR-time complement to Dependabot, which only reacts *after* a vulnerable dependency is already on main.
+#
+# Because it fires only on the PR's dependency *changes*, it does not block on a CVE published overnight
+# against an existing dependency (that stays a warning via the NuGet audit; see Directory.Build.props) — it
+# blocks only at the moment a PR would introduce the problem, which is exactly when it is cheap to fix.
+
+on:
+  pull_request:
+    branches:
+      - main
+
+# Cancel superseded runs on the same PR.
+concurrency:
+  group: dependency-review-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Least privilege: the action reads the repository's dependency graph. No PR comment is posted (that would
+# need pull-requests: write); the failed check is the signal.
+permissions:
+  contents: read
+
+jobs:
+  review:
+    name: Dependency review
+    runs-on: ubuntu-latest
+    # The dependency-graph diff is seconds; cap a stuck runner.
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Dependency review
+        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+        with:
+          # Fail on moderate-or-higher advisories. Only dependency changes introduced by the PR are checked,
+          # so this is a genuine gate rather than noise; lower to 'low' to be stricter, raise to 'high' to be
+          # laxer.
+          fail-on-severity: moderate

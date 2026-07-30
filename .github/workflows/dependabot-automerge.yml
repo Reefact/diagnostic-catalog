@@ -1,0 +1,138 @@
+name: dependabot-automerge
+
+# The low-friction lane of the Dependabot automation policy: for Dependabot PRs, enable
+# GitHub auto-merge on patch and minor updates so they merge on their own once
+# the required checks pass. Major updates are deliberately left untouched for
+# human review.
+#
+# IMPORTANT — this workflow only *enables* auto-merge; it does not decide when to
+# merge. GitHub merges the PR only once the branch's REQUIRED status checks pass.
+# Without a branch-protection rule on `main` that marks the CI checks as required,
+# auto-merge would merge immediately. The required checks are therefore the safety
+# gate, not this workflow.
+#
+# Which is why arming is OFF until said so. The enable step below is gated on the
+# repository variable DEPENDABOT_AUTOMERGE, and the variable does not exist yet, so
+# this workflow currently does nothing but its fail-safe withdrawal. A workflow that
+# silently merged unchecked dependency bumps because the protection rule had not
+# been created yet is the exact accident this gate prevents — the hazard is at its
+# worst on a young repository, which is when nobody thinks to look for it.
+#
+# To arm it, in this order:
+#   1. protect `main` and mark the CI checks required (Settings -> Branches);
+#   2. set the repository variable DEPENDABOT_AUTOMERGE to `true`
+#      (Settings -> Secrets and variables -> Actions -> Variables).
+# Step 2 without step 1 re-creates the hazard. The withdrawal step is NOT gated:
+# disarming is always safe, so it keeps working either way.
+#
+# Why the job keys on the pull request's AUTHOR and not on `github.actor`. Auto-merge,
+# once enabled, SURVIVES later pushes to the head branch. `github.actor` names whoever
+# triggered the run, so a push by someone else made the job skip — leaving the
+# auto-merge armed on a tip that nobody re-checked. The author of a pull request never
+# changes, so keying on it means this job runs on EVERY event of a Dependabot pull
+# request, including a push by someone else, which is precisely when it needs to act
+# (the `bot-conditions` class of workflow-security finding).
+#
+# Identity is then settled twice, and the two answers do different work:
+#   - `dependabot/fetch-metadata` re-checks the pull request's author and the FIRST
+#     commit's signature (verified by reading the action's source; both its
+#     skip-*-verification inputs default to false). It fails closed — no outputs, so
+#     the steps below are skipped.
+#   - The TIP check here is the one the action does not do. `fetch-metadata` validates
+#     the first commit; auto-merge acts on the tip. Somebody with push access can append
+#     to a Dependabot branch without changing either the author or the first commit.
+#
+# The two guards are deliberately asymmetric:
+#   - ENABLING requires the strong proof — the tip is Dependabot's own GitHub-signed
+#     commit. Commit author NAMES forge freely; GitHub's signature does not.
+#   - DISABLING triggers on the weaker signal — the tip's author is not Dependabot —
+#     because disabling is the fail-safe direction: at worst a human merges by hand.
+#     Keying the disable on the SIGNATURE instead would disarm every branch Dependabot
+#     itself rewrote on request (`@dependabot rebase`, `@dependabot recreate`): those
+#     keep Dependabot as the author but drop the GitHub signature. That is what the
+#     middle `dependabot-unsigned` state below is for — neither armed nor disarmed.
+
+on:
+  pull_request:
+    branches:
+      - main
+
+# Least privilege by default; the job widens only what it needs.
+permissions:
+  contents: read
+
+jobs:
+  automerge:
+    name: Auto-merge Dependabot patch/minor
+    runs-on: ubuntu-latest
+    # Fetch metadata + enable auto-merge is seconds; cap a stuck runner.
+    timeout-minutes: 10
+    # Only act on pull requests Dependabot OPENED — a fact no later push can change.
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
+    permissions:
+      # Enable auto-merge (contents) on the pull request (pull-requests).
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Fetch Dependabot metadata
+        id: meta
+        uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3
+
+      - name: Inspect the head commit this event is about
+        id: tip
+        # Reads the tip the checks actually ran against, not whatever the branch points at
+        # by the time this job runs. A newer push raises its own event and re-enters here.
+        # Fail closed: anything unreadable answers "not Dependabot's", which only ever
+        # withholds or withdraws auto-merge.
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          tip="$(gh api "repos/${GH_REPO}/commits/${HEAD_SHA}" \
+            --jq '"\(.author.login // "")|\(.commit.verification.verified)"' 2>/dev/null || true)"
+          author="${tip%%|*}"
+          echo "head ${HEAD_SHA}: author='${author:-unknown}' signed='${tip##*|}'"
+          # Signed by Dependabot — the strong proof, required to ARM auto-merge.
+          if [ "$tip" = "dependabot[bot]|true" ]; then
+            echo "state=dependabot-signed" >> "$GITHUB_OUTPUT"
+          # Authored by Dependabot but unsigned: what a `@dependabot rebase` or `recreate`
+          # leaves behind. Not proof enough to arm, not foreign enough to disarm — leave
+          # whatever is already set alone.
+          elif [ "$author" = "dependabot[bot]" ]; then
+            echo "state=dependabot-unsigned" >> "$GITHUB_OUTPUT"
+          else
+            echo "state=foreign" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Enable auto-merge for patch and minor updates
+        # Major updates fall through this condition, so they never get auto-merge
+        # and stay open for a human to review.
+        #
+        # vars.DEPENDABOT_AUTOMERGE is the arming switch described in the header: unset
+        # (the current state) means this step never runs, so no dependency bump can merge
+        # before `main` has a branch-protection rule making the CI checks required.
+        if: >-
+          vars.DEPENDABOT_AUTOMERGE == 'true' &&
+          steps.tip.outputs.state == 'dependabot-signed' &&
+          (steps.meta.outputs.update-type == 'version-update:semver-patch' ||
+           steps.meta.outputs.update-type == 'version-update:semver-minor')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: gh pr merge --auto --merge "$PR_URL"
+
+      - name: Withdraw auto-merge from a foreign head
+        # The step that closes the gap: auto-merge armed on Dependabot's own commit stays
+        # armed across later pushes, so a commit appended by someone with push access would
+        # ride an approval it never got. Withdrawing is idempotent — `|| true` because the
+        # call errors when auto-merge was not enabled in the first place, which is the
+        # ordinary case here.
+        if: steps.tip.outputs.state == 'foreign'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: |
+          echo "Head is not Dependabot's commit; withdrawing auto-merge so a human decides."
+          gh pr merge --disable-auto "$PR_URL" || true

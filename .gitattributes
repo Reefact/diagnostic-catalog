@@ -1,0 +1,12 @@
+# Snapshot files must keep LF line endings on every platform. Verify 31.21+ rejects
+# verified files that contain a carriage return (it no longer normalizes them), so
+# without this rule a Windows CI runner checks *.verified.* out as CRLF (core.autocrlf)
+# and every snapshot test fails on windows-latest.
+#
+# Declared before the first snapshot test exists, on purpose: the failure it prevents is
+# Windows-only and reads as a mysterious mismatch rather than as a line-ending problem.
+#
+# Scope is intentionally narrow: the repository otherwise leaves line-ending and charset
+# handling untouched (see .editorconfig).
+*.verified.* text eol=lf
+*.received.* text eol=lf

@@ -1,0 +1,92 @@
+name: lint
+
+# Static analysis for the files the C# compiler never sees: the POSIX shell scripts under
+# tools/ and .claude/hooks/, and the workflow definitions themselves.
+#
+# Why this workflow exists. Every other analysis in this repository runs inside a build — the
+# code-style rules restated in .editorconfig, the warning ratchet in Directory.Build.props — so a
+# contributor meets it at the moment they write the code. Shell and YAML have no such moment: the
+# commit linter and the CI definitions are load-bearing, and nothing else reads them. This closes
+# the gap with tools that run on our own runners, so the signal does not depend on a third-party
+# service being up.
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+# Cancel superseded runs on the same branch / PR.
+concurrency:
+  group: lint-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  scripts-and-workflows:
+    name: Lint scripts and workflows
+    runs-on: ubuntu-latest
+    # Both tools are static and finish in seconds; the cap only guards a hung download.
+    timeout-minutes: 10
+    # Declared per job rather than at workflow level, so a job added later inherits nothing
+    # it did not ask for. This job only reads the checkout.
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Lint the shell scripts
+        # shellcheck ships preinstalled on the ubuntu runner image, so there is nothing to
+        # fetch and no third-party action in the supply chain. The version is printed so a
+        # future failure caused by a runner-image upgrade is readable from the log alone.
+        #
+        # Every script here is `#!/bin/sh`; shellcheck reads the shebang and applies the
+        # POSIX dialect, which is what should be checked — `local`, arrays and `[[` are not
+        # available on the shells these run on.
+        #
+        # The bar is ZERO findings at every severity, `info` included. A lower bar lets `info`
+        # accumulate until nobody reads the report.
+        run: |
+          shellcheck --version | sed -n 's/^version: /shellcheck /p'
+          find . -name '*.sh' -not -path './.git/*' -not -path '*/bin/*' -not -path '*/obj/*' \
+            -print0 | xargs -0 --no-run-if-empty shellcheck
+
+      - name: Lint the git hooks
+        # The hooks under .githooks/ carry no .sh extension (git requires the exact hook name),
+        # so the find above cannot see them. They are the same POSIX shell and face the same bar;
+        # -x tells shellcheck to follow the `source`/`exec` into the linter they delegate to.
+        run: |
+          find .githooks -type f -print0 | xargs -0 --no-run-if-empty shellcheck -x
+
+      - name: Lint the workflow definitions
+        # actionlint checks what YAML alone cannot: `${{ }}` expression types, action inputs
+        # against each action's own schema, `needs`/matrix references, cron syntax, and the
+        # shell of every `run:` block (it embeds shellcheck, which is why the run blocks
+        # carry the same inline `disable` directives the scripts do).
+        #
+        # Pinned to a release tarball and verified by checksum rather than run through a
+        # third-party action: an unpinned action is exactly what OpenSSF Scorecard's
+        # Pinned-Dependencies check counts against this repository. Bump both lines together.
+        #
+        # NOT covered by this step: actionlint audits correctness, not security posture. It
+        # does not flag over-broad permissions, spoofable actor checks or dangerous triggers.
+        # A dedicated auditor (zizmor) is the tool for that and is a separate decision.
+        env:
+          ACTIONLINT_VERSION: '1.7.7'
+          ACTIONLINT_SHA256: '023070a287cd8cccd71515fedc843f1985bf96c436b7effaecce67290e7e0757'
+        run: |
+          set -eu
+          archive="actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz"
+          # --proto '=https' --proto-redir '=https' refuse anything but HTTPS, on the initial request
+          # AND on every redirect. Without them -L would follow a redirect to plaintext http: a release
+          # URL is attacker-influenced the moment DNS or the CDN is. The checksum below would still
+          # catch tampering, but only after the bytes had crossed the network in clear.
+          curl --proto '=https' --proto-redir '=https' -sSfL -o "$archive" \
+            "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/${archive}"
+          echo "${ACTIONLINT_SHA256}  ${archive}" | sha256sum --check --strict
+          tar xzf "$archive" actionlint
+          ./actionlint --version
+          ./actionlint -color

@@ -1,0 +1,162 @@
+# DiagnosticCatalog — guide for Claude Code
+
+DiagnosticCatalog is a .NET foundation for defining, generating and validating
+strongly referenced diagnostic rule catalogs. Keep changes aligned with that
+goal: a rule reference is a **contract**, and it should stay resolvable,
+documented, and close to the code that uses it.
+
+## Language
+
+* The repository language is **English** by default: source code, code comments,
+  commit messages, branch names, PR titles and descriptions, and issues.
+* You may reply to me in French in the chat, but never write repository content
+  in French.
+
+## Build & test
+
+* The libraries target **`netstandard2.0` and `net10.0`**.
+* Build: `dotnet build -c Release`
+* Test: `dotnet test -c Release`
+* Both commands resolve the solution at the repository root, so they keep
+  working as projects are added. Do not hardcode a solution file name in a
+  script or a workflow.
+* A test project that exercises a shipped `netstandard2.0` library MUST import
+  `build/Net472TestFloor.props` and drop its own `<TargetFramework>`; that is
+  what puts it in the `framework-floor` CI job, which runs it on the real .NET
+  Framework 4.7.2 CLR. Test projects covering `net10.0`-only tooling MUST NOT
+  import it. See CONTRIBUTING.md, "The .NET Framework floor".
+* Only report tests as passing if you actually ran the corresponding command.
+* If you did not run a relevant command, say so explicitly.
+
+## Release trains
+
+Commits are partitioned into **release trains by scope**, and each train
+versions and publishes independently:
+
+| Train | Scopes | Pace |
+|---|---|---|
+| `lib` | `core`, `analyzers`, `cli`, `testing` | The foundation. Deliberately very stable. |
+| `sonar` | `sonar` | Follows SonarSource's releases. |
+| `netanalyzers` | `netanalyzers` | Follows the .NET SDK's analyzer releases. |
+| `stylecop` | `stylecop` | Follows StyleCop's releases. |
+
+This is why `commit-lint` **requires a scope on `feat` and `fix`**: an unscoped
+one matches no train and is silently dropped from the release notes and the
+changelog. The full table, with the `analyzers` / `netanalyzers` distinction, is
+in [`CONTRIBUTING.md`](CONTRIBUTING.md).
+
+Two rules follow, and both are checked on every pull request by the release
+rehearsal:
+
+* A project joins a train by declaring `<ReleaseTrain>` in its own `.csproj`.
+  That declaration is the whole membership — it also makes the project packable
+  and gives it an embedded SBOM. Never add a project to a list somewhere else.
+* A project on one train MUST NOT carry a `<ProjectReference>` to a project on
+  another: `dotnet pack` would stamp a dependency on a version of the other train
+  that was never published. Depend on another train through a `PackageReference`
+  to a released version (ADR-0007).
+
+## Change guidelines
+
+* Keep changes small, focused, and aligned with the requested task.
+* Do not introduce new dependencies without a clear reason. Every version is
+  pinned centrally in `Directory.Packages.props` (Central Package Management):
+  a `<PackageReference>` carries no `Version`.
+* Do not make public API changes unless they are required by the task.
+* Treat renamed or removed **rule identifiers and catalog entry keys** as
+  breaking changes unless explicitly stated otherwise: a consumer references
+  them symbolically, which is the whole point of the library.
+* Preserve compatibility with **`netstandard2.0`**. In particular, a shipped
+  library must not rely on `IsExternalInit` (records, `init` accessors): the
+  polyfill under `build/` is a test-only concession, and a consumer compiling
+  against .NET Framework would otherwise have to supply the marker itself.
+
+## Coding rules
+
+Rules you must apply to code you write. They are written out here, rather than
+delegated to a ReSharper/Rider `.DotSettings` artifact, because that file is
+read by Rider and by nothing else — no compiler, no CI job, and no agent.
+Pointing at it reads like an instruction without being one. This list is the
+extensible home for such rules; each one states how it is checked, so none of
+them rests on attention alone.
+
+* **Write the type; never `var`.** The only exception is a declaration C# gives
+  no other spelling, which in practice means an anonymous type (`new { ... }`).
+  This is checked twice: `.claude/hooks/coding-rules.sh` reports it on the edit
+  itself, and the build reports it as `IDE0008`, which CI turns into an error.
+  A pull request carrying one does not merge.
+
+* **Do not reformat code you did not change.** Reformatting buries the real
+  change and drifts away from whatever layout the surrounding file already has.
+  Touch the lines the task requires and leave their neighbours alone, even when
+  the surrounding alignment already looks stale.
+
+## Architecture decisions (ADRs)
+
+Before finalizing a pull request, check the change against the ADR base under
+[`doc/adr/`](doc/adr/). This is **advisory**: produce a recommendation, never a
+blocker. Full procedure in [`AGENTS.md`](AGENTS.md) ("Architecture decisions");
+format and conventions in [`doc/adr/README.md`](doc/adr/README.md). The
+essentials, inlined so they hold even if `AGENTS.md` is not read:
+
+* An ADR records a **significant, lasting decision** — one a future maintainer
+  would question. Test: *if the implementation changed but the decision stood,
+  the ADR should not need editing.* Most pull requests need none; the **check**
+  is the habit, the **ADR** is the exception.
+* **Create** — a new lasting decision (public API contract, cross-cutting
+  invariant, supported-platform floor, dependency or security/compatibility
+  policy): draft one ADR per decision as `Status: Proposed`, index it, and link
+  it from the PR.
+* **Supersede** — the change replaces a recorded decision: draft the successor as
+  `Proposed`; never edit an accepted ADR in place or flip its status yourself.
+* **Alert** — the change contradicts an accepted ADR: flag it in the PR
+  description (`⚠️ Conflicts with ADR-NNNN`); do not proceed silently.
+* You **draft and propose**; you never accept, supersede, or deprecate an ADR —
+  the maintainer decides, exactly as no agent merges a pull request. When unsure
+  whether a change is significant enough, say so and let `@reefact` judge.
+
+## Git and pull requests
+
+* Follow `.github/pull_request_template.md` for every pull request.
+* Do not open a pull request unless I explicitly ask for one.
+* PR titles, descriptions, commits, and branch names must be written in English.
+* Write every commit message per [`CONTRIBUTING.md`](CONTRIBUTING.md):
+  Conventional Commits, a closed type list, the scopes
+  `analyzers, cli, core, netanalyzers, sonar, stylecop, testing`, an imperative
+  header within 72 characters, and `Refs: #NN` in a footer when a GitHub issue
+  exists (issue-closing keywords belong in the PR description, not the commit).
+* Write every pull request title per [`CONTRIBUTING.md`](CONTRIBUTING.md): name
+  the whole change in English; a single-intention PR mirrors its commit header
+  (`type(scope): description`), a multi-intention PR uses a short descriptive
+  title, and issue references stay in the description, not the title.
+* Enable the local commit-message hook once per clone with
+  `git config core.hooksPath .githooks`; the same check runs in CI on every pull
+  request.
+* Before opening a pull request — and after pushing more commits to an open one
+  — read the branch against a fresh `origin/main` and, if the history is messy
+  (pending `fixup!`/`squash!`, wip/typo/"address review" commits, headers the
+  lint rejects, one change split across non-standalone commits or two folded
+  into one), **propose** a cleanup and rewrite only after I approve — while the
+  branch is yours alone, with `git push --force-with-lease`, leaving the diff
+  against `origin/main` unchanged. This repository merges with a merge commit,
+  so a messy branch reaches `main`. Full rule in [`AGENTS.md`](AGENTS.md)
+  ("Tidying history before a pull request"); the `/tidy-history` command runs it.
+* In PR descriptions, do not invent testing results. Only check items that were
+  actually run.
+
+## Responding to pull request review feedback
+
+When you act on review feedback on a pull request, follow the escalation rules
+in [`AGENTS.md`](AGENTS.md) ("Responding to review feedback"). The essentials,
+inlined so they hold even if `AGENTS.md` is not read:
+
+* If you agree and the fix is clear and local, implement it, push, and reply
+  `Resolved in <sha>`.
+* If you believe a finding is wrong, reply with the concrete technical reason
+  and mention `@reefact` to arbitrate — do not argue with the reviewer bot.
+* If a finding needs a human judgement (architecture, a trade-off, an ambiguous
+  requirement, a security or compatibility policy), mention `@reefact` and wait.
+* Never mention both the reviewer bot and `@reefact` on the same thread; cap at
+  two fix/re-review cycles, then escalate to `@reefact`.
+* No agent merges a pull request or enables auto-merge on it — the human
+  maintainer merges.

@@ -1,0 +1,69 @@
+name: scorecard
+
+# OpenSSF Scorecard: scores the repository's security posture — pinned actions, token permissions, branch
+# protection, signed releases, dependency-update tooling, and more — and uploads the findings to the
+# code-scanning dashboard. It also publishes the score to securityscorecards.dev, which powers the README
+# badge. It runs on the DEFAULT BRANCH only: it assesses the repository, not a pull-request diff, so there
+# is no pull_request trigger.
+
+on:
+  # Re-score when a branch-protection rule changes (feeds Scorecard's Branch-Protection check).
+  branch_protection_rule:
+  # Weekly, so newly shipped Scorecard checks run against unchanged code.
+  schedule:
+    - cron: '23 5 * * 1'
+  push:
+    branches:
+      - main
+
+# Cancel superseded runs on the same ref.
+concurrency:
+  group: scorecard-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Minimal read at the workflow level; the single job overrides with only the two write scopes it
+# needs. Enumerated rather than `read-all` so the default token grants exactly one explicit scope.
+permissions:
+  contents: read
+
+jobs:
+  analysis:
+    name: Scorecard analysis
+    runs-on: ubuntu-latest
+    # Scorecard makes external calls (branch protection, dependency tooling, publishing); ~2-3 min typical.
+    timeout-minutes: 15
+    permissions:
+      # Upload the SARIF results to the code-scanning dashboard (Security tab).
+      security-events: write
+      # Publish results to the public OpenSSF API via OIDC — this is what enables the score badge.
+      id-token: write
+      # This repository is public, so contents/actions reads are not needed in the token (the code is
+      # already checked out and the metadata is public). For a PRIVATE repository, also uncomment:
+      # contents: read
+      # actions: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          # A credential-free checkout — Scorecard's own Token-Permissions check rewards it.
+          persist-credentials: false
+
+      - name: Run Scorecard analysis
+        uses: ossf/scorecard-action@2d1146689b8cda280b9bc96326124645441f03bc # v2.4.4
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          # Publish to securityscorecards.dev for transparency and the README badge (public repo only).
+          publish_results: true
+
+      - name: Upload SARIF as a build artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: scorecard-sarif
+          path: results.sarif
+          retention-days: 5
+
+      - name: Upload SARIF to code-scanning
+        uses: github/codeql-action/upload-sarif@e4fba868fa4b1b91e1fdab776edc8cfbe6e9fb81 # v4
+        with:
+          sarif_file: results.sarif
