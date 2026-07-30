@@ -37,4 +37,25 @@
     <PackageReference Include="Microsoft.Sbom.Targets" PrivateAssets="all" />
   </ItemGroup>
 
+  <!--
+    The package icon, attached to the train declaration for the same reason the SBOM is: every
+    package this repository publishes wants one, and a catalog project joining its train later would
+    otherwise ship with the blank placeholder nuget.org shows until somebody noticed.
+
+    The path is anchored on $(MSBuildThisFileDirectory) — this file's own directory, the repository
+    root — rather than written relative to the project. A relative "../icon.png" resolves against the
+    PROJECT directory, so it would silently mean src/icon.png here and break the day a project moved
+    to another depth. NU5019 is the failure, and it fails the pack rather than producing an iconless
+    package, but only for whoever runs pack.
+
+    PackagePath="/" places it at the package root, which is where <PackageIcon> resolves it.
+  -->
+  <PropertyGroup Condition="'$(ReleaseTrain)' != ''">
+    <PackageIcon>icon.png</PackageIcon>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(ReleaseTrain)' != ''">
+    <None Include="$(MSBuildThisFileDirectory)icon.png" Pack="true" PackagePath="/" />
+  </ItemGroup>
+
 </Project>
