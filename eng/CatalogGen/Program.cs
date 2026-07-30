@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using CatalogGen;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -489,27 +490,31 @@ static Previous? ReadPrevious(string path)
     if (!File.Exists(path)) return null;
     string text = File.ReadAllText(path);
 
-    string sourceVersion = Regex.Match(text, @"sourceVersion:\s*""([^""]*)""").Groups[1].Value;
+    string sourceVersion = Regex.Match(text, @"sourceVersion:\s*""([^""]*)""",
+                                       RegexOptions.None, RegexLimits.MatchTimeout).Groups[1].Value;
 
     // 4-space indent is the category class; rule members sit at 8.
     Dictionary<string, string> categoryLiterals = Regex.Matches(text, @"^    public const string (\w+) = ""((?:[^""\\]|\\.)*)"";$",
-                                         RegexOptions.Multiline)
+                                         RegexOptions.Multiline, RegexLimits.MatchTimeout)
         .ToDictionary(m => m.Groups[1].Value, m => Unescape(m.Groups[2].Value), StringComparer.Ordinal);
 
     SortedDictionary<string, RuleInfo> rules = new(StringComparer.Ordinal);
     MatchCollection blocks = Regex.Matches(
         text,
         @"^(?<obsolete>    \[Obsolete\([^\n]*\)\]\n)?    \[DiagnosticRule\]\n    public static class (?<id>\w+)\n    \{\n(?<body>(?:.*\n)*?)    \}$",
-        RegexOptions.Multiline);
+        RegexOptions.Multiline,
+        RegexLimits.MatchTimeout);
 
     foreach (Match b in blocks)
     {
         string id = b.Groups["id"].Value;
         string body = b.Groups["body"].Value;
-        Match catRef = Regex.Match(body, @"public const string Category = \w+\.(\w+);");
+        Match catRef = Regex.Match(body, @"public const string Category = \w+\.(\w+);",
+                                   RegexOptions.None, RegexLimits.MatchTimeout);
         if (!catRef.Success || !categoryLiterals.TryGetValue(catRef.Groups[1].Value, out string? category))
             continue;
-        Match help = Regex.Match(body, @"public const string HelpLinkUri = ""((?:[^""\\]|\\.)*)"";");
+        Match help = Regex.Match(body, @"public const string HelpLinkUri = ""((?:[^""\\]|\\.)*)"";",
+                                 RegexOptions.None, RegexLimits.MatchTimeout);
         rules[id] = new RuleInfo(category, help.Success ? Unescape(help.Groups[1].Value) : string.Empty,
                                  Retired: b.Groups["obsolete"].Success);
     }
@@ -597,15 +602,35 @@ static Cli? ParseArgs(string[] args)
     return new Cli(package, version, ns, container, output, date, language ?? "cs", manifest, summary);
 }
 
-internal sealed record Cli(
-    string? Package, string? Version, string? Namespace, string? Container, string? Output,
-    string? Date, string Language, string? Manifest, string? Summary);
+// Top-level statements place every type declared after them in the global namespace, where
+// nothing can reference them explicitly and anything the build pulls in can collide with
+// them. A named namespace costs one indent and settles the question.
+namespace CatalogGen
+{
+    internal static class RegexLimits
+    {
+        // ReadPrevious parses a file this tool wrote itself, so the well-formed case is never in
+        // doubt. The unattended case is: the nightly job runs the generator against whatever the
+        // upstream release produced, and the block pattern nests quantifiers — the shape that
+        // backtracks catastrophically when the input does not match the way it expects. Without a
+        // bound, that surfaces as a job wedged until the runner's six-hour cap, with no output to
+        // read. With one, it surfaces as a RegexMatchTimeoutException naming the pattern.
+        //
+        // Ten seconds is far above any real parse (the largest catalogue is ~6 000 lines and
+        // matches in milliseconds) and far below anything a human would wait through.
+        internal static readonly TimeSpan MatchTimeout = TimeSpan.FromSeconds(10);
+    }
 
-internal sealed record Job(
-    string Package, string Version, string Namespace, string Container, string Output, string Language);
+    internal sealed record Cli(
+        string? Package, string? Version, string? Namespace, string? Container, string? Output,
+        string? Date, string Language, string? Manifest, string? Summary);
 
-internal sealed record RuleInfo(string Category, string HelpLinkUri, bool Retired);
+    internal sealed record Job(
+        string Package, string Version, string Namespace, string Container, string Output, string Language);
 
-internal sealed record Previous(string SourceVersion, SortedDictionary<string, RuleInfo> Rules);
+    internal sealed record RuleInfo(string Category, string HelpLinkUri, bool Retired);
 
-internal sealed record GenerateResult(bool Changed, string Summary);
+    internal sealed record Previous(string SourceVersion, SortedDictionary<string, RuleInfo> Rules);
+
+    internal sealed record GenerateResult(bool Changed, string Summary);
+}
