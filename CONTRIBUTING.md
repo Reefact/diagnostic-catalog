@@ -15,9 +15,11 @@ titles are written here.
   Framework 4.7.2 (see *The .NET Framework floor* below).
 * Build: `dotnet build -c Release`
 * Test: `dotnet test -c Release`
+* Test the shell tooling: `sh tools/tests/run.sh`
 
-Both commands resolve the solution at the repository root, so they keep working
-as projects are added.
+Both `dotnet` commands resolve the solution at the repository root, so they keep
+working as projects are added. The shell suite is separate because `dotnet test`
+cannot reach it (see *Testing the shell tooling* below).
 
 ### The .NET Framework floor
 
@@ -35,6 +37,27 @@ every project carrying that import and runs each with
 `-p:EnableNet472Floor=true -f net472`.
 
 Test projects that cover `net10.0`-only tooling must **not** import it.
+
+### Testing the shell tooling
+
+The scripts under `tools/` decide what a release publishes: `trains.sh` answers
+which projects belong to a train, and the packaging scripts pack exactly what it
+reports. A project the discovery misses is silently absent from its own release;
+one it wrongly finds is published when it must not be. Neither shows up as a red
+build, and `dotnet test` cannot reach shell at all.
+
+    sh tools/tests/run.sh
+
+Tests live in `tools/tests/`, one `test-<script>.sh` per script. Each one runs as
+its own process — so a test that changes directory into a fixture cannot leak
+that into the next — sources `tools/tests/assert.sh` for `assert_equals` and
+`assert_empty`, and **ends with `finish`**. A file that forgets `finish` exits on
+its last command's status and reports success however many assertions failed.
+
+The suite runs in CI as *Test the shell tooling*, in
+`.github/workflows/lint.yml`. It is invoked with `sh` rather than `bash`: every
+script here carries a `#!/bin/sh` shebang and is written to POSIX, so running the
+suite under bash would let a bashism pass CI and fail on a contributor's machine.
 
 ## Releasing
 

@@ -90,3 +90,27 @@ jobs:
           tar xzf "$archive" actionlint
           ./actionlint --version
           ./actionlint -color
+
+  # The scripts under tools/ decide what a release publishes: trains.sh answers which projects
+  # belong to a train, and the packaging scripts pack exactly what it reports. Nothing the C#
+  # build does can check any of that — a project the discovery misses is silently absent from
+  # its own release, and one it wrongly finds is published when it must not be.
+  #
+  # Separate from the lint job above because it answers a different question. Linting asks
+  # whether the scripts are well formed; this asks whether they are right.
+  shell-tests:
+    name: Test the shell tooling
+    runs-on: ubuntu-latest
+    # Pure shell over throwaway fixtures; the cap only guards a hang.
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Run the shell tests
+        # `sh`, not bash: every script under tools/ carries a #!/bin/sh shebang and is written to
+        # POSIX, so running the suite under bash would let a bashism pass here and fail on a
+        # contributor's machine or in a leaner container.
+        run: sh tools/tests/run.sh
