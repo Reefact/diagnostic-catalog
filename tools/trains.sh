@@ -105,12 +105,52 @@ train_of_tag() {
   return 0
 }
 
+# _without_xml_comments <path> — echo the file with every <!-- ... --> region removed,
+# including a region spanning several lines.
+#
+# Membership is a fact about what a project DECLARES, and an element shown inside a
+# comment declares nothing. Without this, writing <ReleaseTrain>sonar</ReleaseTrain>
+# in a comment — to say what a project will join later, or why it has not joined yet —
+# enrols it for real: it becomes packable, and a release publishes it. That is not
+# hypothetical. DiagnosticCatalog.Sonar.csproj carries a warning telling its own author
+# never to spell the element in its prose, for exactly this reason. A rule that works by
+# asking every future author to remember it is the kind CLAUDE.md exists to replace, so
+# the discovery is made to ignore comments instead.
+#
+# Line-oriented tools cannot do this: a comment opened on one line and closed on another
+# is invisible to grep and to sed. awk carries the state across lines.
+_without_xml_comments() {
+  awk '
+    {
+      _line = $0; _out = ""
+      while (length(_line) > 0) {
+        if (_inside) {
+          _at = index(_line, "-->")
+          if (_at == 0) { _line = "" } else { _line = substr(_line, _at + 3); _inside = 0 }
+        } else {
+          _at = index(_line, "<!--")
+          if (_at == 0) { _out = _out _line; _line = "" }
+          else { _out = _out substr(_line, 1, _at - 1); _line = substr(_line, _at + 4); _inside = 1 }
+        }
+      }
+      print _out
+    }
+  ' "$1"
+}
+
 # projects_of <id> — echo the .csproj paths that declare this train, one per line.
 # Empty output means the train publishes nothing yet, which is a normal state for
 # a train whose project has not been created.
 projects_of() {
+  # grep first as a cheap filter over the tree, then re-check each candidate with its
+  # comments removed. Only files that already mention the train pay for the second pass.
   grep -rl -E "<ReleaseTrain>[[:space:]]*$1[[:space:]]*</ReleaseTrain>" \
-    --include='*.csproj' . 2>/dev/null | sed 's|^\./||' | sort || true
+    --include='*.csproj' . 2>/dev/null | sed 's|^\./||' | sort | while read -r _po_proj; do
+    if _without_xml_comments "$_po_proj" \
+         | grep -q -E "<ReleaseTrain>[[:space:]]*$1[[:space:]]*</ReleaseTrain>"; then
+      printf '%s\n' "$_po_proj"
+    fi
+  done
 }
 
 # declared_trains — echo every train id declared by a .csproj anywhere in the
@@ -118,7 +158,9 @@ projects_of() {
 # such a project would simply never be packed, silently, and a typo in a property
 # nothing validates is exactly the kind of mistake that surfaces at release time.
 declared_trains() {
-  grep -rho -E "<ReleaseTrain>[^<]*</ReleaseTrain>" --include='*.csproj' . 2>/dev/null \
+  grep -rl -E "<ReleaseTrain>[^<]*</ReleaseTrain>" --include='*.csproj' . 2>/dev/null \
+    | while read -r _dt_proj; do _without_xml_comments "$_dt_proj"; done \
+    | grep -o -E "<ReleaseTrain>[^<]*</ReleaseTrain>" \
     | sed -E 's|.*<ReleaseTrain>[[:space:]]*([^<[:space:]]*)[[:space:]]*</ReleaseTrain>.*|\1|' \
     | sort -u || true
 }
