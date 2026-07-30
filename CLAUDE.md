@@ -80,6 +80,30 @@ them rests on attention alone.
   Touch the lines the task requires and leave their neighbours alone, even when
   the surrounding alignment already looks stale.
 
+## Architecture decisions (ADRs)
+
+Before finalizing a pull request, check the change against the ADR base under
+[`doc/adr/`](doc/adr/). This is **advisory**: produce a recommendation, never a
+blocker. Full procedure in [`AGENTS.md`](AGENTS.md) ("Architecture decisions");
+format and conventions in [`doc/adr/README.md`](doc/adr/README.md). The
+essentials, inlined so they hold even if `AGENTS.md` is not read:
+
+* An ADR records a **significant, lasting decision** — one a future maintainer
+  would question. Test: *if the implementation changed but the decision stood,
+  the ADR should not need editing.* Most pull requests need none; the **check**
+  is the habit, the **ADR** is the exception.
+* **Create** — a new lasting decision (public API contract, cross-cutting
+  invariant, supported-platform floor, dependency or security/compatibility
+  policy): draft one ADR per decision as `Status: Proposed`, index it, and link
+  it from the PR.
+* **Supersede** — the change replaces a recorded decision: draft the successor as
+  `Proposed`; never edit an accepted ADR in place or flip its status yourself.
+* **Alert** — the change contradicts an accepted ADR: flag it in the PR
+  description (`⚠️ Conflicts with ADR-NNNN`); do not proceed silently.
+* You **draft and propose**; you never accept, supersede, or deprecate an ADR —
+  the maintainer decides, exactly as no agent merges a pull request. When unsure
+  whether a change is significant enough, say so and let `@reefact` judge.
+
 ## Git and pull requests
 
 * Follow `.github/pull_request_template.md` for every pull request.
