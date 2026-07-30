@@ -188,8 +188,15 @@ jobs:
 
       # Trusted publishing: exchange the job's OIDC token for a short-lived, single-use NuGet API key.
       # Requires a trusted publishing policy on nuget.org (owner Reefact / repo diagnostic-catalog /
-      # workflow release.yml) for each published package, and the NUGET_USER secret set to the nuget.org
-      # account username (profile name, not the email address). Decision: ADR-0006.
+      # workflow release.yml) for each published package. Decision: ADR-0006.
+      #
+      # NUGET_USER is a repository VARIABLE, not a secret, and deliberately so. It is not a credential:
+      # the OIDC token carries the proof of identity, and this only names the nuget.org account whose
+      # trusted-publishing policy to look the token up against. A nuget.org username is public — it is
+      # in the profile URL and on every package the account owns, and NuGet's own example passes it as
+      # a literal. Storing it as a secret would buy no confidentiality and would cost the one thing
+      # that matters when this step fails: the logs would print '***' instead of the account actually
+      # attempted, which is precisely what a failed token exchange needs to show.
       #
       # This login runs on EVERY trigger, INCLUDING a dry run: the OIDC token exchange is what validates the
       # trusted-publishing policy, so rehearsing it here makes a dry run fail red when the policy or
@@ -202,7 +209,7 @@ jobs:
         id: nuget-login
         uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1
         with:
-          user: ${{ secrets.NUGET_USER }}
+          user: ${{ vars.NUGET_USER }}
 
       - name: Push to NuGet
         if: github.event_name == 'push' || inputs.dry_run == false
