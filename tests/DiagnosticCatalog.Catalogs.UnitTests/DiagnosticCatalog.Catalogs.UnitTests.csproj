@@ -31,8 +31,17 @@
     <Content Include="..\..\src\**\*.g.cs" Link="catalogs\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
+  <!--
+    The foundation is NOT referenced here. Each catalogue now depends on the published package, so
+    referencing the project as well puts two DiagnosticCatalog assemblies in front of the compiler —
+    0.0.0.0 from the project, 0.1.0.0 from the package — and MSB3243 resolves the conflict
+    "arbitrarily", which the CI warning ratchet turns into an error.
+
+    Taking it transitively is also the more honest shape: this project asserts what a CONSUMER of a
+    catalogue sees, and a consumer gets the foundation exactly this way. DiagnosticCatalog.UnitTests
+    keeps its project reference, because the foundation itself is what that one tests.
+  -->
   <ItemGroup>
-    <ProjectReference Include="..\..\src\DiagnosticCatalog\DiagnosticCatalog.csproj" />
     <ProjectReference Include="..\..\src\DiagnosticCatalog.Sonar\DiagnosticCatalog.Sonar.csproj" />
     <ProjectReference Include="..\..\src\DiagnosticCatalog.NetAnalyzers\DiagnosticCatalog.NetAnalyzers.csproj" />
     <ProjectReference Include="..\..\src\DiagnosticCatalog.StyleCop\DiagnosticCatalog.StyleCop.csproj" />
