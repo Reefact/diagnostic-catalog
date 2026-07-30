@@ -1,0 +1,50 @@
+# EditorConfig — whitespace hygiene and the one style rule the compiler can enforce.
+#
+# A code style recorded only in a ReSharper/Rider .DotSettings file is read by Rider and
+# by nothing else: no compiler, no CI job and no agent editing this repository can see it,
+# so a rule recorded only there is enforced only while a human has the solution open in
+# Rider. In the sibling repository this convention comes from, explicit types drifted to
+# 203 violations for exactly that reason.
+#
+# So the rule is stated here, in the only dialect the compiler understands, and paired with
+# EnforceCodeStyleInBuild in Directory.Build.props — without which IDE* rules are inert at
+# build time. If a .DotSettings file is added later, both sides must say the same thing:
+# CSharpVarKeywordUsage/* = UseExplicitType there, csharp_style_var_* = false here. Change
+# one, change the other.
+#
+# charset is deliberately left unset: pinning it would rewrite files on the first save.
+
+root = true
+
+[*]
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+[*.cs]
+# Never `var`. The type is written out even when the initializer makes it obvious; the
+# only survivors are the declarations C# gives no choice about, such as anonymous types.
+# IDE0008 is the diagnostic that fires when `var` is used against this preference
+# (IDE0007 is its opposite and stays off). Severity is `warning`, which the CI ratchet in
+# Directory.Build.props promotes to an error — deliberately: a warning nothing acts on is
+# how the rule drifts in the first place. The same rule is reported on the edit itself by
+# .claude/hooks/coding-rules.sh, so an agent meets it before CI does.
+csharp_style_var_for_built_in_types = false
+csharp_style_var_when_type_is_apparent = false
+csharp_style_var_elsewhere = false
+dotnet_diagnostic.IDE0008.severity = warning
+
+[*.{yml,yaml,json,props,targets,csproj,runsettings}]
+indent_size = 2
+
+[*.sh]
+# POSIX shell, run by /bin/sh on the runner images. Two spaces, matching the scripts
+# under tools/ and .claude/hooks/ that shellcheck reads in the POSIX dialect.
+indent_size = 2
+
+[*.md]
+# Markdown gives a hard line break to a line ending in two spaces; stripping them would
+# silently reflow the file.
+trim_trailing_whitespace = false

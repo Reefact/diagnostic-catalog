@@ -1,0 +1,79 @@
+<Project>
+
+  <!--
+    Shared packaging hardening for the NuGet packages this repository ships.
+
+    These properties only take effect during `pack`, so they are inert for every other project that
+    also imports this file (the tests, the samples, any tooling).
+  -->
+  <PropertyGroup>
+    <!-- SourceLink lets debuggers step into the exact commit's sources from the published symbols.
+         Since .NET 8 the SDK bundles Source Link and auto-detects the GitHub remote, so no
+         Microsoft.SourceLink.* PackageReference is needed; setting these properties is enough. -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+
+    <!-- Ship symbols as a separate .snupkg so the main package stays lean but stays debuggable. -->
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+    <!-- Deterministic, path-normalized builds on CI; a no-op for local builds. -->
+    <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <!--
+    Warning ratchet: the codebase builds with ZERO warnings, and CI locks that state in by turning every
+    warning into an error — a new warning can never merge, so the count can never creep up. Scoped to CI
+    (same GITHUB_ACTIONS signal as ContinuousIntegrationBuild above) so local builds stay friendly to
+    iteration: half-finished refactorings may warn without blocking the inner loop.
+  -->
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <!-- Two switches are needed for a TOTAL ratchet. TreatWarningsAsErrors is compiler-scoped (it only
+         promotes CS* diagnostics); MSBuildTreatWarningsAsErrors promotes warnings raised by MSBuild/SDK
+         tasks and pack targets (MSB*, NETSDK*, ...). With only the first, a task-emitted warning would
+         still merge unnoticed. -->
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <MSBuildTreatWarningsAsErrors>true</MSBuildTreatWarningsAsErrors>
+    <!-- Keep NuGet security-audit advisories (NU1901-NU1905) as warnings: a CVE published overnight
+         against a dependency would otherwise turn every PR red without any code change (NuGet honours
+         TreatWarningsAsErrors for its own restore warnings, so they ARE promoted by default). The
+         advisory still shows in logs; Dependabot, dependency-review and CodeQL are the channels that act
+         on it. This exclusion MUST live in WarningsNotAsErrors, not MSBuildWarningsNotAsErrors: NuGet
+         reads the compiler-scoped list — the MSBuild-scoped one does not suppress NU* audit errors. -->
+    <WarningsNotAsErrors>$(WarningsNotAsErrors);NU1901;NU1902;NU1903;NU1904;NU1905</WarningsNotAsErrors>
+  </PropertyGroup>
+
+  <!--
+    Runs the Roslyn code-style analyzers (IDE*) as part of the build. Without this they exist only in the
+    IDE: the rules configured in .editorconfig are read, and then nothing reports them at build time. It is
+    the switch, .editorconfig is only the dial.
+
+    Deliberately NOT scoped to CI, unlike the warning ratchet above. The point is to make the rule visible
+    to whoever writes the code — a human in an editor without ReSharper, or an agent that cannot read a
+    .DotSettings file at all — at the moment they build, not once the pull request is already open. In CI
+    the same diagnostics are promoted to errors by TreatWarningsAsErrors, so the rule is advisory locally
+    and blocking on the way in.
+
+    Only the rules .editorconfig gives an explicit severity are enforced; everything else keeps its default
+    (silent or suggestion) and cannot break a build.
+  -->
+  <PropertyGroup>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+  </PropertyGroup>
+
+  <!--
+    Central Package Management is configured in Directory.Packages.props (ManagePackageVersionsCentrally plus
+    the <PackageVersion> list). The property is repeated here for a TOOLING reason, not an MSBuild one:
+    OpenSSF Scorecard's Pinned-Dependencies check inspects every Directory.*.props file and keeps only the
+    LAST one it reads when deciding whether CPM is enabled (it overwrites its config per file). This file is
+    read after Directory.Packages.props and carries no <PackageVersion>, so without the property here Scorecard
+    concludes "CPM disabled" and reports the solution's `dotnet restore` as an unpinned nugetCommand — capping
+    the check at 7. Declaring it here makes the winning file report CPM enabled; its empty version set trivially
+    satisfies Scorecard's "all versions are fixed" rule, so the restore counts as pinned. Redundant for MSBuild
+    (same value as Directory.Packages.props).
+  -->
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+
+</Project>
