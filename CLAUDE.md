@@ -11,6 +11,10 @@ documented, and close to the code that uses it.
   commit messages, branch names, PR titles and descriptions, and issues.
 * You may reply to me in French in the chat, but never write repository content
   in French.
+* One documented exception: the specification under [`doc/`](doc/) is maintained
+  in English (`specification.en.md`, canonical) alongside a courtesy French
+  translation (`specification.fr.md`). The English version wins wherever the two
+  disagree, and that pair is the only French content the repository carries.
 
 ## Build & test
 

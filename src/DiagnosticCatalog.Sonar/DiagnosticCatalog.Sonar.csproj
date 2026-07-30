@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net10.0</TargetFrameworks>
+    <AssemblyName>DiagnosticCatalog.Sonar</AssemblyName>
+    <RootNamespace>DiagnosticCatalog.Sonar</RootNamespace>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <!--
+    NO <ReleaseTrain> yet, deliberately, and this is the one thing to fix before this catalog
+    can ship.
+
+    It belongs on the 'sonar' train, but joining it now would make the project packable while it
+    still carries a ProjectReference to DiagnosticCatalog on the 'lib' train — the construct
+    ADR-0007 forbids, because `dotnet pack` would stamp a dependency on a lib version that was
+    never published and every consumer's restore would fail with NU1102 on an immutable artifact.
+
+    The foundation has no published version to reference yet, so the release order ADR-0007
+    implies has not run its first step. Once lib ships, this project swaps the ProjectReference
+    below for a versionless PackageReference to DiagnosticCatalog and declares
+    declares its release train as 'sonar'. Until then it builds and is testable, but
+    publishes nothing — which is honest rather than convenient.
+
+    The train name is spelled in prose above, never as the XML element: tools/trains.sh
+    discovers membership with a line-oriented sed that does not parse XML, so the element
+    written inside this comment would be read as a real declaration and this project would
+    be packed after all.
+  -->
+  <PropertyGroup Label="Package">
+    <PackageId>DiagnosticCatalog.Sonar</PackageId>
+    <DevelopmentDependency>false</DevelopmentDependency>
+    <Title>DiagnosticCatalog.Sonar</Title>
+    <Description>The SonarAnalyzer.CSharp rules as strongly referenced constants, so that SuppressMessageAttribute takes compile-checked references instead of magic strings. Ids and categories are read from the analyzers' own DiagnosticDescriptor instances. Unofficial; not affiliated with or endorsed by SonarSource.</Description>
+    <PackageTags>roslyn;analyzers;diagnostics;suppressmessage;sonar;sonaranalyzer;code-analysis;catalog</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <Authors>Reefact</Authors>
+    <Copyright>Copyright (c) Reefact</Copyright>
+    <PackageProjectUrl>https://github.com/Reefact/diagnostic-catalog</PackageProjectUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="/" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../DiagnosticCatalog/DiagnosticCatalog.csproj" />
+  </ItemGroup>
+
+</Project>

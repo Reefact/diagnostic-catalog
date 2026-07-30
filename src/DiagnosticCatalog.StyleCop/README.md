@@ -1,0 +1,163 @@
+# DiagnosticCatalog.StyleCop
+
+The **StyleCop.Analyzers** rules as strongly referenced constants, so that
+`SuppressMessageAttribute` takes compile-checked references instead of magic strings.
+
+> Unofficial. Not affiliated with or endorsed by the StyleCop.Analyzers project.
+
+## Why
+
+StyleCop makes the point better than most analyzers: its categories are namespace-shaped
+strings nobody would ever guess.
+
+```csharp
+[SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1000", Justification = "...")]
+```
+
+Get the id wrong and the suppression silently does nothing — the warning simply stays.
+Get the category wrong and **nothing happens at all**, ever: the .NET platform never
+reads that argument, so nothing will ever tell you. Would you have written
+`"StyleCop.CSharp.SpacingRules"` from memory? Or `"Spacing"`, or `"Style"`?
+
+```csharp
+using DiagnosticCatalog.StyleCop;
+
+[SuppressMessage(
+    StyleCopRule.SA1000.Category,
+    StyleCopRule.SA1000.Id,
+    Justification = "Generated code follows a different spacing convention.")]
+```
+
+## Installation
+
+```xml
+<PackageReference Include="DiagnosticCatalog.StyleCop" Version="0.1.0" />
+```
+
+This package only supplies the constants. The checks that validate rule declarations and
+their use sites ship separately in `DiagnosticCatalog.Analyzers`.
+
+## What is in the package
+
+193 rules across 8 categories, all of them of the `StyleCop.CSharp.*Rules` shape:
+`DocumentationRules`, `LayoutRules`, `MaintainabilityRules`, `NamingRules`,
+`OrderingRules`, `ReadabilityRules`, `SpacingRules`, `SpecialRules`.
+
+Every rule carries its help link, because StyleCop populates `HelpLinkUri` on all 193
+descriptors:
+
+```csharp
+[DiagnosticRule]
+public static class SA1000
+{
+    public const string Id = nameof(SA1000);
+    public const string Category = StyleCopCategory.StyleCopCSharpSpacingRules;
+    public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1000.md";
+}
+```
+
+Rule titles and descriptions are not redistributed — the help link takes you to them.
+
+## A note on versions
+
+This catalogue mirrors **StyleCop.Analyzers 1.1.118**, the latest *stable* release. Many
+projects run `1.2.0-beta.556` instead, which is widely used despite the prerelease tag and
+carries additional rules. If that is you, regenerate against it:
+
+```
+dotnet run --project eng/CatalogGen -- \
+    --package StyleCop.Analyzers.Unstable --version 1.2.0.556 \
+    --namespace DiagnosticCatalog.StyleCop --container StyleCopRule \
+    --output src/DiagnosticCatalog.StyleCop/StyleCopRules.g.cs
+```
+
+Note the package id: `StyleCop.Analyzers` 1.2.0-beta is a metapackage carrying no
+analyzer assembly of its own — the rules live in `StyleCop.Analyzers.Unstable`.
+
+The assembly records exactly what it mirrors:
+
+```csharp
+[assembly: CatalogSource(
+    source:        "StyleCop.Analyzers",
+    sourceVersion: "1.1.118",
+    generatedOn:   "2026-07-30")]
+```
+
+## Categories declared once
+
+A catalogue repeats very few distinct categories across very many rules. Each one is
+declared once in `StyleCopCategory` and the rules refer to it, so there is a single source per value:
+
+```csharp
+[DiagnosticCategory]
+public static class StyleCopCategory
+{
+    public const string StyleCopCSharpSpacingRules = "StyleCop.CSharp.SpacingRules";
+}
+
+[DiagnosticRule]
+public static class SA1000
+{
+    public const string Id = nameof(SA1000);
+    public const string Category = StyleCopCategory.StyleCopCSharpSpacingRules;
+}
+```
+
+A `const` initialised from another `const` is still a compile-time constant, so
+`StyleCopRule.SA1000.Category` remains valid as an attribute argument and still folds to
+`"StyleCop.CSharp.SpacingRules"` in metadata. The indirection costs nothing.
+
+`StyleCopCategory` is also usable on its own — IntelliSense on it lists exactly the 8 categories
+this analyzer actually uses.
+
+## How it is produced
+
+Not transcribed from documentation. The generator loads the analyzer assemblies,
+constructs every `DiagnosticAnalyzer` they contain, and reads the `DiagnosticDescriptor`
+instances they actually declare — the only source that cannot have drifted.
+
+```
+dotnet run --project eng/CatalogGen -- \
+    --package StyleCop.Analyzers --version latest \
+    --namespace DiagnosticCatalog.StyleCop --container StyleCopRule \
+    --output src/DiagnosticCatalog.StyleCop/StyleCopRules.g.cs
+```
+
+## How it stays current
+
+A nightly workflow regenerates every catalogue from its upstream package and opens a
+pull request when something actually moved — added rules, recategorised rules, rules
+retired upstream. It never publishes: a category or an id that changed upstream changes
+a published contract, and since the platform never reads a suppression's category, a
+wrong value merged unreviewed would produce no symptom anywhere. A human reads the diff.
+
+Nights where upstream has not moved produce nothing at all: the generator compares its
+own previous output and leaves the file untouched, `generatedOn` included.
+
+**A rule retired upstream is never deleted.** It is kept and marked `[Obsolete]` naming
+the version that dropped it, so a project still referencing it gets a `CS0618` warning
+telling it to remove the suppression — rather than a hard error from a member that
+vanished. Consumers inline constant values at their own compile time, so deleting one
+breaks their recompilation.
+
+To regenerate every catalogue at once:
+
+```
+dotnet run --project eng/CatalogGen -- --manifest eng/catalogs.json
+```
+
+## Limits
+
+`[SuppressMessage]` cannot suppress **compiler** warnings — `CS0219` and friends need
+`#pragma warning disable`, which takes bare identifiers and so can never reference a
+constant. This package covers the `SAxxxx` analyzer rules only.
+
+## Documentation
+
+[Specification](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/specification.en.md)
+([français](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/specification.fr.md)).
+
+## License
+
+Apache-2.0. The rule identifiers, categories and help links are facts about a
+third-party analyzer, which is itself MIT-licensed.

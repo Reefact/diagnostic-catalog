@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Exercises the shipped netstandard2.0 foundation, so it joins the .NET Framework 4.7.2 floor
+    and owns no <TargetFramework> of its own. What it asserts is precisely what the floor exists
+    to prove: that the attributes survive into metadata and read back correctly on the real
+    .NET Framework reflection stack, not only on net10.0.
+  -->
+  <Import Project="..\..\build\Net472TestFloor.props" />
+
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <!--
+      SuppressMessageAttribute is [Conditional("CODE_ANALYSIS")]: without this symbol the compiler
+      does not emit it at all, and every assertion about the folded category and id would read null
+      against an attribute that was never there. Defining it is what makes those tests possible;
+      the symbol is deliberately NOT set on the shipped projects, because the absence is the
+      zero-footprint property they promise.
+    -->
+    <DefineConstants>$(DefineConstants);CODE_ANALYSIS</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="coverlet.collector" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\DiagnosticCatalog\DiagnosticCatalog.csproj" />
+  </ItemGroup>
+
+</Project>

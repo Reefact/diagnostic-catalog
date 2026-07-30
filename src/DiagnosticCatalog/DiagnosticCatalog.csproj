@@ -1,0 +1,63 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net10.0</TargetFrameworks>
+    <AssemblyName>DiagnosticCatalog</AssemblyName>
+    <RootNamespace>DiagnosticCatalog</RootNamespace>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <!--
+    The foundation ships on the lib train. Declaring it here is the whole membership
+    (Directory.Build.targets), and it is also what makes the project packable and gives it
+    an embedded SBOM.
+  -->
+  <PropertyGroup>
+    <ReleaseTrain>lib</ReleaseTrain>
+  </PropertyGroup>
+
+  <!--
+    NOT a development dependency. Per docs §16.1 this package must flow to the consumers of
+    a catalog: they need the attribute to declare rules of their own, and it must be present
+    at run time for reflection over a catalog to work. Note it is deliberately NOT needed for
+    the analyzers to see the rules — §7.2 matches on the fully qualified metadata name, which
+    survives even when [DiagnosticRule] degrades to an error type.
+  -->
+  <PropertyGroup Label="Package">
+    <PackageId>DiagnosticCatalog</PackageId>
+    <DevelopmentDependency>false</DevelopmentDependency>
+    <Title>DiagnosticCatalog</Title>
+    <Description>Marker attributes for declaring analyzer diagnostic rules as strongly referenced constants, so that SuppressMessageAttribute takes compile-checked references instead of magic strings.</Description>
+    <PackageTags>roslyn;analyzers;diagnostics;suppressmessage;code-analysis;static-analysis;catalog</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <Authors>Reefact</Authors>
+    <Copyright>Copyright (c) Reefact</Copyright>
+    <PackageProjectUrl>https://github.com/Reefact/diagnostic-catalog</PackageProjectUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="/" />
+  </ItemGroup>
+
+  <!--
+    Guards the shape of this assembly's public API: renaming DiagnosticRuleAttribute or moving
+    it out of the DiagnosticCatalog namespace fails the build (RS0016/RS0017) instead of passing
+    as a review oversight. Both are major-version triggers.
+
+    Scope note — PublicAPI.*.txt records type and member signatures only. It does NOT cover
+    sealedness, AttributeUsage, applied attributes (see the [Conditional] constraint in
+    DiagnosticRuleAttribute.cs), or the mandatory Id/Category member names. Those last belong to
+    the structural contract imposed on catalog authors and are enforced by DCAT0003/DCAT0004 in
+    DiagnosticCatalog.Analyzers, not here.
+  -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="PublicAPI.Shipped.txt" />
+    <AdditionalFiles Include="PublicAPI.Unshipped.txt" />
+  </ItemGroup>
+
+</Project>
