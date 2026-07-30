@@ -61,7 +61,7 @@ display="${file##*/}"
 # (documentation routinely shows `var` in sample code), an anonymous type (C#
 # gives no other spelling), and an occurrence inside a string literal (the
 # analyzer suites embed C# fixtures that deliberately use `var`).
-# shellcheck disable=SC2317  # reached through the `"rule_${rule}"` dispatch in the run section below
+# shellcheck disable=SC2317,SC2329  # reached through the `"rule_${rule}"` dispatch in the run section below
 rule_explicit_types() {
   awk -v name="$display" '
     {
@@ -94,7 +94,7 @@ rule_explicit_types() {
   ' "$file"
 }
 
-# shellcheck disable=SC2317  # reached through the `"${rule}_hint"` dispatch in the run section below
+# shellcheck disable=SC2317,SC2329  # reached through the `"${rule}_hint"` dispatch in the run section below
 explicit_types_hint() {
   printf '%s' "Coding rule — explicit types (CLAUDE.md, \"Coding rules\"). This file now declares
 inferred types:
