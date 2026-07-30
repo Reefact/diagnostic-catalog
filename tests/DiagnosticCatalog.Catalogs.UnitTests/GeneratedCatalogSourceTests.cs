@@ -25,11 +25,20 @@ public sealed class GeneratedCatalogSourceTests
         "StyleCopRules.g.cs",
     ];
 
+    /// <summary>
+    /// Line endings are normalised to LF because none of these checks is about them, and every one
+    /// of them anchors on <c>$</c> under <see cref="RegexOptions.Multiline"/> — which matches before
+    /// a line feed, not before a carriage return. The repository leaves line-ending handling to git
+    /// outside a narrow snapshot rule (see <c>.gitattributes</c>), so these files check out CRLF on
+    /// Windows, and an un-normalised read makes the emptiness assertions below pass vacuously there:
+    /// green on a violation they exist to catch. <c>ReplaceLineEndings</c> would say this better but
+    /// does not exist on .NET Framework, where the floor runs.
+    /// </summary>
     private static string Read(string fileName)
     {
         string path = Path.Combine(AppContext.BaseDirectory, "catalogs", fileName);
         Assert.True(File.Exists(path), $"Generated source not found beside the tests: {path}");
-        return File.ReadAllText(path);
+        return File.ReadAllText(path).Replace("\r\n", "\n");
     }
 
     /// <summary>
