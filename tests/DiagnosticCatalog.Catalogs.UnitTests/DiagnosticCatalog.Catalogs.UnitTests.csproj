@@ -11,6 +11,14 @@
   <PropertyGroup>
     <IsPackable>false</IsPackable>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <!--
+      SYSLIB1045 (use [GeneratedRegex]) cannot be honoured here. The regex source generator needs
+      .NET 7 or later, and this project also builds for net472 — that is the whole point of the
+      floor it imports above. A partial method carrying the attribute would simply not compile on
+      the inner build that matters most. The sibling CatalogGen.UnitTests targets net10.0 only and
+      does use [GeneratedRegex]; this waiver is about the floor, not about the rule.
+    -->
+    <NoWarn>$(NoWarn);SYSLIB1045</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
