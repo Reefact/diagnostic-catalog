@@ -28,6 +28,14 @@ Two roles are covered: **writing code** and **reviewing pull requests**.
 - **Write the type; never `var`**, except where C# gives no other spelling
   (anonymous types). The build reports it as `IDE0008` and CI turns it into an
   error.
+- **A `fix` ships with a test that was seen failing against the unfixed code.**
+  This constrains the evidence, not the order of work: write the test first, or
+  write the fix and stash it to watch the test go red. A test that was never red
+  cannot tell a fixed bug from one that was never reproduced. Where a failing
+  test is genuinely impractical (a race, a fix inside a workflow), say so in the
+  pull request and describe how the fix was verified instead — the proof may be
+  skipped, never skipped silently. Full wording in
+  [`CLAUDE.md`](CLAUDE.md), "Proving a fix".
 
 ## Release trains (code changes)
 
