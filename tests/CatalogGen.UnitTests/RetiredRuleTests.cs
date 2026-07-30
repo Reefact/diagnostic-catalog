@@ -15,7 +15,7 @@ namespace CatalogGen.UnitTests;
 /// never once been executed. It would have run for the first time unattended, in the nightly job,
 /// on the night an upstream release finally dropped a rule.
 /// </summary>
-public sealed class RetiredRuleTests : IDisposable
+public sealed partial class RetiredRuleTests : IDisposable
 {
     private const string Package = "Vendor.Analyzers";
     private readonly string _temp = Directory.CreateTempSubdirectory("cataloggen-retired-").FullName;
@@ -79,7 +79,7 @@ public sealed class RetiredRuleTests : IDisposable
         // rule's doc comment, so any slice taken at "public static class X0002" already contains it.
         // Two rules, one retired, therefore exactly one marker in the file.
         Assert.Contains("public static class X0001", emitted, StringComparison.Ordinal);
-        Assert.Single(Regex.Matches(emitted, @"\[Obsolete\("));
+        Assert.Single(ObsoleteMarker().Matches(emitted));
     }
 
     [Fact]
@@ -120,4 +120,7 @@ public sealed class RetiredRuleTests : IDisposable
         Assert.Equal(string.Empty, result.Summary);
         Assert.Equal(string.Empty, emitted);
     }
+
+    [GeneratedRegex(@"\[Obsolete\(")]
+    private static partial Regex ObsoleteMarker();
 }
