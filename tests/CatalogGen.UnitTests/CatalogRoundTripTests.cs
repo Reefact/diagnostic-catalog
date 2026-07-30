@@ -12,7 +12,7 @@ namespace CatalogGen.UnitTests;
 /// neither — and because nothing in the platform validates a suppression's category, a bad diff
 /// merged on that basis leaves no symptom anywhere.
 /// </summary>
-public sealed class CatalogRoundTripTests : IDisposable
+public sealed partial class CatalogRoundTripTests : IDisposable
 {
     private readonly string _temp = Directory.CreateTempSubdirectory("cataloggen-").FullName;
 
@@ -45,9 +45,7 @@ public sealed class CatalogRoundTripTests : IDisposable
         Previous? parsed = CatalogParser.ReadPrevious(path);
         Assert.NotNull(parsed);
 
-        Match source = Regex.Match(
-            original,
-            """\[assembly: CatalogSource\(\s*source:\s*"([^"]*)",\s*sourceVersion:\s*"([^"]*)",\s*generatedOn:\s*"([^"]*)"\)\]""");
+        Match source = ProvenanceAttribute().Match(original);
         Assert.True(source.Success, "the catalogue should declare its own provenance");
 
         string package = source.Groups[1].Value;
@@ -58,9 +56,9 @@ public sealed class CatalogRoundTripTests : IDisposable
         // so the version it recovers has to be the one written.
         Assert.Equal(version, parsed!.SourceVersion);
 
-        string ns = Regex.Match(original, "(?m)^namespace (\\S+);$").Groups[1].Value;
+        string ns = NamespaceDeclaration().Match(original).Groups[1].Value;
         // Two classes sit at column 0: the categories first, the rules second.
-        string container = Regex.Matches(original, "(?m)^public static class (\\w+)$")[^1].Groups[1].Value;
+        string container = TopLevelClass().Matches(original)[^1].Groups[1].Value;
 
         string output = Path.Combine(_temp, Path.GetFileName(path));
         Job job = new(package, version, ns, container, output, "cs");
@@ -71,4 +69,18 @@ public sealed class CatalogRoundTripTests : IDisposable
         Assert.True(result.Changed);
         Assert.Equal(original, File.ReadAllText(output).ReplaceLineEndings("\n"));
     }
+
+    // Source-generated rather than interpreted: the pattern is checked when this project is built,
+    // so a typo in one is a compile error naming it instead of a test failure to be read backwards.
+    // The catalogue tests next door cannot do this — they run on the .NET Framework floor, which
+    // predates the generator.
+
+    [GeneratedRegex("""\[assembly: CatalogSource\(\s*source:\s*"([^"]*)",\s*sourceVersion:\s*"([^"]*)",\s*generatedOn:\s*"([^"]*)"\)\]""")]
+    private static partial Regex ProvenanceAttribute();
+
+    [GeneratedRegex(@"^namespace (\S+);$", RegexOptions.Multiline)]
+    private static partial Regex NamespaceDeclaration();
+
+    [GeneratedRegex(@"^public static class (\w+)$", RegexOptions.Multiline)]
+    private static partial Regex TopLevelClass();
 }
