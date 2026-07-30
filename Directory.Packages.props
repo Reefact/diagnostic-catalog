@@ -26,6 +26,10 @@
     <!-- Embeds the SPDX SBOM in every published package. Referenced from Directory.Build.targets for any
          project declaring a <ReleaseTrain>, version-less, so the version has to resolve from here. -->
     <PackageVersion Include="Microsoft.Sbom.Targets" Version="4.1.5" />
+    <!-- Guards the foundation's public API surface: RS0016/RS0017 turn a renamed or added
+         public member into a build error, which is what makes §23's "renaming the attribute is
+         a major version" a mechanical check rather than a review habit. -->
+    <PackageVersion Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="5.6.0" />
   </ItemGroup>
 
 </Project>
