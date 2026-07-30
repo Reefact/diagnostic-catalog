@@ -3,6 +3,7 @@
     <Project Path="eng/CatalogGen/CatalogGen.csproj" />
   </Folder>
   <Folder Name="/src/">
+    <Project Path="src/DiagnosticCatalog.Sonar/DiagnosticCatalog.Sonar.csproj" />
     <Project Path="src/DiagnosticCatalog/DiagnosticCatalog.csproj" />
   </Folder>
 </Solution>
