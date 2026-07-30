@@ -130,11 +130,17 @@ jobs:
       #
       # A per-project loop, not a solution-wide `-f net472`: the latter would force the TFM onto
       # the net10-only projects and fail.
+      #
+      # The pattern is anchored on the <Import> ELEMENT, not on the file name alone. A bare name
+      # match also finds the name written in prose — and the first project to explain in a comment
+      # why it deliberately stays OFF the floor enrolled itself by saying so, then failed with
+      # NETSDK1005 because it has no net472 target. Matching the construct rather than the string
+      # means a project is enrolled by what it does, never by what it says about itself.
       - name: Test the netstandard2.0 libraries on .NET Framework 4.7.2
         shell: bash
         run: |
           set -euo pipefail
-          projects="$(grep -rl 'Net472TestFloor\.props' --include='*.csproj' . || true)"
+          projects="$(grep -rlE '<Import[^>]*Net472TestFloor\.props' --include='*.csproj' . || true)"
           if [ -z "$projects" ]; then
             echo "::notice::No project imports build/Net472TestFloor.props yet; the floor has nothing to run."
             exit 0
