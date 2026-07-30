@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    The catalogs are shipped netstandard2.0 libraries, so this joins the .NET Framework 4.7.2
+    floor. What it checks is read out of their metadata by reflection, which is the same surface
+    the analyzers read across an assembly boundary — running it on the real .NET Framework CLR is
+    therefore not ceremony.
+  -->
+  <Import Project="..\..\build\Net472TestFloor.props" />
+
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="coverlet.collector" />
+  </ItemGroup>
+
+  <!--
+    The generated sources are copied beside the test binary because one invariant cannot be seen
+    from metadata: whether a rule reached its category through the shared constant or repeated the
+    literal. Constant folding erases the difference — both produce the same value — so that check
+    has to read the source. Copying rather than resolving a path at run time keeps it working under
+    the deterministic CI build, which rewrites compile-time source paths.
+  -->
+  <ItemGroup>
+    <Content Include="..\..\src\**\*.g.cs" Link="catalogs\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\DiagnosticCatalog\DiagnosticCatalog.csproj" />
+    <ProjectReference Include="..\..\src\DiagnosticCatalog.Sonar\DiagnosticCatalog.Sonar.csproj" />
+    <ProjectReference Include="..\..\src\DiagnosticCatalog.NetAnalyzers\DiagnosticCatalog.NetAnalyzers.csproj" />
+    <ProjectReference Include="..\..\src\DiagnosticCatalog.StyleCop\DiagnosticCatalog.StyleCop.csproj" />
+  </ItemGroup>
+
+</Project>

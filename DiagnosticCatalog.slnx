@@ -8,4 +8,8 @@
     <Project Path="src/DiagnosticCatalog.StyleCop/DiagnosticCatalog.StyleCop.csproj" />
     <Project Path="src/DiagnosticCatalog/DiagnosticCatalog.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/DiagnosticCatalog.Catalogs.UnitTests/DiagnosticCatalog.Catalogs.UnitTests.csproj" />
+    <Project Path="tests/DiagnosticCatalog.UnitTests/DiagnosticCatalog.UnitTests.csproj" />
+  </Folder>
 </Solution>
