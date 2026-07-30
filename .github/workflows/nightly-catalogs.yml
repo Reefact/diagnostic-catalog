@@ -1,0 +1,147 @@
+name: Nightly catalogue sync
+
+# Regenerates every catalogue in eng/catalogs.json from its upstream analyzer package and
+# opens a pull request when something actually changed.
+#
+# It never publishes. Per doc/specification.en.md §14.2 the output of this job is a pull
+# request carrying a rules diff for human review, because a category or an id that moved
+# upstream is a change to a published contract — and because the platform never validates
+# a suppression's category (§3.2), a wrong value merged here would produce no symptom
+# anywhere.
+
+on:
+  schedule:
+    # 03:17 UTC. Off the hour on purpose: scheduled jobs at :00 queue behind everyone
+    # else's, and nothing here is time-critical.
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+    inputs:
+      force-pr:
+        description: 'Open a pull request even if nothing changed (for testing the job)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  # One sync at a time. Two overlapping runs would race on the same branch.
+  group: catalog-sync
+  cancel-in-progress: false
+
+env:
+  SYNC_BRANCH: automation/catalog-sync
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Regenerate catalogues
+        id: generate
+        run: |
+          set -euo pipefail
+          dotnet run --project eng/CatalogGen -c Release -v minimal -- \
+            --manifest eng/catalogs.json \
+            --summary "$RUNNER_TEMP/summary.md"
+
+          if [ -n "$(git status --porcelain -- src/)" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          {
+            echo "## Catalogue sync"
+            echo
+            cat "$RUNNER_TEMP/summary.md"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # A regeneration that does not build is a signal, not something to paper over: it
+      # means upstream changed shape. Fail before opening a pull request.
+      - name: Build and verify
+        if: steps.generate.outputs.changed == 'true'
+        run: dotnet build -c Release --nologo
+
+      # The generator leaves files untouched when nothing moved, so a second run over the
+      # freshly written files must report no change at all. If it does not, the output is
+      # not deterministic and every future run would churn the diff.
+      - name: Check the output is stable
+        if: steps.generate.outputs.changed == 'true'
+        run: |
+          set -euo pipefail
+          cp -r src "$RUNNER_TEMP/src-first"
+          dotnet run --project eng/CatalogGen -c Release -v minimal -- \
+            --manifest eng/catalogs.json
+          if ! diff -r "$RUNNER_TEMP/src-first" src > "$RUNNER_TEMP/stability.diff"; then
+            echo "::error::Regeneration is not deterministic; a second run changed the output."
+            head -50 "$RUNNER_TEMP/stability.diff"
+            exit 1
+          fi
+
+      - name: Open or update the pull request
+        if: steps.generate.outputs.changed == 'true' || inputs.force-pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          git config user.name  'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+          git checkout -B "$SYNC_BRANCH"
+          git add -- src/
+          if git diff --cached --quiet; then
+            echo 'Nothing staged; force-pr was requested with no changes. Skipping.'
+            exit 0
+          fi
+
+          SUMMARY="$(cat "$RUNNER_TEMP/summary.md")"
+          git commit -q -m "chore: sync generated catalogues with upstream analyzers" \
+                        -m "$SUMMARY"
+
+          # The catalogue content is derived, so the latest regeneration always wins over
+          # whatever the branch held before.
+          git push --force-with-lease origin "$SYNC_BRANCH"
+
+          BODY_FILE="$RUNNER_TEMP/body.md"
+          {
+            echo 'Regenerated from the upstream analyzer packages by the nightly catalogue'
+            echo 'sync workflow (`.github/workflows/nightly-catalogs.yml`).'
+            echo
+            echo '**Review this diff, do not merge it blind.** A category or an id that moved'
+            echo 'upstream changes a published contract, and because the .NET platform never'
+            echo 'reads a suppression'"'"'s category, a wrong value merged here would produce no'
+            echo 'symptom anywhere (specification §3.2).'
+            echo
+            cat "$RUNNER_TEMP/summary.md"
+            echo
+            echo '---'
+            echo
+            echo '- Ids and categories are read from each analyzer'"'"'s own `DiagnosticDescriptor`'
+            echo '  instances, never from documentation (§14.1).'
+            echo '- Rules retired upstream are kept and marked `[Obsolete]`, never deleted:'
+            echo '  consumers inline constants, so removing one breaks their recompilation (§23.1).'
+            echo '- No package is published by this job.'
+          } > "$BODY_FILE"
+
+          if gh pr view "$SYNC_BRANCH" --json number --jq .number >/dev/null 2>&1; then
+            gh pr edit "$SYNC_BRANCH" \
+              --title 'chore: sync generated catalogues with upstream analyzers' \
+              --body-file "$BODY_FILE"
+            echo "Updated existing pull request."
+          else
+            gh pr create \
+              --head "$SYNC_BRANCH" \
+              --title 'chore: sync generated catalogues with upstream analyzers' \
+              --body-file "$BODY_FILE"
+          fi
+
+      - name: Report no change
+        if: steps.generate.outputs.changed != 'true'
+        run: echo 'Every upstream package still resolves to the version already mirrored. Nothing to do.'
