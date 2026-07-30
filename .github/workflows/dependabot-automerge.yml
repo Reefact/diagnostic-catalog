@@ -11,6 +11,20 @@ name: dependabot-automerge
 # auto-merge would merge immediately. The required checks are therefore the safety
 # gate, not this workflow.
 #
+# Which is why arming is OFF until said so. The enable step below is gated on the
+# repository variable DEPENDABOT_AUTOMERGE, and the variable does not exist yet, so
+# this workflow currently does nothing but its fail-safe withdrawal. A workflow that
+# silently merged unchecked dependency bumps because the protection rule had not
+# been created yet is the exact accident this gate prevents — the hazard is at its
+# worst on a young repository, which is when nobody thinks to look for it.
+#
+# To arm it, in this order:
+#   1. protect `main` and mark the CI checks required (Settings -> Branches);
+#   2. set the repository variable DEPENDABOT_AUTOMERGE to `true`
+#      (Settings -> Secrets and variables -> Actions -> Variables).
+# Step 2 without step 1 re-creates the hazard. The withdrawal step is NOT gated:
+# disarming is always safe, so it keeps working either way.
+#
 # Why the job keys on the pull request's AUTHOR and not on `github.actor`. Auto-merge,
 # once enabled, SURVIVES later pushes to the head branch. `github.actor` names whoever
 # triggered the run, so a push by someone else made the job skip — leaving the
@@ -95,7 +109,12 @@ jobs:
       - name: Enable auto-merge for patch and minor updates
         # Major updates fall through this condition, so they never get auto-merge
         # and stay open for a human to review.
+        #
+        # vars.DEPENDABOT_AUTOMERGE is the arming switch described in the header: unset
+        # (the current state) means this step never runs, so no dependency bump can merge
+        # before `main` has a branch-protection rule making the CI checks required.
         if: >-
+          vars.DEPENDABOT_AUTOMERGE == 'true' &&
           steps.tip.outputs.state == 'dependabot-signed' &&
           (steps.meta.outputs.update-type == 'version-update:semver-patch' ||
            steps.meta.outputs.update-type == 'version-update:semver-minor')
