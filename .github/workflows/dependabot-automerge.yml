@@ -9,21 +9,15 @@ name: dependabot-automerge
 # merge. GitHub merges the PR only once the branch's REQUIRED status checks pass.
 # Without a branch-protection rule on `main` that marks the CI checks as required,
 # auto-merge would merge immediately. The required checks are therefore the safety
-# gate, not this workflow.
+# gate, not this workflow, and this workflow MUST NOT be relied upon on a branch
+# that has none (ADR-0005).
 #
-# Which is why arming is OFF until said so. The enable step below is gated on the
-# repository variable DEPENDABOT_AUTOMERGE, and the variable does not exist yet, so
-# this workflow currently does nothing but its fail-safe withdrawal. A workflow that
-# silently merged unchecked dependency bumps because the protection rule had not
-# been created yet is the exact accident this gate prevents — the hazard is at its
-# worst on a young repository, which is when nobody thinks to look for it.
-#
-# To arm it, in this order:
-#   1. protect `main` and mark the CI checks required (Settings -> Branches);
-#   2. set the repository variable DEPENDABOT_AUTOMERGE to `true`
-#      (Settings -> Secrets and variables -> Actions -> Variables).
-# Step 2 without step 1 re-creates the hazard. The withdrawal step is NOT gated:
-# disarming is always safe, so it keeps working either way.
+# `main` is protected and its CI checks are required, so that condition holds and
+# the workflow is live. It shipped behind a repository-variable switch while the
+# protection rule did not yet exist; the switch has been removed rather than set,
+# because it only ever covered the bootstrap window. Once armed it protected
+# nothing: removing the branch-protection rule later would leave the switch on and
+# the hazard back. The guarantee lives in the required checks, and nowhere else.
 #
 # Why the job keys on the pull request's AUTHOR and not on `github.actor`. Auto-merge,
 # once enabled, SURVIVES later pushes to the head branch. `github.actor` names whoever
@@ -109,12 +103,7 @@ jobs:
       - name: Enable auto-merge for patch and minor updates
         # Major updates fall through this condition, so they never get auto-merge
         # and stay open for a human to review.
-        #
-        # vars.DEPENDABOT_AUTOMERGE is the arming switch described in the header: unset
-        # (the current state) means this step never runs, so no dependency bump can merge
-        # before `main` has a branch-protection rule making the CI checks required.
         if: >-
-          vars.DEPENDABOT_AUTOMERGE == 'true' &&
           steps.tip.outputs.state == 'dependabot-signed' &&
           (steps.meta.outputs.update-type == 'version-update:semver-patch' ||
            steps.meta.outputs.update-type == 'version-update:semver-minor')
