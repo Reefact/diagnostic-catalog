@@ -1,7 +1,8 @@
 # ADR-0008 | Express a rule as a marked static class of constants, never an interface
 
-**Status:** Proposed
+**Status:** Accepted
 **Proposed:** 2026-07-30
+**Accepted:** 2026-07-30
 **Decision Makers:** Reefact
 
 ## Context
