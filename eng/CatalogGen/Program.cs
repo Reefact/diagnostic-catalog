@@ -35,49 +35,19 @@ if (cli is null) return 2;
 // .NET Core has no binding redirects. Upstream analyzers are compiled against older
 // Roslyn versions, so map every Microsoft.CodeAnalysis request onto the loaded one.
 HashSet<string> resolving = new(StringComparer.Ordinal);
-AppDomain.CurrentDomain.AssemblyResolve += (_, e) =>
-{
-    string? want = new AssemblyName(e.Name).Name;
-    if (want is null) return null;
-    Assembly? loaded = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.GetName().Name == want);
-    if (loaded is not null) return loaded;
-    if (!want.StartsWith("Microsoft.CodeAnalysis", StringComparison.Ordinal)) return null;
-
-    // Assembly.Load raises AssemblyResolve again when it fails, so without this guard a
-    // genuinely missing assembly recurses until the stack overflows.
-    lock (resolving)
-    {
-        if (!resolving.Add(want)) return null;
-    }
-    try { return Assembly.Load(want); }
-    catch { return null; }
-    finally { lock (resolving) { resolving.Remove(want); } }
-};
+AppDomain.CurrentDomain.AssemblyResolve += (_, e) => ResolveAgainstLoaded(e, resolving);
 _ = typeof(Workspace); // force Workspaces into the load context before the analyzer needs it
 
-List<Job> jobs = [];
+List<Job> jobs;
 if (cli.Manifest is not null)
 {
-    string manifestDir = Path.GetDirectoryName(Path.GetFullPath(cli.Manifest))!;
-    using JsonDocument doc = JsonDocument.Parse(File.ReadAllText(cli.Manifest));
-    foreach (JsonElement e in doc.RootElement.GetProperty("catalogs").EnumerateArray())
-    {
-        jobs.Add(new Job(
-            Package: e.GetProperty("package").GetString()!,
-            Version: e.TryGetProperty("version", out JsonElement v) ? v.GetString()! : "latest",
-            Namespace: e.GetProperty("namespace").GetString()!,
-            Container: e.GetProperty("container").GetString()!,
-            // Manifest paths are relative to the manifest, so the tool can be run from
-            // anywhere without the paths depending on the caller's working directory.
-            Output: Path.GetFullPath(Path.Combine(manifestDir, e.GetProperty("output").GetString()!)),
-            Language: e.TryGetProperty("language", out JsonElement l) ? l.GetString()! : "cs"));
-    }
+    jobs = JobsFromManifest(await File.ReadAllTextAsync(cli.Manifest), Path.GetFullPath(cli.Manifest));
     Console.WriteLine($"manifest {cli.Manifest}: {jobs.Count} catalogue(s)");
 }
 else
 {
-    jobs.Add(new Job(cli.Package!, cli.Version!, cli.Namespace!, cli.Container!,
-                     Path.GetFullPath(cli.Output!), cli.Language));
+    jobs = [new Job(cli.Package!, cli.Version!, cli.Namespace!, cli.Container!,
+                    Path.GetFullPath(cli.Output!), cli.Language)];
 }
 
 using HttpClient http = new();
@@ -103,7 +73,16 @@ foreach (Job job in jobs)
     {
         // One unreachable or restructured upstream package must not silently take the
         // whole run down: report it, keep going, and fail the process at the end.
+        //
+        // S6966 asks for WriteLineAsync here and at the other Console.Error site below, but on
+        // none of the ~20 Console.WriteLine calls around them — Console.WriteLine is a static
+        // method with no async counterpart, while Console.Error is a TextWriter that has one.
+        // Both streams are synchronized writers whose async overloads complete synchronously,
+        // so awaiting would yield to nothing and leave this tool's diagnostics half-async on a
+        // technicality of where the method happens to be declared.
+#pragma warning disable S6966 // Awaitable method should be used
         Console.Error.WriteLine($"FAILED {job.Namespace}: {ex.GetType().Name}: {ex.Message}");
+#pragma warning restore S6966
         exitCode = 1;
     }
 }
@@ -113,8 +92,8 @@ if (cli.Summary is not null)
     string body = changedAny
         ? string.Join("\n", summaries)
         : "No catalogue changed: every upstream package still resolves to the version already mirrored.";
-    File.WriteAllText(Path.GetFullPath(cli.Summary), body.ReplaceLineEndings("\n") + "\n",
-                      new UTF8Encoding(false));
+    await File.WriteAllTextAsync(Path.GetFullPath(cli.Summary), body.ReplaceLineEndings("\n") + "\n",
+                                 new UTF8Encoding(false));
     Console.WriteLine();
     Console.WriteLine($"summary written to {cli.Summary}");
 }
@@ -124,6 +103,49 @@ Console.WriteLine(changedAny ? "RESULT: catalogues changed" : "RESULT: no change
 return exitCode;
 
 // ---------------------------------------------------------------------------
+
+// The handler behind the hook above. Answers with the assembly already loaded, and with null —
+// meaning "not mine" — for anything outside the Microsoft.CodeAnalysis family, which leaves the
+// runtime's own resolution in charge of it.
+static Assembly? ResolveAgainstLoaded(ResolveEventArgs e, HashSet<string> resolving)
+{
+    string? want = new AssemblyName(e.Name).Name;
+    if (want is null) return null;
+    Assembly? loaded = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.GetName().Name == want);
+    if (loaded is not null) return loaded;
+    if (!want.StartsWith("Microsoft.CodeAnalysis", StringComparison.Ordinal)) return null;
+
+    // Assembly.Load raises AssemblyResolve again when it fails, so without this guard a
+    // genuinely missing assembly recurses until the stack overflows.
+    lock (resolving)
+    {
+        if (!resolving.Add(want)) return null;
+    }
+    try { return Assembly.Load(want); }
+    catch { return null; }
+    finally { lock (resolving) { resolving.Remove(want); } }
+}
+
+static List<Job> JobsFromManifest(string json, string manifestPath)
+{
+    string manifestDir = Path.GetDirectoryName(manifestPath)!;
+    List<Job> jobs = [];
+    using JsonDocument doc = JsonDocument.Parse(json);
+    foreach (JsonElement e in doc.RootElement.GetProperty("catalogs").EnumerateArray())
+    {
+        jobs.Add(new Job(
+            Package: e.GetProperty("package").GetString()!,
+            Version: e.TryGetProperty("version", out JsonElement v) ? v.GetString()! : "latest",
+            Namespace: e.GetProperty("namespace").GetString()!,
+            Container: e.GetProperty("container").GetString()!,
+            // Manifest paths are relative to the manifest, so the tool can be run from
+            // anywhere without the paths depending on the caller's working directory.
+            Output: Path.GetFullPath(Path.Combine(manifestDir, e.GetProperty("output").GetString()!)),
+            Language: e.TryGetProperty("language", out JsonElement l) ? l.GetString()! : "cs"));
+    }
+
+    return jobs;
+}
 
 static async Task<GenerateResult?> GenerateAsync(Job job, string? dateOverride, HttpClient http)
 {
@@ -143,7 +165,10 @@ static async Task<GenerateResult?> GenerateAsync(Job job, string? dateOverride, 
         List<string> candidates = version == "latest" ? all.Where(v => !v.Contains('-')).ToList() : all;
         if (candidates.Count == 0)
         {
+            // Synchronous for the reason given at the other Console.Error site above.
+#pragma warning disable S6966 // Awaitable method should be used
             Console.Error.WriteLine($"{packageId} has no stable version; use latest-any or an explicit version");
+#pragma warning restore S6966
             return null;
         }
         version = candidates[^1];
@@ -182,6 +207,23 @@ static SortedDictionary<string, RuleInfo>? ExtractRules(
     ok = false;
     using ZipArchive zip = ZipFile.OpenRead(nupkg);
 
+    List<ZipArchiveEntry>? entries = SelectAnalyzerAssemblies(zip, packageId, version, language);
+    if (entries is null) return null;
+
+    foreach (ZipArchiveEntry e in entries)
+        e.ExtractToFile(Path.Combine(workDir, Path.GetFileName(e.FullName)), overwrite: true);
+
+    SortedDictionary<string, RuleInfo> accepted = AcceptSuppressable(ReadDescriptors(workDir));
+
+    ok = true;
+    return accepted;
+}
+
+// The assemblies in the package that carry this language's descriptors, or null when the package
+// carries none at all — which is a failure, not an empty result.
+static List<ZipArchiveEntry>? SelectAnalyzerAssemblies(
+    ZipArchive zip, string packageId, string version, string language)
+{
     // Satellite assemblies hold localized rule text, never descriptors, and they sit in
     // culture-named folders that would otherwise be mistaken for language folders — note
     // that "cs" is both C# and Czech.
@@ -222,38 +264,21 @@ static SortedDictionary<string, RuleInfo>? ExtractRules(
     foreach (ZipArchiveEntry e in entries) Console.WriteLine($"  + {e.FullName}");
     foreach (ZipArchiveEntry e in excluded) Console.WriteLine($"  - {e.FullName} (other language)");
 
-    foreach (ZipArchiveEntry e in entries)
-        e.ExtractToFile(Path.Combine(workDir, Path.GetFileName(e.FullName)), overwrite: true);
+    return entries;
+}
 
-    // Descriptors are instance state, so every analyzer type has to be constructed.
+// Descriptors are instance state, so every analyzer type has to be constructed.
+static SortedDictionary<string, RuleInfo> ReadDescriptors(string workDir)
+{
     SortedDictionary<string, RuleInfo> rules = new(StringComparer.Ordinal);
     int analyzerTypes = 0, constructed = 0;
 
     foreach (string dll in Directory.GetFiles(workDir, "*.dll"))
     {
-        Assembly asm;
-        try { asm = Assembly.LoadFrom(dll); } catch { continue; }
-
-        Type[] types;
-        try { types = asm.GetTypes(); }
-        catch (ReflectionTypeLoadException ex) { types = ex.Types.Where(t => t is not null).ToArray()!; }
-
-        foreach (Type t in types)
+        foreach (Type t in AnalyzerTypesIn(dll))
         {
-            if (t.IsAbstract || !typeof(DiagnosticAnalyzer).IsAssignableFrom(t)) continue;
             analyzerTypes++;
-            try
-            {
-                DiagnosticAnalyzer instance = (DiagnosticAnalyzer)Activator.CreateInstance(t)!;
-                foreach (DiagnosticDescriptor d in instance.SupportedDiagnostics)
-                    rules[d.Id] = new RuleInfo(d.Category, d.HelpLinkUri ?? string.Empty, Retired: false);
-                constructed++;
-            }
-            catch
-            {
-                // An analyzer that cannot be constructed contributes no descriptors. Counted
-                // below so the difference is visible rather than silently absorbed.
-            }
+            if (TryAddDescriptors(t, rules)) constructed++;
         }
     }
 
@@ -261,10 +286,52 @@ static SortedDictionary<string, RuleInfo>? ExtractRules(
     if (constructed != analyzerTypes)
         Console.WriteLine($"WARNING: {analyzerTypes - constructed} analyzer type(s) could not be constructed");
 
-    // Filtering. Only two things disqualify a descriptor, and both are reported: an empty
-    // category means the entry is not a suppressable diagnostic (analyzers use such entries
-    // for internal metrics and telemetry channels), and a non-identifier id would need a
-    // mangled container name.
+    return rules;
+}
+
+static IEnumerable<Type> AnalyzerTypesIn(string dll)
+{
+    Assembly asm;
+    // S3885 asks for Assembly.Load. It cannot do this: Load resolves an assembly by NAME through
+    // the runtime's probing paths, and this path is a file the process extracted moments ago into
+    // its own temp directory, deliberately outside them. LoadFrom is the API that takes a path —
+    // the required one here, not a lax alternative. What makes the upstream assembly's older
+    // Roslyn references resolve is the AssemblyResolve handler above, not the choice of loader.
+#pragma warning disable S3885 // "Assembly.Load" should be used
+    try { asm = Assembly.LoadFrom(dll); } catch { return []; }
+#pragma warning restore S3885
+
+    Type[] types;
+    try { types = asm.GetTypes(); }
+    catch (ReflectionTypeLoadException ex) { types = ex.Types.Where(t => t is not null).ToArray()!; }
+
+    return types.Where(t => !t.IsAbstract && typeof(DiagnosticAnalyzer).IsAssignableFrom(t));
+}
+
+// True when the type was constructed, whether or not it declared any descriptor. An analyzer that
+// cannot be constructed contributes none; the caller counts the difference so it stays visible
+// rather than being silently absorbed.
+static bool TryAddDescriptors(Type analyzer, SortedDictionary<string, RuleInfo> rules)
+{
+    try
+    {
+        DiagnosticAnalyzer instance = (DiagnosticAnalyzer)Activator.CreateInstance(analyzer)!;
+        foreach (DiagnosticDescriptor d in instance.SupportedDiagnostics)
+            rules[d.Id] = new RuleInfo(d.Category, d.HelpLinkUri ?? string.Empty, Retired: false);
+        return true;
+    }
+    catch
+    {
+        return false;
+    }
+}
+
+// Filtering. Only two things disqualify a descriptor, and both are reported: an empty
+// category means the entry is not a suppressable diagnostic (analyzers use such entries
+// for internal metrics and telemetry channels), and a non-identifier id would need a
+// mangled container name.
+static SortedDictionary<string, RuleInfo> AcceptSuppressable(SortedDictionary<string, RuleInfo> rules)
+{
     SortedDictionary<string, RuleInfo> accepted = new(StringComparer.Ordinal);
     List<(string Id, string Reason)> skipped = [];
     foreach ((string id, RuleInfo info) in rules)
@@ -278,7 +345,6 @@ static SortedDictionary<string, RuleInfo>? ExtractRules(
     Console.WriteLine($"accepted: {accepted.Count}, skipped: {skipped.Count}, HelpLinkUri populated on {withHelp}/{rules.Count}");
     foreach ((string id, string reason) in skipped) Console.WriteLine($"  skipped {id}: {reason}");
 
-    ok = true;
     return accepted;
 }
 
