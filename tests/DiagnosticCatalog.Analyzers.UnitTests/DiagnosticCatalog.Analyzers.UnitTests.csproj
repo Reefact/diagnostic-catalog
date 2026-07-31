@@ -24,10 +24,17 @@
          newest central pin; the analyzer under test stays on the load floor through its own
          VersionOverride. The two versions coexisting is the point of that override. -->
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
+    <!-- The code-fix harness needs a workspace: a CodeFixProvider acts on a Document, not on a
+         Compilation. Same reasoning as above — this is the test side, free to take the newest pin. -->
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\DiagnosticCatalog.Analyzers\DiagnosticCatalog.Analyzers.csproj" />
+    <!-- The code fixes ship in the analyzer's package but live in their own assembly (RS1022), so the
+         tests reference both. This is also what proves the two really are separable: the fix assembly
+         compiles and runs without the analyzer one on its reference list. -->
+    <ProjectReference Include="..\..\src\DiagnosticCatalog.CodeFixes\DiagnosticCatalog.CodeFixes.csproj" />
     <!--
       The foundation is referenced so that [DiagnosticRule] resolves from a REAL assembly in the
       snippets the harness compiles. The analyzer itself takes no such reference, on purpose: it matches

@@ -62,7 +62,9 @@ internal static class SuppressionAttribute
     /// </summary>
     /// <remarks>
     /// Named arguments are skipped: <c>Justification</c>, <c>Scope</c>, <c>Target</c> and
-    /// <c>MessageId</c> may appear in any order and are not part of the pair being checked.
+    /// <c>MessageId</c> may appear in any order and are not part of the pair being checked. The two that
+    /// are may themselves be written by parameter name and out of order, which is why the slot comes
+    /// from <see cref="SuppressionArgumentOrder"/> rather than from the index in the list.
     /// </remarks>
     internal static (SuppressionArgument Category, SuppressionArgument CheckId)? ReadPair(
         AttributeSyntax attribute,
@@ -70,13 +72,33 @@ internal static class SuppressionAttribute
     {
         if (attribute.ArgumentList is null) { return null; }
 
-        List<AttributeArgumentSyntax> positional = attribute.ArgumentList.Arguments
-            .Where(argument => argument.NameEquals is null)
-            .ToList();
+        ExpressionSyntax? category = null;
+        ExpressionSyntax? checkId = null;
+        int positionalIndex = 0;
 
-        if (positional.Count < 2) { return null; }
+        foreach (AttributeArgumentSyntax argument in attribute.ArgumentList.Arguments)
+        {
+            if (argument.NameEquals is not null) { continue; }
 
-        return (Resolve(positional[0].Expression, model), Resolve(positional[1].Expression, model));
+            switch (SuppressionArgumentOrder.SlotOf(argument, positionalIndex))
+            {
+                case SuppressionArgumentOrder.CategorySlot:
+                    category = argument.Expression;
+
+                    break;
+
+                case SuppressionArgumentOrder.CheckIdSlot:
+                    checkId = argument.Expression;
+
+                    break;
+            }
+
+            positionalIndex++;
+        }
+
+        if (category is null || checkId is null) { return null; }
+
+        return (Resolve(category, model), Resolve(checkId, model));
     }
 
     private static SuppressionArgument Resolve(ExpressionSyntax expression, SemanticModel model)

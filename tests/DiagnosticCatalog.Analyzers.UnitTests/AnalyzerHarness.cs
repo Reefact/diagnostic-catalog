@@ -39,6 +39,9 @@ internal static class AnalyzerHarness
         .Where(path => path.Length > 0)
         .Select(path => (MetadataReference)MetadataReference.CreateFromFile(path)));
 
+    /// <summary>The same references, for the code-fix harness's workspace.</summary>
+    internal static ImmutableArray<MetadataReference> PlatformReferences => References;
+
     /// <summary>Runs <paramref name="analyzer"/> over <paramref name="source"/>.</summary>
     /// <param name="referencedSource">
     /// Optional source compiled into a separate assembly and referenced by the snippet. The analyzer
