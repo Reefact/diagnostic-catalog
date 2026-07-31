@@ -186,12 +186,6 @@ step, not an API.
 
 ### Risks
 
-* **A partial read is reported and not refused.** An analyzer the tool cannot
-  construct contributes no descriptor, and the run says so in a warning and
-  succeeds. Internally that is visible to whoever reads the nightly log; published,
-  it means a stranger's catalogue can silently omit rules when their analyzer was
-  compiled against a Roslyn the tool does not tolerate. This is the risk that most
-  needs closing before a first release.
 * **Loading happens in the tool's own process.** The reader resolves every
   Roslyn request onto the version it already holds, which works because this
   repository controls the three packages it reads. Published, the tolerated range
@@ -210,8 +204,6 @@ step, not an API.
   before the first release.
 * Decide the runtime floor the tool targets, and whether a build on that floor is
   allowed to run on newer majors.
-* Make a partial read fail rather than warn, or make the choice explicit to the
-  caller.
 * Decide whether provenance and the banner rewriting are always-on or opt-in, now
   that a source can be first-party.
 * Move the `cli` scope off the `lib` train and route `cataloggen` to the new one,
