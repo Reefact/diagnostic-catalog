@@ -57,9 +57,14 @@
           "minItems": 1,
           "items": { "type": "string", "minLength": 1 }
         },
+        "solution": {
+          "type": "string",
+          "description": "A solution, relative to this manifest. Reads the projects in it that declare ProducesDiagnosticRules; they must already be built.",
+          "minLength": 1
+        },
         "configuration": {
           "type": "string",
-          "description": "Which configuration of `projects` to read. Defaults to \"Release\".",
+          "description": "Which configuration of `projects` or `solution` to read. Defaults to \"Release\".",
           "default": "Release",
           "minLength": 1
         },
@@ -107,20 +112,23 @@
 
       "oneOf": [
         { "required": ["package"], "not": { "anyOf": [
-          { "required": ["nupkg"] }, { "required": ["projects"] }, { "required": ["assemblies"] }] } },
+          { "required": ["nupkg"] }, { "required": ["projects"] }, { "required": ["solution"] }, { "required": ["assemblies"] }] } },
         { "required": ["nupkg"], "not": { "anyOf": [
-          { "required": ["package"] }, { "required": ["projects"] }, { "required": ["assemblies"] }] } },
+          { "required": ["package"] }, { "required": ["projects"] }, { "required": ["solution"] }, { "required": ["assemblies"] }] } },
         { "required": ["projects"], "not": { "anyOf": [
-          { "required": ["package"] }, { "required": ["nupkg"] }, { "required": ["assemblies"] }] } },
+          { "required": ["package"] }, { "required": ["nupkg"] }, { "required": ["solution"] }, { "required": ["assemblies"] }] } },
+        { "required": ["solution"], "not": { "anyOf": [
+          { "required": ["package"] }, { "required": ["nupkg"] }, { "required": ["projects"] }, { "required": ["assemblies"] }] } },
         { "required": ["assemblies"], "not": { "anyOf": [
-          { "required": ["package"] }, { "required": ["nupkg"] }, { "required": ["projects"] }] } }
+          { "required": ["package"] }, { "required": ["nupkg"] }, { "required": ["projects"] }, { "required": ["solution"] }] } }
       ],
 
       "allOf": [
         {
           "$comment": "version and source describe a feed, and mean nothing for a source on disk.",
           "if": { "anyOf": [
-            { "required": ["nupkg"] }, { "required": ["projects"] }, { "required": ["assemblies"] }] },
+            { "required": ["nupkg"] }, { "required": ["projects"] }, { "required": ["solution"] },
+            { "required": ["assemblies"] }] },
           "then": { "not": { "anyOf": [{ "required": ["version"] }, { "required": ["source"] }] } }
         },
         {
@@ -131,7 +139,7 @@
         },
         {
           "$comment": "configuration selects among a project's build outputs, and nothing else has any.",
-          "if": { "not": { "required": ["projects"] } },
+          "if": { "not": { "anyOf": [{ "required": ["projects"] }, { "required": ["solution"] }] } },
           "then": { "not": { "required": ["configuration"] } }
         }
       ]
