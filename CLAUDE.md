@@ -64,10 +64,12 @@ versions and publishes independently:
 | `sonar` | `sonar` | Follows SonarSource's releases. |
 | `netanalyzers` | `netanalyzers` | Follows the .NET SDK's analyzer releases. |
 | `stylecop` | `stylecop` | Follows StyleCop's releases. |
+| — | `cataloggen` | **No train.** The generator ships nothing, so it moves no version. |
 
 This is why `commit-lint` **requires a scope on `feat` and `fix`**: an unscoped
 one matches no train and is silently dropped from the release notes and the
-changelog. The full table, with the `analyzers` / `netanalyzers` distinction, is
+changelog. `cataloggen` is the deliberate exception — it matches no train on
+purpose, because the generator ships nothing to version. The full table, with the `analyzers` / `netanalyzers` distinction, is
 in [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 Two rules follow, and both are checked on every pull request by the release
@@ -147,7 +149,7 @@ essentials, inlined so they hold even if `AGENTS.md` is not read:
 * PR titles, descriptions, commits, and branch names must be written in English.
 * Write every commit message per [`CONTRIBUTING.md`](CONTRIBUTING.md):
   Conventional Commits, a closed type list, the scopes
-  `analyzers, cli, core, netanalyzers, sonar, stylecop, testing`, an imperative
+  `analyzers, cataloggen, cli, core, netanalyzers, sonar, stylecop, testing`, an imperative
   header within 72 characters, and `Refs: #NN` in a footer when a GitHub issue
   exists (issue-closing keywords belong in the PR description, not the commit).
 * Write every pull request title per [`CONTRIBUTING.md`](CONTRIBUTING.md): name

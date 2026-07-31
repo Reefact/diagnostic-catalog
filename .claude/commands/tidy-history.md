@@ -50,7 +50,7 @@ If something is flagged, show me a plan as a table — for each commit:
 keep / squash-into / reword-to / drop / reorder — plus the resulting
 `git log --oneline`, every rewritten header conforming to CONTRIBUTING.md
 (`<type>[(scope)][!]: <imperative, lowercase, no trailing period, ≤72 chars>`,
-scope from `analyzers, cli, core, netanalyzers, sonar, stylecop, testing`). Then **ask
+scope from `analyzers, cataloggen, cli, core, netanalyzers, sonar, stylecop, testing`). Then **ask
 me to approve.** Run no history-rewriting command before I say go.
 
 ## 4 — Rewrite (only after I approve, only while the branch is yours alone)

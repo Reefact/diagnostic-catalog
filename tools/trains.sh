@@ -36,7 +36,10 @@
 # Row format (pipe-separated, no spaces around the pipes except inside the label):
 #   <id>|<tag-prefix>|<scopes csv>|<package label>
 # Keep the scopes a subset of the closed SCOPES list in
-# tools/commit-lint/lint-commit-message.sh.
+# tools/commit-lint/lint-commit-message.sh. The reverse does NOT hold: a scope may
+# belong to no train at all. `cataloggen` is one, deliberately — the generator ships
+# nothing, so a commit scoped to it must move no published version. A scope missing
+# from every row here is therefore not evidence of a mistake.
 trains_rows() {
   cat <<'ROWS'
 lib|lib-v|analyzers,cli,core,testing|the DiagnosticCatalog foundation, its analyzers, its CLI and its test-support package
