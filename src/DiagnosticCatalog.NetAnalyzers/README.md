@@ -52,8 +52,10 @@ public static class CA1822
 }
 ```
 
-Rule titles and descriptions are not redistributed — they are localised resources
-belonging to the upstream project. The help link takes you to them.
+Each rule carries its upstream title as a documentation comment, read from the
+descriptor in the invariant culture so the generated file does not depend on the machine
+that produced it. Rule descriptions are not redistributed — the help link takes you to
+them.
 
 ## A note on versions
 

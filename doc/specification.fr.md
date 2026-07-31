@@ -495,8 +495,9 @@ catalogue autonome doit s'en tenir aux chaînes.
 des resx) sort du modèle `const`. Le catalogue couvre l'axe identifiant/catégorie ;
 les fichiers de ressources restent le bon outil pour le texte traduit.
 
-Pour les catalogues tiers, préférer les commentaires de documentation XML aux
-constantes `Title` et `Description` — voir §25.4 pour la raison de licence.
+Pour les catalogues tiers, le titre amont est porté par un commentaire de
+documentation XML plutôt que par une constante `Title`, et aucune constante
+`Description` n'est émise — voir §14.1 et l'ADR-0014.
 
 ### 7.6 Provenance d'un catalogue
 
@@ -1214,12 +1215,17 @@ Règles du générateur, toutes porteuses :
    avec l'identifiant et le motif ; rien n'est écarté en silence. Pour
    `SonarAnalyzer.CSharp 10.31.0.145097`, cela représente neuf entrées `S9999-*`,
    qui sont des canaux internes de métriques et de télémétrie.
-4. **Ne livrer que les identifiants et les catégories.** Ce sont des faits
-   portant sur le logiciel d'un tiers. Les titres et descriptions de règles sont
-   le contenu rédigé par cet éditeur sous sa propre licence et ne doivent pas
-   être redistribués dans le package. (Cela contraint ce qu'un *package* livre ;
-   citer un titre de règle dans la documentation pour illustrer un format, comme
-   le fait le §3.3, est une autre affaire.)
+4. **Livrer les identifiants, les catégories et les titres.** Les deux premiers
+   sont des faits portant sur le logiciel d'un tiers ; le titre est la phrase de
+   cet éditeur nommant ce sur quoi la règle porte, portée par le commentaire de
+   documentation de la règle, parce qu'un identifiant répété ne peut pas dire de
+   quoi une règle parle. Les descriptions et les formats de message sont la
+   documentation de cet éditeur et ne doivent pas être redistribués dans le
+   package (ADR-0014). Un format de message n'est d'ailleurs pas une valeur unique
+   par règle : 203 des 456 règles Sonar portent des emplacements remplis au moment
+   de l'analyse et 37 ne portent rien d'autre, si bien qu'en publier un
+   reviendrait à inventer une phrase qu'aucun descriptor ne déclare, ce que le
+   point 5 interdit.
 5. **Ne pas synthétiser de valeurs non lues.** `SonarAnalyzer.CSharp` renseigne
    `HelpLinkUri` sur 0 de ses 465 descriptors : le catalogue généré ne porte donc
    aucun lien d'aide, plutôt que des liens assemblés depuis un motif d'URL

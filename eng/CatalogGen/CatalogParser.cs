@@ -25,9 +25,13 @@ internal static class CatalogParser
             .ToDictionary(m => m.Groups[1].Value, m => Naming.Unescape(m.Groups[2].Value), StringComparer.Ordinal);
 
         SortedDictionary<string, RuleInfo> rules = new(StringComparer.Ordinal);
+        // The documentation comment is captured rather than skipped, because it is where the rule's
+        // title is written and the title has to survive a round trip: the emitter reproduces this
+        // file from what this method returns, and a title it could not read back would be reported
+        // as changed on every single run.
         MatchCollection blocks = Regex.Matches(
             text,
-            @"^(?<obsolete>    \[Obsolete\([^\n]*\)\]\n)?    \[DiagnosticRule\]\n    public static class (?<id>\w+)\n    \{\n(?<body>(?:.*\n)*?)    \}$",
+            @"^(?<doc>(?:    ///[^\n]*\n)*)(?<obsolete>    \[Obsolete\([^\n]*\)\]\n)?    \[DiagnosticRule\]\n    public static class (?<id>\w+)\n    \{\n(?<body>(?:.*\n)*?)    \}$",
             RegexOptions.Multiline,
             RegexLimits.MatchTimeout);
 
@@ -42,7 +46,8 @@ internal static class CatalogParser
             Match help = Regex.Match(body, @"public const string HelpLinkUri = ""((?:[^""\\]|\\.)*)"";",
                                      RegexOptions.None, RegexLimits.MatchTimeout);
             rules[id] = new RuleInfo(category, help.Success ? Naming.Unescape(help.Groups[1].Value) : string.Empty,
-                                     Retired: block["obsolete"].Success);
+                                     Retired: block["obsolete"].Success,
+                                     Title: TitleFrom(block["doc"].Value, id, category));
         }
 
         // Inverted, because the emitter asks the question the other way round: given a category's
@@ -57,6 +62,22 @@ internal static class CatalogParser
         return new Previous(sourceVersion, rules, categoryNames);
 
         static string packageOrEmpty(string v) => string.IsNullOrEmpty(v) ? "" : $"{v}, ";
+    }
+
+    // The title as the previous run wrote it, or empty when that run wrote none. Two shapes yield
+    // empty, and both are real: a catalogue generated before titles were emitted at all, whose
+    // summary spans several lines and matches nothing here; and a rule the emitter fell back on,
+    // whose summary is the identifier-and-category sentence rather than a title.
+    private static string TitleFrom(string doc, string id, string category)
+    {
+        Match summary = Regex.Match(doc, @"^    /// <summary>(?<text>.*)</summary>$",
+                                    RegexOptions.Multiline, RegexLimits.MatchTimeout);
+        if (!summary.Success) return string.Empty;
+
+        string text = summary.Groups["text"].Value;
+        return string.Equals(text, CatalogEmitter.SummaryWithoutTitle(id, category), StringComparison.Ordinal)
+            ? string.Empty
+            : Naming.UnescapeXml(text);
     }
 }
 

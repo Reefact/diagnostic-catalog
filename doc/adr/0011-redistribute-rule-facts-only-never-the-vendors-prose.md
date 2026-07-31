@@ -1,6 +1,6 @@
 # ADR-0011 | Redistribute rule facts only, never the vendor's rule prose
 
-**Status:** Accepted
+**Status:** Superseded by [ADR-0014](0014-ship-the-vendors-rule-title-as-a-catalogues-documentation.md)
 **Proposed:** 2026-07-30
 **Accepted:** 2026-07-30
 **Decision Makers:** Reefact
