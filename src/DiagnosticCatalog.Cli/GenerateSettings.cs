@@ -35,6 +35,14 @@ internal sealed class GenerateSettings : CommandSettings
     [DefaultValue("latest")]
     public string PackageVersion { get; init; } = "latest";
 
+    [CommandOption("--source <NAME-OR-URL>")]
+    [Description("Which configured feed to read --package from. Defaults to every enabled source in NuGet.config.")]
+    public string? Source { get; init; }
+
+    [CommandOption("--nupkg <PATH>")]
+    [Description("A .nupkg already on disk. Its .nuspec names the source unless you say otherwise.")]
+    public string? Nupkg { get; init; }
+
     [CommandOption("--assembly <PATH>")]
     [Description("An analyzer assembly already on disk. Repeat to read several together.")]
     public string[] Assemblies { get; init; } = [];
@@ -57,11 +65,11 @@ internal sealed class GenerateSettings : CommandSettings
     public string Language { get; init; } = "cs";
 
     [CommandOption("--source-name <NAME>")]
-    [Description("What to record as the source. Defaults to the first assembly's name. Only with --assembly.")]
+    [Description("What to record as the source. Defaults to the first assembly's name, or the package's own id.")]
     public string? SourceName { get; init; }
 
     [CommandOption("--source-version <VERSION>")]
-    [Description("What to record as the source's release. Defaults to the first assembly's version. Only with --assembly.")]
+    [Description("What to record as the source's release. Defaults to the assembly's version, or the package's own.")]
     public string? SourceVersion { get; init; }
 
     [CommandOption("--date <yyyy-MM-dd>")]
@@ -77,26 +85,30 @@ internal sealed class GenerateSettings : CommandSettings
     /// </summary>
     public override ValidationResult Validate()
     {
-        bool fromPackage = Package is not null;
-        bool fromAssemblies = Assemblies.Length > 0;
+        List<string> named = [];
+        if (Package is not null) named.Add("--package");
+        if (Nupkg is not null) named.Add("--nupkg");
+        if (Assemblies.Length > 0) named.Add("--assembly");
 
         if (Manifest is not null)
         {
             // A manifest carries every source and destination itself, so anything naming one
             // alongside it is a command line that contradicts its own input.
-            return fromPackage || fromAssemblies
-                ? ValidationResult.Error("--manifest already names its sources; drop --package and --assembly.")
+            return named.Count > 0
+                ? ValidationResult.Error($"--manifest already names its sources; drop {string.Join(" and ", named)}.")
                 : ValidationResult.Success();
         }
 
-        if (fromPackage && fromAssemblies)
+        // Refused rather than resolved by precedence: each names a source, and picking one silently
+        // would generate a catalogue from something the caller did not ask for.
+        if (named.Count > 1)
         {
-            return ValidationResult.Error("--package and --assembly name two different sources; give one.");
+            return ValidationResult.Error($"{string.Join(" and ", named)} name different sources; give one.");
         }
 
-        if (!fromPackage && !fromAssemblies)
+        if (named.Count == 0)
         {
-            return ValidationResult.Error("nothing to read: give --package, --assembly or --manifest.");
+            return ValidationResult.Error("nothing to read: give --package, --nupkg, --assembly or --manifest.");
         }
 
         // Checked apart from the source so the message says which half is missing.
@@ -111,11 +123,19 @@ internal sealed class GenerateSettings : CommandSettings
 
         // Reported rather than ignored: a caller who passed one of these with --package believes it
         // took effect, and a catalogue whose recorded source silently came from somewhere else is
-        // exactly the drift a recorded source exists to prevent.
-        if (fromPackage && (SourceName is not null || SourceVersion is not null))
+        // exactly the drift a recorded source exists to prevent. A .nupkg on disk accepts them —
+        // its .nuspec is only a default there, and a file can have been renamed or rebuilt.
+        if (Package is not null && (SourceName is not null || SourceVersion is not null))
         {
             return ValidationResult.Error(
-                "--source-name and --source-version describe assemblies on disk; a package states its own.");
+                "--source-name and --source-version describe a source on disk; a feed states its own.");
+        }
+
+        // Same reason, the other way round: a caller who names a feed for a source that is not a
+        // feed believes it took effect. Nothing would be read from it, and nothing would say so.
+        if (Source is not null && Package is null)
+        {
+            return ValidationResult.Error("--source selects a feed for --package; it means nothing for the others.");
         }
 
         return ValidationResult.Success();

@@ -40,6 +40,37 @@ dcat generate \
 release) or `latest-any` (including prereleases). `--version` is left to mean
 what it means everywhere else: which version of `dcat` you are running.
 
+**Your sources, not ours.** `dcat` resolves through NuGet's own client, so it
+reads the `NuGet.config` hierarchy exactly as `dotnet restore` does — machine,
+user, and every folder up from where you run it — and honours the credentials
+configured there, including the encrypted and provider-supplied kinds. A package
+on a private feed works with no extra flag. Add `--source <name-or-url>` to pin
+one feed when several are configured:
+
+```bash
+dcat generate --package Vendor.Analyzers --source maison \
+  --namespace My.Catalog --container VendorRule \
+  --output src/My.Catalog/VendorRules.g.cs
+```
+
+## Generating from a package on disk
+
+A `.nupkg` you built, fetched by hand, or keep on a share — anything that never
+came through a feed this tool can reach:
+
+```bash
+dcat generate \
+  --nupkg packages/Vendor.Analyzers.3.1.4.nupkg \
+  --namespace My.Catalog --container VendorRule \
+  --output src/My.Catalog/VendorRules.g.cs
+```
+
+The package names itself: `dcat` reads the id and version out of its `.nuspec`,
+not out of the file name — a renamed file must not quietly rewrite what a
+catalogue records as the release it was generated from. Pass `--source-name` or
+`--source-version` when you know better, which happens when a package is rebuilt
+without its version moving.
+
 ## Generating from your own analyzers
 
 Point it at assemblies you have already built. Repeat `--assembly` when a

@@ -1,142 +1,159 @@
-using System.IO.Compression;
-using System.Text.Json;
+using NuGet.Common;
+using NuGet.Configuration;
+using NuGet.Protocol;
+using NuGet.Protocol.Core.Types;
+using NuGet.Versioning;
 
 namespace CatalogGen;
 
 // Acquisition from a NuGet feed: resolve the release, fetch the package, and hand the reader the
 // analyzer assemblies it carries for one language.
 //
-// Everything here is a property of how a NUGET PACKAGE is laid out — the flat-container URLs, the
-// "latest means latest stable" policy, the analyzers/<lang>/ folder convention. None of it is a
-// property of reading descriptors, which is why it lives on this side of AnalyzerAssemblySet and
-// why a second acquisition strategy adds a file here rather than a second reader.
+// It goes through NuGet's own client rather than calling api.nuget.org by hand, and the reason is
+// not tidiness. A hardcoded flat-container URL reaches exactly one feed, so a shop whose analyzers
+// live on a private one could not use this mode at all — which hollows out the argument for
+// publishing the tool in the first place (ADR-0017). Sources, the NuGet.config hierarchy above the
+// working directory, and credentials are what the client library is for; the encrypted and
+// provider-supplied kinds of credential cannot be read by hand at all.
+//
+// The layout question a package then asks — which assemblies are this language's analyzers — is the
+// same one a local .nupkg asks, and lives in NupkgReader rather than here.
 internal static class NuGetPackageSource
 {
-    private const string FlatContainer = "https://api.nuget.org/v3-flatcontainer";
-
     internal static async Task<AnalyzerAssemblySet?> AcquireAsync(
-        string packageId, string requestedVersion, string language, string workDir, HttpClient http,
+        string packageId, string requestedVersion, string language, string workDir, string? requestedSource,
         CancellationToken cancellation = default)
     {
-        string? version = await ResolveVersionAsync(packageId, requestedVersion, http, cancellation);
-        if (version is null) return null;
+        IReadOnlyList<SourceRepository>? repositories = Repositories(requestedSource);
+        if (repositories is null) return null;
+
+        using SourceCacheContext cache = new();
+        ILogger log = NullLogger.Instance;
+
+        Resolved? resolved = await ResolveAsync(packageId, requestedVersion, repositories, cache, log, cancellation);
+        if (resolved is null) return null;
 
         string nupkg = Path.Combine(workDir, "package.nupkg");
-        string url = $"{FlatContainer}/{packageId.ToLowerInvariant()}/{version}/" +
-                     $"{packageId.ToLowerInvariant()}.{version}.nupkg";
-        Console.WriteLine($"downloading {url}");
-        await using (Stream s = await http.GetStreamAsync(url, cancellation))
-        await using (FileStream f = File.Create(nupkg))
-            await s.CopyToAsync(f, cancellation);
-
-        using ZipArchive zip = ZipFile.OpenRead(nupkg);
-        List<ZipArchiveEntry>? entries = SelectAnalyzerAssemblies(zip, packageId, version, language);
-        if (entries is null) return null;
-
-        List<string> paths = [];
-        foreach (ZipArchiveEntry e in entries)
+        Console.WriteLine($"downloading {packageId} {resolved.Version} from {resolved.Repository.PackageSource.Name}");
+        await using (FileStream file = File.Create(nupkg))
         {
-            string path = Path.Combine(workDir, Path.GetFileName(e.FullName));
-            e.ExtractToFile(path, overwrite: true);
-            paths.Add(path);
+            FindPackageByIdResource finder =
+                await resolved.Repository.GetResourceAsync<FindPackageByIdResource>(cancellation);
+            bool copied = await finder.CopyNupkgToStreamAsync(
+                packageId, resolved.Version, file, cache, log, cancellation);
+            if (!copied)
+            {
+                Console.Error.WriteLine($"{packageId} {resolved.Version} could not be downloaded");
+
+                return null;
+            }
         }
 
-        // Ordinal, and distinct. Two entries whose leaf names collide extract onto one file, so the
-        // list would otherwise name it twice and the reader would count its analyzer types twice.
-        //
-        // The order matters for a reason worth stating: when two assemblies declare the same rule id,
-        // the last one read wins. Until this stage was extracted the assemblies were re-enumerated
-        // with Directory.GetFiles, whose order .NET explicitly does not guarantee — so which
-        // descriptor won could depend on the filesystem underneath. A generated catalogue is required
-        // to be the same bytes on a maintainer's laptop and on the nightly runner, so the order it is
-        // read in has to be a property of the package, not of the disk.
-        return new AnalyzerAssemblySet(
-            [.. paths.Distinct(StringComparer.Ordinal).OrderBy(p => p, StringComparer.Ordinal)],
-            packageId,
-            version);
+        IReadOnlyList<string>? paths = NupkgReader.ExtractAnalyzerAssemblies(
+            nupkg, $"{packageId} {resolved.Version}", workDir, language);
+
+        return paths is null
+            ? null
+            : new AnalyzerAssemblySet(paths, packageId, resolved.Version.ToNormalizedString());
     }
 
-    // The release to mirror: the requested one, or the newest matching what "latest" is allowed to
-    // mean. Null when the package has none that qualifies.
-    private static async Task<string?> ResolveVersionAsync(
-        string packageId, string requested, HttpClient http, CancellationToken cancellation)
+    // The sources to look in: the one asked for, or every enabled source the machine is configured
+    // with. Settings are loaded from the current directory, so a repository's own NuGet.config —
+    // and every one above it — is honoured exactly as `dotnet restore` would honour it.
+    private static IReadOnlyList<SourceRepository>? Repositories(string? requestedSource)
     {
-        if (requested is not ("latest" or "latest-any")) return requested;
+        ISettings settings = Settings.LoadDefaultSettings(Directory.GetCurrentDirectory());
+        PackageSourceProvider provider = new(settings);
+        List<PackageSource> configured = provider.LoadPackageSources().Where(s => s.IsEnabled).ToList();
 
-        string index = await http.GetStringAsync($"{FlatContainer}/{packageId.ToLowerInvariant()}/index.json",
-                                                 cancellation);
-        List<string> all = JsonDocument.Parse(index)
-            .RootElement.GetProperty("versions").EnumerateArray()
-            .Select(v => v.GetString()!).ToList();
-
-        // "latest" means latest *stable*. A catalogue mirrors a release people actually
-        // consume; resolving to a preview would silently pin the catalogue to one.
-        List<string> candidates = requested == "latest" ? all.Where(v => !v.Contains('-')).ToList() : all;
-        if (candidates.Count == 0)
+        if (requestedSource is not null)
         {
-            // S6966 asks for WriteLineAsync here. Console.WriteLine is a static method with no async
-            // counterpart, while Console.Error is a TextWriter that has one — but both streams are
-            // synchronized writers whose async overloads complete synchronously, so awaiting would
-            // yield to nothing and leave this tool's diagnostics half-async on a technicality of
-            // where the method happens to be declared.
-#pragma warning disable S6966 // Awaitable method should be used
-            Console.Error.WriteLine($"{packageId} has no stable version; use latest-any or an explicit version");
-#pragma warning restore S6966
-            return null;
+            // By name first, because that is what a NuGet.config gives a private feed and what a
+            // caller will have to hand; a URL is accepted too, and anything that matches neither is
+            // taken as a URL rather than refused — an unreachable one fails with its own message.
+            PackageSource source =
+                configured.FirstOrDefault(s => string.Equals(s.Name, requestedSource, StringComparison.OrdinalIgnoreCase))
+                ?? configured.FirstOrDefault(s => string.Equals(s.Source, requestedSource, StringComparison.OrdinalIgnoreCase))
+                ?? new PackageSource(requestedSource);
+
+            Console.WriteLine($"source: {source.Name} ({source.Source})");
+
+            return [Repository.Factory.GetCoreV3(source)];
         }
 
-        string resolved = candidates[^1];
-        Console.WriteLine($"resolved {packageId} => {resolved}" +
-                          (resolved == all[^1] ? "" : $" (latest overall is {all[^1]}, a prerelease)"));
-
-        return resolved;
-    }
-
-    // The assemblies in the package that carry this language's descriptors, or null when the package
-    // carries none at all — which is a failure, not an empty result.
-    private static List<ZipArchiveEntry>? SelectAnalyzerAssemblies(
-        ZipArchive zip, string packageId, string version, string language)
-    {
-        // Satellite assemblies hold localized rule text, never descriptors, and they sit in
-        // culture-named folders that would otherwise be mistaken for language folders — note
-        // that "cs" is both C# and Czech.
-        List<ZipArchiveEntry> candidateDlls = zip.Entries
-            .Where(e => e.FullName.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
-            .Where(e => !e.FullName.EndsWith(".resources.dll", StringComparison.OrdinalIgnoreCase))
-            .Where(e => e.FullName.StartsWith("analyzers/", StringComparison.OrdinalIgnoreCase))
-            .ToList();
-
-        if (candidateDlls.Count == 0)
+        if (configured.Count == 0)
         {
             Console.Error.WriteLine(
-                $"no analyzer assemblies under analyzers/ in {packageId} {version}. " +
-                "If this is a metapackage, point --package at the one that actually carries them.");
+                "no enabled package source is configured; name one with --source or add it to NuGet.config");
+
             return null;
         }
 
-        // Layouts differ, and the difference matters. Sonar ships one assembly straight under
-        // analyzers/. StyleCop uses analyzers/dotnet/cs/. Microsoft.CodeAnalysis.NetAnalyzers
-        // uses BOTH: the language-specific analyzers live under cs/ and vb/, but the bulk of the
-        // rules sit in a language-neutral assembly at analyzers/dotnet/.
-        //
-        // So the rule is to exclude the OTHER languages, never to keep only the requested one:
-        // keeping only .../cs/ would silently drop most of the CA rules, and keeping everything
-        // would silently absorb Visual Basic rules into a C# catalogue. Both failures are
-        // invisible in the output — you would just get a catalogue with the wrong rules in it.
-        string[] knownLanguages = ["cs", "vb", "fs"];
-        string[] otherLanguages = knownLanguages
-            .Where(l => !string.Equals(l, language, StringComparison.OrdinalIgnoreCase))
-            .ToArray();
+        Console.WriteLine($"sources: {string.Join(", ", configured.Select(s => s.Name))}");
 
-        List<ZipArchiveEntry> excluded = candidateDlls
-            .Where(e => otherLanguages.Contains(Naming.ParentDir(e.FullName), StringComparer.OrdinalIgnoreCase))
-            .ToList();
-        List<ZipArchiveEntry> entries = candidateDlls.Except(excluded).ToList();
-
-        Console.WriteLine($"analyzer assemblies for language '{language}': {entries.Count}");
-        foreach (ZipArchiveEntry e in entries) Console.WriteLine($"  + {e.FullName}");
-        foreach (ZipArchiveEntry e in excluded) Console.WriteLine($"  - {e.FullName} (other language)");
-
-        return entries;
+        return [.. configured.Select(Repository.Factory.GetCoreV3)];
     }
+
+    // The release to mirror, and the source that has it. Null when no source offers one that
+    // qualifies — which is a failure rather than an empty result.
+    private static async Task<Resolved?> ResolveAsync(
+        string packageId, string requested, IReadOnlyList<SourceRepository> repositories,
+        SourceCacheContext cache, ILogger log, CancellationToken cancellation)
+    {
+        bool anyRelease = requested is "latest" or "latest-any";
+        NuGetVersion? pinned = anyRelease ? null : NuGetVersion.Parse(requested);
+
+        Resolved? best = null;
+        NuGetVersion? newestOverall = null;
+        foreach (SourceRepository repository in repositories)
+        {
+            FindPackageByIdResource finder = await repository.GetResourceAsync<FindPackageByIdResource>(cancellation);
+            IReadOnlyList<NuGetVersion> available =
+                [.. await finder.GetAllVersionsAsync(packageId, cache, log, cancellation)];
+            if (available.Count == 0) continue;
+
+            NuGetVersion sourceNewest = available.Max()!;
+            if (newestOverall is null || sourceNewest > newestOverall) newestOverall = sourceNewest;
+
+            // "latest" means latest *stable*. A catalogue mirrors a release people actually
+            // consume; resolving to a preview would silently pin the catalogue to one.
+            NuGetVersion? candidate = pinned is not null
+                ? available.FirstOrDefault(v => v == pinned)
+                : (requested == "latest" ? available.Where(v => !v.IsPrerelease) : available).Max();
+
+            // Ordered by NuGetVersion rather than by position in the feed's answer: SemVer ordering
+            // is not string ordering, and taking the last element of a list was only ever correct
+            // because one feed happened to return it sorted.
+            if (candidate is not null && (best is null || candidate > best.Version))
+                best = new Resolved(candidate, repository);
+        }
+
+        if (best is null)
+        {
+            // Three different failures, and telling them apart is the whole value of the message.
+            // "Not on this source at all" is the one a private feed makes common, and answering it
+            // with "use latest-any" — which cannot help, since there is nothing to fall back to —
+            // sends the reader to change a switch instead of looking at their sources.
+            Console.Error.WriteLine(
+                newestOverall is null
+                    ? $"{packageId} was not found on any configured source"
+                    : pinned is not null
+                        ? $"{packageId} {requested} was not found on any configured source; " +
+                          $"the newest available is {newestOverall.ToNormalizedString()}"
+                        : $"{packageId} has no stable version on any configured source " +
+                          $"(newest is {newestOverall.ToNormalizedString()}, a prerelease); " +
+                          "use latest-any or an explicit version");
+
+            return null;
+        }
+
+        Console.WriteLine($"resolved {packageId} => {best.Version.ToNormalizedString()}" +
+                          (newestOverall is null || best.Version == newestOverall
+                               ? ""
+                               : $" (newest overall is {newestOverall.ToNormalizedString()}, a prerelease)"));
+
+        return best;
+    }
+
+    private sealed record Resolved(NuGetVersion Version, SourceRepository Repository);
 }
