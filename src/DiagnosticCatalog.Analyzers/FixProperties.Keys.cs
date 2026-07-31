@@ -34,4 +34,22 @@ internal static partial class FixProperties
     /// outside any rule looks like a member access too, so the analyzer says.
     /// </remarks>
     internal const string Slot = "Slot";
+
+    /// <summary>Keep the category's rule and correct the identifier (§12.1).</summary>
+    internal const string AlignOnCategory = "AlignOnCategory";
+
+    /// <summary>Keep the identifier's rule and correct the category (§12.1).</summary>
+    internal const string AlignOnId = "AlignOnId";
+
+    /// <summary>
+    /// An incoherent pair carries one reference per correction, so the keys are prefixed by which.
+    /// </summary>
+    /// <remarks>
+    /// Both are always present. §12.1 forbids the fix from guessing which rule was intended, so the
+    /// analyzer cannot send one of them and call it the answer.
+    /// </remarks>
+    internal static string ReferenceKey(string alignment) => alignment + "." + Reference;
+
+    /// <summary>The namespace half of <see cref="ReferenceKey"/>.</summary>
+    internal static string NamespaceKey(string alignment) => alignment + "." + Namespace;
 }
