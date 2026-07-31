@@ -1263,10 +1263,12 @@ Règles du générateur, toutes porteuses :
 ### 14.2 Versionnement d'un catalogue généré
 
 Comme le §7.6 enregistre la version amont exacte dans les métadonnées, la version
-du package n'a pas à l'encoder et les deux peuvent évoluer indépendamment — une
-correction de génération n'a pas besoin d'une publication amont à laquelle
-s'accrocher. Quel que soit le schéma retenu, une constante n'est jamais supprimée
-(§23.1) : une règle retirée en amont devient `[Obsolete]`.
+du package n'a pas à l'encoder — et ne l'encode pas : la version d'un catalogue
+évolue sur sa propre ligne SemVer, incrémentée depuis ce qui a changé dans le
+catalogue (ADR-0015). Une correction de génération n'a donc besoin d'aucune
+publication amont à laquelle s'accrocher, et une publication amont qui ne change
+aucune règle publiée ne déplace aucune version. Dans les deux cas, une constante
+n'est jamais supprimée (§23.1) : une règle retirée en amont devient `[Obsolete]`.
 
 La synchronisation avec l'amont est automatisée (§14.3).
 
@@ -1941,4 +1943,4 @@ sources, non restituée de mémoire. À re-vérifier avant toute révision majeu
 | B4 | Les alias et `using static` valent-ils la complexité d'analyse, compte tenu du §10.5 ? | Résolus, documentés, non promus. |
 | B5 | L'analyzer Roslyn d'ILLink (`IL2xxx` à la compilation) partage-t-il le décodeur vérifié en A4 ? | Supposé équivalent ; à vérifier avant d'annoncer une couverture complète d'`UnconditionalSuppressMessage`. |
 | B6 | Signer l'assembly `DiagnosticCatalog` (nom fort) ? Signer sert les consommateurs .NET Framework signés pour lesquels netstandard2.0 a été choisi ; ne pas signer évite la gestion de clé. Irréversible dans les deux sens après publication (§20). | Non signée aujourd'hui. À trancher avant la première publication. |
-| B7 | La version du package `DiagnosticCatalog.Sonar` doit-elle suivre `SonarAnalyzer.CSharp`, ou évoluer sur sa propre ligne ? Le §7.6 enregistre de toute façon la version amont dans les métadonnées. | Ligne propre pour l'instant ; à trancher avant la première publication. |
+| B7 | ~~La version du package `DiagnosticCatalog.Sonar` doit-elle suivre `SonarAnalyzer.CSharp`, ou évoluer sur sa propre ligne ?~~ | **Tranché** — sa propre ligne, pour chaque catalogue : [ADR-0015](adr/0015-a-catalogues-version-runs-on-its-own-line.md). |
