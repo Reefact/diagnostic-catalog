@@ -733,6 +733,13 @@ signaler qu'une règle dont l'`Id` ne correspond pas à `IL####` est utilisée d
 `UnconditionalSuppressMessage` (`DCAT0009`) — un no-op silencieux qu'aucun autre
 outil ne rapporte aujourd'hui.
 
+**Deux décodeurs lisent cet attribut, et celui cité plus haut n'est que celui du
+linker.** L'analyzer de trim à la compilation — la source des avertissements
+`IL2xxx` qu'on voit pendant un build ordinaire — applique sa propre règle :
+tronquer au premier deux-points, puis comparer l'identifiant exactement. Mesuré
+plutôt que supposé, et la divergence tient en une seule forme (A13). Le §11.9
+indique lequel des deux `DCAT0009` reflète, et ce que cela laisse de côté.
+
 ### 9.2 Emplacements
 
 Les suppressions peuvent être placées sur un type, une méthode, une propriété,
@@ -999,6 +1006,23 @@ correspondant serait autrement submergé.
 Signalé lorsqu'une règle dont l'`Id` ne correspond pas à `IL####` est utilisée
 dans `UnconditionalSuppressMessageAttribute` (§9.1). La suppression est un no-op
 silencieux qu'aucun autre outil ne rapporte.
+
+**L'attribut est lu par deux décodeurs différents, et ce ne sont pas les
+mêmes** (A13). Le linker le lit dans l'assembly compilée et accepte tout ce dont
+les caractères 3 à 6 s'analysent comme un nombre ; l'analyzer de trim à la
+compilation tronque au premier deux-points puis compare l'identifiant
+exactement. Ils s'accordent sur tout ce qu'un catalogue généré peut produire —
+un `Id` valant `nameof(IL2026)` vaut `IL2026` — et divergent sur une seule
+forme : `IL####` suivi d'autre chose qu'un deux-points. `IL20265` est honoré par
+le linker comme `IL2026` et ignoré à la compilation.
+
+La vérification reflète le **linker** et reste donc muette sur cette forme. La
+signaler reviendrait à dire « ce n'est pas un identifiant IL », ce qui est faux :
+c'en est un, mal formé. La conséquence est bornée et mérite d'être dite — une
+suppression de cette forme fonctionne à la publication et pas à la compilation,
+et `DCAT0009` ne la nomme pas. Elle est inatteignable depuis un catalogue
+généré, et une règle écrite à la main déclarant `Id = "IL20265"` a un problème
+plus grand que ce diagnostic.
 
 ### 11.10 `DCAT0010` — règle référencée mal formée
 
@@ -1963,6 +1987,7 @@ sources, non restituée de mémoire. À re-vérifier avant toute révision majeu
 | A9 | `SonarAnalyzer.CSharp 10.31.0.145097` déclare 465 descriptors répartis sur 448 types d'analyzers. Les catégories sont des paires `{Sévérité} {Type}` — 13 valeurs distinctes, p. ex. `S1144` = `"Major Code Smell"`. Neuf entrées `S9999-*` portent une catégorie vide, et `HelpLinkUri` est renseigné sur **0** des 465. | Lu depuis le `DiagnosticAnalyzer.SupportedDiagnostics` du package lui-même par `eng/CatalogGen` (§14.1) |
 | A10 | Une `const string` initialisée depuis une autre `const string` reste une constante de compilation : elle est acceptée comme argument d'attribut et se replie vers le littéral dans les métadonnées. Vérifié par réflexion sur un `[SuppressMessage]` dont la catégorie passait par `SonarCategory.MajorCodeSmell` — `Category` relu à `"Major Code Smell"`. | Test de compilation + réflexion (§7.7) |
 | A12 | Des règles sont bel et bien retirées en amont : `CA2109` et `CA2229` sont déclarées par `Microsoft.CodeAnalysis.NetAnalyzers 6.0.0` et plus par `10.0.302`. Reportées en `[Obsolete]`, un consommateur qui en référence encore une obtient `CS0618` nommant la règle, plutôt qu'une erreur dure `CS0117` de membre supprimé. | Régénération entre les deux versions, plus compilation de la forme consommatrice (§14.1) |
+| A13 | L'analyzer de trim **à la compilation** n'utilise **pas** le décodeur du linker d'A4. Il tronque le `checkId` au premier deux-points, puis exige une correspondance exacte et sensible à la casse avec l'identifiant du diagnostic. Ainsi `IL2026:FriendlyName`, `IL2026:` et `IL2026:a:b` sont honorés, tandis qu'`IL20265` — qu'A4 accepte comme `IL2026` — est ignoré, tout comme `il2026` et `" IL2026"`. Les deux chemins ignorent la catégorie, en accord avec A2 et A4. | Compilation avec `EnableTrimAnalyzer`, en supprimant un vrai `IL2026` une forme d'identifiant à la fois et en observant quels avertissements subsistent (§9.1) |
 | A11 | `Microsoft.CodeAnalysis.NetAnalyzers 10.0.302` déclare 318 descriptors sur 10 catégories, tous avec liens d'aide, et répartit ses analyzers entre une assembly neutre à `analyzers/dotnet/` et des assemblies par langage sous `cs/` et `vb/`. `StyleCop.Analyzers 1.1.118` déclare 193 descriptors sur 8 catégories de la forme `StyleCop.CSharp.*Rules`, tous avec liens d'aide. `StyleCop.Analyzers 1.2.0-beta.556` est un métapackage sans assembly d'analyzer ; les règles vivent dans `StyleCop.Analyzers.Unstable`. | Même méthode qu'en A9 |
 
 ## Annexe B — Décisions ouvertes
@@ -1973,6 +1998,6 @@ sources, non restituée de mémoire. À re-vérifier avant toute révision majeu
 | B2 | Le préfixe `DCAT` est-il libre ? Les préfixes d'analyzers communautaires ne sont pas enregistrés centralement. | À vérifier contre les préfixes connus avant la 1.0. |
 | B3 | Le repli purement structurel du §7.2 (sans attribut) doit-il être activé par défaut ? | Attribut seul pour la 1.0 ; repli structurel documenté mais désactivé. |
 | B4 | Les alias et `using static` valent-ils la complexité d'analyse, compte tenu du §10.5 ? | Résolus, documentés, non promus. |
-| B5 | L'analyzer Roslyn d'ILLink (`IL2xxx` à la compilation) partage-t-il le décodeur vérifié en A4 ? | Supposé équivalent ; à vérifier avant d'annoncer une couverture complète d'`UnconditionalSuppressMessage`. |
+| B5 | ~~L'analyzer Roslyn d'ILLink (`IL2xxx` à la compilation) partage-t-il le décodeur vérifié en A4 ?~~ | **Tranché — non** (A13). Les deux s'accordent sur tout ce qu'un catalogue généré peut produire, et divergent sur une seule forme : `IL####` suivi d'autre chose qu'un deux-points. `DCAT0009` reflète le linker et reste donc muet là-dessus ; voir §11.9. |
 | B6 | ~~Signer l'assembly `DiagnosticCatalog` (nom fort) ?~~ | **Tranché** — non signée, et elle le reste au-delà de la 1.0. Le consommateur d'un catalogue n'est concerné dans aucun sens : il lit des `const`, que le compilateur inline, si bien qu'aucune référence à l'assembly du catalogue n'est émise et que l'application tourne sans lui. Seul est concerné un assembly lui-même signé **et** qui utilise les attributs marqueurs pour déclarer son propre catalogue, et seulement par un `CS8002` — un avertissement, sur n'importe quel framework cible, ce n'est pas une affaire .NET Framework. Ce n'est pas le public premier de cette bibliothèque. |
 | B7 | ~~La version du package `DiagnosticCatalog.Sonar` doit-elle suivre `SonarAnalyzer.CSharp`, ou évoluer sur sa propre ligne ?~~ | **Tranché** — sa propre ligne, pour chaque catalogue : [ADR-0015](adr/0015-a-catalogues-version-runs-on-its-own-line.md). |
