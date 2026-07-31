@@ -4,3 +4,8 @@ DiagnosticCatalog.CodeFixes.UseCatalogReferenceCodeFixProvider.UseCatalogReferen
 override DiagnosticCatalog.CodeFixes.UseCatalogReferenceCodeFixProvider.FixableDiagnosticIds.get -> System.Collections.Immutable.ImmutableArray<string!>
 override DiagnosticCatalog.CodeFixes.UseCatalogReferenceCodeFixProvider.GetFixAllProvider() -> Microsoft.CodeAnalysis.CodeFixes.FixAllProvider!
 override DiagnosticCatalog.CodeFixes.UseCatalogReferenceCodeFixProvider.RegisterCodeFixesAsync(Microsoft.CodeAnalysis.CodeFixes.CodeFixContext context) -> System.Threading.Tasks.Task!
+DiagnosticCatalog.CodeFixes.CompleteCatalogReferenceCodeFixProvider
+DiagnosticCatalog.CodeFixes.CompleteCatalogReferenceCodeFixProvider.CompleteCatalogReferenceCodeFixProvider() -> void
+override DiagnosticCatalog.CodeFixes.CompleteCatalogReferenceCodeFixProvider.FixableDiagnosticIds.get -> System.Collections.Immutable.ImmutableArray<string!>
+override DiagnosticCatalog.CodeFixes.CompleteCatalogReferenceCodeFixProvider.GetFixAllProvider() -> Microsoft.CodeAnalysis.CodeFixes.FixAllProvider!
+override DiagnosticCatalog.CodeFixes.CompleteCatalogReferenceCodeFixProvider.RegisterCodeFixesAsync(Microsoft.CodeAnalysis.CodeFixes.CodeFixContext context) -> System.Threading.Tasks.Task!

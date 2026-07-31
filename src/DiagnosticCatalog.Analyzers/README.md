@@ -31,6 +31,20 @@ Two behaviours worth knowing before you run it:
 * **When two catalogues describe the same rule, no fix is offered.** The diagnostic still appears, so
   nothing is hidden, but choosing between them is yours to make.
 
+A suppression left half migrated — one reference, one literal — is reported too, and completed from
+the rule the migrated argument already names:
+
+```csharp
+[SuppressMessage(SonarRules.S1144.Category, "S1144", Justification = "kept for reflection")]
+// becomes
+[SuppressMessage(SonarRules.S1144.Category, SonarRules.S1144.Id, Justification = "kept for reflection")]
+```
+
+Only the literal is rewritten; whatever spelling you chose for the other side, an alias included, is
+left alone. And if the literal names something the referenced rule does not — `"S9999"` beside
+`SonarRules.S1144.Category` — you get the diagnostic and no fix. Completing that one would silence a
+different rule than the one silenced today, which is a decision for you and not for a lightbulb.
+
 ## Referencing it
 
 Analysis assemblies must never become runtime dependencies, so reference it privately:
