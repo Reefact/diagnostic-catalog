@@ -1748,8 +1748,10 @@ load, because a Visual Basic analyzer derives from
 The refusal is correct — it is §14.3 declining to emit a catalogue short of the
 rules those types declare — but it means the option promised what the tool could
 not do, so `cs` is now the only value it accepts. Supporting Visual Basic means
-giving the worker that Roslyn, and weighing what it adds to the tool package;
-that is new code, and a decision, not a line of JSON.
+giving the worker that Roslyn, and carrying a second construction path for as
+long as the tool exists. `ADR-0020` decides against it: Visual Basic is closed to
+new language features, so its analyzer population is small and will not grow, and
+every install would pay for it. A settled position, not a deferred task.
 
 ### 25.5 Justification validation
 

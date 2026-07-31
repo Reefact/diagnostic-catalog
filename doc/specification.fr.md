@@ -1806,9 +1806,12 @@ Visual Basic dérivant de `Microsoft.CodeAnalysis.VisualBasic`, que le worker de
 descripteurs n'embarque pas. Le refus est correct — c'est le §14.3 qui décline
 d'émettre un catalogue amputé des règles que ces types déclarent — mais l'option
 promettait ce que l'outil ne savait pas faire, donc `cs` est désormais la seule
-valeur acceptée. Supporter Visual Basic suppose de donner ce Roslyn au worker et
-de peser ce qu'il ajoute au paquet : c'est du code nouveau, et une décision, pas
-une ligne de JSON.
+valeur acceptée. Supporter Visual Basic supposerait de donner ce Roslyn au worker
+et de maintenir un second chemin de construction aussi longtemps que l'outil
+existe. L'`ADR-0020` tranche contre : Visual Basic est fermé aux nouvelles
+fonctionnalités de langage, sa population d'analyzers est donc restreinte et ne
+grandira pas, et chaque installation la paierait. Une position arrêtée, pas une
+tâche différée.
 
 ### 25.5 Validation des justifications
 
