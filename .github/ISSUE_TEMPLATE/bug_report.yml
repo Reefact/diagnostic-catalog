@@ -1,0 +1,77 @@
+name: Bug report
+description: Something behaves differently from what the documentation says.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please write in **English**, like everything else recorded in this repository.
+
+        **Found a security vulnerability?** Do not open an issue —
+        [report it privately](https://github.com/Reefact/diagnostic-catalog/security/advisories/new).
+
+  - type: dropdown
+    id: package
+    attributes:
+      label: Which package?
+      options:
+        - DiagnosticCatalog (the markers)
+        - DiagnosticCatalog.Analyzers (the DCAT diagnostics and code fixes)
+        - DiagnosticCatalog.Sonar
+        - DiagnosticCatalog.NetAnalyzers
+        - DiagnosticCatalog.StyleCop
+        - DiagnosticCatalog.Self
+        - DiagnosticCatalog.Cli (the dcat tool)
+        - Not sure
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Package version
+      description: The version you actually referenced, not the latest one.
+      placeholder: "0.1.0"
+    validations:
+      required: true
+
+  - type: input
+    id: framework
+    attributes:
+      label: Target framework
+      description: >
+        This matters more here than in most libraries: the shipped assemblies target
+        netstandard2.0 and are loaded both by .NET applications and by .NET Framework ones,
+        and the analyzers are loaded by your compiler rather than by your application.
+      placeholder: "net8.0, or net472, or netstandard2.0"
+    validations:
+      required: true
+
+  - type: input
+    id: diagnostic
+    attributes:
+      label: Diagnostic id, if one is involved
+      description: Leave empty if the problem is not about a reported or missing diagnostic.
+      placeholder: "DCAT0006"
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: The smallest code that shows it
+      description: >
+        A rule declaration, a suppression, or both. Complete enough to compile — a fragment
+        that cannot be pasted into a project usually cannot be diagnosed either.
+      render: csharp
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected, and what happened instead
+      description: >
+        For a diagnostic, please say which one you expected and which one you got — including
+        "none". A diagnostic that stays silent when it should speak is the failure this library
+        exists to remove, so it is worth reporting even though nothing looks broken.
+    validations:
+      required: true
