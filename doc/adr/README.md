@@ -197,4 +197,4 @@ Optional supporting material:
 | [ADR-0014](0014-ship-the-vendors-rule-title-as-a-catalogues-documentation.md) | Ship the vendor's rule title as a catalogue's documentation | Accepted |
 | [ADR-0015](0015-a-catalogues-version-runs-on-its-own-line.md) | A catalogue's package version runs on its own line, never the upstream's | Accepted |
 | [ADR-0016](0016-mirror-stylecops-prerelease-line.md) | Mirror StyleCop's prerelease line, not its stale stable release | Accepted |
-| [ADR-0017](0017-publish-the-generator-as-a-cli-on-its-own-release-train.md) | Publish the generator as a CLI, on its own release train | Proposed |
+| [ADR-0017](0017-publish-the-generator-as-a-cli-on-its-own-release-train.md) | Publish the generator as a CLI, on its own release train | Accepted |

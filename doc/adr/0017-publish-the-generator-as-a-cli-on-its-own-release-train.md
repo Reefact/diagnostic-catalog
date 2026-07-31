@@ -1,7 +1,8 @@
 # ADR-0017 | Publish the generator as a CLI, on its own release train
 
-**Status:** Proposed
+**Status:** Accepted
 **Proposed:** 2026-07-31
+**Accepted:** 2026-07-31
 **Decision Makers:** Reefact
 
 ## Context
