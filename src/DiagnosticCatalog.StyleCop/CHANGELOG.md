@@ -29,7 +29,7 @@ _No other change yet._
 earlier version mirrored `StyleCop.Analyzers 1.1.118`. That stable was published in April
 2019 and the project has never left beta since, so the catalogue was describing a release
 almost nobody installs
-([ADR-0016](../../doc/adr/0016-mirror-stylecops-prerelease-line.md), proposed).
+([ADR-0016](../../doc/adr/0016-mirror-stylecops-prerelease-line.md)).
 
 If you are on `1.1.118`, stay on **0.2.0**, the last version to mirror it.
 
