@@ -3,10 +3,11 @@
 //     SonarAnalyzer.CSharp 10.31.0.145097 (language: cs).
 //     Do not edit by hand: rerun the generator.
 //
-//     Only Id, Category and HelpLinkUri are emitted, and only when the descriptor
-//     actually supplies them. All are facts read from the descriptors. Rule titles
-//     and descriptions are the upstream vendor's authored content and are
-//     deliberately not redistributed here.
+//     Only Id, Category, Title and HelpLinkUri are emitted, and only when the
+//     descriptor actually supplies them. A rule's title is reproduced verbatim as its
+//     documentation comment: it is the one sentence that says what the rule is about,
+//     and it is SonarAnalyzer.CSharp's own wording. Rule descriptions and message
+//     formats are the vendor's documentation and are not redistributed here.
 // </auto-generated>
 
 using DiagnosticCatalog;
@@ -14,7 +15,7 @@ using DiagnosticCatalog;
 [assembly: CatalogSource(
     source:        "SonarAnalyzer.CSharp",
     sourceVersion: "10.31.0.145097",
-    generatedOn:   "2026-07-30")]
+    generatedOn:   "2026-07-31")]
 
 namespace DiagnosticCatalog.Sonar;
 
@@ -69,9 +70,7 @@ public static class SonarCategory
 /// </summary>
 public static class SonarRule
 {
-    /// <summary>
-    /// Rule <c>S100</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Methods and properties should be named in PascalCase.</summary>
     [DiagnosticRule]
     public static class S100
     {
@@ -82,9 +81,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1006</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Method overrides should not change parameter defaults.</summary>
     [DiagnosticRule]
     public static class S1006
     {
@@ -95,9 +92,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S101</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Types should be named in PascalCase.</summary>
     [DiagnosticRule]
     public static class S101
     {
@@ -108,9 +103,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S103</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Lines should not be too long.</summary>
     [DiagnosticRule]
     public static class S103
     {
@@ -121,9 +114,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S104</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Files should not have too many lines of code.</summary>
     [DiagnosticRule]
     public static class S104
     {
@@ -134,9 +125,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1048</c>, category <c>Blocker Bug</c>.
-    /// </summary>
+    /// <summary>Finalizers should not throw exceptions.</summary>
     [DiagnosticRule]
     public static class S1048
     {
@@ -147,9 +136,7 @@ public static class SonarRule
         public const string Category = SonarCategory.BlockerBug;
     }
 
-    /// <summary>
-    /// Rule <c>S105</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Tabulation characters should not be used.</summary>
     [DiagnosticRule]
     public static class S105
     {
@@ -160,9 +147,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S106</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Standard outputs should not be used directly to log anything.</summary>
     [DiagnosticRule]
     public static class S106
     {
@@ -173,9 +158,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1066</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Mergeable "if" statements should be combined.</summary>
     [DiagnosticRule]
     public static class S1066
     {
@@ -186,9 +169,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1067</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Expressions should not be too complex.</summary>
     [DiagnosticRule]
     public static class S1067
     {
@@ -199,9 +180,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S107</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Methods should not have too many parameters.</summary>
     [DiagnosticRule]
     public static class S107
     {
@@ -212,9 +191,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1075</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>URIs should not be hardcoded.</summary>
     [DiagnosticRule]
     public static class S1075
     {
@@ -225,9 +202,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S108</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Nested blocks of code should not be left empty.</summary>
     [DiagnosticRule]
     public static class S108
     {
@@ -238,9 +213,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S109</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Magic numbers should not be used.</summary>
     [DiagnosticRule]
     public static class S109
     {
@@ -251,9 +224,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S110</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Inheritance tree of classes should not be too deep.</summary>
     [DiagnosticRule]
     public static class S110
     {
@@ -264,9 +235,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1104</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Fields should not have public accessibility.</summary>
     [DiagnosticRule]
     public static class S1104
     {
@@ -277,9 +246,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1109</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>A close curly brace should be located at the beginning of a line.</summary>
     [DiagnosticRule]
     public static class S1109
     {
@@ -290,9 +257,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1110</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Redundant pairs of parentheses should be removed.</summary>
     [DiagnosticRule]
     public static class S1110
     {
@@ -303,9 +268,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1116</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Empty statements should be removed.</summary>
     [DiagnosticRule]
     public static class S1116
     {
@@ -316,9 +279,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1117</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Local variables should not shadow class fields or properties.</summary>
     [DiagnosticRule]
     public static class S1117
     {
@@ -329,9 +290,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1118</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Utility classes should not have public constructors.</summary>
     [DiagnosticRule]
     public static class S1118
     {
@@ -342,9 +301,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S112</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>General or reserved exceptions should never be thrown.</summary>
     [DiagnosticRule]
     public static class S112
     {
@@ -355,9 +312,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1121</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Assignments should not be made from within sub-expressions.</summary>
     [DiagnosticRule]
     public static class S1121
     {
@@ -368,9 +323,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1123</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>"Obsolete" attributes should include explanations.</summary>
     [DiagnosticRule]
     public static class S1123
     {
@@ -381,9 +334,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1125</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Boolean literals should not be redundant.</summary>
     [DiagnosticRule]
     public static class S1125
     {
@@ -394,9 +345,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1128</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Unnecessary "using" should be removed.</summary>
     [DiagnosticRule]
     public static class S1128
     {
@@ -407,9 +356,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S113</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Files should end with a newline.</summary>
     [DiagnosticRule]
     public static class S113
     {
@@ -420,9 +367,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1133</c>, category <c>Info Code Smell</c>.
-    /// </summary>
+    /// <summary>Deprecated code should be removed.</summary>
     [DiagnosticRule]
     public static class S1133
     {
@@ -433,9 +378,7 @@ public static class SonarRule
         public const string Category = SonarCategory.InfoCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1134</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Track uses of "FIXME" tags.</summary>
     [DiagnosticRule]
     public static class S1134
     {
@@ -446,9 +389,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1135</c>, category <c>Info Code Smell</c>.
-    /// </summary>
+    /// <summary>Track uses of "TODO" tags.</summary>
     [DiagnosticRule]
     public static class S1135
     {
@@ -459,9 +400,7 @@ public static class SonarRule
         public const string Category = SonarCategory.InfoCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1144</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Unused private types or members should be removed.</summary>
     [DiagnosticRule]
     public static class S1144
     {
@@ -472,9 +411,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1147</c>, category <c>Blocker Code Smell</c>.
-    /// </summary>
+    /// <summary>Exit methods should not be called.</summary>
     [DiagnosticRule]
     public static class S1147
     {
@@ -485,9 +422,7 @@ public static class SonarRule
         public const string Category = SonarCategory.BlockerCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1151</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>"switch case" clauses should not have too many lines of code.</summary>
     [DiagnosticRule]
     public static class S1151
     {
@@ -498,9 +433,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1155</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>"Any()" should be used to test for emptiness.</summary>
     [DiagnosticRule]
     public static class S1155
     {
@@ -511,9 +444,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1163</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Exceptions should not be thrown in finally blocks.</summary>
     [DiagnosticRule]
     public static class S1163
     {
@@ -524,9 +455,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1168</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Empty arrays and collections should be returned instead of null.</summary>
     [DiagnosticRule]
     public static class S1168
     {
@@ -537,9 +466,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1172</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Unused method parameters should be removed.</summary>
     [DiagnosticRule]
     public static class S1172
     {
@@ -550,9 +477,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1185</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Overriding members should do more than simply call the same member in the base class.</summary>
     [DiagnosticRule]
     public static class S1185
     {
@@ -563,9 +488,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1186</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Methods should not be empty.</summary>
     [DiagnosticRule]
     public static class S1186
     {
@@ -576,9 +499,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1192</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>String literals should not be duplicated.</summary>
     [DiagnosticRule]
     public static class S1192
     {
@@ -589,9 +510,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1199</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Nested code blocks should not be used.</summary>
     [DiagnosticRule]
     public static class S1199
     {
@@ -602,9 +521,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1200</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Classes should not be coupled to too many other classes.</summary>
     [DiagnosticRule]
     public static class S1200
     {
@@ -615,9 +532,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1206</c>, category <c>Minor Bug</c>.
-    /// </summary>
+    /// <summary>"Equals(Object)" and "GetHashCode()" should be overridden in pairs.</summary>
     [DiagnosticRule]
     public static class S1206
     {
@@ -628,9 +543,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S121</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Control structures should use curly braces.</summary>
     [DiagnosticRule]
     public static class S121
     {
@@ -641,9 +554,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1210</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>"Equals" and the comparison operators should be overridden when implementing "IComparable".</summary>
     [DiagnosticRule]
     public static class S1210
     {
@@ -654,9 +565,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1215</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>"GC.Collect" should not be called.</summary>
     [DiagnosticRule]
     public static class S1215
     {
@@ -667,9 +576,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S122</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Statements should be on separate lines.</summary>
     [DiagnosticRule]
     public static class S122
     {
@@ -680,9 +587,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1226</c>, category <c>Minor Bug</c>.
-    /// </summary>
+    /// <summary>Method parameters, caught exceptions and foreach variables' initial values should not be ignored.</summary>
     [DiagnosticRule]
     public static class S1226
     {
@@ -693,9 +598,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S1227</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>break statements should not be used except for switch cases.</summary>
     [DiagnosticRule]
     public static class S1227
     {
@@ -706,9 +609,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1244</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>Floating point numbers should not be tested for equality.</summary>
     [DiagnosticRule]
     public static class S1244
     {
@@ -719,9 +620,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S125</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Sections of code should not be commented out.</summary>
     [DiagnosticRule]
     public static class S125
     {
@@ -732,9 +631,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S126</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>"if ... else if" constructs should end with "else" clauses.</summary>
     [DiagnosticRule]
     public static class S126
     {
@@ -745,9 +642,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1264</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>A "while" loop should be used instead of a "for" loop.</summary>
     [DiagnosticRule]
     public static class S1264
     {
@@ -758,9 +653,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S127</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>"for" loop stop conditions should be invariant.</summary>
     [DiagnosticRule]
     public static class S127
     {
@@ -771,9 +664,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1301</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>"switch" statements should have at least 3 "case" clauses.</summary>
     [DiagnosticRule]
     public static class S1301
     {
@@ -784,9 +675,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1309</c>, category <c>Info Code Smell</c>.
-    /// </summary>
+    /// <summary>Track uses of in-source issue suppressions.</summary>
     [DiagnosticRule]
     public static class S1309
     {
@@ -797,9 +686,7 @@ public static class SonarRule
         public const string Category = SonarCategory.InfoCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S131</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>"switch/Select" statements should contain a "default/Case Else" clauses.</summary>
     [DiagnosticRule]
     public static class S131
     {
@@ -810,9 +697,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1312</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Logger fields should be "private static readonly".</summary>
     [DiagnosticRule]
     public static class S1312
     {
@@ -823,9 +708,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1313</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>IP addresses should not be hardcoded.</summary>
     [DiagnosticRule]
     public static class S1313
     {
@@ -836,9 +719,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S134</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Control flow statements "if", "switch", "for", "foreach", "while", "do" and "try" should not be nested too deeply.</summary>
     [DiagnosticRule]
     public static class S134
     {
@@ -849,9 +730,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S138</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Functions should not have too many lines of code.</summary>
     [DiagnosticRule]
     public static class S138
     {
@@ -862,9 +741,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1449</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Culture should be specified for "string" operations.</summary>
     [DiagnosticRule]
     public static class S1449
     {
@@ -875,9 +752,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1450</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Private fields only used as local variables in methods should become local variables.</summary>
     [DiagnosticRule]
     public static class S1450
     {
@@ -888,9 +763,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1451</c>, category <c>Blocker Code Smell</c>.
-    /// </summary>
+    /// <summary>Track lack of copyright and license headers.</summary>
     [DiagnosticRule]
     public static class S1451
     {
@@ -901,9 +774,7 @@ public static class SonarRule
         public const string Category = SonarCategory.BlockerCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1479</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>"switch" statements with many "case" clauses should have only one statement.</summary>
     [DiagnosticRule]
     public static class S1479
     {
@@ -914,9 +785,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1481</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Unused local variables should be removed.</summary>
     [DiagnosticRule]
     public static class S1481
     {
@@ -927,9 +796,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1541</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Methods and properties should not be too complex.</summary>
     [DiagnosticRule]
     public static class S1541
     {
@@ -940,9 +807,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1607</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Tests should not be ignored.</summary>
     [DiagnosticRule]
     public static class S1607
     {
@@ -953,9 +818,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1643</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Strings should not be concatenated using '+' in a loop.</summary>
     [DiagnosticRule]
     public static class S1643
     {
@@ -966,9 +829,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1656</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>Variables should not be self-assigned.</summary>
     [DiagnosticRule]
     public static class S1656
     {
@@ -979,9 +840,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S1659</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Multiple variables should not be declared on the same line.</summary>
     [DiagnosticRule]
     public static class S1659
     {
@@ -992,9 +851,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1694</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>An abstract class should have both abstract and concrete methods.</summary>
     [DiagnosticRule]
     public static class S1694
     {
@@ -1005,9 +862,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1696</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>NullReferenceException should not be caught.</summary>
     [DiagnosticRule]
     public static class S1696
     {
@@ -1018,9 +873,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1698</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>"==" should not be used when "Equals" is overridden.</summary>
     [DiagnosticRule]
     public static class S1698
     {
@@ -1031,9 +884,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1699</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Constructors should only call non-overridable methods.</summary>
     [DiagnosticRule]
     public static class S1699
     {
@@ -1044,9 +895,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1751</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>Loops with at most one iteration should be refactored.</summary>
     [DiagnosticRule]
     public static class S1751
     {
@@ -1057,9 +906,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S1764</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>Identical expressions should not be used on both sides of operators.</summary>
     [DiagnosticRule]
     public static class S1764
     {
@@ -1070,9 +917,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S1821</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>"switch" statements should not be nested.</summary>
     [DiagnosticRule]
     public static class S1821
     {
@@ -1083,9 +928,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1848</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>Objects should not be created to be dropped immediately without being used.</summary>
     [DiagnosticRule]
     public static class S1848
     {
@@ -1096,9 +939,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S1854</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Unused assignments should be removed.</summary>
     [DiagnosticRule]
     public static class S1854
     {
@@ -1109,9 +950,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1858</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>"ToString()" calls should not be redundant.</summary>
     [DiagnosticRule]
     public static class S1858
     {
@@ -1122,9 +961,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1862</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>Related "if/else if" statements should not have the same condition.</summary>
     [DiagnosticRule]
     public static class S1862
     {
@@ -1135,9 +972,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S1871</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Two branches in a conditional structure should not have exactly the same implementation.</summary>
     [DiagnosticRule]
     public static class S1871
     {
@@ -1148,9 +983,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1905</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Redundant casts should not be used.</summary>
     [DiagnosticRule]
     public static class S1905
     {
@@ -1161,9 +994,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1939</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Inheritance list should not be redundant.</summary>
     [DiagnosticRule]
     public static class S1939
     {
@@ -1174,9 +1005,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1940</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Boolean checks should not be inverted.</summary>
     [DiagnosticRule]
     public static class S1940
     {
@@ -1187,9 +1016,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1944</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Invalid casts should be avoided.</summary>
     [DiagnosticRule]
     public static class S1944
     {
@@ -1200,9 +1027,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S1994</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>"for" loop increment clauses should modify the loops' counters.</summary>
     [DiagnosticRule]
     public static class S1994
     {
@@ -1213,9 +1038,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2068</c>, category <c>Major Vulnerability</c>.
-    /// </summary>
+    /// <summary>Credentials should not be hard-coded.</summary>
     [DiagnosticRule]
     public static class S2068
     {
@@ -1226,9 +1049,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorVulnerability;
     }
 
-    /// <summary>
-    /// Rule <c>S2077</c>, category <c>Major Vulnerability</c>.
-    /// </summary>
+    /// <summary>SQL queries should not be dynamically formatted.</summary>
     [DiagnosticRule]
     public static class S2077
     {
@@ -1239,9 +1060,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorVulnerability;
     }
 
-    /// <summary>
-    /// Rule <c>S2092</c>, category <c>Minor Vulnerability</c>.
-    /// </summary>
+    /// <summary>Cookies should have the "secure" flag.</summary>
     [DiagnosticRule]
     public static class S2092
     {
@@ -1252,9 +1071,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorVulnerability;
     }
 
-    /// <summary>
-    /// Rule <c>S2094</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Classes should not be empty.</summary>
     [DiagnosticRule]
     public static class S2094
     {
@@ -1265,9 +1082,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2114</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>Collections should not be passed as arguments to their own methods.</summary>
     [DiagnosticRule]
     public static class S2114
     {
@@ -1278,9 +1093,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S2115</c>, category <c>Blocker Vulnerability</c>.
-    /// </summary>
+    /// <summary>A secure password should be used when connecting to a database.</summary>
     [DiagnosticRule]
     public static class S2115
     {
@@ -1291,9 +1104,7 @@ public static class SonarRule
         public const string Category = SonarCategory.BlockerVulnerability;
     }
 
-    /// <summary>
-    /// Rule <c>S2123</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>Values should not be uselessly incremented.</summary>
     [DiagnosticRule]
     public static class S2123
     {
@@ -1304,9 +1115,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S2139</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Exceptions should be either logged or rethrown but not both.</summary>
     [DiagnosticRule]
     public static class S2139
     {
@@ -1317,9 +1126,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2148</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Underscores should be used to make large numbers readable.</summary>
     [DiagnosticRule]
     public static class S2148
     {
@@ -1330,9 +1137,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2156</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>"sealed" classes should not have "protected" members.</summary>
     [DiagnosticRule]
     public static class S2156
     {
@@ -1343,9 +1148,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2166</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Classes named like "Exception" should extend "Exception" or a subclass.</summary>
     [DiagnosticRule]
     public static class S2166
     {
@@ -1356,9 +1159,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2178</c>, category <c>Blocker Code Smell</c>.
-    /// </summary>
+    /// <summary>Short-circuit logic should be used in boolean contexts.</summary>
     [DiagnosticRule]
     public static class S2178
     {
@@ -1369,9 +1170,7 @@ public static class SonarRule
         public const string Category = SonarCategory.BlockerCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2183</c>, category <c>Minor Bug</c>.
-    /// </summary>
+    /// <summary>Integral numbers should not be shifted by zero or more than their number of bits-1.</summary>
     [DiagnosticRule]
     public static class S2183
     {
@@ -1382,9 +1181,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S2184</c>, category <c>Minor Bug</c>.
-    /// </summary>
+    /// <summary>Results of integer division should not be assigned to floating point variables.</summary>
     [DiagnosticRule]
     public static class S2184
     {
@@ -1395,9 +1192,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S2187</c>, category <c>Blocker Code Smell</c>.
-    /// </summary>
+    /// <summary>Test classes should contain at least one test case.</summary>
     [DiagnosticRule]
     public static class S2187
     {
@@ -1408,9 +1203,7 @@ public static class SonarRule
         public const string Category = SonarCategory.BlockerCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2190</c>, category <c>Blocker Bug</c>.
-    /// </summary>
+    /// <summary>Loops and recursions should not be infinite.</summary>
     [DiagnosticRule]
     public static class S2190
     {
@@ -1421,9 +1214,7 @@ public static class SonarRule
         public const string Category = SonarCategory.BlockerBug;
     }
 
-    /// <summary>
-    /// Rule <c>S2197</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Modulus results should not be checked for direct equality.</summary>
     [DiagnosticRule]
     public static class S2197
     {
@@ -1434,9 +1225,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2198</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Unnecessary mathematical comparisons should not be made.</summary>
     [DiagnosticRule]
     public static class S2198
     {
@@ -1447,9 +1236,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2201</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>Methods without side effects should not have their return values ignored.</summary>
     [DiagnosticRule]
     public static class S2201
     {
@@ -1460,9 +1247,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S2219</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Runtime type checking should be simplified.</summary>
     [DiagnosticRule]
     public static class S2219
     {
@@ -1473,9 +1258,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2221</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>"Exception" should not be caught.</summary>
     [DiagnosticRule]
     public static class S2221
     {
@@ -1486,9 +1269,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2223</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Non-constant static fields should not be visible.</summary>
     [DiagnosticRule]
     public static class S2223
     {
@@ -1499,9 +1280,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2225</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>"ToString()" method should not return null.</summary>
     [DiagnosticRule]
     public static class S2225
     {
@@ -1512,9 +1291,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S2234</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Arguments should be passed in the same order as the method parameters.</summary>
     [DiagnosticRule]
     public static class S2234
     {
@@ -1525,9 +1302,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2245</c>, category <c>Major Vulnerability</c>.
-    /// </summary>
+    /// <summary>Pseudorandom number generators (PRNGs) should not be used in security contexts.</summary>
     [DiagnosticRule]
     public static class S2245
     {
@@ -1538,9 +1313,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorVulnerability;
     }
 
-    /// <summary>
-    /// Rule <c>S2251</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>A "for" loop update clause should move the counter in the right direction.</summary>
     [DiagnosticRule]
     public static class S2251
     {
@@ -1551,9 +1324,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S2252</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>For-loop conditions should be true at least once.</summary>
     [DiagnosticRule]
     public static class S2252
     {
@@ -1564,9 +1335,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S2257</c>, category <c>Critical Vulnerability</c>.
-    /// </summary>
+    /// <summary>Custom cryptographic algorithms should not be used.</summary>
     [DiagnosticRule]
     public static class S2257
     {
@@ -1577,9 +1346,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalVulnerability;
     }
 
-    /// <summary>
-    /// Rule <c>S2275</c>, category <c>Blocker Bug</c>.
-    /// </summary>
+    /// <summary>Composite format strings should not lead to unexpected behavior at runtime.</summary>
     [DiagnosticRule]
     public static class S2275
     {
@@ -1590,9 +1357,7 @@ public static class SonarRule
         public const string Category = SonarCategory.BlockerBug;
     }
 
-    /// <summary>
-    /// Rule <c>S2290</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Field-like events should not be virtual.</summary>
     [DiagnosticRule]
     public static class S2290
     {
@@ -1603,9 +1368,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2291</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Overflow checking should not be disabled for "Enumerable.Sum".</summary>
     [DiagnosticRule]
     public static class S2291
     {
@@ -1616,9 +1379,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2292</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Trivial properties should be auto-implemented.</summary>
     [DiagnosticRule]
     public static class S2292
     {
@@ -1629,9 +1390,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2302</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>"nameof" should be used.</summary>
     [DiagnosticRule]
     public static class S2302
     {
@@ -1642,9 +1401,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2306</c>, category <c>Blocker Code Smell</c>.
-    /// </summary>
+    /// <summary>"async" and "await" should not be used as identifiers.</summary>
     [DiagnosticRule]
     public static class S2306
     {
@@ -1655,9 +1412,7 @@ public static class SonarRule
         public const string Category = SonarCategory.BlockerCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2325</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Methods and properties that don't access instance data should be static.</summary>
     [DiagnosticRule]
     public static class S2325
     {
@@ -1668,9 +1423,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2326</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Unused type parameters should be removed.</summary>
     [DiagnosticRule]
     public static class S2326
     {
@@ -1681,9 +1434,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2327</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>"try" statements with identical "catch" and/or "finally" blocks should be merged.</summary>
     [DiagnosticRule]
     public static class S2327
     {
@@ -1694,9 +1445,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2328</c>, category <c>Minor Bug</c>.
-    /// </summary>
+    /// <summary>"GetHashCode" should not reference mutable fields.</summary>
     [DiagnosticRule]
     public static class S2328
     {
@@ -1707,9 +1456,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S2330</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Array covariance should not be used.</summary>
     [DiagnosticRule]
     public static class S2330
     {
@@ -1720,9 +1467,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2333</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Redundant modifiers should not be used.</summary>
     [DiagnosticRule]
     public static class S2333
     {
@@ -1733,9 +1478,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2339</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Public constant members should not be used.</summary>
     [DiagnosticRule]
     public static class S2339
     {
@@ -1746,9 +1489,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2342</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Enumeration types should comply with a naming convention.</summary>
     [DiagnosticRule]
     public static class S2342
     {
@@ -1759,9 +1500,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2344</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Enumeration type names should not have "Flags" or "Enum" suffixes.</summary>
     [DiagnosticRule]
     public static class S2344
     {
@@ -1772,9 +1511,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2345</c>, category <c>Minor Bug</c>.
-    /// </summary>
+    /// <summary>Flags enumerations should explicitly initialize all their members.</summary>
     [DiagnosticRule]
     public static class S2345
     {
@@ -1785,9 +1522,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S2346</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Flags enumerations zero-value members should be named "None".</summary>
     [DiagnosticRule]
     public static class S2346
     {
@@ -1798,9 +1533,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2357</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Fields should be private.</summary>
     [DiagnosticRule]
     public static class S2357
     {
@@ -1811,9 +1544,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2360</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Optional parameters should not be used.</summary>
     [DiagnosticRule]
     public static class S2360
     {
@@ -1824,9 +1555,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2365</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Properties should not make collection or array copies.</summary>
     [DiagnosticRule]
     public static class S2365
     {
@@ -1837,9 +1566,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2368</c>, category <c>Blocker Code Smell</c>.
-    /// </summary>
+    /// <summary>Public methods should not have multidimensional array parameters.</summary>
     [DiagnosticRule]
     public static class S2368
     {
@@ -1850,9 +1577,7 @@ public static class SonarRule
         public const string Category = SonarCategory.BlockerCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2372</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Exceptions should not be thrown from property getters.</summary>
     [DiagnosticRule]
     public static class S2372
     {
@@ -1863,9 +1588,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2376</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Write-only properties should not be used.</summary>
     [DiagnosticRule]
     public static class S2376
     {
@@ -1876,9 +1599,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2386</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Mutable fields should not be "public static".</summary>
     [DiagnosticRule]
     public static class S2386
     {
@@ -1889,9 +1610,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2387</c>, category <c>Blocker Code Smell</c>.
-    /// </summary>
+    /// <summary>Child class fields should not shadow parent class fields.</summary>
     [DiagnosticRule]
     public static class S2387
     {
@@ -1902,9 +1621,7 @@ public static class SonarRule
         public const string Category = SonarCategory.BlockerCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2436</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Types and methods should not have too many generic parameters.</summary>
     [DiagnosticRule]
     public static class S2436
     {
@@ -1915,9 +1632,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2437</c>, category <c>Blocker Code Smell</c>.
-    /// </summary>
+    /// <summary>Unnecessary bit operations should not be performed.</summary>
     [DiagnosticRule]
     public static class S2437
     {
@@ -1928,9 +1643,7 @@ public static class SonarRule
         public const string Category = SonarCategory.BlockerCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2445</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>Blocks should be synchronized on read-only fields.</summary>
     [DiagnosticRule]
     public static class S2445
     {
@@ -1941,9 +1654,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S2479</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Whitespace and control characters in string literals should be explicit.</summary>
     [DiagnosticRule]
     public static class S2479
     {
@@ -1954,9 +1665,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2486</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Generic exceptions should not be ignored.</summary>
     [DiagnosticRule]
     public static class S2486
     {
@@ -1967,9 +1676,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2551</c>, category <c>Critical Bug</c>.
-    /// </summary>
+    /// <summary>Shared resources should not be used for locking.</summary>
     [DiagnosticRule]
     public static class S2551
     {
@@ -1980,9 +1687,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalBug;
     }
 
-    /// <summary>
-    /// Rule <c>S2612</c>, category <c>Major Vulnerability</c>.
-    /// </summary>
+    /// <summary>File permissions should not be set to world-accessible values.</summary>
     [DiagnosticRule]
     public static class S2612
     {
@@ -1993,9 +1698,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorVulnerability;
     }
 
-    /// <summary>
-    /// Rule <c>S2629</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Logging templates should be constant.</summary>
     [DiagnosticRule]
     public static class S2629
     {
@@ -2006,9 +1709,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2674</c>, category <c>Minor Bug</c>.
-    /// </summary>
+    /// <summary>The length returned from a stream read should be checked.</summary>
     [DiagnosticRule]
     public static class S2674
     {
@@ -2019,9 +1720,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S2681</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Multiline blocks should be enclosed in curly braces.</summary>
     [DiagnosticRule]
     public static class S2681
     {
@@ -2032,9 +1731,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2688</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>"NaN" should not be used in comparisons.</summary>
     [DiagnosticRule]
     public static class S2688
     {
@@ -2045,9 +1742,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S2692</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>"IndexOf" checks should not be for positive numbers.</summary>
     [DiagnosticRule]
     public static class S2692
     {
@@ -2058,9 +1753,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2696</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Instance members should not write to "static" fields.</summary>
     [DiagnosticRule]
     public static class S2696
     {
@@ -2071,9 +1764,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2699</c>, category <c>Blocker Code Smell</c>.
-    /// </summary>
+    /// <summary>Tests should include assertions.</summary>
     [DiagnosticRule]
     public static class S2699
     {
@@ -2084,9 +1775,7 @@ public static class SonarRule
         public const string Category = SonarCategory.BlockerCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2701</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Literal boolean values should not be used in assertions.</summary>
     [DiagnosticRule]
     public static class S2701
     {
@@ -2097,9 +1786,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2737</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>"catch" clauses should do more than rethrow.</summary>
     [DiagnosticRule]
     public static class S2737
     {
@@ -2110,9 +1797,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2743</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Static fields should not be used in generic types.</summary>
     [DiagnosticRule]
     public static class S2743
     {
@@ -2123,9 +1808,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2755</c>, category <c>Blocker Vulnerability</c>.
-    /// </summary>
+    /// <summary>XML parsers should not be vulnerable to XXE attacks.</summary>
     [DiagnosticRule]
     public static class S2755
     {
@@ -2136,9 +1819,7 @@ public static class SonarRule
         public const string Category = SonarCategory.BlockerVulnerability;
     }
 
-    /// <summary>
-    /// Rule <c>S2757</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>Non-existent operators like "=+" should not be used.</summary>
     [DiagnosticRule]
     public static class S2757
     {
@@ -2149,9 +1830,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S2760</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Sequential tests should not check the same condition.</summary>
     [DiagnosticRule]
     public static class S2760
     {
@@ -2162,9 +1841,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2761</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>Doubled prefix operators "!!" and "~~" should not be used.</summary>
     [DiagnosticRule]
     public static class S2761
     {
@@ -2175,9 +1852,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S2857</c>, category <c>Blocker Bug</c>.
-    /// </summary>
+    /// <summary>SQL keywords should be delimited by whitespace.</summary>
     [DiagnosticRule]
     public static class S2857
     {
@@ -2188,9 +1863,7 @@ public static class SonarRule
         public const string Category = SonarCategory.BlockerBug;
     }
 
-    /// <summary>
-    /// Rule <c>S2925</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>"Thread.Sleep" should not be used in tests.</summary>
     [DiagnosticRule]
     public static class S2925
     {
@@ -2201,9 +1874,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2930</c>, category <c>Blocker Bug</c>.
-    /// </summary>
+    /// <summary>"IDisposables" should be disposed.</summary>
     [DiagnosticRule]
     public static class S2930
     {
@@ -2214,9 +1885,7 @@ public static class SonarRule
         public const string Category = SonarCategory.BlockerBug;
     }
 
-    /// <summary>
-    /// Rule <c>S2931</c>, category <c>Blocker Bug</c>.
-    /// </summary>
+    /// <summary>Classes with "IDisposable" members should implement "IDisposable".</summary>
     [DiagnosticRule]
     public static class S2931
     {
@@ -2227,9 +1896,7 @@ public static class SonarRule
         public const string Category = SonarCategory.BlockerBug;
     }
 
-    /// <summary>
-    /// Rule <c>S2933</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Fields that are only assigned in the constructor should be "readonly".</summary>
     [DiagnosticRule]
     public static class S2933
     {
@@ -2240,9 +1907,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2934</c>, category <c>Minor Bug</c>.
-    /// </summary>
+    /// <summary>Property assignments should not be made for "readonly" fields not constrained to reference types.</summary>
     [DiagnosticRule]
     public static class S2934
     {
@@ -2253,9 +1918,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S2952</c>, category <c>Critical Bug</c>.
-    /// </summary>
+    /// <summary>Classes should "Dispose" of members from the classes' own "Dispose" methods.</summary>
     [DiagnosticRule]
     public static class S2952
     {
@@ -2266,9 +1929,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalBug;
     }
 
-    /// <summary>
-    /// Rule <c>S2953</c>, category <c>Blocker Code Smell</c>.
-    /// </summary>
+    /// <summary>Methods named "Dispose" should implement "IDisposable.Dispose".</summary>
     [DiagnosticRule]
     public static class S2953
     {
@@ -2279,9 +1940,7 @@ public static class SonarRule
         public const string Category = SonarCategory.BlockerCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2955</c>, category <c>Minor Bug</c>.
-    /// </summary>
+    /// <summary>Generic parameters not constrained to reference types should not be compared to "null".</summary>
     [DiagnosticRule]
     public static class S2955
     {
@@ -2292,9 +1951,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S2970</c>, category <c>Blocker Code Smell</c>.
-    /// </summary>
+    /// <summary>Assertions should be complete.</summary>
     [DiagnosticRule]
     public static class S2970
     {
@@ -2305,9 +1962,7 @@ public static class SonarRule
         public const string Category = SonarCategory.BlockerCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2971</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>LINQ expressions should be simplified.</summary>
     [DiagnosticRule]
     public static class S2971
     {
@@ -2318,9 +1973,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S2995</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>"Object.ReferenceEquals" should not be used for value types.</summary>
     [DiagnosticRule]
     public static class S2995
     {
@@ -2331,9 +1984,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S2996</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>"ThreadStatic" fields should not be initialized.</summary>
     [DiagnosticRule]
     public static class S2996
     {
@@ -2344,9 +1995,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S2997</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>"IDisposables" created in a "using" statement should not be returned.</summary>
     [DiagnosticRule]
     public static class S2997
     {
@@ -2357,9 +2006,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S3005</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>"ThreadStatic" should not be used on non-static fields.</summary>
     [DiagnosticRule]
     public static class S3005
     {
@@ -2370,9 +2017,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S3010</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Static fields should not be updated in constructors.</summary>
     [DiagnosticRule]
     public static class S3010
     {
@@ -2383,9 +2028,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3011</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Reflection should not be used to increase accessibility of classes, methods, or fields.</summary>
     [DiagnosticRule]
     public static class S3011
     {
@@ -2396,9 +2039,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3052</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Members should not be initialized to default values.</summary>
     [DiagnosticRule]
     public static class S3052
     {
@@ -2409,9 +2050,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3059</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Types should not have members with visibility set higher than the type's visibility.</summary>
     [DiagnosticRule]
     public static class S3059
     {
@@ -2422,9 +2061,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3060</c>, category <c>Blocker Code Smell</c>.
-    /// </summary>
+    /// <summary>"is" should not be used with "this".</summary>
     [DiagnosticRule]
     public static class S3060
     {
@@ -2435,9 +2072,7 @@ public static class SonarRule
         public const string Category = SonarCategory.BlockerCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3063</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>"StringBuilder" data should be used.</summary>
     [DiagnosticRule]
     public static class S3063
     {
@@ -2448,9 +2083,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3168</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>"async" methods should not return "void".</summary>
     [DiagnosticRule]
     public static class S3168
     {
@@ -2461,9 +2094,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S3169</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Multiple "OrderBy" calls should not be used.</summary>
     [DiagnosticRule]
     public static class S3169
     {
@@ -2474,9 +2105,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3172</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>Delegates should not be subtracted.</summary>
     [DiagnosticRule]
     public static class S3172
     {
@@ -2487,9 +2116,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S3215</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>"interface" instances should not be cast to concrete types.</summary>
     [DiagnosticRule]
     public static class S3215
     {
@@ -2500,9 +2127,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3216</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>"ConfigureAwait(false)" should be used.</summary>
     [DiagnosticRule]
     public static class S3216
     {
@@ -2513,9 +2138,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3217</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>"Explicit" conversions of "foreach" loops should not be used.</summary>
     [DiagnosticRule]
     public static class S3217
     {
@@ -2526,9 +2149,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3218</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Inner class members should not shadow outer class "static" or type members.</summary>
     [DiagnosticRule]
     public static class S3218
     {
@@ -2539,9 +2160,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3220</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Method calls should not resolve ambiguously to overloads with "params".</summary>
     [DiagnosticRule]
     public static class S3220
     {
@@ -2552,9 +2171,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3234</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>"GC.SuppressFinalize" should not be invoked for types without destructors.</summary>
     [DiagnosticRule]
     public static class S3234
     {
@@ -2565,9 +2182,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3235</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Redundant parentheses should not be used.</summary>
     [DiagnosticRule]
     public static class S3235
     {
@@ -2578,9 +2193,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3236</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Caller information arguments should not be provided explicitly.</summary>
     [DiagnosticRule]
     public static class S3236
     {
@@ -2591,9 +2204,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3237</c>, category <c>Blocker Code Smell</c>.
-    /// </summary>
+    /// <summary>"value" contextual keyword should be used.</summary>
     [DiagnosticRule]
     public static class S3237
     {
@@ -2604,9 +2215,7 @@ public static class SonarRule
         public const string Category = SonarCategory.BlockerCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3240</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>The simplest possible condition syntax should be used.</summary>
     [DiagnosticRule]
     public static class S3240
     {
@@ -2617,9 +2226,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3241</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Methods should not return values that are never used.</summary>
     [DiagnosticRule]
     public static class S3241
     {
@@ -2630,9 +2237,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3242</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Method parameters should be declared with base types.</summary>
     [DiagnosticRule]
     public static class S3242
     {
@@ -2643,9 +2248,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3244</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>Anonymous delegates should not be used to unsubscribe from Events.</summary>
     [DiagnosticRule]
     public static class S3244
     {
@@ -2656,9 +2259,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S3246</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Generic type parameters should be co/contravariant when possible.</summary>
     [DiagnosticRule]
     public static class S3246
     {
@@ -2669,9 +2270,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3247</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Duplicate casts should not be made.</summary>
     [DiagnosticRule]
     public static class S3247
     {
@@ -2682,9 +2281,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3249</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>Classes directly extending "object" should not call "base" in "GetHashCode" or "Equals".</summary>
     [DiagnosticRule]
     public static class S3249
     {
@@ -2695,9 +2292,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S3251</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Implementations should be provided for "partial" methods.</summary>
     [DiagnosticRule]
     public static class S3251
     {
@@ -2708,9 +2303,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3253</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Constructor and destructor declarations should not be redundant.</summary>
     [DiagnosticRule]
     public static class S3253
     {
@@ -2721,9 +2314,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3254</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Default parameter values should not be passed as arguments.</summary>
     [DiagnosticRule]
     public static class S3254
     {
@@ -2734,9 +2325,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3256</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>"string.IsNullOrEmpty" should be used.</summary>
     [DiagnosticRule]
     public static class S3256
     {
@@ -2747,9 +2336,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3257</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Declarations and initializations should be as concise as possible.</summary>
     [DiagnosticRule]
     public static class S3257
     {
@@ -2760,9 +2347,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3260</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Non-derived "private" classes and records should be "sealed".</summary>
     [DiagnosticRule]
     public static class S3260
     {
@@ -2773,9 +2358,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3261</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Namespaces should not be empty.</summary>
     [DiagnosticRule]
     public static class S3261
     {
@@ -2786,9 +2369,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3262</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>"params" should be used on overrides.</summary>
     [DiagnosticRule]
     public static class S3262
     {
@@ -2799,9 +2380,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3263</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>Static fields should appear in the order they must be initialized.</summary>
     [DiagnosticRule]
     public static class S3263
     {
@@ -2812,9 +2391,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S3264</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Events should be invoked.</summary>
     [DiagnosticRule]
     public static class S3264
     {
@@ -2825,9 +2402,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3265</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Non-flags enums should not be used in bitwise operations.</summary>
     [DiagnosticRule]
     public static class S3265
     {
@@ -2838,9 +2413,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3267</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Loops should be simplified with "LINQ" expressions.</summary>
     [DiagnosticRule]
     public static class S3267
     {
@@ -2851,9 +2424,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3330</c>, category <c>Minor Vulnerability</c>.
-    /// </summary>
+    /// <summary>Cookies should have the "HttpOnly" flag.</summary>
     [DiagnosticRule]
     public static class S3330
     {
@@ -2864,9 +2435,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorVulnerability;
     }
 
-    /// <summary>
-    /// Rule <c>S3343</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>Caller information parameters should come at the end of the parameter list.</summary>
     [DiagnosticRule]
     public static class S3343
     {
@@ -2877,9 +2446,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S3346</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>Expressions used in "Debug.Assert" should not produce side effects.</summary>
     [DiagnosticRule]
     public static class S3346
     {
@@ -2890,9 +2457,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S3353</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Unchanged variables should be marked as "const".</summary>
     [DiagnosticRule]
     public static class S3353
     {
@@ -2903,9 +2468,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3358</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Ternary operators should not be nested.</summary>
     [DiagnosticRule]
     public static class S3358
     {
@@ -2916,9 +2479,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3363</c>, category <c>Minor Bug</c>.
-    /// </summary>
+    /// <summary>Date and time should not be used as a type for primary keys.</summary>
     [DiagnosticRule]
     public static class S3363
     {
@@ -2929,9 +2490,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S3366</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>"this" should not be exposed from constructors.</summary>
     [DiagnosticRule]
     public static class S3366
     {
@@ -2942,9 +2501,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3376</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Attribute, EventArgs, and Exception type names should end with the type being extended.</summary>
     [DiagnosticRule]
     public static class S3376
     {
@@ -2955,9 +2512,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3397</c>, category <c>Minor Bug</c>.
-    /// </summary>
+    /// <summary>"base.Equals" should not be used to check for reference equality in "Equals" if "base" is not "object".</summary>
     [DiagnosticRule]
     public static class S3397
     {
@@ -2968,9 +2523,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S3398</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>"private" methods called only by inner classes should be moved to those classes.</summary>
     [DiagnosticRule]
     public static class S3398
     {
@@ -2981,9 +2534,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3400</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Methods should not return constants.</summary>
     [DiagnosticRule]
     public static class S3400
     {
@@ -2994,9 +2545,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3415</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Assertion arguments should be passed in the correct order.</summary>
     [DiagnosticRule]
     public static class S3415
     {
@@ -3007,9 +2556,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3416</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Loggers should be named for their enclosing types.</summary>
     [DiagnosticRule]
     public static class S3416
     {
@@ -3020,9 +2567,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3427</c>, category <c>Blocker Code Smell</c>.
-    /// </summary>
+    /// <summary>Method overloads with default parameter values should not overlap.</summary>
     [DiagnosticRule]
     public static class S3427
     {
@@ -3033,9 +2578,7 @@ public static class SonarRule
         public const string Category = SonarCategory.BlockerCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3431</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>"[ExpectedException]" should not be used.</summary>
     [DiagnosticRule]
     public static class S3431
     {
@@ -3046,9 +2589,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3433</c>, category <c>Blocker Code Smell</c>.
-    /// </summary>
+    /// <summary>Test method signatures should be correct.</summary>
     [DiagnosticRule]
     public static class S3433
     {
@@ -3059,9 +2600,7 @@ public static class SonarRule
         public const string Category = SonarCategory.BlockerCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3440</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Variables should not be checked against the values they're about to be assigned.</summary>
     [DiagnosticRule]
     public static class S3440
     {
@@ -3072,9 +2611,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3441</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Redundant property names should be omitted in anonymous classes.</summary>
     [DiagnosticRule]
     public static class S3441
     {
@@ -3085,9 +2622,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3442</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>"abstract" classes should not have "public" constructors.</summary>
     [DiagnosticRule]
     public static class S3442
     {
@@ -3098,9 +2633,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3443</c>, category <c>Blocker Code Smell</c>.
-    /// </summary>
+    /// <summary>Type should not be examined on "System.Type" instances.</summary>
     [DiagnosticRule]
     public static class S3443
     {
@@ -3111,9 +2644,7 @@ public static class SonarRule
         public const string Category = SonarCategory.BlockerCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3444</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Interfaces should not simply inherit from base interfaces with colliding members.</summary>
     [DiagnosticRule]
     public static class S3444
     {
@@ -3124,9 +2655,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3445</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Exceptions should not be explicitly rethrown.</summary>
     [DiagnosticRule]
     public static class S3445
     {
@@ -3137,9 +2666,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3447</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>"[Optional]" should not be used on "ref" or "out" parameters.</summary>
     [DiagnosticRule]
     public static class S3447
     {
@@ -3150,9 +2677,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3449</c>, category <c>Critical Bug</c>.
-    /// </summary>
+    /// <summary>Right operands of shift operators should be integers.</summary>
     [DiagnosticRule]
     public static class S3449
     {
@@ -3163,9 +2688,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalBug;
     }
 
-    /// <summary>
-    /// Rule <c>S3450</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Parameters with "[DefaultParameterValue]" attributes should also be marked "[Optional]".</summary>
     [DiagnosticRule]
     public static class S3450
     {
@@ -3176,9 +2699,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3451</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>"[DefaultValue]" should not be used when "[DefaultParameterValue]" is meant.</summary>
     [DiagnosticRule]
     public static class S3451
     {
@@ -3189,9 +2710,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3453</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>Classes should not have only "private" constructors.</summary>
     [DiagnosticRule]
     public static class S3453
     {
@@ -3202,9 +2721,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S3456</c>, category <c>Minor Bug</c>.
-    /// </summary>
+    /// <summary>"string.ToCharArray()" and "ReadOnlySpan&lt;T&gt;.ToArray()" should not be called redundantly.</summary>
     [DiagnosticRule]
     public static class S3456
     {
@@ -3215,9 +2732,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S3457</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Composite format strings should be used correctly.</summary>
     [DiagnosticRule]
     public static class S3457
     {
@@ -3228,9 +2743,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3458</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Empty "case" clauses that fall through to the "default" should be omitted.</summary>
     [DiagnosticRule]
     public static class S3458
     {
@@ -3241,9 +2754,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3459</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Unassigned members should be removed.</summary>
     [DiagnosticRule]
     public static class S3459
     {
@@ -3254,9 +2765,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3464</c>, category <c>Blocker Bug</c>.
-    /// </summary>
+    /// <summary>Type inheritance should not be recursive.</summary>
     [DiagnosticRule]
     public static class S3464
     {
@@ -3267,9 +2776,7 @@ public static class SonarRule
         public const string Category = SonarCategory.BlockerBug;
     }
 
-    /// <summary>
-    /// Rule <c>S3466</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>Optional parameters should be passed to "base" calls.</summary>
     [DiagnosticRule]
     public static class S3466
     {
@@ -3280,9 +2787,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S3532</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Empty "default" clauses should be removed.</summary>
     [DiagnosticRule]
     public static class S3532
     {
@@ -3293,9 +2798,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3597</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>"ServiceContract" and "OperationContract" attributes should be used together.</summary>
     [DiagnosticRule]
     public static class S3597
     {
@@ -3306,9 +2809,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3598</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>One-way "OperationContract" methods should have "void" return type.</summary>
     [DiagnosticRule]
     public static class S3598
     {
@@ -3319,9 +2820,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S3600</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>"params" should not be introduced on overrides.</summary>
     [DiagnosticRule]
     public static class S3600
     {
@@ -3332,9 +2831,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3603</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>Methods with "Pure" attribute should return a value.</summary>
     [DiagnosticRule]
     public static class S3603
     {
@@ -3345,9 +2842,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S3604</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Member initializer values should not be redundant.</summary>
     [DiagnosticRule]
     public static class S3604
     {
@@ -3358,9 +2853,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3610</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>Nullable type comparison should not be redundant.</summary>
     [DiagnosticRule]
     public static class S3610
     {
@@ -3371,9 +2864,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S3626</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Jump statements should not be redundant.</summary>
     [DiagnosticRule]
     public static class S3626
     {
@@ -3384,9 +2875,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3717</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Track use of "NotImplementedException".</summary>
     [DiagnosticRule]
     public static class S3717
     {
@@ -3397,9 +2886,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3776</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Cognitive Complexity of methods should not be too high.</summary>
     [DiagnosticRule]
     public static class S3776
     {
@@ -3410,9 +2897,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3869</c>, category <c>Blocker Bug</c>.
-    /// </summary>
+    /// <summary>"SafeHandle.DangerousGetHandle" should not be called.</summary>
     [DiagnosticRule]
     public static class S3869
     {
@@ -3423,9 +2908,7 @@ public static class SonarRule
         public const string Category = SonarCategory.BlockerBug;
     }
 
-    /// <summary>
-    /// Rule <c>S3871</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Exception types should be "public".</summary>
     [DiagnosticRule]
     public static class S3871
     {
@@ -3436,9 +2919,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3872</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Parameter names should not duplicate the names of their methods.</summary>
     [DiagnosticRule]
     public static class S3872
     {
@@ -3449,9 +2930,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3874</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>"out" and "ref" parameters should not be used.</summary>
     [DiagnosticRule]
     public static class S3874
     {
@@ -3462,9 +2941,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3875</c>, category <c>Blocker Code Smell</c>.
-    /// </summary>
+    /// <summary>"operator==" should not be overloaded on reference types.</summary>
     [DiagnosticRule]
     public static class S3875
     {
@@ -3475,9 +2952,7 @@ public static class SonarRule
         public const string Category = SonarCategory.BlockerCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3876</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Strings or integral types should be used for indexers.</summary>
     [DiagnosticRule]
     public static class S3876
     {
@@ -3488,9 +2963,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3877</c>, category <c>Blocker Code Smell</c>.
-    /// </summary>
+    /// <summary>Exceptions should not be thrown from unexpected methods.</summary>
     [DiagnosticRule]
     public static class S3877
     {
@@ -3501,9 +2974,7 @@ public static class SonarRule
         public const string Category = SonarCategory.BlockerCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3878</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Arrays should not be created for params parameters.</summary>
     [DiagnosticRule]
     public static class S3878
     {
@@ -3514,9 +2985,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3880</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Finalizers should not be empty.</summary>
     [DiagnosticRule]
     public static class S3880
     {
@@ -3527,9 +2996,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3881</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>"IDisposable" should be implemented correctly.</summary>
     [DiagnosticRule]
     public static class S3881
     {
@@ -3540,9 +3007,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3884</c>, category <c>Blocker Vulnerability</c>.
-    /// </summary>
+    /// <summary>"CoSetProxyBlanket" and "CoInitializeSecurity" should not be used.</summary>
     [DiagnosticRule]
     public static class S3884
     {
@@ -3553,9 +3018,7 @@ public static class SonarRule
         public const string Category = SonarCategory.BlockerVulnerability;
     }
 
-    /// <summary>
-    /// Rule <c>S3885</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>"Assembly.Load" should be used.</summary>
     [DiagnosticRule]
     public static class S3885
     {
@@ -3566,9 +3029,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3887</c>, category <c>Minor Bug</c>.
-    /// </summary>
+    /// <summary>Mutable, non-private fields should not be "readonly".</summary>
     [DiagnosticRule]
     public static class S3887
     {
@@ -3579,9 +3040,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S3889</c>, category <c>Blocker Bug</c>.
-    /// </summary>
+    /// <summary>"Thread.Resume" and "Thread.Suspend" should not be used.</summary>
     [DiagnosticRule]
     public static class S3889
     {
@@ -3592,9 +3051,7 @@ public static class SonarRule
         public const string Category = SonarCategory.BlockerBug;
     }
 
-    /// <summary>
-    /// Rule <c>S3897</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Classes that provide "Equals(&lt;T&gt;)" should implement "IEquatable&lt;T&gt;".</summary>
     [DiagnosticRule]
     public static class S3897
     {
@@ -3605,9 +3062,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3898</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Value types should implement "IEquatable&lt;T&gt;".</summary>
     [DiagnosticRule]
     public static class S3898
     {
@@ -3618,9 +3073,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3902</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>"Assembly.GetExecutingAssembly" should not be called.</summary>
     [DiagnosticRule]
     public static class S3902
     {
@@ -3631,9 +3084,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3903</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>Types should be defined in named namespaces.</summary>
     [DiagnosticRule]
     public static class S3903
     {
@@ -3644,9 +3095,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S3904</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Assemblies should have version information.</summary>
     [DiagnosticRule]
     public static class S3904
     {
@@ -3657,9 +3106,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3906</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Event Handlers should have the correct signature.</summary>
     [DiagnosticRule]
     public static class S3906
     {
@@ -3670,9 +3117,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3908</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Generic event handlers should be used.</summary>
     [DiagnosticRule]
     public static class S3908
     {
@@ -3683,9 +3128,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3909</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Collections should implement the generic interface.</summary>
     [DiagnosticRule]
     public static class S3909
     {
@@ -3696,9 +3139,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3923</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>All branches in a conditional structure should not have exactly the same implementation.</summary>
     [DiagnosticRule]
     public static class S3923
     {
@@ -3709,9 +3150,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S3925</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>"ISerializable" should be implemented correctly.</summary>
     [DiagnosticRule]
     public static class S3925
     {
@@ -3722,9 +3161,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3926</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>Deserialization methods should be provided for "OptionalField" members.</summary>
     [DiagnosticRule]
     public static class S3926
     {
@@ -3735,9 +3172,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S3927</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>Serialization event handlers should be implemented correctly.</summary>
     [DiagnosticRule]
     public static class S3927
     {
@@ -3748,9 +3183,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S3928</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Parameter names used into ArgumentException constructors should match an existing one.</summary>
     [DiagnosticRule]
     public static class S3928
     {
@@ -3761,9 +3194,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3937</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Number patterns should be regular.</summary>
     [DiagnosticRule]
     public static class S3937
     {
@@ -3774,9 +3205,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3956</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>"Generic.List" instances should not be part of public APIs.</summary>
     [DiagnosticRule]
     public static class S3956
     {
@@ -3787,9 +3216,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3962</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>"static readonly" constants should be "const" instead.</summary>
     [DiagnosticRule]
     public static class S3962
     {
@@ -3800,9 +3227,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3963</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>"static" fields should be initialized inline.</summary>
     [DiagnosticRule]
     public static class S3963
     {
@@ -3813,9 +3238,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3967</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Multidimensional arrays should not be used.</summary>
     [DiagnosticRule]
     public static class S3967
     {
@@ -3826,9 +3249,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3971</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>"GC.SuppressFinalize" should not be called.</summary>
     [DiagnosticRule]
     public static class S3971
     {
@@ -3839,9 +3260,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3972</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Conditionals should start on new lines.</summary>
     [DiagnosticRule]
     public static class S3972
     {
@@ -3852,9 +3271,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3973</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>A conditionally executed single line should be denoted by indentation.</summary>
     [DiagnosticRule]
     public static class S3973
     {
@@ -3865,9 +3282,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3981</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>Collection sizes and array length comparisons should make sense.</summary>
     [DiagnosticRule]
     public static class S3981
     {
@@ -3878,9 +3293,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S3984</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>Exceptions should not be created without being thrown.</summary>
     [DiagnosticRule]
     public static class S3984
     {
@@ -3891,9 +3304,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S3990</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Assemblies should be marked as CLS compliant.</summary>
     [DiagnosticRule]
     public static class S3990
     {
@@ -3904,9 +3315,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3992</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Assemblies should explicitly specify COM visibility.</summary>
     [DiagnosticRule]
     public static class S3992
     {
@@ -3917,9 +3326,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3993</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Custom attributes should be marked with "System.AttributeUsageAttribute".</summary>
     [DiagnosticRule]
     public static class S3993
     {
@@ -3930,9 +3337,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3994</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>URI Parameters should not be strings.</summary>
     [DiagnosticRule]
     public static class S3994
     {
@@ -3943,9 +3348,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3995</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>URI return values should not be strings.</summary>
     [DiagnosticRule]
     public static class S3995
     {
@@ -3956,9 +3359,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3996</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>URI properties should not be strings.</summary>
     [DiagnosticRule]
     public static class S3996
     {
@@ -3969,9 +3370,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3997</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>String URI overloads should call "System.Uri" overloads.</summary>
     [DiagnosticRule]
     public static class S3997
     {
@@ -3982,9 +3381,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S3998</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Threads should not lock on objects with weak identity.</summary>
     [DiagnosticRule]
     public static class S3998
     {
@@ -3995,9 +3392,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4000</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Pointers to unmanaged memory should not be visible.</summary>
     [DiagnosticRule]
     public static class S4000
     {
@@ -4008,9 +3403,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4002</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Disposable types should declare finalizers.</summary>
     [DiagnosticRule]
     public static class S4002
     {
@@ -4021,9 +3414,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4004</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Collection properties should be readonly.</summary>
     [DiagnosticRule]
     public static class S4004
     {
@@ -4034,9 +3425,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4005</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>"System.Uri" arguments should be used instead of strings.</summary>
     [DiagnosticRule]
     public static class S4005
     {
@@ -4047,9 +3436,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4015</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Inherited member visibility should not be decreased.</summary>
     [DiagnosticRule]
     public static class S4015
     {
@@ -4060,9 +3447,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4016</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Enumeration members should not be named "Reserved".</summary>
     [DiagnosticRule]
     public static class S4016
     {
@@ -4073,9 +3458,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4017</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Method signatures should not contain nested generic types.</summary>
     [DiagnosticRule]
     public static class S4017
     {
@@ -4086,9 +3469,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4018</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>All type parameters should be used in the parameter list to enable type inference.</summary>
     [DiagnosticRule]
     public static class S4018
     {
@@ -4099,9 +3480,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4019</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Base class methods should not be hidden.</summary>
     [DiagnosticRule]
     public static class S4019
     {
@@ -4112,9 +3491,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4022</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Enumerations should have "Int32" storage.</summary>
     [DiagnosticRule]
     public static class S4022
     {
@@ -4125,9 +3502,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4023</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Interfaces should not be empty.</summary>
     [DiagnosticRule]
     public static class S4023
     {
@@ -4138,9 +3513,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4025</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Child class fields should not differ from parent class fields only by capitalization.</summary>
     [DiagnosticRule]
     public static class S4025
     {
@@ -4151,9 +3524,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4026</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Assemblies should be marked with "NeutralResourcesLanguageAttribute".</summary>
     [DiagnosticRule]
     public static class S4026
     {
@@ -4164,9 +3535,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4027</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Exceptions should provide standard constructors.</summary>
     [DiagnosticRule]
     public static class S4027
     {
@@ -4177,9 +3546,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4035</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Classes implementing "IEquatable&lt;T&gt;" should be sealed.</summary>
     [DiagnosticRule]
     public static class S4035
     {
@@ -4190,9 +3557,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4036</c>, category <c>Minor Vulnerability</c>.
-    /// </summary>
+    /// <summary>OS commands should not rely on PATH resolution.</summary>
     [DiagnosticRule]
     public static class S4036
     {
@@ -4203,9 +3568,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorVulnerability;
     }
 
-    /// <summary>
-    /// Rule <c>S4039</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Interface methods should be callable by derived types.</summary>
     [DiagnosticRule]
     public static class S4039
     {
@@ -4216,9 +3579,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4040</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Strings should be normalized to uppercase.</summary>
     [DiagnosticRule]
     public static class S4040
     {
@@ -4229,9 +3590,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4041</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Type names should not match namespaces.</summary>
     [DiagnosticRule]
     public static class S4041
     {
@@ -4242,9 +3601,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4047</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Generics should be used when appropriate.</summary>
     [DiagnosticRule]
     public static class S4047
     {
@@ -4255,9 +3612,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4049</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Properties should be preferred.</summary>
     [DiagnosticRule]
     public static class S4049
     {
@@ -4268,9 +3623,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4050</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Operators should be overloaded consistently.</summary>
     [DiagnosticRule]
     public static class S4050
     {
@@ -4281,9 +3634,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4052</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Types should not extend outdated base types.</summary>
     [DiagnosticRule]
     public static class S4052
     {
@@ -4294,9 +3645,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4055</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Literals should not be passed as localized parameters.</summary>
     [DiagnosticRule]
     public static class S4055
     {
@@ -4307,9 +3656,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4056</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Overloads with a "CultureInfo" or an "IFormatProvider" parameter should be used.</summary>
     [DiagnosticRule]
     public static class S4056
     {
@@ -4320,9 +3667,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4057</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Locales should be set for data types.</summary>
     [DiagnosticRule]
     public static class S4057
     {
@@ -4333,9 +3678,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4058</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Overloads with a "StringComparison" parameter should be used.</summary>
     [DiagnosticRule]
     public static class S4058
     {
@@ -4346,9 +3689,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4059</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Property names should not match get methods.</summary>
     [DiagnosticRule]
     public static class S4059
     {
@@ -4359,9 +3700,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4060</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Non-abstract attributes should be sealed.</summary>
     [DiagnosticRule]
     public static class S4060
     {
@@ -4372,9 +3711,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4061</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>"params" should be used instead of "varargs".</summary>
     [DiagnosticRule]
     public static class S4061
     {
@@ -4385,9 +3722,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4069</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Operator overloads should have named alternatives.</summary>
     [DiagnosticRule]
     public static class S4069
     {
@@ -4398,9 +3733,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4070</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Non-flags enums should not be marked with "FlagsAttribute".</summary>
     [DiagnosticRule]
     public static class S4070
     {
@@ -4411,9 +3744,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4136</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Method overloads should be grouped together.</summary>
     [DiagnosticRule]
     public static class S4136
     {
@@ -4424,9 +3755,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4143</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>Collection elements should not be replaced unconditionally.</summary>
     [DiagnosticRule]
     public static class S4143
     {
@@ -4437,9 +3766,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S4144</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Methods should not have identical implementations.</summary>
     [DiagnosticRule]
     public static class S4144
     {
@@ -4450,9 +3777,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4159</c>, category <c>Blocker Bug</c>.
-    /// </summary>
+    /// <summary>Classes should implement their "ExportAttribute" interfaces.</summary>
     [DiagnosticRule]
     public static class S4159
     {
@@ -4463,9 +3788,7 @@ public static class SonarRule
         public const string Category = SonarCategory.BlockerBug;
     }
 
-    /// <summary>
-    /// Rule <c>S4200</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Native methods should be wrapped.</summary>
     [DiagnosticRule]
     public static class S4200
     {
@@ -4476,9 +3799,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4201</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Null checks should not be combined with "is" operator checks.</summary>
     [DiagnosticRule]
     public static class S4201
     {
@@ -4489,9 +3810,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4210</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>Windows Forms entry points should be marked with STAThread.</summary>
     [DiagnosticRule]
     public static class S4210
     {
@@ -4502,9 +3821,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S4211</c>, category <c>Major Vulnerability</c>.
-    /// </summary>
+    /// <summary>Members should not have conflicting transparency annotations.</summary>
     [DiagnosticRule]
     public static class S4211
     {
@@ -4515,9 +3832,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorVulnerability;
     }
 
-    /// <summary>
-    /// Rule <c>S4212</c>, category <c>Major Vulnerability</c>.
-    /// </summary>
+    /// <summary>Serialization constructors should be secured.</summary>
     [DiagnosticRule]
     public static class S4212
     {
@@ -4528,9 +3843,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorVulnerability;
     }
 
-    /// <summary>
-    /// Rule <c>S4214</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>"P/Invoke" methods should not be visible.</summary>
     [DiagnosticRule]
     public static class S4214
     {
@@ -4541,9 +3854,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4220</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Events should have proper arguments.</summary>
     [DiagnosticRule]
     public static class S4220
     {
@@ -4554,9 +3865,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4225</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Extension methods should not extend "object".</summary>
     [DiagnosticRule]
     public static class S4225
     {
@@ -4567,9 +3876,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4226</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Extensions should be in separate namespaces.</summary>
     [DiagnosticRule]
     public static class S4226
     {
@@ -4580,9 +3887,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4260</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>"ConstructorArgument" parameters should exist in constructors.</summary>
     [DiagnosticRule]
     public static class S4260
     {
@@ -4593,9 +3898,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S4261</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Methods should be named according to their synchronicities.</summary>
     [DiagnosticRule]
     public static class S4261
     {
@@ -4606,9 +3909,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4275</c>, category <c>Critical Bug</c>.
-    /// </summary>
+    /// <summary>Getters and setters should access the expected fields.</summary>
     [DiagnosticRule]
     public static class S4275
     {
@@ -4619,9 +3920,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalBug;
     }
 
-    /// <summary>
-    /// Rule <c>S4277</c>, category <c>Critical Bug</c>.
-    /// </summary>
+    /// <summary>"Shared" parts should not be created with "new".</summary>
     [DiagnosticRule]
     public static class S4277
     {
@@ -4632,9 +3931,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalBug;
     }
 
-    /// <summary>
-    /// Rule <c>S4423</c>, category <c>Critical Vulnerability</c>.
-    /// </summary>
+    /// <summary>Weak SSL/TLS protocols should not be used.</summary>
     [DiagnosticRule]
     public static class S4423
     {
@@ -4645,9 +3942,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalVulnerability;
     }
 
-    /// <summary>
-    /// Rule <c>S4426</c>, category <c>Critical Vulnerability</c>.
-    /// </summary>
+    /// <summary>Cryptographic keys should be robust.</summary>
     [DiagnosticRule]
     public static class S4426
     {
@@ -4658,9 +3953,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalVulnerability;
     }
 
-    /// <summary>
-    /// Rule <c>S4428</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>"PartCreationPolicyAttribute" should be used with "ExportAttribute".</summary>
     [DiagnosticRule]
     public static class S4428
     {
@@ -4671,9 +3964,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S4433</c>, category <c>Critical Vulnerability</c>.
-    /// </summary>
+    /// <summary>LDAP connections should be authenticated.</summary>
     [DiagnosticRule]
     public static class S4433
     {
@@ -4684,9 +3975,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalVulnerability;
     }
 
-    /// <summary>
-    /// Rule <c>S4456</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Parameter validation in yielding methods should be wrapped.</summary>
     [DiagnosticRule]
     public static class S4456
     {
@@ -4697,9 +3986,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4457</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Parameter validation in "async"/"await" methods should be wrapped.</summary>
     [DiagnosticRule]
     public static class S4457
     {
@@ -4710,9 +3997,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4462</c>, category <c>Blocker Code Smell</c>.
-    /// </summary>
+    /// <summary>Calls to "async" methods should not be blocking.</summary>
     [DiagnosticRule]
     public static class S4462
     {
@@ -4723,9 +4008,7 @@ public static class SonarRule
         public const string Category = SonarCategory.BlockerCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4487</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Unread "private" fields should be removed.</summary>
     [DiagnosticRule]
     public static class S4487
     {
@@ -4736,9 +4019,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4502</c>, category <c>Critical Vulnerability</c>.
-    /// </summary>
+    /// <summary>CSRF protections should not be disabled.</summary>
     [DiagnosticRule]
     public static class S4502
     {
@@ -4749,9 +4030,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalVulnerability;
     }
 
-    /// <summary>
-    /// Rule <c>S4507</c>, category <c>Minor Vulnerability</c>.
-    /// </summary>
+    /// <summary>Debugging features should not be enabled in production.</summary>
     [DiagnosticRule]
     public static class S4507
     {
@@ -4762,9 +4041,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorVulnerability;
     }
 
-    /// <summary>
-    /// Rule <c>S4524</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>"default" clauses should be first or last.</summary>
     [DiagnosticRule]
     public static class S4524
     {
@@ -4775,9 +4052,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4545</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>"DebuggerDisplayAttribute" strings should reference existing members.</summary>
     [DiagnosticRule]
     public static class S4545
     {
@@ -4788,9 +4063,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4581</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>"new Guid()" should not be used.</summary>
     [DiagnosticRule]
     public static class S4581
     {
@@ -4801,9 +4074,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4583</c>, category <c>Critical Bug</c>.
-    /// </summary>
+    /// <summary>Calls to delegate's method "BeginInvoke" should be paired with calls to "EndInvoke".</summary>
     [DiagnosticRule]
     public static class S4583
     {
@@ -4814,9 +4085,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalBug;
     }
 
-    /// <summary>
-    /// Rule <c>S4586</c>, category <c>Critical Bug</c>.
-    /// </summary>
+    /// <summary>Non-async "Task/Task&lt;T&gt;" methods should not return null.</summary>
     [DiagnosticRule]
     public static class S4586
     {
@@ -4827,9 +4096,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalBug;
     }
 
-    /// <summary>
-    /// Rule <c>S4635</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Start index should be used instead of calling Substring.</summary>
     [DiagnosticRule]
     public static class S4635
     {
@@ -4840,9 +4107,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4663</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Comments should not be empty.</summary>
     [DiagnosticRule]
     public static class S4663
     {
@@ -4853,9 +4118,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S4790</c>, category <c>Critical Vulnerability</c>.
-    /// </summary>
+    /// <summary>Weak hashing algorithms should not be used.</summary>
     [DiagnosticRule]
     public static class S4790
     {
@@ -4866,9 +4129,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalVulnerability;
     }
 
-    /// <summary>
-    /// Rule <c>S4830</c>, category <c>Critical Vulnerability</c>.
-    /// </summary>
+    /// <summary>Server certificates should be verified during SSL/TLS connections.</summary>
     [DiagnosticRule]
     public static class S4830
     {
@@ -4879,9 +4140,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalVulnerability;
     }
 
-    /// <summary>
-    /// Rule <c>S5034</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>"ValueTask" should be consumed correctly.</summary>
     [DiagnosticRule]
     public static class S5034
     {
@@ -4892,9 +4151,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S5042</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Expanding archive files should not be done without controlling resource consumption.</summary>
     [DiagnosticRule]
     public static class S5042
     {
@@ -4905,9 +4162,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S5122</c>, category <c>Major Vulnerability</c>.
-    /// </summary>
+    /// <summary>Cross-Origin Resource Sharing (CORS) policy should be restricted to trusted origins.</summary>
     [DiagnosticRule]
     public static class S5122
     {
@@ -4918,9 +4173,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorVulnerability;
     }
 
-    /// <summary>
-    /// Rule <c>S5332</c>, category <c>Minor Vulnerability</c>.
-    /// </summary>
+    /// <summary>Clear-text protocols should not be used.</summary>
     [DiagnosticRule]
     public static class S5332
     {
@@ -4931,9 +4184,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorVulnerability;
     }
 
-    /// <summary>
-    /// Rule <c>S5344</c>, category <c>Critical Vulnerability</c>.
-    /// </summary>
+    /// <summary>Passwords should not be stored in plaintext or with a fast hashing algorithm.</summary>
     [DiagnosticRule]
     public static class S5344
     {
@@ -4944,9 +4195,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalVulnerability;
     }
 
-    /// <summary>
-    /// Rule <c>S5443</c>, category <c>Critical Vulnerability</c>.
-    /// </summary>
+    /// <summary>Temporary files should not be created in publicly writable directories.</summary>
     [DiagnosticRule]
     public static class S5443
     {
@@ -4957,9 +4206,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalVulnerability;
     }
 
-    /// <summary>
-    /// Rule <c>S5445</c>, category <c>Critical Vulnerability</c>.
-    /// </summary>
+    /// <summary>Insecure temporary file creation methods should not be used.</summary>
     [DiagnosticRule]
     public static class S5445
     {
@@ -4970,9 +4217,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalVulnerability;
     }
 
-    /// <summary>
-    /// Rule <c>S5542</c>, category <c>Critical Vulnerability</c>.
-    /// </summary>
+    /// <summary>Encryption algorithms should be used with secure mode and padding scheme.</summary>
     [DiagnosticRule]
     public static class S5542
     {
@@ -4983,9 +4228,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalVulnerability;
     }
 
-    /// <summary>
-    /// Rule <c>S5547</c>, category <c>Critical Vulnerability</c>.
-    /// </summary>
+    /// <summary>Cipher algorithms should be robust.</summary>
     [DiagnosticRule]
     public static class S5547
     {
@@ -4996,9 +4239,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalVulnerability;
     }
 
-    /// <summary>
-    /// Rule <c>S5659</c>, category <c>Critical Vulnerability</c>.
-    /// </summary>
+    /// <summary>JWT should be signed and verified with strong cipher algorithms.</summary>
     [DiagnosticRule]
     public static class S5659
     {
@@ -5009,9 +4250,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalVulnerability;
     }
 
-    /// <summary>
-    /// Rule <c>S5693</c>, category <c>Major Vulnerability</c>.
-    /// </summary>
+    /// <summary>HTTP request content length should be limited.</summary>
     [DiagnosticRule]
     public static class S5693
     {
@@ -5022,9 +4261,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorVulnerability;
     }
 
-    /// <summary>
-    /// Rule <c>S5753</c>, category <c>Major Vulnerability</c>.
-    /// </summary>
+    /// <summary>ASP.NET Request Validation should not be disabled.</summary>
     [DiagnosticRule]
     public static class S5753
     {
@@ -5035,9 +4272,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorVulnerability;
     }
 
-    /// <summary>
-    /// Rule <c>S5766</c>, category <c>Major Vulnerability</c>.
-    /// </summary>
+    /// <summary>Serializable objects should validate data during deserialization.</summary>
     [DiagnosticRule]
     public static class S5766
     {
@@ -5048,9 +4283,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorVulnerability;
     }
 
-    /// <summary>
-    /// Rule <c>S5856</c>, category <c>Critical Bug</c>.
-    /// </summary>
+    /// <summary>Regular expressions should be syntactically valid.</summary>
     [DiagnosticRule]
     public static class S5856
     {
@@ -5061,9 +4294,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalBug;
     }
 
-    /// <summary>
-    /// Rule <c>S6354</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Use a testable date/time provider.</summary>
     [DiagnosticRule]
     public static class S6354
     {
@@ -5074,9 +4305,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6377</c>, category <c>Major Vulnerability</c>.
-    /// </summary>
+    /// <summary>XML signatures should be validated securely.</summary>
     [DiagnosticRule]
     public static class S6377
     {
@@ -5087,9 +4316,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorVulnerability;
     }
 
-    /// <summary>
-    /// Rule <c>S6418</c>, category <c>Blocker Vulnerability</c>.
-    /// </summary>
+    /// <summary>Secrets should not be hard-coded.</summary>
     [DiagnosticRule]
     public static class S6418
     {
@@ -5100,9 +4327,7 @@ public static class SonarRule
         public const string Category = SonarCategory.BlockerVulnerability;
     }
 
-    /// <summary>
-    /// Rule <c>S6419</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Azure Functions should be stateless.</summary>
     [DiagnosticRule]
     public static class S6419
     {
@@ -5113,9 +4338,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6420</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Client instances should not be recreated on each Azure Function invocation.</summary>
     [DiagnosticRule]
     public static class S6420
     {
@@ -5126,9 +4349,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6421</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Azure Functions should use Structured Error Handling.</summary>
     [DiagnosticRule]
     public static class S6421
     {
@@ -5139,9 +4360,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6422</c>, category <c>Blocker Code Smell</c>.
-    /// </summary>
+    /// <summary>Calls to "async" methods should not be blocking in Azure Functions.</summary>
     [DiagnosticRule]
     public static class S6422
     {
@@ -5152,9 +4371,7 @@ public static class SonarRule
         public const string Category = SonarCategory.BlockerCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6423</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Azure Functions should log all failures.</summary>
     [DiagnosticRule]
     public static class S6423
     {
@@ -5165,9 +4382,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6424</c>, category <c>Blocker Code Smell</c>.
-    /// </summary>
+    /// <summary>Interfaces for durable entities should satisfy the restrictions.</summary>
     [DiagnosticRule]
     public static class S6424
     {
@@ -5178,9 +4393,7 @@ public static class SonarRule
         public const string Category = SonarCategory.BlockerCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6444</c>, category <c>Minor Vulnerability</c>.
-    /// </summary>
+    /// <summary>Regular expressions should be executed with a timeout.</summary>
     [DiagnosticRule]
     public static class S6444
     {
@@ -5191,9 +4404,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorVulnerability;
     }
 
-    /// <summary>
-    /// Rule <c>S6507</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>Blocks should not be synchronized on local variables.</summary>
     [DiagnosticRule]
     public static class S6507
     {
@@ -5204,9 +4415,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S6513</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>"ExcludeFromCodeCoverage" attributes should include a justification.</summary>
     [DiagnosticRule]
     public static class S6513
     {
@@ -5217,9 +4426,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6561</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Avoid using "DateTime.Now" for benchmarking or timing operations.</summary>
     [DiagnosticRule]
     public static class S6561
     {
@@ -5230,9 +4437,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6562</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Always set the "DateTimeKind" when creating new "DateTime" instances.</summary>
     [DiagnosticRule]
     public static class S6562
     {
@@ -5243,9 +4448,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6563</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Use UTC when recording DateTime instants.</summary>
     [DiagnosticRule]
     public static class S6563
     {
@@ -5256,9 +4459,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6566</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Use "DateTimeOffset" instead of "DateTime".</summary>
     [DiagnosticRule]
     public static class S6566
     {
@@ -5269,9 +4470,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6575</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Use "TimeZoneInfo.FindSystemTimeZoneById" without converting the timezones with "TimezoneConverter".</summary>
     [DiagnosticRule]
     public static class S6575
     {
@@ -5282,9 +4481,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6580</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Use a format provider when parsing date and time.</summary>
     [DiagnosticRule]
     public static class S6580
     {
@@ -5295,9 +4492,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6585</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Don't hardcode the format when turning dates and times to strings.</summary>
     [DiagnosticRule]
     public static class S6585
     {
@@ -5308,9 +4503,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6588</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Use the "UnixEpoch" field instead of creating "DateTime" instances that point to the beginning of the Unix epoch.</summary>
     [DiagnosticRule]
     public static class S6588
     {
@@ -5321,9 +4514,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6602</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>"Find" method should be used instead of the "FirstOrDefault" extension.</summary>
     [DiagnosticRule]
     public static class S6602
     {
@@ -5334,9 +4525,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6603</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>The collection-specific "TrueForAll" method should be used instead of the "All" extension.</summary>
     [DiagnosticRule]
     public static class S6603
     {
@@ -5347,9 +4536,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6605</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Collection-specific "Exists" method should be used instead of the "Any" extension.</summary>
     [DiagnosticRule]
     public static class S6605
     {
@@ -5360,9 +4547,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6607</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>The collection should be filtered before sorting by using "Where" before "OrderBy".</summary>
     [DiagnosticRule]
     public static class S6607
     {
@@ -5373,9 +4558,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6608</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Prefer indexing instead of "Enumerable" methods on types implementing "IList".</summary>
     [DiagnosticRule]
     public static class S6608
     {
@@ -5386,9 +4569,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6609</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>"Min/Max" properties of "Set" types should be used instead of the "Enumerable" extension methods.</summary>
     [DiagnosticRule]
     public static class S6609
     {
@@ -5399,9 +4580,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6610</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>"StartsWith" and "EndsWith" overloads that take a "char" should be used instead of the ones that take a "string".</summary>
     [DiagnosticRule]
     public static class S6610
     {
@@ -5412,9 +4591,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6612</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>The lambda parameter should be used instead of capturing arguments in "ConcurrentDictionary" methods.</summary>
     [DiagnosticRule]
     public static class S6612
     {
@@ -5425,9 +4602,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6613</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>"First" and "Last" properties of "LinkedList" should be used instead of the "First()" and "Last()" extension methods.</summary>
     [DiagnosticRule]
     public static class S6613
     {
@@ -5438,9 +4613,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6617</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>"Contains" should be used instead of "Any" for simple equality checks.</summary>
     [DiagnosticRule]
     public static class S6617
     {
@@ -5451,9 +4624,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6618</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>"string.Create" should be used instead of "FormattableString".</summary>
     [DiagnosticRule]
     public static class S6618
     {
@@ -5464,9 +4635,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6640</c>, category <c>Major Vulnerability</c>.
-    /// </summary>
+    /// <summary>Unsafe code blocks should not be used.</summary>
     [DiagnosticRule]
     public static class S6640
     {
@@ -5477,9 +4646,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorVulnerability;
     }
 
-    /// <summary>
-    /// Rule <c>S6664</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>The code block contains too many logging calls.</summary>
     [DiagnosticRule]
     public static class S6664
     {
@@ -5490,9 +4657,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6667</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Logging in a catch clause should pass the caught exception as a parameter.</summary>
     [DiagnosticRule]
     public static class S6667
     {
@@ -5503,9 +4668,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6668</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Logging arguments should be passed to the correct parameter.</summary>
     [DiagnosticRule]
     public static class S6668
     {
@@ -5516,9 +4679,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6669</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Logger field or property name should comply with a naming convention.</summary>
     [DiagnosticRule]
     public static class S6669
     {
@@ -5529,9 +4690,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6670</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>"Trace.Write" and "Trace.WriteLine" should not be used.</summary>
     [DiagnosticRule]
     public static class S6670
     {
@@ -5542,9 +4701,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6672</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Generic logger injection should match enclosing type.</summary>
     [DiagnosticRule]
     public static class S6672
     {
@@ -5555,9 +4712,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6673</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Log message template placeholders should be in the right order.</summary>
     [DiagnosticRule]
     public static class S6673
     {
@@ -5568,9 +4723,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6674</c>, category <c>Critical Bug</c>.
-    /// </summary>
+    /// <summary>Log message template should be syntactically correct.</summary>
     [DiagnosticRule]
     public static class S6674
     {
@@ -5581,9 +4734,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalBug;
     }
 
-    /// <summary>
-    /// Rule <c>S6675</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>"Trace.WriteLineIf" should not be used with "TraceSwitch" levels.</summary>
     [DiagnosticRule]
     public static class S6675
     {
@@ -5594,9 +4745,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6677</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>Message template placeholders should be unique.</summary>
     [DiagnosticRule]
     public static class S6677
     {
@@ -5607,9 +4756,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S6678</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Use PascalCase for named placeholders.</summary>
     [DiagnosticRule]
     public static class S6678
     {
@@ -5620,9 +4767,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6797</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>Blazor query parameter type should be supported.</summary>
     [DiagnosticRule]
     public static class S6797
     {
@@ -5633,9 +4778,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S6798</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>[JSInvokable] attribute should only be used on public methods.</summary>
     [DiagnosticRule]
     public static class S6798
     {
@@ -5646,9 +4789,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S6800</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>Component parameter type should match the route parameter type constraint.</summary>
     [DiagnosticRule]
     public static class S6800
     {
@@ -5659,9 +4800,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S6802</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Using lambda expressions in loops should be avoided in Blazor markup section.</summary>
     [DiagnosticRule]
     public static class S6802
     {
@@ -5672,9 +4811,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6803</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Parameters with SupplyParameterFromQuery attribute should be used only in routable components.</summary>
     [DiagnosticRule]
     public static class S6803
     {
@@ -5685,9 +4822,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6930</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>Backslash should be avoided in route templates.</summary>
     [DiagnosticRule]
     public static class S6930
     {
@@ -5698,9 +4833,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S6931</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>ASP.NET controller actions should not have a route template starting with "/".</summary>
     [DiagnosticRule]
     public static class S6931
     {
@@ -5711,9 +4844,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6932</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Use model binding instead of reading raw request data.</summary>
     [DiagnosticRule]
     public static class S6932
     {
@@ -5724,9 +4855,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6934</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>A Route attribute should be added to the controller when a route template is specified at the action level.</summary>
     [DiagnosticRule]
     public static class S6934
     {
@@ -5737,9 +4866,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6960</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Controllers should not have mixed responsibilities.</summary>
     [DiagnosticRule]
     public static class S6960
     {
@@ -5750,9 +4877,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6961</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>API Controllers should derive from ControllerBase instead of Controller.</summary>
     [DiagnosticRule]
     public static class S6961
     {
@@ -5763,9 +4888,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6962</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>You should pool HTTP connections with HttpClientFactory.</summary>
     [DiagnosticRule]
     public static class S6962
     {
@@ -5776,9 +4899,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6964</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Value type property used as input in a controller action should be nullable, required or annotated with the JsonRequiredAttribute to avoid under-posting.</summary>
     [DiagnosticRule]
     public static class S6964
     {
@@ -5789,9 +4910,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6965</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>REST API actions should be annotated with an HTTP verb attribute.</summary>
     [DiagnosticRule]
     public static class S6965
     {
@@ -5802,9 +4921,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6966</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Awaitable method should be used.</summary>
     [DiagnosticRule]
     public static class S6966
     {
@@ -5815,9 +4932,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6967</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>ModelState.IsValid should be called in controller actions.</summary>
     [DiagnosticRule]
     public static class S6967
     {
@@ -5828,9 +4943,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S6968</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Actions that return a value should be annotated with ProducesResponseTypeAttribute containing the return type.</summary>
     [DiagnosticRule]
     public static class S6968
     {
@@ -5841,9 +4954,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S7039</c>, category <c>Major Vulnerability</c>.
-    /// </summary>
+    /// <summary>Content Security Policies should be restrictive.</summary>
     [DiagnosticRule]
     public static class S7039
     {
@@ -5854,9 +4965,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorVulnerability;
     }
 
-    /// <summary>
-    /// Rule <c>S818</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Literal suffixes should be upper case.</summary>
     [DiagnosticRule]
     public static class S818
     {
@@ -5867,9 +4976,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S8367</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Identifiers should not conflict with the C# 14 "field" contextual keyword.</summary>
     [DiagnosticRule]
     public static class S8367
     {
@@ -5880,9 +4987,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S8368</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Identifiers should not conflict with the C# 14 "extension" contextual keyword.</summary>
     [DiagnosticRule]
     public static class S8368
     {
@@ -5893,9 +4998,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S8380</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Return types named "partial" should be escaped with "@".</summary>
     [DiagnosticRule]
     public static class S8380
     {
@@ -5906,9 +5009,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S8381</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>"scoped" should be escaped when used as an identifier or type name in parenthesized lambda parameter lists.</summary>
     [DiagnosticRule]
     public static class S8381
     {
@@ -5919,9 +5020,7 @@ public static class SonarRule
         public const string Category = SonarCategory.CriticalCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S881</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>Increment (++) and decrement (--) operators should not be used in a method call or mixed with other operators in an expression.</summary>
     [DiagnosticRule]
     public static class S881
     {
@@ -5932,9 +5031,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S8949</c>, category <c>Major Bug</c>.
-    /// </summary>
+    /// <summary>The overload accepting a 'CancellationToken' should be used.</summary>
     [DiagnosticRule]
     public static class S8949
     {
@@ -5945,9 +5042,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorBug;
     }
 
-    /// <summary>
-    /// Rule <c>S8969</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Null-forgiving operators should not be redundant.</summary>
     [DiagnosticRule]
     public static class S8969
     {
@@ -5958,9 +5053,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S8970</c>, category <c>Minor Code Smell</c>.
-    /// </summary>
+    /// <summary>Null-forgiving operators should not be used when nullable warnings are disabled.</summary>
     [DiagnosticRule]
     public static class S8970
     {
@@ -5971,9 +5064,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MinorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S907</c>, category <c>Major Code Smell</c>.
-    /// </summary>
+    /// <summary>"goto" statement should not be used.</summary>
     [DiagnosticRule]
     public static class S907
     {
@@ -5984,9 +5075,7 @@ public static class SonarRule
         public const string Category = SonarCategory.MajorCodeSmell;
     }
 
-    /// <summary>
-    /// Rule <c>S927</c>, category <c>Critical Code Smell</c>.
-    /// </summary>
+    /// <summary>Parameter names should match base declaration and other partial definitions.</summary>
     [DiagnosticRule]
     public static class S927
     {

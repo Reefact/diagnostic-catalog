@@ -16,7 +16,20 @@ number below.
 
 ## [Unreleased]
 
-_Nothing yet._
+### Added
+
+* Every rule now carries the title its `DiagnosticDescriptor` declares as its
+  documentation comment, so hovering a constant says what the rule is about
+  instead of restating the identifier under the cursor. This catalogue gains the
+  most from it: SonarAnalyzer.CSharp populates no help link, so until now a rule
+  had nothing at all to say for itself
+  ([ADR-0014](../../doc/adr/0014-ship-the-vendors-rule-title-as-a-catalogues-documentation.md)).
+
+### Changed
+
+* A rule's category is now documented on its `Category` constant rather than on
+  the rule itself, where the title has taken its place. No constant moved: this is
+  a documentation change only, and every id and category is unchanged.
 
 ## [0.1.0] - 2026-07-31
 
