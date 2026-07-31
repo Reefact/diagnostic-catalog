@@ -142,5 +142,5 @@ here take the foundation as a `PackageReference` even though its source sits in 
 ---
 
 <div align="center">
-<a href="./versioning-a-catalogue.en.md">← Versioning a catalogue</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./diagnostics.en.md">The DCAT diagnostics →</a>
+<a href="./versioning-a-catalogue.en.md">← Versioning a catalogue</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./dcat.en.md">The dcat tool →</a>
 </div>

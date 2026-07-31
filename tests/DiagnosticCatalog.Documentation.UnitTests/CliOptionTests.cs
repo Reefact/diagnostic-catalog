@@ -30,10 +30,10 @@ namespace DiagnosticCatalog.Documentation.UnitTests;
 /// the version of Spectre.Console.Cli that happens to be pinned.
 /// </para>
 /// <para>
-/// The converse — every option the tool exposes is documented — is not checked yet. It needs a
-/// single page that carries the obligation, and the <c>dcat</c> reference page does not exist. An
-/// obligation spread across every document that happens to mention the tool is one no document can
-/// discharge.
+/// The converse is checked too, and it needs somewhere to land: an obligation spread across every
+/// document that mentions the tool is one no document can discharge. <c>doc/guide/dcat-reference</c>
+/// carries it, in both languages, so an option added without documentation fails rather than waiting
+/// for a user to ask what it does.
 /// </para>
 /// </remarks>
 public sealed class CliOptionTests
@@ -95,7 +95,7 @@ public sealed class CliOptionTests
         MarkdownDocument document = Repository.Require(path);
         IReadOnlyCollection<string> declared = DeclaredOptions();
 
-        foreach (Match option in Regex.Matches(document.Text, OptionPattern, RegexOptions.None, MatchTimeout))
+        foreach (Match option in Regex.Matches(Addressable(document), OptionPattern, RegexOptions.None, MatchTimeout))
         {
             string name = option.Groups["name"].Value;
             if (Foreign.Contains(name)) continue;
@@ -114,6 +114,32 @@ public sealed class CliOptionTests
     /// as empty and the theory written the other way round, every one would pass. Either way the
     /// check has to say out loud that it found the tool.
     /// </summary>
+    public static TheoryData<string> ReferenceLanguages() => new("en", "fr");
+
+    /// <summary>
+    /// Every option the tool exposes appears in the reference page. The direction that catches the
+    /// commoner mistake: a flag shipped and never written down is met by a reader who cannot know it
+    /// exists, and the only signal is nobody using it.
+    /// </summary>
+    [Theory]
+    [MemberData(nameof(ReferenceLanguages))]
+    public void Every_option_the_tool_exposes_is_documented(string language)
+    {
+        MarkdownDocument reference = Repository.Require($"doc/guide/dcat-reference.{language}.md");
+
+        foreach (string option in DeclaredOptions())
+        {
+            Assert.True(
+                Regex.IsMatch(
+                    Addressable(reference),
+                    "(?<!\\w)--" + Regex.Escape(option) + "(?![\\w-])",
+                    RegexOptions.None,
+                    MatchTimeout),
+                $"dcat accepts --{option} and doc/guide/dcat-reference.{language}.md never mentions " +
+                "it. A flag nobody wrote down is a flag nobody can know exists.");
+        }
+    }
+
     [Fact]
     public void The_tool_options_are_discovered()
     {
@@ -159,6 +185,24 @@ public sealed class CliOptionTests
 
         return options;
     }
+
+    /// <summary>
+    /// The document with its link targets removed, which is what an option may be looked for in.
+    /// </summary>
+    /// <remarks>
+    /// A heading that names an option produces an anchor that begins with it —
+    /// <c>#--solution-and-why-it-needs-a-declaration</c> for "`--solution`, and why it needs a
+    /// declaration" — and a scanner reading raw text takes the whole slug for a flag. Stripping the
+    /// targets is the fix rather than renaming the headings: the collision belongs to every heading
+    /// that will ever name an option, and only one of the two places can be made not to recur.
+    /// </remarks>
+    private static string Addressable(MarkdownDocument document) =>
+        Regex.Replace(
+            Regex.Replace(document.Text, "\\]\\([^)]*\\)", "]()", RegexOptions.None, MatchTimeout),
+            "href=\"[^\"]*\"",
+            "href=\"\"",
+            RegexOptions.None,
+            MatchTimeout);
 
     /// <summary>
     /// The long option names a property declares, or nothing when it declares no option. The

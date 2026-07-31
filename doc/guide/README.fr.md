@@ -49,6 +49,16 @@ Le cas courant, et celui qui ne demande de connaître rien d'autre ici.
   ce que nuget.org fait de votre README.
 * [Les diagnostics `DCAT`](diagnostics.fr.md) — ce qu'on dira à vos utilisateurs, et quand.
 
+## Je génère un catalogue plutôt que de l'écrire à la main
+
+* [**L'outil `dcat`**](dcat.fr.md) — les quatre verbes, quelle source lui désigner, et pourquoi il lit
+  des descripteurs plutôt que de la documentation. Deux schémas.
+* [**La référence `dcat`**](dcat-reference.fr.md) — chaque commande, option et code de sortie, vérifiés
+  contre les types de configuration de l'outil.
+* [**Le manifeste de catalogues**](catalogs-manifest.fr.md) — chaque clé de `catalogs.json`.
+* [**Tenir un catalogue à jour**](ci-integration.fr.md) — `validate` dans un pipeline, la pull request
+  de dérive nocturne, et pourquoi `1` et `2` doivent être traités différemment. Un schéma.
+
 ## J'ai vu passer un `DCATxxxx` et je veux savoir ce que c'est
 
 * [**Les diagnostics `DCAT`**](diagnostics.fr.md) — chaque identifiant, ce qui le déclenche,
@@ -112,7 +122,11 @@ votre propre catalogue :
 11. [Boucler la boucle avec votre propre analyseur](first-party-analyzers.fr.md)
 12. [Versionner un catalogue](versioning-a-catalogue.fr.md)
 13. [Empaqueter un catalogue](packaging-a-catalogue.fr.md)
-14. [Les diagnostics `DCAT`](diagnostics.fr.md)
+14. [L'outil `dcat`](dcat.fr.md)
+15. [La référence `dcat`](dcat-reference.fr.md)
+16. [Le manifeste de catalogues](catalogs-manifest.fr.md)
+17. [Tenir un catalogue à jour](ci-integration.fr.md)
+18. [Les diagnostics `DCAT`](diagnostics.fr.md)
 
 ---
 

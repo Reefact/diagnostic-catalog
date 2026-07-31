@@ -38,6 +38,28 @@ Three details in that snippet earn their place:
 * **`nameof(CTS0001)`** rather than `"CTS0001"` — it resolves to the containing type's own name, so
   the identifier and the class cannot drift apart. Rename one in the IDE and the other follows.
 
+## When you get it wrong, the analyzer offers to fix it
+
+`DCAT0002`, `DCAT0003` and `DCAT0004` report a declaration that misses the contract, and each carries
+a fix — **offered only where the repair is already written in the code**, and silent otherwise:
+
+| What you wrote | What is offered |
+| --- | --- |
+| `public sealed class CTS0001` | *Make 'CTS0001' static* — for a plain class that could carry the keyword: no type parameters, no base type, no instance member, not `partial` |
+| `private static readonly string Id = ...` | *Make 'Id' a public constant* — modifiers only; the value is left alone |
+| no `Id` member at all | *Declare 'public const string Id'*, written `nameof(CTS0001)` — read off your declaration rather than invented |
+
+Nothing is offered when the **value** is what is wrong — a `const int`, a blank string, a
+non-constant initialiser. The code says nothing about what you meant, and a fix that guessed would
+produce a rule the compiler accepts and nobody checks.
+
+> **One to think about before pressing it.** *Declare 'public const string Category'* writes `"TODO"`.
+> That is a real string, so `DCAT0004` stops being reported the moment you apply it — you have traded
+> a warning that named the problem for a marker only a reader will notice, and a wrong category is
+> invisible in every build forever. Apply it when you are about to fill it in.
+
+Full detail in [the diagnostics reference](diagnostics.en.md#definition-diagnostics).
+
 ## The shape to actually ship
 
 Nest the rules in a container, so the use site reads well:

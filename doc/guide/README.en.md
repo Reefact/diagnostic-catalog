@@ -46,6 +46,16 @@ The common case, and the one that needs no knowledge of anything else here.
   what nuget.org does to your README.
 * [The `DCAT` diagnostics](diagnostics.en.md) — what your users will be told, and when.
 
+## I generate a catalogue rather than hand-writing one
+
+* [**The `dcat` tool**](dcat.en.md) — the four verbs, which source to point it at, and why it reads
+  descriptors rather than documentation. Two diagrams.
+* [**The `dcat` reference**](dcat-reference.en.md) — every command, option and exit code, checked
+  against the tool's own settings types.
+* [**The catalogue manifest**](catalogs-manifest.en.md) — every key of `catalogs.json`.
+* [**Keeping a catalogue current**](ci-integration.en.md) — `validate` in a pipeline, the nightly
+  drift pull request, and why `1` and `2` must be handled differently. One diagram.
+
 ## I saw a `DCATxxxx` and want to know what it means
 
 * [**The `DCAT` diagnostics**](diagnostics.en.md) — every id, what triggers it, why it exists, and
@@ -106,7 +116,11 @@ own:
 11. [Closing the loop with your own analyzer](first-party-analyzers.en.md)
 12. [Versioning a catalogue](versioning-a-catalogue.en.md)
 13. [Packaging a catalogue](packaging-a-catalogue.en.md)
-14. [The `DCAT` diagnostics](diagnostics.en.md)
+14. [The `dcat` tool](dcat.en.md)
+15. [The `dcat` reference](dcat-reference.en.md)
+16. [The catalogue manifest](catalogs-manifest.en.md)
+17. [Keeping a catalogue current](ci-integration.en.md)
+18. [The `DCAT` diagnostics](diagnostics.en.md)
 
 ---
 
