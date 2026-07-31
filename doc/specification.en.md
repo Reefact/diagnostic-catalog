@@ -479,8 +479,9 @@ already references Microsoft.CodeAnalysis, typically the analyzer itself
 falls outside the `const` model. The catalogue covers the id/category axis;
 resource files remain the right tool for translated text.
 
-For third-party catalogues, prefer XML documentation comments over `Title` and
-`Description` constants — see §25.4 for the licensing reason.
+For third-party catalogues, the upstream title is carried as an XML documentation
+comment rather than as a `Title` constant, and no `Description` constant is
+emitted — see §14.1 and ADR-0014.
 
 ### 7.6 Catalogue provenance
 
@@ -1175,11 +1176,15 @@ Rules for the generator, each of which is load-bearing:
    a valid C# identifier. Both cases are printed with the id and the reason;
    nothing is dropped silently. For `SonarAnalyzer.CSharp 10.31.0.145097` that is
    nine `S9999-*` entries, which are internal metrics and telemetry channels.
-4. **Ship ids and categories only.** Both are facts about a third party's
-   software. Rule titles and descriptions are that vendor's authored content
-   under their own licence and must not be redistributed in the package. (This
-   constrains what a *package* ships; quoting a rule title in documentation to
-   illustrate a format, as §3.3 does, is a different matter.)
+4. **Ship ids, categories and titles.** The first two are facts about a third
+   party's software; the title is that vendor's own sentence naming what the rule
+   reports on, carried as the rule's documentation comment because an identifier
+   restated cannot say what a rule is about. Rule descriptions and message formats
+   are that vendor's documentation and must not be redistributed in the package
+   (ADR-0014). A message format is also not one value per rule: 203 of Sonar's 456
+   carry placeholders filled at analysis time and 37 carry nothing else, so
+   publishing one would mean inventing a sentence no descriptor declares, which
+   item 5 forbids.
 5. **Do not synthesise values that were not read.** `SonarAnalyzer.CSharp`
    populates `HelpLinkUri` on 0 of its 465 descriptors, so the generated
    catalogue carries no help links rather than links assembled from a guessed
