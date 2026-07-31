@@ -1,0 +1,158 @@
+using System;
+using System.Collections.Immutable;
+using System.IO;
+using System.Linq;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Emit;
+using Xunit;
+
+namespace CatalogGen.UnitTests;
+
+/// <summary>
+/// Compiles a catalogue assembly to disk, so a test can state exactly what is in one.
+/// </summary>
+/// <remarks>
+/// <para>
+/// Compiled rather than copied from the catalogues this repository ships, and the reason is
+/// coverage of the SHAPES rather than of one vendor's contents. A retired rule, a rule carrying a
+/// help link and a rule carrying none, an assembly with no provenance at all — the real catalogues
+/// happen to contain some of those and never all of them, so asserting against one would leave the
+/// branches that matter untested and would change the day the mirrored release changed.
+/// </para>
+/// <para>
+/// The markers are declared INSIDE the fixture rather than referenced from the foundation. That is
+/// the §7.2 shape — a catalogue may embed its own marker instead of taking a package dependency —
+/// and it is what makes these assemblies self-contained: <see cref="CatalogueInspector"/> resolves
+/// the attribute types before it can recognise them, so a fixture referencing the foundation would
+/// only be readable where the foundation happened to sit beside it.
+/// </para>
+/// </remarks>
+internal static class CatalogueFixture
+{
+    /// <summary>The marker declarations every fixture carries, under the names the reader matches on.</summary>
+    internal const string Markers = """
+        namespace DiagnosticCatalog
+        {
+            [System.AttributeUsage(System.AttributeTargets.Class)]
+            internal sealed class DiagnosticRuleAttribute : System.Attribute { }
+
+            [System.AttributeUsage(System.AttributeTargets.Assembly, AllowMultiple = true)]
+            internal sealed class CatalogSourceAttribute : System.Attribute
+            {
+                public CatalogSourceAttribute(string source, string sourceVersion, string generatedOn)
+                {
+                    Source = source;
+                    SourceVersion = sourceVersion;
+                    GeneratedOn = generatedOn;
+                }
+
+                public string Source { get; }
+                public string SourceVersion { get; }
+                public string GeneratedOn { get; }
+            }
+        }
+        """;
+
+    /// <summary>
+    /// A catalogue with the four shapes worth telling apart: a rule with a help link and one
+    /// without, a retired rule, and a declaration order that is not the published order.
+    /// </summary>
+    internal const string TwoRulesAndOneRetired = """
+        [assembly: DiagnosticCatalog.CatalogSource("Acme.Analyzers", "1.2.3", "2026-07-30")]
+
+        namespace Vendor.Catalog
+        {
+            public static class AcmeRules
+            {
+                // Declared second on purpose: the reader publishes by identifier, not by position.
+                [DiagnosticCatalog.DiagnosticRule]
+                public static class ACME0002
+                {
+                    public const string Id = "ACME0002";
+                    public const string Category = "Usage";
+                    public const string HelpLinkUri = "https://acme.example/ACME0002";
+                }
+
+                [DiagnosticCatalog.DiagnosticRule]
+                [System.Obsolete("ACME0001 is no longer declared by Acme.Analyzers 1.2.3.")]
+                public static class ACME0001
+                {
+                    public const string Id = "ACME0001";
+                    public const string Category = "Naming";
+                }
+            }
+        }
+        """;
+
+    /// <summary>An assembly that is perfectly valid and is not a catalogue.</summary>
+    internal const string NotACatalogue = """
+        namespace Vendor.Ordinary
+        {
+            public static class Helper
+            {
+                public const string Id = "not a rule";
+            }
+        }
+        """;
+
+    /// <summary>Rules with no <c>[assembly: CatalogSource]</c>, which a hand-written catalogue may omit.</summary>
+    internal const string NoProvenance = """
+        namespace Vendor.Catalog
+        {
+            [DiagnosticCatalog.DiagnosticRule]
+            public static class LOOSE0001
+            {
+                public const string Id = "LOOSE0001";
+                public const string Category = "Usage";
+            }
+        }
+        """;
+
+    /// <summary>
+    /// A type carrying the marker and none of the constants a rule must declare — the shape
+    /// DCAT0003 exists to report at compile time, and which a referenced assembly can carry anyway.
+    /// </summary>
+    internal const string MarkedButIncomplete = """
+        namespace Vendor.Catalog
+        {
+            public static class BrokenRules
+            {
+                [DiagnosticCatalog.DiagnosticRule]
+                public static class HALF0001
+                {
+                }
+            }
+        }
+        """;
+
+    /// <summary>Compiles <paramref name="source"/> into <paramref name="directory"/> and returns its path.</summary>
+    internal static string Write(string directory, string name, string source)
+    {
+        CSharpCompilation compilation = CSharpCompilation.Create(
+            assemblyName: name,
+            syntaxTrees: [CSharpSyntaxTree.ParseText(Markers), CSharpSyntaxTree.ParseText(source)],
+            references: PlatformReferences,
+            options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+
+        Directory.CreateDirectory(directory);
+        string path = Path.Combine(directory, name + ".dll");
+
+        EmitResult result = compilation.Emit(path);
+
+        // A fixture that failed to build would be read as a catalogue with no rules, and every
+        // assertion about its contents would pass for the wrong reason.
+        Assert.True(
+            result.Success,
+            "the fixture catalogue must compile; it reported: "
+            + string.Join("; ", result.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error)));
+
+        return path;
+    }
+
+    private static ImmutableArray<MetadataReference> PlatformReferences { get; } = ImmutableArray.CreateRange(
+        ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")!)
+        .Split(Path.PathSeparator)
+        .Where(path => path.Length > 0)
+        .Select(path => (MetadataReference)MetadataReference.CreateFromFile(path)));
+}
