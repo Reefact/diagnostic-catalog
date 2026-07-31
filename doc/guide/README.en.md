@@ -6,35 +6,47 @@
 For anyone deciding what to read. This page is organised by what you are trying to **do**, not by
 how the code is arranged.
 
+## I am finding out whether this is for me
+
+* [**Getting started**](getting-started.en.md) — ten minutes: reference a catalogue, rewrite one
+  suppression, break it on purpose and watch the compiler catch it.
+* [**Why magic strings fail**](the-problem.en.md) — the two arguments of a suppression, the two
+  different ways they fail, and why nothing in the platform can report the worse one.
+* [**When not to use this**](when-not-to-use.en.md) — written to talk you out of it where it should.
+* [**The alternatives**](alternatives.en.md) — a constants file you maintain, `GlobalSuppressions`,
+  `#pragma`, a grep before each upgrade, doing nothing.
+
 ## I write `[SuppressMessage(...)]` and want it checked
 
 The common case, and the one that needs no knowledge of anything else here.
 
-1. [**Writing suppressions that the compiler checks**](writing-suppressions.en.md) — reference a
-   catalogue, write the suppression against constants, migrate the literals you already have, and
-   see what it costs at run time (nothing).
-
-Then, when a diagnostic appears:
-
-* [The `DCAT` diagnostics](diagnostics.en.md) — what each one means, and how to configure its
-  severity.
+* [**Writing suppressions that the compiler checks**](writing-suppressions.en.md) — reference a
+  catalogue, write the suppression against constants, migrate the literals you already have, and see
+  what it costs at run time (nothing).
+* [Core concepts](concepts.en.md) — if a word in that guide is unfamiliar.
+* [The `DCAT` diagnostics](diagnostics.en.md) — when one of them appears.
 
 ## I ship an analyzer, or own rules nobody else publishes
 
-1. [**Publishing a catalogue**](authoring-a-catalogue.en.md) — the structural contract, the shape to
-   actually ship, declaring categories once, packaging, and the versioning rule that will bite you
-   if you skip it.
-2. [The `DCAT` diagnostics](diagnostics.en.md) — what your users will be told, and when.
+* [**Publishing a catalogue**](authoring-a-catalogue.en.md) — the structural contract, the shape to
+  actually ship, declaring categories once, packaging, and the versioning rule that will bite you if
+  you skip it.
+* [The `DCAT` diagnostics](diagnostics.en.md) — what your users will be told, and when.
 
 ## I saw a `DCATxxxx` and want to know what it means
 
 * [**The `DCAT` diagnostics**](diagnostics.en.md) — every id, what triggers it, why it exists, and
   the `.editorconfig` keys that configure it.
 
+## I want the vocabulary
+
+* [**Core concepts**](concepts.en.md) — rule, catalogue, container, category class, provenance; how
+  they nest, which package carries which, and exactly what a reference gives you today.
+
 ## I want the reasoning, not the instructions
 
-The guides above state what to do and say why in a sentence. Where a decision needed an argument, it
-is recorded once and linked rather than repeated:
+The guides state what to do and say why in a sentence. Where a decision needed an argument, it is
+recorded once and linked rather than repeated:
 
 * [**The specification**](../specification.en.md) — the canonical design document: the rule
   contract, the platform behaviour it relies on, the generator, the analyzer diagnostics, packaging.
@@ -64,16 +76,21 @@ mirroring other people's analyzers.
 
 ## Suggested reading order
 
-Everything in this folder is threaded in one order, and each page's footer carries the previous and
-the next. Following it end to end takes you from a single suppression to publishing a catalogue of
-your own:
+Every page in this folder is threaded in one order, and each footer carries the previous and the
+next. Following it end to end takes you from a single suppression to publishing a catalogue of your
+own:
 
-1. [Writing suppressions that the compiler checks](writing-suppressions.en.md)
-2. [Publishing a catalogue](authoring-a-catalogue.en.md)
-3. [The `DCAT` diagnostics](diagnostics.en.md)
+1. [Getting started](getting-started.en.md)
+2. [Why magic strings fail](the-problem.en.md)
+3. [Core concepts](concepts.en.md)
+4. [When not to use this](when-not-to-use.en.md)
+5. [The alternatives](alternatives.en.md)
+6. [Writing suppressions that the compiler checks](writing-suppressions.en.md)
+7. [Publishing a catalogue](authoring-a-catalogue.en.md)
+8. [The `DCAT` diagnostics](diagnostics.en.md)
 
 ---
 
 <div align="center">
-<a href="../../README.md">← Project README</a> · <a href="./writing-suppressions.en.md">Start with Writing suppressions →</a>
+<a href="../../README.md">← Project README</a> · <a href="./getting-started.en.md">Start with Getting started →</a>
 </div>
