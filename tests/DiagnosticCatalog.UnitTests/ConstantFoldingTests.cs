@@ -27,6 +27,13 @@ public sealed class ConstantFoldingTests
     private static class TestRules
     {
         [DiagnosticRule]
+        [SuppressMessage(
+            "Major Code Smell",
+            "S101:Types should be named in PascalCase",
+            Justification =
+                "A fixture rule's name IS its identifier: it is read back through nameof and "
+                + "asserted as such. Real rule ids are shouty by nature — S1144, CA1822, SA1000 — "
+                + "so PascalCase here would change the constant under test.")]
         public static class TEST0001
         {
             public const string Id = nameof(TEST0001);
@@ -38,6 +45,13 @@ public sealed class ConstantFoldingTests
         /// generated catalog declares each category once instead of repeating it per rule.
         /// </summary>
         [DiagnosticRule]
+        [SuppressMessage(
+            "Major Code Smell",
+            "S101:Types should be named in PascalCase",
+            Justification =
+                "A fixture rule's name IS its identifier: it is read back through nameof and "
+                + "asserted as such. Real rule ids are shouty by nature — S1144, CA1822, SA1000 — "
+                + "so PascalCase here would change the constant under test.")]
         public static class TEST0002
         {
             public const string Id = nameof(TEST0002);
@@ -68,9 +82,10 @@ public sealed class ConstantFoldingTests
     [Fact]
     public void Rule_members_fold_to_their_literals_in_metadata()
     {
-        SuppressMessageAttribute attribute = typeof(DirectlyDeclaredSubject)
-            .GetCustomAttribute<SuppressMessageAttribute>()!;
+        SuppressMessageAttribute? attribute = typeof(DirectlyDeclaredSubject)
+            .GetCustomAttribute<SuppressMessageAttribute>();
 
+        Assert.NotNull(attribute);
         Assert.Equal("TEST0001", attribute.CheckId);
         Assert.Equal("Usage", attribute.Category);
     }
@@ -83,9 +98,10 @@ public sealed class ConstantFoldingTests
     [Fact]
     public void A_category_reached_through_a_second_constant_folds_the_same_way()
     {
-        SuppressMessageAttribute attribute = typeof(ChainedCategorySubject)
-            .GetCustomAttribute<SuppressMessageAttribute>()!;
+        SuppressMessageAttribute? attribute = typeof(ChainedCategorySubject)
+            .GetCustomAttribute<SuppressMessageAttribute>();
 
+        Assert.NotNull(attribute);
         Assert.Equal("TEST0002", attribute.CheckId);
         Assert.Equal("Usage", attribute.Category);
     }
@@ -163,6 +179,12 @@ public sealed class CatalogSourceTests
             out DateTime date);
 
         Assert.True(parsed);
-        Assert.Equal(new DateTime(2026, 7, 30), date);
+
+        // Unspecified, stated rather than defaulted into: DateTimeStyles.None is what makes the
+        // parse yield it, and a catalogue stamps a calendar DATE — the day the generator ran — not
+        // an instant anybody could place on a timeline. Naming the kind here says that on purpose;
+        // leaving it off would say the same thing by accident.
+        Assert.Equal(new DateTime(2026, 7, 30, 0, 0, 0, DateTimeKind.Unspecified), date);
+        Assert.Equal(DateTimeKind.Unspecified, date.Kind);
     }
 }

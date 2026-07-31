@@ -42,6 +42,13 @@ public sealed class ZeroFootprintTests
     private static class TestRules
     {
         [DiagnosticRule]
+        [SuppressMessage(
+            "Major Code Smell",
+            "S101:Types should be named in PascalCase",
+            Justification =
+                "A fixture rule's name IS its identifier: it is read back through nameof and "
+                + "asserted as such. Real rule ids are shouty by nature — S1144, CA1822, SA1000 — "
+                + "so PascalCase here would change the constant under test.")]
         public static class TEST0001
         {
             public const string Id = nameof(TEST0001);
@@ -129,7 +136,7 @@ public sealed class ZeroFootprintTests
             .GetCustomAttribute<UnconditionalSuppressMessageAttribute>();
 
         Assert.NotNull(attribute);
-        Assert.Equal("IL2026", attribute!.CheckId);
+        Assert.Equal("IL2026", attribute.CheckId);
         Assert.Equal("Trimming", attribute.Category);
     }
 #endif
