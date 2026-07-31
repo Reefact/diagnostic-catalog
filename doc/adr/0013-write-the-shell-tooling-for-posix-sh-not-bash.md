@@ -1,7 +1,8 @@
 # ADR-0013 | Write the shell tooling for POSIX sh, not bash
 
-**Status:** Proposed
+**Status:** Accepted
 **Proposed:** 2026-07-31
+**Accepted:** 2026-07-31
 **Decision Makers:** Reefact
 
 ## Context
