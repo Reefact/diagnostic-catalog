@@ -61,6 +61,10 @@ has exactly one published source of truth, read from the analyzer's own
 | **`DiagnosticCatalog.Sonar`** | The [SonarAnalyzer.CSharp](https://github.com/SonarSource/sonar-dotnet) rules, ids and categories read from the analyzers' own descriptors. |
 | **`DiagnosticCatalog.NetAnalyzers`** | The .NET code analysis (`CAxxxx`) rules, same treatment. |
 | **`DiagnosticCatalog.StyleCop`** | The [StyleCop.Analyzers](https://github.com/DotNetAnalyzers/StyleCopAnalyzers) (`SAxxxx`) rules, same treatment. |
+| **`DiagnosticCatalog.Analyzers`** | The checking. Diagnostics that read a rule declaration against the structural contract and a suppression against the rule it names — a category and an id taken from two different rules, a suppression left half migrated — and the code fixes that turn a literal into a catalogue reference, or complete a half-migrated one from the rule it already names. A build-time dependency: these assemblies never reach your runtime. |
+| **`DiagnosticCatalog.Cli`**, the `dcat` tool | The generator, as a .NET tool. Point it at an analyzer package or at assemblies on disk and it writes a catalogue the same way this repository writes the three above. |
+
+The last two are built here but have no version on nuget.org yet; see **Project status** below.
 
 The three vendor catalogues are **generated**, never hand-written, and carry ids,
 categories, help links and the rule's own title — the last as a documentation comment, so
