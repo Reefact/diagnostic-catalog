@@ -71,6 +71,39 @@ catalogue records as the release it was generated from. Pass `--source-name` or
 `--source-version` when you know better, which happens when a package is rebuilt
 without its version moving.
 
+## Generating from your own project
+
+Point it at the project instead of at its output, and MSBuild works out where the
+assembly is:
+
+```bash
+dcat generate --project src/My.Analyzers/My.Analyzers.csproj \
+  --namespace My.Catalog --container MyRule \
+  --output src/My.Catalog/MyRules.g.cs
+```
+
+What this removes from a manifest is the `bin/Release/net8.0/` path — the one part
+of a catalogue's declaration that says nothing about the catalogue and breaks when
+the project retargets, is renamed, or is built somewhere else. The source is
+recorded from what the project declares: its `AssemblyName` and its `Version`, not
+the numbers stamped into the assembly, because `AssemblyVersion` is routinely
+pinned to a major while the release moves.
+
+**It reads; it does not build.** The project must already be built, and `dcat`
+says so — naming the path it looked at and the `dotnet build` that would produce
+it — rather than building on your behalf. That is what keeps `dcat validate
+--project` safe to run against a working copy: it restores nothing, writes no
+`obj/`, and touches no output. `--configuration` picks which build to read and
+defaults to `Release`. A multi-targeted project is read through `netstandard2.0`
+when it builds one, because that is the build a consumer's compiler actually
+loads.
+
+Repeat `--project` when rules are split across projects, as an analyzer and its
+code fixes often are. **A solution is refused**: which of its projects declare
+analyzers cannot be told from the outside, and guessing short would emit a
+catalogue whose missing rules read as retired ones — with nothing anywhere to
+report the omission.
+
 ## Generating from your own analyzers
 
 Point it at assemblies you have already built. Repeat `--assembly` when a
@@ -88,10 +121,21 @@ dcat generate \
 If your analyzer was built with the SDK it will have a `.deps.json` beside it.
 `dcat` reads it and runs the descriptor worker against **your** dependency
 graph, so an analyzer compiled against a different Roslyn than the tool carries
-is read through its own rather than through ours. It falls back to the tool's
-Roslyn when there is no graph, or when your package cache does not hold what the
-graph asks for — which is what happens for analyzers unpacked from a NuGet
-package, since those travel without one.
+is read through its own rather than through ours.
+
+It falls back to the tool's Roslyn when there is no graph — which is what happens
+for analyzers unpacked from a NuGet package, since those travel without one — when
+your package cache does not hold what the graph asks for, and **when the graph
+names no Roslyn at all**. That last one matters because handing a graph over
+*replaces* the worker's own rather than extending it: a graph without Roslyn does
+not leave the worker with its own, it leaves it with none. A `netstandard2.0`
+library's `.deps.json` is exactly that, listing the assembly and nothing else, and
+`dcat` says so rather than reading it:
+
+```
+resolved MyLib => 1.0.0 (from 1 assembly/assemblies on disk)
+  MyLib.deps.json names no Roslyn — reading through this tool's
+```
 
 `--source-name` and `--source-version` are worth passing. A catalogue records
 which release it was generated from, and that record is what tells one snapshot
@@ -102,11 +146,12 @@ claim an unmoved source while its rules move underneath.
 
 ## Generating several at once
 
-A manifest declares any number of catalogues, from either kind of source. Paths
+A manifest declares any number of catalogues, from any kind of source. Paths
 inside it are relative to the manifest, so it works from any directory:
 
 ```json
 {
+  "$schema": "https://raw.githubusercontent.com/Reefact/diagnostic-catalog/main/eng/catalogs.schema.json",
   "catalogs": [
     {
       "package": "SonarAnalyzer.CSharp",
@@ -115,9 +160,7 @@ inside it are relative to the manifest, so it works from any directory:
       "output": "../src/MyCompany.Catalog/SonarRules.g.cs"
     },
     {
-      "assemblies": ["../src/My.Analyzers/bin/Release/net8.0/My.Analyzers.dll"],
-      "sourceName": "My.Analyzers",
-      "sourceVersion": "1.4.0",
+      "projects": ["../src/My.Analyzers/My.Analyzers.csproj"],
       "namespace": "My.Catalog",
       "container": "MyRule",
       "output": "../src/My.Catalog/MyRules.g.cs"
@@ -130,9 +173,71 @@ inside it are relative to the manifest, so it works from any directory:
 dcat generate --manifest eng/catalogs.json --summary "$RUNNER_TEMP/summary.md"
 ```
 
+The `$schema` line is worth the two seconds it costs. It documents every key
+inside your editor and reports a mistyped one where you typed it — rather than
+after a package has been downloaded, which is where `dcat` reports it. `dcat`
+names the file, the entry and the key either way:
+
+```
+error: catalogs.json: catalogs[2]: "namespace" is missing.
+```
+
 `--summary` writes a Markdown report of what changed — rules added,
 recategorised, retitled, retired — which is what makes a scheduled regeneration
 open a pull request a human can review rather than merge blind.
+
+## Checking a catalogue is still true
+
+`validate` does everything `generate` does and stops one step short: it acquires the
+source, reads its descriptors, computes the catalogue that would be written — and writes
+nothing. It answers whether what you have on disk still matches what your source declares.
+
+```bash
+dcat validate --manifest eng/catalogs.json
+```
+
+| Exit | Meaning |
+|---|---|
+| `0` | Current. |
+| `2` | Out of date — regenerate. |
+| `1` | Could not be checked: the source would not resolve. Distinct on purpose, so a feed outage is never reported as a drifted contract. |
+
+This is the question no analyzer can answer for you. `DCAT0001`–`DCAT0007` check that a
+catalogue is well formed and correctly used, at compile time, which is the better place
+for those — but none of them can check that it is still *current*, because that needs the
+vendor's package and a compiler has no business fetching one. And staleness is the failure
+with no symptom: a category that moved upstream still compiles, suppresses nothing, and
+says nothing.
+
+## Reading a catalogue
+
+`list` and `explain` read a **compiled** catalogue — the assembly from a package you
+reference, not a source file you would have to have generated yourself. Nothing in it is
+executed: a catalogue declares everything it publishes as metadata constants, so it is
+read reflection-only.
+
+```bash
+dcat list  ~/.nuget/packages/diagnosticcatalog.stylecop/0.2.1/lib/netstandard2.0/DiagnosticCatalog.StyleCop.dll
+dcat explain <that same path> SA1000
+```
+
+```
+StyleCop.Analyzers.Unstable 1.2.0.556, generated 2026-07-31
+
+id        SA1000
+category  StyleCop.CSharp.SpacingRules
+help      https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1000.md
+
+[SuppressMessage(
+    StyleCopRule.SA1000.Category,
+    StyleCopRule.SA1000.Id,
+    Justification = "…")]
+```
+
+The snippet is the point: it is the line to copy, fully qualified as you would write it.
+Both commands state which upstream release the catalogue mirrors and when it was generated
+before answering, because a catalogue is a snapshot and its age decides whether its answer
+can be trusted.
 
 ## Reproducibility
 
@@ -151,6 +256,7 @@ something else changed too.
 |---|---|
 | `0` | The catalogues were generated. |
 | `1` | The run could not finish: an upstream package that would not resolve, an analyzer that could not be constructed, an output that could not be written. |
+| `2` | `validate` only: the catalogue no longer matches its source. |
 | `64` | The command line is wrong. No retry will fix it. |
 
 ## Runtime

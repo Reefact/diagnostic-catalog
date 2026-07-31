@@ -20,10 +20,19 @@ internal static class ExitCodes
     internal const int Failure = 1;
 
     /// <summary>
+    /// <c>dcat validate</c> found a catalogue that no longer matches its source. Distinct from
+    /// <see cref="Failure"/> on purpose: the command worked, and the catalogue is what the caller
+    /// must look at. A pipeline that treated the two alike would retry a staleness that no retry
+    /// can fix, and would report a feed outage as a drifted contract.
+    /// </summary>
+    internal const int OutOfDate = 2;
+
+    /// <summary>
     /// The command line could not be parsed: an unknown command, a malformed option, an argument
     /// the settings reject. Distinct from <see cref="Failure"/> so a pipeline can tell "this
     /// invocation is wrong" — which a retry will never fix — from "the tool ran and could not
-    /// finish". <c>64</c> is <c>EX_USAGE</c>, the conventional value for a command-line usage error.
+    /// finish". <c>64</c> is <c>EX_USAGE</c>, the conventional value for a command-line usage error; <see cref="OutOfDate"/> already owns
+    /// <c>2</c>, the other convention for it.
     /// </summary>
     internal const int UsageError = 64;
 }

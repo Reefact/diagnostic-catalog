@@ -94,7 +94,7 @@ internal static class DescriptorReader
         string workerDirectory = Path.GetDirectoryName(workerPath)!;
         ProcessStartInfo start = new()
         {
-            FileName = DotnetHost(),
+            FileName = DotnetCli.Host(),
             UseShellExecute = false,
             WorkingDirectory = workerDirectory,
         };
@@ -105,10 +105,17 @@ internal static class DescriptorReader
 
         // Run against the TARGET's dependency graph when it has one, so an analyzer compiled
         // against a different Roslyn resolves its own rather than being read through this tool's.
-        // It replaces the worker's own graph rather than adding to it, which is why the worker's
-        // directory goes on the probing path below: that is where the worker's own assemblies —
-        // CatalogGen, and the Roslyn it falls back on — are then found.
-        if (source.DependencyContextPath is not null)
+        // It REPLACES the worker's own graph rather than adding to it, which is why the acquisition
+        // hands one over only when it carries Roslyn (see DependencyGraph): a graph without it
+        // leaves the worker with none, and the worker's own Microsoft.CodeAnalysis reference stops
+        // resolving before it has read a thing. The probing paths below do not rescue that — they
+        // are searched in the NuGet package layout, not as flat directories — which is also why the
+        // worker links the source it shares with this engine instead of referencing it.
+        //
+        // Checked here as well as at acquisition, through the same one function. The acquisition
+        // reports it, because that is where the run's provenance is read; this is where the failure
+        // would land, and a set can be built by hand — the seam type is public to whoever holds it.
+        if (source.DependencyContextPath is not null && DependencyGraph.SuppliesRoslyn(source.DependencyContextPath))
         {
             start.ArgumentList.Add("--depsfile");
             start.ArgumentList.Add(source.DependencyContextPath);
@@ -179,25 +186,6 @@ internal static class DescriptorReader
         string candidate = Path.Combine(AppContext.BaseDirectory, WorkerAssemblyName);
 
         return File.Exists(candidate) ? candidate : null;
-    }
-
-    // DOTNET_HOST_PATH is set by the SDK and by `dotnet` itself, and is the authoritative answer
-    // when present. Failing that, this process may already BE the host — a framework-dependent app
-    // launched by `dotnet` reports it as its own path — and failing that, the name on PATH is all
-    // that is left. Guessing wrong is survivable and reported: the process simply fails to start.
-    private static string DotnetHost()
-    {
-        string? declared = Environment.GetEnvironmentVariable("DOTNET_HOST_PATH");
-        if (!string.IsNullOrEmpty(declared) && File.Exists(declared)) return declared;
-
-        string? current = Environment.ProcessPath;
-        if (current is not null)
-        {
-            string name = Path.GetFileNameWithoutExtension(current);
-            if (string.Equals(name, "dotnet", StringComparison.OrdinalIgnoreCase)) return current;
-        }
-
-        return "dotnet";
     }
 
     private static void Delete(string path)

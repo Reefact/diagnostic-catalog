@@ -37,37 +37,75 @@ public static class CatalogRun
     public static IReadOnlyList<Job> JobsFromManifest(string json, string manifestPath)
     {
         string manifestDir = Path.GetDirectoryName(Path.GetFullPath(manifestPath))!;
+        string file = Path.GetFileName(manifestPath);
         List<Job> jobs = [];
         using JsonDocument doc = JsonDocument.Parse(json);
-        foreach (JsonElement e in doc.RootElement.GetProperty("catalogs").EnumerateArray())
+
+        if (!doc.RootElement.TryGetProperty("catalogs", out JsonElement catalogs))
+            throw new ManifestException($"{file}: no \"catalogs\" array.");
+
+        int index = 0;
+        foreach (JsonElement e in catalogs.EnumerateArray())
         {
-            // An entry names either a package to fetch or assemblies already on disk. "assemblies"
-            // decides, so an entry carrying it needs no "package" — and paths in it are resolved
-            // against the manifest, exactly as "output" is.
+            // Every entry names itself in its own errors. A manifest is edited by hand, so the
+            // likeliest fault is a mistyped key — and the answer to one used to be "The given key
+            // was not present in the dictionary", which named neither the key, nor the file, nor
+            // which of several entries carried it.
+            string where = $"{file}: catalogs[{index}]";
+            index++;
+
+            // An entry names a package to fetch, a .nupkg on disk, or assemblies on disk. Paths in
+            // any of them are resolved against the manifest, exactly as "output" is.
             IReadOnlyList<string>? assemblies = e.TryGetProperty("assemblies", out JsonElement a)
-                ? [.. a.EnumerateArray().Select(x => Path.GetFullPath(Path.Combine(manifestDir, x.GetString()!)))]
+                ? [.. a.EnumerateArray().Select(x => Path.GetFullPath(Path.Combine(manifestDir, Text(x, where, "assemblies"))))]
                 : null;
             string? nupkg = e.TryGetProperty("nupkg", out JsonElement n)
-                ? Path.GetFullPath(Path.Combine(manifestDir, n.GetString()!))
+                ? Path.GetFullPath(Path.Combine(manifestDir, Text(n, where, "nupkg")))
+                : null;
+            IReadOnlyList<string>? projects = e.TryGetProperty("projects", out JsonElement pr)
+                ? [.. pr.EnumerateArray().Select(x => Path.GetFullPath(Path.Combine(manifestDir, Text(x, where, "projects"))))]
                 : null;
 
+            int named = (assemblies is not null ? 1 : 0) + (nupkg is not null ? 1 : 0) + (projects is not null ? 1 : 0);
+            if (named > 1)
+                throw new ManifestException($"{where}: names more than one source; give one of " +
+                                            "\"package\", \"nupkg\", \"projects\" or \"assemblies\".");
+
+            bool fromFeed = named == 0;
+
             jobs.Add(new Job(
-                Package: assemblies is null && nupkg is null ? e.GetProperty("package").GetString()! : null,
-                Version: assemblies is not null || nupkg is not null ? null
-                         : e.TryGetProperty("version", out JsonElement v) ? v.GetString()! : "latest",
-                Namespace: e.GetProperty("namespace").GetString()!,
-                Container: e.GetProperty("container").GetString()!,
-                Output: Path.GetFullPath(Path.Combine(manifestDir, e.GetProperty("output").GetString()!)),
-                Language: e.TryGetProperty("language", out JsonElement l) ? l.GetString()! : "cs",
+                Package: fromFeed ? Required(e, "package", where) : null,
+                Version: fromFeed ? Optional(e, "version", where) ?? "latest" : null,
+                Namespace: Required(e, "namespace", where),
+                Container: Required(e, "container", where),
+                Output: Path.GetFullPath(Path.Combine(manifestDir, Required(e, "output", where))),
+                Language: Optional(e, "language", where) ?? "cs",
                 Assemblies: assemblies,
-                SourceName: e.TryGetProperty("sourceName", out JsonElement sn) ? sn.GetString() : null,
-                SourceVersion: e.TryGetProperty("sourceVersion", out JsonElement sv) ? sv.GetString() : null,
+                SourceName: Optional(e, "sourceName", where),
+                SourceVersion: Optional(e, "sourceVersion", where),
                 Nupkg: nupkg,
-                Source: e.TryGetProperty("source", out JsonElement src) ? src.GetString() : null));
+                Source: Optional(e, "source", where),
+                Projects: projects,
+                Configuration: Optional(e, "configuration", where) ?? "Release"));
         }
+
+        if (jobs.Count == 0) throw new ManifestException($"{file}: \"catalogs\" declares no entry.");
 
         return jobs;
     }
+
+    private static string Required(JsonElement entry, string name, string where)
+        => entry.TryGetProperty(name, out JsonElement value)
+               ? Text(value, where, name)
+               : throw new ManifestException($"{where}: \"{name}\" is missing.");
+
+    private static string? Optional(JsonElement entry, string name, string where)
+        => entry.TryGetProperty(name, out JsonElement value) ? Text(value, where, name) : null;
+
+    private static string Text(JsonElement value, string where, string name)
+        => value.ValueKind == JsonValueKind.String
+               ? value.GetString()!
+               : throw new ManifestException($"{where}: \"{name}\" should be a string, not {value.ValueKind}.");
 
     /// <summary>
     /// Generates every catalogue in <paramref name="jobs"/>.
@@ -81,8 +119,13 @@ public static class CatalogRun
     /// Observed while a package is being resolved and downloaded, which is where a run spends
     /// almost all of its time and the only place interrupting it has anything to interrupt.
     /// </param>
+    /// <param name="writeChanges">
+    /// False to compare without touching anything, which is what asking "is this catalogue still
+    /// true?" means. <see cref="RunOutcome.ChangedAny"/> then reports drift rather than work done.
+    /// </param>
     public static async Task<RunOutcome> ExecuteAsync(
-        IReadOnlyList<Job> jobs, string? dateOverride, CancellationToken cancellation = default)
+        IReadOnlyList<Job> jobs, string? dateOverride, CancellationToken cancellation = default,
+        bool writeChanges = true)
     {
         List<string> summaries = [];
         bool changedAny = false;
@@ -94,7 +137,7 @@ public static class CatalogRun
             Console.WriteLine($"=== {job.Namespace} <- {job.SourceLabel} ===");
             try
             {
-                GenerateResult? result = await GenerateAsync(job, dateOverride, cancellation);
+                GenerateResult? result = await GenerateAsync(job, dateOverride, cancellation, writeChanges);
                 if (result is null) { exitCode = 1; continue; }
                 if (result.Changed)
                 {
@@ -122,7 +165,9 @@ public static class CatalogRun
 
         string summary = changedAny
             ? string.Join("\n", summaries)
-            : "No catalogue changed: every upstream package still resolves to the version already mirrored.";
+            : writeChanges
+                ? "No catalogue changed: every upstream package still resolves to the version already mirrored."
+                : "Every catalogue is current with its source.";
 
         return new RunOutcome(exitCode, changedAny, summary);
     }
@@ -130,7 +175,7 @@ public static class CatalogRun
     // One catalogue, end to end: acquire, read, emit. Only the acquisition differs per source; what
     // follows it is the same two calls either way, which is the property the split exists to give.
     private static async Task<GenerateResult?> GenerateAsync(
-        Job job, string? dateOverride, CancellationToken cancellation)
+        Job job, string? dateOverride, CancellationToken cancellation, bool writeChanges)
     {
         Previous? previous = CatalogParser.ReadPrevious(job.Output);
 
@@ -139,6 +184,14 @@ public static class CatalogRun
             AnalyzerAssemblySet? local = LocalAssemblySource.Acquire(job.Assemblies, job.SourceName, job.SourceVersion);
 
             return local is null ? null : EmitFrom(local);
+        }
+
+        if (job.Projects is not null)
+        {
+            AnalyzerAssemblySet? built = ProjectSource.Acquire(job.Projects, job.Configuration, job.SourceName,
+                                                               job.SourceVersion);
+
+            return built is null ? null : EmitFrom(built);
         }
 
         // Only a package needs scratch space: it has to be unzipped — and, from a feed, downloaded
@@ -166,7 +219,30 @@ public static class CatalogRun
 
             return rules is null
                 ? null
-                : CatalogEmitter.Emit(job, source.SourceName, source.SourceVersion, rules, previous, dateOverride);
+                : CatalogEmitter.Emit(job, source.SourceName, source.SourceVersion, rules, previous, dateOverride,
+                                      writeChanges);
         }
+    }
+}
+
+/// <summary>
+/// A manifest the tool cannot act on, described in terms of the manifest rather than of the parser.
+/// </summary>
+/// <remarks>
+/// It exists so the shell can tell a file it was handed from a defect in the tool: the first is the
+/// caller's to fix and deserves one legible line, the second is not and deserves a stack trace.
+/// </remarks>
+public sealed class ManifestException : Exception
+{
+    public ManifestException(string message) : base(message)
+    {
+    }
+
+    public ManifestException()
+    {
+    }
+
+    public ManifestException(string message, Exception innerException) : base(message, innerException)
+    {
     }
 }
