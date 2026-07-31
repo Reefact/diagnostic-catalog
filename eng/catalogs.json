@@ -16,16 +16,21 @@
   "catalogs": [
     {
       "$comment": [
-        "This repository's own analyzers, catalogued by this repository's own generator. It reads an",
-        "assembly ALREADY BUILT rather than a NuGet package, because the analyzer it mirrors ships",
-        "from here: waiting for a published package would mean a new DCAT id could not be catalogued",
-        "until after it was released.",
+        "This repository's own analyzers, catalogued by this repository's own generator. It reads a",
+        "project ALREADY BUILT rather than a NuGet package, because the analyzer it mirrors ships from",
+        "here: waiting for a published package would mean a new DCAT id could not be catalogued until",
+        "after it was released.",
         "",
         "Consequence for any workflow running this manifest: DiagnosticCatalog.Analyzers must be built",
-        "first, or the generator stops on a missing assembly rather than emitting a catalogue short of",
-        "rules. Both callers do that today."
+        "first. Nothing here builds it. What that costs is now said by the tool rather than only here —",
+        "naming the path it looked at and the `dotnet build` that would produce it — so the reader who",
+        "meets it is the one who is told. Both callers build it today.",
+        "",
+        "configuration is stated rather than left to its default, because it is what decides which",
+        "build is read and it used to be legible in the assembly path this entry replaced."
       ],
-      "assemblies": ["../src/DiagnosticCatalog.Analyzers/bin/Release/netstandard2.0/DiagnosticCatalog.Analyzers.dll"],
+      "projects": ["../src/DiagnosticCatalog.Analyzers/DiagnosticCatalog.Analyzers.csproj"],
+      "configuration": "Release",
       "namespace": "DiagnosticCatalog.Self",
       "container": "DcatRule",
       "output": "../src/DiagnosticCatalog.Self/DcatRules.g.cs"
