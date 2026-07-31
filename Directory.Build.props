@@ -91,4 +91,24 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
 
+  <!--
+    The Roslyn LOAD CONTRACT for the shipped analyzer, and the reason it is a property rather than a
+    number in a csproj.
+
+    DiagnosticCatalog.Analyzers is loaded by each consumer's host compiler, not by their application.
+    The Microsoft.CodeAnalysis version it is COMPILED against is therefore the minimum Roslyn able to
+    load it: build against a higher one and it fails to load with CS8032 on every older SDK and IDE —
+    which reports no diagnostics at all, indistinguishable from code that has none.
+
+    4.8.0 is Visual Studio 2022 17.8 / the .NET 8 SDK. It is deliberately far below the 4.14.0 pinned
+    centrally for eng/CatalogGen, which is a build-time tool of this repository and constrains nobody
+    else; the analyzer takes this floor through a VersionOverride so the two never share a number.
+
+    Declared once here so the csproj pin and the test that guards it (RoslynFloorTests, which reads it
+    back through assembly metadata) cannot drift apart.
+  -->
+  <PropertyGroup>
+    <RoslynFloorVersion>4.8.0</RoslynFloorVersion>
+  </PropertyGroup>
+
 </Project>

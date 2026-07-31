@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Deliberately does NOT import build/Net472TestFloor.props, and the reason differs from
+    CatalogGen.UnitTests's. That floor proves a SHIPPED netstandard2.0 assembly behaves on the .NET
+    Framework CLR, because a consumer's application loads it there. This assembly is netstandard2.0 too,
+    but nothing loads it on that runtime: an analyzer is loaded by a host compiler — VBCSCompiler, Visual
+    Studio, Rider — and what constrains it is the Roslyn version it is compiled against, not the BCL it
+    would meet in an application. RoslynFloorTests is what guards that, and it is the floor that matters
+    here. See CONTRIBUTING.md, "The .NET Framework floor".
+  -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="coverlet.collector" />
+    <!-- The harness compiles snippets, so it needs a compiler. This is the TEST side and takes the
+         newest central pin; the analyzer under test stays on the load floor through its own
+         VersionOverride. The two versions coexisting is the point of that override. -->
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\DiagnosticCatalog.Analyzers\DiagnosticCatalog.Analyzers.csproj" />
+    <!--
+      The foundation is referenced so that [DiagnosticRule] resolves from a REAL assembly in the
+      snippets the harness compiles. The analyzer itself takes no such reference, on purpose: it matches
+      the marker by metadata name (§7.2). Having the real attribute here is what lets the tests prove
+      both halves of that — one fixture takes it from this assembly, another declares its own copy in
+      source, and the analyzer must find rules in both.
+    -->
+    <ProjectReference Include="..\..\src\DiagnosticCatalog\DiagnosticCatalog.csproj" />
+  </ItemGroup>
+
+</Project>
