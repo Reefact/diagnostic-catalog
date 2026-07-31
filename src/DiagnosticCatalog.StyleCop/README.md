@@ -56,7 +56,8 @@ public static class SA1000
 }
 ```
 
-Rule titles and descriptions are not redistributed — the help link takes you to them.
+Each rule carries its upstream title as a documentation comment. Rule descriptions are
+not redistributed — the help link takes you to them.
 
 ## A note on versions
 
