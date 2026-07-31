@@ -67,8 +67,18 @@ Analysis assemblies must never become runtime dependencies, so reference it priv
 <PackageReference Include="DiagnosticCatalog.Analyzers" Version="0.1.0" PrivateAssets="all" />
 ```
 
-A catalogue package may bring these analyzers to its own consumers instead, so that referencing the
-catalogue is enough. That is a decision the catalogue makes, not a default of this package.
+A catalogue package that references this one brings the analyzers to **its** consumers too, so
+referencing the catalogue alone is enough once one does. That was measured against a real restore
+rather than read from NuGet's documentation, which says the opposite:
+
+| A catalogue referencing this package with | The analyzers run for its consumers |
+| --- | --- |
+| no `PrivateAssets` | **yes** |
+| `PrivateAssets="none"` | yes |
+| `PrivateAssets="all"` | no |
+
+If you publish a catalogue and would rather not impose analysis on everyone downstream, say so
+explicitly with `PrivateAssets="all"` — silence propagates.
 
 ## What it does not do
 

@@ -39,11 +39,17 @@
     foundation must flow the other way — to the consumers of a catalogue, so [DiagnosticRule] resolves
     for them. One package cannot carry both settings, which is why there are two.
 
-    How a consumer gets these analyzers WITHOUT knowing this package exists is a separate mechanism:
-    each catalogue references it with PrivateAssets="none" (§16.3), so referencing
-    DiagnosticCatalog.Sonar brings the checking along. That wiring cannot be added until this package
-    has a published version to point at — the same ordering ADR-0007 imposed on the catalogues
-    themselves — so it lands in its own change after the first release.
+    How a consumer gets these analyzers WITHOUT knowing this package exists needed measuring rather
+    than assuming, and tools/packaging/verify-consumption.sh now does it. The answer is the reverse of
+    what was written here: a catalogue referencing this package propagates the analyzer to its own
+    consumers by DEFAULT, despite DevelopmentDependency and despite NuGet documenting analyzers as
+    non-transitive (§16.3, NuGet/Home#13813). No PrivateAssets="none" lever is needed; a catalogue
+    that does NOT want to impose analysis must opt out with PrivateAssets="all".
+
+    A catalogue can therefore only take that reference once this package has a published version to
+    point at — the same ordering ADR-0007 imposed on the catalogues themselves — so the wiring still
+    lands in its own change after the first release. What changed is that the change is now a
+    one-line reference rather than one carrying a setting nobody had tested.
   -->
   <PropertyGroup Label="Package">
     <PackageId>DiagnosticCatalog.Analyzers</PackageId>
