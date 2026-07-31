@@ -50,6 +50,13 @@ public sealed class ZeroFootprintTests
         }
 
         /// <summary>A trim rule, whose suppression is the one the platform does keep (§9.1).</summary>
+        /// <remarks>
+        /// Scoped to the frameworks that HAVE UnconditionalSuppressMessage, which is the only thing
+        /// that reads it here — the suppression below and the test that asserts it are both already
+        /// behind the same condition. On the .NET Framework floor the attribute does not exist, so
+        /// this fixture would be a rule nothing in the assembly can reference.
+        /// </remarks>
+#if NET
         [DiagnosticRule]
         public static class IL2026
         {
@@ -57,6 +64,7 @@ public sealed class ZeroFootprintTests
 
             public const string Category = "Trimming";
         }
+#endif
     }
 
     /// <summary>

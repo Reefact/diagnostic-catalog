@@ -201,3 +201,4 @@ Optional supporting material:
 | [ADR-0018](0018-a-code-fix-never-decides-what-only-the-author-can.md) | A code fix never decides what only the author can decide | Accepted |
 | [ADR-0019](0019-resolve-packages-through-the-users-own-nuget-configuration.md) | Resolve packages through the user's own NuGet configuration | Accepted |
 | [ADR-0020](0020-a-catalogue-is-generated-for-c-sharp-only.md) | A catalogue is generated for C# only | Accepted |
+| [ADR-0021](0021-derive-the-build-rule-set-from-the-quality-profile.md) | Derive the build's Sonar rule set from the server's quality profile | Proposed |

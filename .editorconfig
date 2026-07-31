@@ -36,6 +36,46 @@ csharp_style_var_when_type_is_apparent = false
 csharp_style_var_elsewhere = false
 dotnet_diagnostic.IDE0008.severity = warning
 
+# ---------------------------------------------------------------------------------------------
+# The Sonar backlog: every exception to build/sonar-profile.globalconfig, and nothing else.
+#
+# That file is generated from the server's quality profile and puts all 377 rules at `warning`,
+# which the CI ratchet promotes to an error. This section is what overrides it — .editorconfig
+# wins over a global AnalyzerConfig — so a rule is either enforced or named here, never quietly
+# off. `suggestion` means "not yet" and carries its count; `none` means this codebase refuses it
+# and carries the reason. Decision: ADR-0021.
+#
+# A rule leaves this list by one of two doors, and both are visible in the tree: its sites are
+# cleared, or the few that remain are deliberate and carry a [SuppressMessage] at the site. The
+# second door keeps the rule enforced everywhere else, which parking it never does — so for the
+# two refusals below, a site-level suppression is the better end state, not this section.
+
+# Test projects only. Everything under tests/ is a test project; no shipping code lives there,
+# so none of these three reaches a published assembly.
+[tests/**.cs]
+# Not yet — 18 sites, all in CatalogGen.UnitTests but one. S8969 reports a `!` the compiler
+# already knows is redundant, and it is right: `Assert.NotNull(set)` followed by `set!.SourceName`
+# tells xUnit and the reader the same thing twice. Clearing them is a mechanical edit and a
+# separate change; parked at `suggestion` rather than `none` because there is nothing to refuse
+# here, only work not done.
+dotnet_diagnostic.S8969.severity = suggestion
+
+# Declined in tests: PascalCase type names. S101 asks that the fixture rules `TEST0001` and
+# `TEST0002` become `Test0001`. Their name is not a style choice — it IS the rule identifier,
+# read back through `Id = nameof(TEST0001)`, and real catalogues emit `S1144`, `CA1822`, `SA1000`.
+# Renaming them would change the constant under test and make these fixtures the only rules in
+# the repository shaped unlike every rule a catalogue actually carries. The rule stays ON for
+# shipping code, where a shouting type name is the smell it describes.
+dotnet_diagnostic.S101.severity = none
+
+# Declined in tests: an unspecified DateTimeKind. S6562 asks that `new DateTime(2026, 7, 30)`
+# name a kind. That value is the expected side of a date parsed with `DateTimeStyles.None`, which
+# yields `Unspecified` by definition — a generated catalogue stamps a calendar date, not an
+# instant. Naming a kind would assert a timezone the format never carried. One site; the rule
+# stays ON for shipping code, where an ambiguous DateTime really is the bug.
+dotnet_diagnostic.S6562.severity = none
+# ---------------------------------------------------------------------------------------------
+
 [*.{yml,yaml,json,props,targets,csproj,runsettings}]
 indent_size = 2
 
