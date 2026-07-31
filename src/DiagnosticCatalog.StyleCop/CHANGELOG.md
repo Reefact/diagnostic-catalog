@@ -21,10 +21,10 @@ _Nothing yet._
 
 ## [0.3.0] - 2026-07-31
 
-**This catalogue now mirrors the `1.2.0-beta` line** — `StyleCop.Analyzers.Unstable
-1.2.0.556` — instead of `StyleCop.Analyzers 1.1.118`. The stable it mirrored until
-now was published in April 2019 and the project has never left beta since, so the
-catalogue was describing a release almost nobody installs
+**Mirrors `StyleCop.Analyzers.Unstable 1.2.0.556`** — the `1.2.0-beta` line, where every
+earlier version mirrored `StyleCop.Analyzers 1.1.118`. That stable was published in April
+2019 and the project has never left beta since, so the catalogue was describing a release
+almost nobody installs
 ([ADR-0016](../../doc/adr/0016-mirror-stylecops-prerelease-line.md), proposed).
 
 If you are on `1.1.118`, stay on **0.2.0**, the last version to mirror it.
@@ -49,7 +49,7 @@ If you are on `1.1.118`, stay on **0.2.0**, the last version to mirror it.
 
 ## [0.2.0] - 2026-07-31
 
-Still mirroring **StyleCop.Analyzers 1.1.118**, unchanged since 0.1.0: no rule was
+**Mirrors `StyleCop.Analyzers 1.1.118`** — unchanged since 0.1.0: no rule was
 added, retired or recategorised, and all 193 of them keep the identifier and the
 category they shipped with. What moved is what each rule says about itself.
 
@@ -69,7 +69,7 @@ category they shipped with. What moved is what each rule says about itself.
 
 ## [0.1.0] - 2026-07-31
 
-The first release, mirroring **StyleCop.Analyzers 1.1.118**.
+**Mirrors `StyleCop.Analyzers 1.1.118`** — the first release.
 
 ### Added
 
