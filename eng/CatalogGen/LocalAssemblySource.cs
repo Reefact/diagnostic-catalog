@@ -55,8 +55,22 @@ internal static class LocalAssemblySource
         // and the honest ambiguity that comes with it.
         string version = sourceVersion ?? AssemblyName.GetAssemblyName(resolved[0]).Version?.ToString() ?? "0.0.0.0";
 
+        // The first assembly's dependency graph, when it has one — the same assembly that names the
+        // source above, for the same reason: it is the principal one, and the caller controls the
+        // order. A project's build output carries a .deps.json listing what it was compiled
+        // against, including which Roslyn; handing it to the reader is what lets an analyzer built
+        // against a different one bring it along rather than be read through this tool's.
+        //
+        // Only the first is consulted. A second assembly's own graph is not merged in, because
+        // there is no meaning to merging two: its directory is on the probing path, which is what
+        // resolves a sibling either way.
+        string? dependencyContext = Path.ChangeExtension(resolved[0], ".deps.json");
+        if (!File.Exists(dependencyContext)) dependencyContext = null;
+
         Console.WriteLine($"resolved {name} => {version} (from {resolved.Count} assembly/assemblies on disk)");
         foreach (string full in resolved) Console.WriteLine($"  + {full}");
+        if (dependencyContext is not null)
+            Console.WriteLine($"  using the dependency graph of {Path.GetFileName(dependencyContext)}");
 
         // Ordinal and distinct, for the reason NuGetPackageSource states: when two assemblies declare
         // the same rule id the last read wins, so the order has to be a property of the request
@@ -65,6 +79,7 @@ internal static class LocalAssemblySource
         return new AnalyzerAssemblySet(
             [.. resolved.Distinct(StringComparer.Ordinal).OrderBy(p => p, StringComparer.Ordinal)],
             name,
-            version);
+            version,
+            dependencyContext);
     }
 }

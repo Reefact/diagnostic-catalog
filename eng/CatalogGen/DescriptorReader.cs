@@ -45,7 +45,7 @@ internal static class DescriptorReader
             File.WriteAllText(request,
                               JsonSerializer.Serialize(new DescriptorReadRequest { AssemblyPaths = [.. source.AssemblyPaths] }));
 
-            int exitCode = RunWorker(worker, request, response);
+            int exitCode = RunWorker(worker, source, request, response);
             if (exitCode != WorkerExitCodes.Complete)
             {
                 // The worker has already said what it could not read and why it refuses. Adding a
@@ -88,7 +88,8 @@ internal static class DescriptorReader
     // The worker inherits this process's console rather than having its streams captured: its
     // output IS the run's diagnostics, and relaying it verbatim keeps the log reading exactly as it
     // did when this stage ran in-process.
-    private static int RunWorker(string workerPath, string requestPath, string responsePath)
+    private static int RunWorker(
+        string workerPath, AnalyzerAssemblySet source, string requestPath, string responsePath)
     {
         string workerDirectory = Path.GetDirectoryName(workerPath)!;
         ProcessStartInfo start = new()
@@ -99,11 +100,30 @@ internal static class DescriptorReader
         };
 
         // `exec` rather than `run`, so the worker's own runtimeconfig decides the runtime — which is
-        // the entire point of the worker, since that is where RollForward=LatestMajor lives. The
-        // probing path is a fallback for assemblies the worker's own deps.json does not place.
+        // the entire point of the worker, since that is where RollForward=LatestMajor lives.
         start.ArgumentList.Add("exec");
-        start.ArgumentList.Add("--additionalprobingpath");
-        start.ArgumentList.Add(workerDirectory);
+
+        // Run against the TARGET's dependency graph when it has one, so an analyzer compiled
+        // against a different Roslyn resolves its own rather than being read through this tool's.
+        // It replaces the worker's own graph rather than adding to it, which is why the worker's
+        // directory goes on the probing path below: that is where the worker's own assemblies —
+        // CatalogGen, and the Roslyn it falls back on — are then found.
+        if (source.DependencyContextPath is not null)
+        {
+            start.ArgumentList.Add("--depsfile");
+            start.ArgumentList.Add(source.DependencyContextPath);
+        }
+
+        // The worker's own directory first, then every directory the assemblies live in, so a
+        // sibling an analyzer needs resolves whether or not the graph above mentions it. Distinct
+        // and ordinal for the same reason the assembly list is: the probing order must be a
+        // property of the request rather than of the disk.
+        foreach (string directory in ProbingPaths(workerDirectory, source))
+        {
+            start.ArgumentList.Add("--additionalprobingpath");
+            start.ArgumentList.Add(directory);
+        }
+
         start.ArgumentList.Add(workerPath);
         start.ArgumentList.Add(requestPath);
         start.ArgumentList.Add(responsePath);
@@ -112,6 +132,44 @@ internal static class DescriptorReader
         process.WaitForExit();
 
         return process.ExitCode;
+    }
+
+    private static IEnumerable<string> ProbingPaths(string workerDirectory, AnalyzerAssemblySet source)
+    {
+        IEnumerable<string> assemblyDirectories = source.AssemblyPaths
+            .Select(p => Path.GetDirectoryName(p))
+            .Where(d => !string.IsNullOrEmpty(d))
+            .Select(d => d!)
+            .OrderBy(d => d, StringComparer.Ordinal);
+
+        List<string> paths = [workerDirectory, .. assemblyDirectories];
+
+        // A library's dependency graph names its packages by the path INSIDE the package, and
+        // nothing in a class library says where packages live — an application would answer that
+        // with a runtimeconfig.dev.json, and an analyzer, being netstandard2.0, has none. Without
+        // the cache on the probing path the graph resolves to nothing: measured, the worker died on
+        // "package: 'Microsoft.CodeAnalysis.Common', version: '4.8.0'".
+        //
+        // Best effort by nature. A machine whose cache does not hold what the analyzer was built
+        // against gets the worker's own Roslyn through the AssemblyResolve unification, which is
+        // what happened before any of this existed.
+        string? cache = NuGetPackageCache();
+        if (cache is not null) paths.Add(cache);
+
+        return paths.Distinct(StringComparer.Ordinal);
+    }
+
+    private static string? NuGetPackageCache()
+    {
+        string? configured = Environment.GetEnvironmentVariable("NUGET_PACKAGES");
+        if (!string.IsNullOrEmpty(configured) && Directory.Exists(configured)) return configured;
+
+        string home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        if (string.IsNullOrEmpty(home)) return null;
+
+        string standard = Path.Combine(home, ".nuget", "packages");
+
+        return Directory.Exists(standard) ? standard : null;
     }
 
     // Beside this assembly, which for the shipped tool is the directory PackAsTool lays the worker

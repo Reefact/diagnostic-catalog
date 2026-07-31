@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Reflection;
 using Xunit;
@@ -82,6 +83,35 @@ public sealed class LocalAssemblySourceTests
 
         Assert.NotNull(set);
         Assert.Single(set!.AssemblyPaths);
+    }
+
+    [Fact]
+    public void An_assembly_that_came_with_a_dependency_graph_carries_it_forward()
+    {
+        // What the graph buys: the worker is run against the TARGET's dependencies, so an analyzer
+        // compiled against another Roslyn resolves its own instead of being read through this
+        // tool's. The worker's own assembly is used as the fixture because it is the one beside
+        // these tests that ships a .deps.json.
+        string withGraph = Path.Combine(AppContext.BaseDirectory, "CatalogGen.Worker.dll");
+
+        AnalyzerAssemblySet? set = LocalAssemblySource.Acquire([withGraph], "n", "v");
+
+        Assert.NotNull(set);
+        Assert.Equal(Path.ChangeExtension(withGraph, ".deps.json"), set!.DependencyContextPath);
+    }
+
+    [Fact]
+    public void An_assembly_without_one_carries_nothing_rather_than_a_path_that_is_not_there()
+    {
+        // Assemblies extracted flat out of a package are the common case and have no graph at all.
+        // Naming a file that does not exist would make the worker fail to start rather than fall
+        // back to reading them through its own Roslyn, which is what it did before graphs existed.
+        AnalyzerAssemblySet? set = LocalAssemblySource.Acquire([Generator], "n", "v");
+
+        Assert.NotNull(set);
+        Assert.False(File.Exists(Path.ChangeExtension(Generator, ".deps.json")),
+                     "the fixture only means anything while the generator has no graph beside it");
+        Assert.Null(set!.DependencyContextPath);
     }
 
     [Fact]
