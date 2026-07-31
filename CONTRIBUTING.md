@@ -342,6 +342,7 @@ When present it MUST be lowercase and MUST be one of:
 | `sonar` | The **catalog of SonarQube/SonarAnalyzer rules** |
 | `netanalyzers` | The **catalog of Microsoft .NET analyzer (CAxxxx) rules** |
 | `stylecop` | The **catalog of StyleCop analyzer rules** |
+| `cataloggen` | The **catalog generator** (`eng/CatalogGen`) — build tooling that ships nothing |
 
 > `analyzers` and `netanalyzers` are close in spelling and far apart in meaning.
 > `analyzers` is *code this repository ships* — Roslyn analyzers that enforce our
@@ -364,6 +365,20 @@ independently:
 | `sonar` | `sonar` | Follows SonarSource's release cadence. |
 | `netanalyzers` | `netanalyzers` | Follows the .NET SDK's analyzer releases. |
 | `stylecop` | `stylecop` | Follows StyleCop's releases. |
+| — | `cataloggen` | **No train.** The generator ships nothing, so nothing it does can move a published version. |
+
+`cataloggen` is the one scope that belongs to no train, and that is the whole
+reason it exists. The generator produces the catalogs but is never packed, so a
+correction to it changes no published assembly. Scoped `core` it would ride the
+`lib` train and bump the foundation's version for work its consumers never see;
+scoped here it is recorded, linted and reviewed like any other commit, and moves
+nobody's version.
+
+That makes it the one place where a `feat` or `fix` reaching no release notes is
+**correct** rather than a mistake. Everywhere else, a versioning type that routes
+to no train is the accident the required-scope rule exists to prevent — see the
+warning under *Scope* above. The difference is intent, and the scope is what
+states it.
 
 A catalog moves when its vendor ships rules; the foundation moves when its own
 contract changes. Folding them into one version number would force a release of
