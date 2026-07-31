@@ -18,6 +18,12 @@
     <PackageReference Include="xunit.v3" />
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="coverlet.collector" />
+    <!--
+      For the deliberately unconstructible DiagnosticAnalyzer that DescriptorReaderTests hands the
+      worker. It used to arrive transitively from the engine; the engine no longer references Roslyn
+      at all, because reading descriptors — the only thing that needed it — moved into the worker.
+    -->
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
   </ItemGroup>
 
   <!--
@@ -43,5 +49,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\eng\CatalogGen\CatalogGen.csproj" />
   </ItemGroup>
+
+  <!-- DescriptorReader spawns the worker, so the tests that exercise it need one beside them. -->
+  <Import Project="..\..\build\BundleDescriptorWorker.props" />
 
 </Project>

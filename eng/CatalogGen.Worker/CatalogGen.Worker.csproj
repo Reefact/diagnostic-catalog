@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    The process that reads descriptors on the engine's behalf. It is spawned, never referenced:
+    nothing links against it, and it reaches users bundled beside the `dcat` executable rather than
+    as a package of its own (it declares no <ReleaseTrain>).
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <!--
+      LatestMajor, and the distinction from the tool's Major matters. Major only rolls up when the
+      requested major is ABSENT, so on a machine carrying both .NET 8 and .NET 10 a net8.0 worker
+      would bind to 8 and fail to load an analyzer built for 10. LatestMajor always selects the
+      highest installed major, so the floor that makes `dcat` installable everywhere (ADR-0017)
+      stops deciding what it is able to read.
+    -->
+    <RollForward>LatestMajor</RollForward>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <!--
+      Roslyn ships satellite resources for fourteen cultures, and they travel into the tool package
+      because the worker travels into it. Not one of them can ever be read: a descriptor's title is
+      formatted against the invariant culture on purpose, so that the same upstream release yields
+      the same bytes on a maintainer's laptop and on the nightly runner. Keeping them would put ~10 MB
+      of translations in a tool that is required never to use a translation.
+    -->
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <!--
+    Roslyn lives HERE and only here. Resolving DiagnosticAnalyzer and DiagnosticDescriptor is what
+    reading a descriptor is, and reading is all this process does — so the engine, and with it the
+    `dcat` process itself, no longer loads Roslyn at all.
+  -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
+  </ItemGroup>
+
+  <!--
+    For the wire contract it answers on, and for Naming.Sentence — the title normalisation has to be
+    the same code on both sides of that wire, or a title would be written one way and read back
+    another and every rule would be reported as retitled on every run.
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\CatalogGen\CatalogGen.csproj" />
+  </ItemGroup>
+
+</Project>
