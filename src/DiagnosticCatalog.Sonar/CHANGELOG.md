@@ -16,7 +16,11 @@ number below.
 
 ## [Unreleased]
 
-_Nothing yet._
+<!-- mirror:begin -->
+**Mirrors `SonarAnalyzer.CSharp 10.31.0.145097`** — unchanged upstream.
+<!-- mirror:end -->
+
+_No other change yet._
 
 ## [0.2.0] - 2026-07-31
 

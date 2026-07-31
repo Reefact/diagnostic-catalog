@@ -16,7 +16,11 @@ number below.
 
 ## [Unreleased]
 
-_Nothing yet._
+<!-- mirror:begin -->
+**Mirrors `Microsoft.CodeAnalysis.NetAnalyzers 10.0.302`** — unchanged upstream.
+<!-- mirror:end -->
+
+_No other change yet._
 
 ## [0.2.0] - 2026-07-31
 

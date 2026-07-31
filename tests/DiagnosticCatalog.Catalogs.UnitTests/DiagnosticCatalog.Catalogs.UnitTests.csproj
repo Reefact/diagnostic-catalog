@@ -40,6 +40,18 @@
   </ItemGroup>
 
   <!--
+    The consumer-facing documents come along for the same reason, one level up: which upstream
+    release a catalogue mirrors is the first thing a consumer needs, and nothing compiles a README,
+    so a banner left behind by a regeneration would be wrong and silent. DocumentedMirrorTests reads
+    these against the CatalogSource attribute the generator wrote next to them. The project folder is
+    preserved in the link, because that is what ties a README to its catalogue.
+  -->
+  <ItemGroup>
+    <Content Include="..\..\src\**\README.md;..\..\src\**\CHANGELOG.md"
+             Link="catalogdocs\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <!--
     The foundation is NOT referenced here. Each catalogue now depends on the published package, so
     referencing the project as well puts two DiagnosticCatalog assemblies in front of the compiler —
     0.0.0.0 from the project, 0.1.0.0 from the package — and MSB3243 resolves the conflict
