@@ -317,7 +317,19 @@ static bool TryAddDescriptors(Type analyzer, SortedDictionary<string, RuleInfo> 
     {
         DiagnosticAnalyzer instance = (DiagnosticAnalyzer)Activator.CreateInstance(analyzer)!;
         foreach (DiagnosticDescriptor d in instance.SupportedDiagnostics)
-            rules[d.Id] = new RuleInfo(d.Category, d.HelpLinkUri ?? string.Empty, Retired: false);
+        {
+            // A title is a LocalizableString, and the .NET analyzers back theirs with resources.
+            // Formatting one against the current culture would make the generated catalogue depend
+            // on the machine that produced it, which is the one property a generated file may not
+            // have: the same upstream release has to yield the same bytes on a maintainer's laptop
+            // and on the nightly runner.
+            rules[d.Id] = new RuleInfo(
+                d.Category,
+                d.HelpLinkUri ?? string.Empty,
+                Retired: false,
+                Naming.Sentence(d.Title.ToString(CultureInfo.InvariantCulture)));
+        }
+
         return true;
     }
     catch
@@ -361,7 +373,12 @@ namespace CatalogGen
     internal sealed record Job(
         string Package, string Version, string Namespace, string Container, string Output, string Language);
 
-    internal sealed record RuleInfo(string Category, string HelpLinkUri, bool Retired);
+    // Title defaults to empty because a rule can genuinely have none to state: one the vendor
+    // retired before this generator emitted titles at all is carried forward from a file that
+    // never recorded one, and no later run can recover it — the descriptor it came from is gone.
+    // The emitter falls back to the identifier and category for those, which is what every rule
+    // carried before.
+    internal sealed record RuleInfo(string Category, string HelpLinkUri, bool Retired, string Title = "");
 
     // CategoryNames maps a category's LITERAL to the identifier it was published under — the
     // direction the emitter needs to keep an already-published constant's name stable.
