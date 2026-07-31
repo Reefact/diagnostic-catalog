@@ -19,7 +19,7 @@ internal static class Descriptors
     internal const string Category = "DiagnosticCatalog";
 
     internal static readonly DiagnosticDescriptor MembersFromDifferentRules = new(
-        id: "DCAT0001",
+        id: DiagnosticIds.MembersFromDifferentRules,
         title: "Category and Id must reference the same diagnostic rule",
         messageFormat: "The category comes from '{0}' and the id from '{1}': a suppression must reference one rule",
         category: Category,
@@ -32,7 +32,7 @@ internal static class Descriptors
             + "the suppression carries the wrong category and nothing in the platform will say so.");
 
     internal static readonly DiagnosticDescriptor ReplaceableStringLiterals = new(
-        id: "DCAT0006",
+        id: DiagnosticIds.ReplaceableStringLiterals,
         title: "Use a diagnostic catalog reference instead of string literals",
         messageFormat: "Reference {2} instead of the string literals \"{0}\" and \"{1}\"",
         category: Category,
@@ -52,7 +52,7 @@ internal static class Descriptors
             + "documentation.");
 
     internal static readonly DiagnosticDescriptor NonIlUnconditionalSuppression = new(
-        id: "DCAT0009",
+        id: DiagnosticIds.NonIlUnconditionalSuppression,
         title: "UnconditionalSuppressMessage only accepts IL#### identifiers",
         messageFormat: "'{0}' is not an IL warning identifier: this suppression is silently ignored",
         category: Category,
@@ -66,7 +66,7 @@ internal static class Descriptors
             + "form — are left alone.");
 
     internal static readonly DiagnosticDescriptor InvalidRuleType = new(
-        id: "DCAT0002",
+        id: DiagnosticIds.InvalidRuleType,
         title: "A diagnostic rule must be declared as a static non-generic class",
         messageFormat: "'{0}' is marked [DiagnosticRule] but is not a static non-generic class",
         category: Category,
@@ -78,7 +78,7 @@ internal static class Descriptors
             + "to offer; and it cannot be an instance type, because nothing ever instantiates it.");
 
     internal static readonly DiagnosticDescriptor InvalidRuleId = new(
-        id: "DCAT0003",
+        id: DiagnosticIds.InvalidRuleId,
         title: "A diagnostic rule must expose a public constant string named Id",
         messageFormat: "'{0}' does not expose a public constant string named Id",
         category: Category,
@@ -91,7 +91,7 @@ internal static class Descriptors
             + "type it names.");
 
     internal static readonly DiagnosticDescriptor InvalidRuleCategory = new(
-        id: "DCAT0004",
+        id: DiagnosticIds.InvalidRuleCategory,
         title: "A diagnostic rule must expose a public constant string named Category",
         messageFormat: "'{0}' does not expose a public constant string named Category",
         category: Category,

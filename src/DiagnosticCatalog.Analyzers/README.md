@@ -7,6 +7,30 @@ They check two things: that a rule **declaration** satisfies the structural cont
 half-migrated suppression mixing a reference with a literal, a literal that a catalogue reference
 would replace.
 
+## Migrating an existing codebase
+
+The package also carries the code fix for the last of those, which is how a codebase adopts a
+catalogue in practice:
+
+```csharp
+[SuppressMessage("Major Code Smell", "S1144", Justification = "kept for reflection")]
+// becomes
+[SuppressMessage(SonarRules.S1144.Category, SonarRules.S1144.Id, Justification = "kept for reflection")]
+```
+
+*Fix all occurrences* applies it across a document, project or solution in one step, and the `using`
+the reference needs is added for you. Everything else in the attribute is left exactly as written —
+`Justification`, `Scope`, `Target` and `MessageId` are yours.
+
+Two behaviours worth knowing before you run it:
+
+* **The friendly-name suffix is dropped.** Visual Studio writes
+  `"S1144:Unused private members should be removed"`; the fix recognises that form and replaces the
+  whole thing with the reference. The prose lived in the suppression only because there was nothing
+  else to hold it — the rule's own documentation has it now.
+* **When two catalogues describe the same rule, no fix is offered.** The diagnostic still appears, so
+  nothing is hidden, but choosing between them is yours to make.
+
 ## Referencing it
 
 Analysis assemblies must never become runtime dependencies, so reference it privately:

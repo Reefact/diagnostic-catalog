@@ -1,0 +1,6 @@
+#nullable enable
+DiagnosticCatalog.CodeFixes.UseCatalogReferenceCodeFixProvider
+DiagnosticCatalog.CodeFixes.UseCatalogReferenceCodeFixProvider.UseCatalogReferenceCodeFixProvider() -> void
+override DiagnosticCatalog.CodeFixes.UseCatalogReferenceCodeFixProvider.FixableDiagnosticIds.get -> System.Collections.Immutable.ImmutableArray<string!>
+override DiagnosticCatalog.CodeFixes.UseCatalogReferenceCodeFixProvider.GetFixAllProvider() -> Microsoft.CodeAnalysis.CodeFixes.FixAllProvider!
+override DiagnosticCatalog.CodeFixes.UseCatalogReferenceCodeFixProvider.RegisterCodeFixesAsync(Microsoft.CodeAnalysis.CodeFixes.CodeFixContext context) -> System.Threading.Tasks.Task!
