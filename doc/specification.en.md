@@ -1366,13 +1366,34 @@ flow transitively. In practice
 [NuGet/Home#13813](https://github.com/NuGet/Home/issues/13813) reports that
 transitive analyzers *do* flow. **Depend on neither direction.**
 
-* `DiagnosticCatalog.Packaging.Tests` must perform a real restore of the
-  produced packages and assert whether the analyzer activates for a consumer of
-  a catalogue package.
-* The explicit lever for a catalogue that *wants* to propagate the analyzer is
-  `PrivateAssets="none"` on its own reference.
-* Until that test exists, the documentation must instruct consumers to reference
-  `DiagnosticCatalog.Analyzers` explicitly.
+* `tools/packaging/verify-consumption.sh` performs a real restore of the produced
+  packages and asserts whether the analyzer activates for a consumer of a
+  catalogue package. It runs on every pull request, from the release rehearsal,
+  where real `.nupkg` files exist.
+
+**Measured, and it is not what the documentation implies.** Three catalogue
+packages differing only in `PrivateAssets` were built and consumed:
+
+| A catalogue referencing the analyzer with | The analyzer runs for its consumers |
+| --- | --- |
+| no `PrivateAssets` at all | **yes** |
+| `PrivateAssets="none"` | yes |
+| `PrivateAssets="all"` | no |
+
+So the analyzer **does** flow transitively by default, despite the package
+setting `DevelopmentDependency` and despite NuGet documenting analyzers as
+non-transitive — the behaviour reported in
+[NuGet/Home#13813](https://github.com/NuGet/Home/issues/13813).
+
+Two consequences, both the reverse of the earlier assumption:
+
+* A catalogue that wants to bring the checking along needs **no lever at all**;
+  `PrivateAssets="none"` is confirmed to work and changes nothing.
+* A catalogue that does *not* want to impose analysis on its consumers must say
+  so explicitly with `PrivateAssets="all"`. Silence propagates.
+
+A consumer may still reference `DiagnosticCatalog.Analyzers` directly, and should
+when no catalogue package supplies it.
 
 ---
 

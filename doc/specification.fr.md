@@ -1412,13 +1412,35 @@ analyzers ne circulent pas transitivement. En pratique,
 analyzers transitifs circulent bel et bien. **Ne dépendre d'aucune des deux
 directions.**
 
-* `DiagnosticCatalog.Packaging.Tests` doit effectuer un restore réel des packages
-  produits et vérifier si l'analyzer s'active pour le consommateur d'un package
-  de catalogue.
-* Le levier explicite pour un catalogue qui *souhaite* propager l'analyzer est
-  `PrivateAssets="none"` sur sa propre référence.
-* Jusqu'à ce que ce test existe, la documentation doit demander aux
-  consommateurs de référencer explicitement `DiagnosticCatalog.Analyzers`.
+* `tools/packaging/verify-consumption.sh` effectue un restore réel des packages
+  produits et vérifie si l'analyzer s'active pour le consommateur d'un package de
+  catalogue. Il tourne sur chaque pull request, depuis la répétition de release,
+  là où de vrais fichiers `.nupkg` existent.
+
+**Mesuré, et ce n'est pas ce que la documentation laisse entendre.** Trois
+packages de catalogue ne différant que par `PrivateAssets` ont été construits
+puis consommés :
+
+| Un catalogue référençant l'analyzer avec | L'analyzer tourne chez ses consommateurs |
+| --- | --- |
+| aucun `PrivateAssets` | **oui** |
+| `PrivateAssets="none"` | oui |
+| `PrivateAssets="all"` | non |
+
+L'analyzer circule donc **bel et bien** transitivement par défaut, alors même que
+le package déclare `DevelopmentDependency` et que NuGet documente les analyzers
+comme non transitifs — le comportement rapporté dans
+[NuGet/Home#13813](https://github.com/NuGet/Home/issues/13813).
+
+Deux conséquences, toutes deux inverses de l'hypothèse initiale :
+
+* Un catalogue qui veut apporter la vérification n'a besoin **d'aucun levier** ;
+  `PrivateAssets="none"` fonctionne et ne change rien.
+* Un catalogue qui ne veut *pas* imposer l'analyse à ses consommateurs doit le
+  dire explicitement avec `PrivateAssets="all"`. Le silence propage.
+
+Un consommateur peut toujours référencer `DiagnosticCatalog.Analyzers`
+directement, et doit le faire quand aucun package de catalogue ne le fournit.
 
 ---
 

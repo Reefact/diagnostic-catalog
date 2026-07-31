@@ -108,6 +108,22 @@ jobs:
             echo "::notice::No train publishes anything yet; the rehearsal had nothing to pack."
           fi
 
+      # The packaging tests of docs §21.7, run here because this is where real .nupkg files exist.
+      # Nothing the C# build does can see what NuGet hands a consumer: whether the analyzer activates,
+      # whether its assemblies leak into an application's output folder, and whether it flows through a
+      # catalogue package. The last is the one §16.3 forbids assuming in either direction.
+      - name: Verify what a consumer actually gets
+        if: steps.solution.outputs.present == 'true'
+        env:
+          VERSION: ${{ env.DRYRUN_VERSION }}
+        run: |
+          set -euo pipefail
+          if [ ! -f "artifacts/DiagnosticCatalog.Analyzers.$VERSION.nupkg" ]; then
+            echo "::notice::The analyzer package was not produced; there is nothing to consume."
+            exit 0
+          fi
+          tools/packaging/verify-consumption.sh "$VERSION"
+
       - name: Upload the rehearsed packages
         if: steps.solution.outputs.present == 'true'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
