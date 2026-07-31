@@ -23,6 +23,12 @@ The common case, and the one that needs no knowledge of anything else here.
 * [**Writing suppressions that the compiler checks**](writing-suppressions.en.md) — reference a
   catalogue, write the suppression against constants, migrate the literals you already have, and see
   what it costs at run time (nothing).
+* [**Adopting a catalogue on an existing codebase**](adopting-a-catalogue.en.md) — the severity ramp,
+  *Fix all occurrences*, scoping by folder, and what order to convert in.
+* [**Configuration**](configuration.en.md) — every severity key, the category-wide switch, generated
+  code, and the `PrivateAssets` mistake that silences everything.
+* [**The zero-footprint guarantee**](zero-footprint.en.md) — what reaches the assembly you ship, and
+  what the test actually asserts.
 * [Core concepts](concepts.en.md) — if a word in that guide is unfamiliar.
 * [The `DCAT` diagnostics](diagnostics.en.md) — when one of them appears.
 
@@ -86,8 +92,11 @@ own:
 4. [When not to use this](when-not-to-use.en.md)
 5. [The alternatives](alternatives.en.md)
 6. [Writing suppressions that the compiler checks](writing-suppressions.en.md)
-7. [Publishing a catalogue](authoring-a-catalogue.en.md)
-8. [The `DCAT` diagnostics](diagnostics.en.md)
+7. [Adopting a catalogue on an existing codebase](adopting-a-catalogue.en.md)
+8. [Configuration](configuration.en.md)
+9. [The zero-footprint guarantee](zero-footprint.en.md)
+10. [Publishing a catalogue](authoring-a-catalogue.en.md)
+11. [The `DCAT` diagnostics](diagnostics.en.md)
 
 ---
 
