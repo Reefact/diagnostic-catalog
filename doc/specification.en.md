@@ -1221,9 +1221,12 @@ Rules for the generator, each of which is load-bearing:
 ### 14.2 Versioning a generated catalogue
 
 Because §7.6 records the exact upstream version in metadata, the package version
-does not have to encode it, and the two can move independently — a regeneration
-fix does not need an upstream release to hang off. Whichever scheme is chosen, a
-constant is never deleted (§23.1): a rule retired upstream becomes `[Obsolete]`.
+does not have to encode it — and it does not: a catalogue's version runs on its
+own Semantic Versioning line, incremented from what changed in the catalogue
+(ADR-0015). A regeneration fix therefore needs no upstream release to hang off,
+and an upstream release that changes no published rule moves no version. Either
+way a constant is never deleted (§23.1): a rule retired upstream becomes
+`[Obsolete]`.
 
 Synchronisation with upstream is automated (§14.3).
 
@@ -1880,4 +1883,4 @@ recalled. Re-verify before any major revision.
 | B4 | Are aliases and `using static` worth the analyzer complexity given §10.5? | Resolved, documented, not promoted. |
 | B5 | Does the ILLink Roslyn analyzer (`IL2xxx` at compile time) share the decoder verified in A4? | Assumed equivalent; verify before claiming full `UnconditionalSuppressMessage` coverage. |
 | B6 | Strong-name the `DiagnosticCatalog` assembly? Signing serves the strong-named .NET Framework consumers netstandard2.0 was chosen for; not signing avoids key management. Irreversible in both directions once published (§20). | Unsigned today. Must be decided before the first public release. |
-| B7 | Should `DiagnosticCatalog.Sonar`'s package version track `SonarAnalyzer.CSharp`, or run on its own line? §7.6 records the upstream version in metadata either way. | Own line for now; decide before the first public release. |
+| B7 | ~~Should `DiagnosticCatalog.Sonar`'s package version track `SonarAnalyzer.CSharp`, or run on its own line?~~ | **Settled** — its own line, for every catalogue: [ADR-0015](adr/0015-a-catalogues-version-runs-on-its-own-line.md). |

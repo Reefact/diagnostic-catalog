@@ -195,3 +195,4 @@ Optional supporting material:
 | [ADR-0012](0012-a-catalogue-never-renames-a-member-it-published.md) | A catalogue never renames a member it published | Accepted |
 | [ADR-0013](0013-write-the-shell-tooling-for-posix-sh-not-bash.md) | Write the shell tooling for POSIX sh, not bash | Accepted |
 | [ADR-0014](0014-ship-the-vendors-rule-title-as-a-catalogues-documentation.md) | Ship the vendor's rule title as a catalogue's documentation | Accepted |
+| [ADR-0015](0015-a-catalogues-version-runs-on-its-own-line.md) | A catalogue's package version runs on its own line, never the upstream's | Accepted |
