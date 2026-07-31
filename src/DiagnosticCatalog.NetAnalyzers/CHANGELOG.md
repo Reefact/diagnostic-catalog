@@ -16,11 +16,15 @@ number below.
 
 ## [Unreleased]
 
-_Nothing yet._
+<!-- mirror:begin -->
+**Mirrors `Microsoft.CodeAnalysis.NetAnalyzers 10.0.302`** — unchanged upstream.
+<!-- mirror:end -->
+
+_No other change yet._
 
 ## [0.2.0] - 2026-07-31
 
-Still mirroring **Microsoft.CodeAnalysis.NetAnalyzers 10.0.302**, unchanged since 0.1.0: no rule was
+**Mirrors `Microsoft.CodeAnalysis.NetAnalyzers 10.0.302`** — unchanged since 0.1.0: no rule was
 added, retired or recategorised, and all 318 of them keep the identifier and the
 category they shipped with. What moved is what each rule says about itself.
 
@@ -42,7 +46,7 @@ category they shipped with. What moved is what each rule says about itself.
 
 ## [0.1.0] - 2026-07-31
 
-The first release, mirroring **Microsoft.CodeAnalysis.NetAnalyzers 10.0.302**.
+**Mirrors `Microsoft.CodeAnalysis.NetAnalyzers 10.0.302`** — the first release.
 
 ### Added
 

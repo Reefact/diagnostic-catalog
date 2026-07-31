@@ -36,9 +36,80 @@ internal static class CatalogEmitter
         Console.WriteLine($"wrote {liveCount} live rules " +
                           $"({accepted.Count - liveCount} retired) to {job.Output}");
 
+        UpdateMirrorBanners(job, catalogue, previous, date, liveCount, categories.Ordered.Count);
+
         string summary = RenderSummary(catalogue, previous, changes, liveCount, categories.Ordered.Count);
 
         return new GenerateResult(Changed: true, Summary: summary);
+    }
+
+    // --- the mirrored release, restated wherever a consumer reads -----------------
+    //
+    // Which upstream release a catalogue reflects is the first thing a consumer needs, and a
+    // hand-written banner saying so goes stale the first night regeneration moves it — silently,
+    // because nothing compiles a README. So the generator writes it, in the two files a consumer
+    // actually opens, and DocumentedMirrorTests asserts that what they say matches the catalogue's
+    // own CatalogSource attribute. Between the two, the statement cannot drift: the generator keeps
+    // it current, and the test fails the build if anything else moves it.
+    //
+    // The nightly job commits the whole of src/, so the refreshed banners travel in the same pull
+    // request as the rules that moved, with no change to the workflow.
+
+    private const string MirrorBegin = "<!-- mirror:begin -->";
+    private const string MirrorEnd = "<!-- mirror:end -->";
+
+    private static void UpdateMirrorBanners(
+        Job job, Catalogue catalogue, Previous? previous, string date, int liveCount, int categoryCount)
+    {
+        string dir = Path.GetDirectoryName(job.Output)!;
+        string mirrored = $"`{catalogue.PackageId} {catalogue.Version}`";
+
+        // The banner carries only what the generator knows. Whatever a catalogue has to explain
+        // about its upstream — a vendor mirrored on its prerelease line, analyzers that ship inside
+        // the SDK — is prose belonging to that catalogue and is written OUTSIDE the markers, where
+        // rewriting the block cannot destroy it.
+        WriteBlock(Path.Combine(dir, "README.md"),
+            $"> ## 🪞 Mirrors {mirrored}\n" +
+            ">\n" +
+            $"> **{liveCount} rules, {categoryCount} categories**, every identifier and category read\n" +
+            $"> from that release's own analyzers. Regenerated {date}.");
+
+        // In the changelog the banner sits under Unreleased, so a release promotes it into that
+        // version's section along with everything else — which is what makes every published entry
+        // state the release it mirrored, including the ones where nothing upstream moved.
+        string moved = previous is not null
+                       && !string.Equals(previous.SourceVersion, catalogue.Version, StringComparison.Ordinal)
+            ? $" — upstream moved from `{previous.SourceVersion}`"
+            : " — unchanged upstream";
+        WriteBlock(Path.Combine(dir, "CHANGELOG.md"), $"**Mirrors {mirrored}**{moved}.");
+    }
+
+    // Replaces what sits between the markers, and reports rather than repairs when they are absent:
+    // where a banner belongs in a document is an editorial choice this tool cannot make, and a
+    // generator that guessed would eventually insert one in the wrong place, silently.
+    private static void WriteBlock(string path, string body)
+    {
+        if (!File.Exists(path))
+        {
+            Console.WriteLine($"  note: {Path.GetFileName(path)} not found beside the catalogue — no banner written");
+            return;
+        }
+
+        string text = File.ReadAllText(path);
+        int start = text.IndexOf(MirrorBegin, StringComparison.Ordinal);
+        int end = text.IndexOf(MirrorEnd, StringComparison.Ordinal);
+        if (start < 0 || end < start)
+        {
+            Console.WriteLine($"  WARNING: no {MirrorBegin} … {MirrorEnd} block in {Path.GetFileName(path)}; " +
+                              "the mirrored release is not stated there and the tests will say so");
+            return;
+        }
+
+        string updated = text[..(start + MirrorBegin.Length)] + "\n" + body + "\n" + text[end..];
+        if (string.Equals(updated, text, StringComparison.Ordinal)) return;
+
+        File.WriteAllText(path, updated, new UTF8Encoding(false));
+        Console.WriteLine($"  updated the mirrored release stated in {Path.GetFileName(path)}");
     }
 
     // §23.1: a constant is never deleted. Consumers inline const values at their own

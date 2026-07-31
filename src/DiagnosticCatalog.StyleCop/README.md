@@ -2,7 +2,13 @@
 
 The **StyleCop.Analyzers** rules as strongly referenced constants, so that
 `SuppressMessageAttribute` takes compile-checked references instead of magic strings.
-Mirrors the `1.2.0-beta` line, which is what projects run — see "A note on versions".
+
+<!-- mirror:begin -->
+> ## 🪞 Mirrors `StyleCop.Analyzers.Unstable 1.2.0.556`
+>
+> **197 rules, 8 categories**, every identifier and category read
+> from that release's own analyzers. Regenerated 2026-07-31.
+<!-- mirror:end -->
 
 > Unofficial. Not affiliated with or endorsed by the StyleCop.Analyzers project.
 
