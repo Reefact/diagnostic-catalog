@@ -1,203 +1,211 @@
-using System.Globalization;
-using System.Reflection;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Diagnostics;
+using System.Diagnostics;
+using System.Text.Json;
 
 namespace CatalogGen;
 
-// The reading stage: analyzer assemblies in, the rules they declare out.
+// The reading stage — which no longer happens here.
 //
-// It knows nothing about where the assemblies came from — it is handed paths — and that is the
-// point. This is the one stage that must never be duplicated per acquisition strategy: it loads
-// third-party code into this process and constructs it, and its failure mode is silence. An
-// analyzer that cannot be constructed contributes no descriptor, and a catalogue short of a rule
-// is indistinguishable from a catalogue whose vendor removed it. One copy of that risk, exercised
-// by every source, is the whole reason the seam sits where it does.
+// Reading descriptors means loading somebody else's analyzer assemblies and constructing them:
+// running third-party code compiled against a Roslyn this repository does not choose, on a runtime
+// it does not choose either. That now happens in CatalogGen.Worker, a separate process, and this
+// type is what asks it to.
+//
+// The move buys two things no in-process arrangement can. The worker rolls forward to the latest
+// installed major, so `dcat`'s net8.0 floor — which exists to make it installable widely
+// (ADR-0017) — stops deciding which analyzers it can read. And a construction that overflows the
+// stack or kills the process takes the worker down rather than the tool, leaving something to
+// report.
+//
+// It also takes Roslyn out of the engine entirely: nothing on this side of the process boundary
+// references it any more.
 internal static class DescriptorReader
 {
-    // .NET Core has no binding redirects. Upstream analyzers are compiled against older Roslyn
-    // versions, so map every Microsoft.CodeAnalysis request onto the loaded one.
-    //
-    // Installed once for the process rather than per read: the handler answers from the assemblies
-    // already loaded, so a second registration would only add a redundant hop to every resolution.
-    // Idempotent because the run is now callable rather than a process entry point, and a caller
-    // that runs twice must not stack a second handler onto the first.
-    private static bool resolverInstalled;
+    private const string WorkerAssemblyName = "CatalogGen.Worker.dll";
 
-    internal static void InstallAssemblyResolver()
-    {
-        if (resolverInstalled) return;
-        resolverInstalled = true;
-
-        HashSet<string> resolving = new(StringComparer.Ordinal);
-        AppDomain.CurrentDomain.AssemblyResolve += (_, e) => ResolveAgainstLoaded(e, resolving);
-        _ = typeof(Workspace); // force Workspaces into the load context before the analyzer needs it
-    }
-
-    // The handler behind the hook above. Answers with the assembly already loaded, and with null —
-    // meaning "not mine" — for anything outside the Microsoft.CodeAnalysis family, which leaves the
-    // runtime's own resolution in charge of it.
-    private static Assembly? ResolveAgainstLoaded(ResolveEventArgs e, HashSet<string> resolving)
-    {
-        string? want = new AssemblyName(e.Name).Name;
-        if (want is null) return null;
-        Assembly? loaded = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.GetName().Name == want);
-        if (loaded is not null) return loaded;
-        if (!want.StartsWith("Microsoft.CodeAnalysis", StringComparison.Ordinal)) return null;
-
-        // Assembly.Load raises AssemblyResolve again when it fails, so without this guard a
-        // genuinely missing assembly recurses until the stack overflows.
-        lock (resolving)
-        {
-            if (!resolving.Add(want)) return null;
-        }
-        try { return Assembly.Load(want); }
-        catch { return null; }
-        finally { lock (resolving) { resolving.Remove(want); } }
-    }
-
-    // The rules declared by one acquisition's assemblies, filtered down to the suppressable ones.
-    // Null when the read was incomplete — see ReadDescriptors for why that is refused rather than
-    // reported. Filtering a shortfall would only make it harder to see.
+    /// The rules declared by one acquisition's assemblies, or null when the read was incomplete.
+    /// The worker owns that judgement and reports it on its own stderr; anything but a clean exit
+    /// is the same refusal this method produced when it read in-process.
     internal static SortedDictionary<string, RuleInfo>? Read(AnalyzerAssemblySet source)
     {
-        SortedDictionary<string, RuleInfo>? declared = ReadDescriptors(source.AssemblyPaths);
-
-        return declared is null ? null : AcceptSuppressable(declared);
-    }
-
-    // Descriptors are instance state, so every analyzer type has to be constructed.
-    //
-    // Null when anything was dropped along the way, which is the whole contract of this method. A
-    // rule the reader failed to reach is absent from the catalogue, and an absent rule is
-    // indistinguishable from one the vendor retired — so the emitter carries it forward and states
-    // in an [Obsolete] message that the vendor no longer declares it. A partial read does not
-    // produce a catalogue that is merely short; it produces one that is wrong about somebody
-    // else's product, and says so to that product's users.
-    //
-    // Nothing downstream can catch it. The platform never validates a suppression's category
-    // (specification §3.2), so a catalogue that lost rules produces no symptom in any consumer's
-    // build, ever. This is the last place the shortfall is still known, which is why it stops here
-    // — the behaviour ADR-0009 calls "a generation that stops rather than guesses".
-    private static SortedDictionary<string, RuleInfo>? ReadDescriptors(IReadOnlyList<string> assemblyPaths)
-    {
-        SortedDictionary<string, RuleInfo> rules = new(StringComparer.Ordinal);
-        List<string> dropped = [];
-        int analyzerTypes = 0, constructed = 0;
-
-        foreach (string dll in assemblyPaths)
+        string? worker = ResolveWorker();
+        if (worker is null)
         {
-            foreach (Type t in AnalyzerTypesIn(dll, dropped))
-            {
-                analyzerTypes++;
-                if (TryAddDescriptors(t, rules)) constructed++;
-                else dropped.Add($"{t.FullName ?? t.Name}: could not be constructed");
-            }
+            Console.Error.WriteLine(
+                $"the descriptor worker ({WorkerAssemblyName}) is not beside this tool, in " +
+                $"{AppContext.BaseDirectory}. It is bundled at build time; a tool package missing it is a " +
+                "packaging fault rather than a usage error.");
+
+            return null;
         }
 
-        Console.WriteLine($"analyzer types: {analyzerTypes}, constructed: {constructed}, descriptors: {rules.Count}");
-        if (dropped.Count == 0) return rules;
-
-        Console.Error.WriteLine($"INCOMPLETE READ: {dropped.Count} item(s) could not be read:");
-        foreach (string reason in dropped) Console.Error.WriteLine($"  {reason}");
-        Console.Error.WriteLine(
-            "Refusing to emit. The rules these declare would be missing from the catalogue, and a " +
-            "missing rule is indistinguishable from a retired one: they would be published as " +
-            "[Obsolete], telling consumers the vendor no longer declares them. If an upstream " +
-            "release changed shape, fix the read rather than accept the shortfall.");
-
-        return null;
-    }
-
-    // Appends to <paramref name="dropped"/> whatever this assembly could not yield, so the caller
-    // can refuse a read that lost something. An assembly that fails to load entirely is the worst
-    // case and the quietest: it contributes no analyzer type at all, so no count anywhere is short.
-    private static IEnumerable<Type> AnalyzerTypesIn(string dll, List<string> dropped)
-    {
-        Assembly asm;
-        // S3885 asks for Assembly.Load. It cannot do this: Load resolves an assembly by NAME through
-        // the runtime's probing paths, and this path is a file the process extracted moments ago into
-        // its own temp directory, deliberately outside them. LoadFrom is the API that takes a path —
-        // the required one here, not a lax alternative. What makes the upstream assembly's older
-        // Roslyn references resolve is the AssemblyResolve handler above, not the choice of loader.
-        //
-        // The catch is broad because the failure set is: LoadFrom answers a malformed file, an
-        // unreadable one and a refused one with three different exception types, and every one of
-        // them means the same thing here — this assembly's rules did not arrive.
-#pragma warning disable S3885 // "Assembly.Load" should be used
-        try { asm = Assembly.LoadFrom(dll); }
-#pragma warning restore S3885
-        catch (Exception ex)
-        {
-            dropped.Add($"{Path.GetFileName(dll)}: could not be loaded ({ex.GetType().Name}: {ex.Message})");
-
-            return [];
-        }
-
-        Type[] types;
-        try { types = asm.GetTypes(); }
-        catch (ReflectionTypeLoadException ex)
-        {
-            // The types that did load are still worth reading; the ones that did not are the reason
-            // the run will refuse. An analyzer among them would otherwise vanish without a trace.
-            types = ex.Types.Where(t => t is not null).ToArray()!;
-            dropped.Add($"{Path.GetFileName(dll)}: {ex.LoaderExceptions.Length} type(s) could not be loaded " +
-                        $"({ex.LoaderExceptions.FirstOrDefault()?.Message ?? "no detail given"})");
-        }
-
-        return types.Where(t => !t.IsAbstract && typeof(DiagnosticAnalyzer).IsAssignableFrom(t));
-    }
-
-    // True when the type was constructed, whether or not it declared any descriptor. An analyzer that
-    // cannot be constructed contributes none; the caller counts the difference so it stays visible
-    // rather than being silently absorbed.
-    private static bool TryAddDescriptors(Type analyzer, SortedDictionary<string, RuleInfo> rules)
-    {
+        string request = Path.Combine(Path.GetTempPath(), $"cataloggen-req-{Guid.NewGuid():N}.json");
+        string response = Path.Combine(Path.GetTempPath(), $"cataloggen-res-{Guid.NewGuid():N}.json");
         try
         {
-            DiagnosticAnalyzer instance = (DiagnosticAnalyzer)Activator.CreateInstance(analyzer)!;
-            foreach (DiagnosticDescriptor d in instance.SupportedDiagnostics)
+            File.WriteAllText(request,
+                              JsonSerializer.Serialize(new DescriptorReadRequest { AssemblyPaths = [.. source.AssemblyPaths] }));
+
+            int exitCode = RunWorker(worker, source, request, response);
+            if (exitCode != WorkerExitCodes.Complete)
             {
-                // A title is a LocalizableString, and the .NET analyzers back theirs with resources.
-                // Formatting one against the current culture would make the generated catalogue depend
-                // on the machine that produced it, which is the one property a generated file may not
-                // have: the same upstream release has to yield the same bytes on a maintainer's laptop
-                // and on the nightly runner.
-                rules[d.Id] = new RuleInfo(
-                    d.Category,
-                    d.HelpLinkUri ?? string.Empty,
-                    Retired: false,
-                    Naming.Sentence(d.Title.ToString(CultureInfo.InvariantCulture)));
+                // The worker has already said what it could not read and why it refuses. Adding a
+                // second account here would only make the first harder to find.
+                if (exitCode != WorkerExitCodes.IncompleteRead)
+                    Console.Error.WriteLine($"the descriptor worker exited with {exitCode}");
+
+                return null;
             }
 
-            return true;
+            if (!File.Exists(response))
+            {
+                Console.Error.WriteLine("the descriptor worker reported success but wrote no result");
+
+                return null;
+            }
+
+            DescriptorReadResponse? read =
+                JsonSerializer.Deserialize<DescriptorReadResponse>(File.ReadAllText(response));
+            if (read is null)
+            {
+                Console.Error.WriteLine("the descriptor worker wrote a result that could not be read");
+
+                return null;
+            }
+
+            SortedDictionary<string, RuleInfo> rules = new(StringComparer.Ordinal);
+            foreach ((string id, ReadRule rule) in read.Rules)
+                rules[id] = new RuleInfo(rule.Category, rule.HelpLinkUri, Retired: false, rule.Title);
+
+            return rules;
         }
-        catch
+        finally
         {
-            return false;
+            Delete(request);
+            Delete(response);
         }
     }
 
-    // Filtering. Only two things disqualify a descriptor, and both are reported: an empty
-    // category means the entry is not a suppressable diagnostic (analyzers use such entries
-    // for internal metrics and telemetry channels), and a non-identifier id would need a
-    // mangled container name.
-    private static SortedDictionary<string, RuleInfo> AcceptSuppressable(SortedDictionary<string, RuleInfo> rules)
+    // The worker inherits this process's console rather than having its streams captured: its
+    // output IS the run's diagnostics, and relaying it verbatim keeps the log reading exactly as it
+    // did when this stage ran in-process.
+    private static int RunWorker(
+        string workerPath, AnalyzerAssemblySet source, string requestPath, string responsePath)
     {
-        SortedDictionary<string, RuleInfo> accepted = new(StringComparer.Ordinal);
-        List<(string Id, string Reason)> skipped = [];
-        foreach ((string id, RuleInfo info) in rules)
+        string workerDirectory = Path.GetDirectoryName(workerPath)!;
+        ProcessStartInfo start = new()
         {
-            if (string.IsNullOrWhiteSpace(info.Category)) { skipped.Add((id, "empty category — not a suppressable diagnostic")); continue; }
-            if (!SyntaxFacts.IsValidIdentifier(id)) { skipped.Add((id, "id is not a valid C# identifier")); continue; }
-            accepted[id] = info;
+            FileName = DotnetHost(),
+            UseShellExecute = false,
+            WorkingDirectory = workerDirectory,
+        };
+
+        // `exec` rather than `run`, so the worker's own runtimeconfig decides the runtime — which is
+        // the entire point of the worker, since that is where RollForward=LatestMajor lives.
+        start.ArgumentList.Add("exec");
+
+        // Run against the TARGET's dependency graph when it has one, so an analyzer compiled
+        // against a different Roslyn resolves its own rather than being read through this tool's.
+        // It replaces the worker's own graph rather than adding to it, which is why the worker's
+        // directory goes on the probing path below: that is where the worker's own assemblies —
+        // CatalogGen, and the Roslyn it falls back on — are then found.
+        if (source.DependencyContextPath is not null)
+        {
+            start.ArgumentList.Add("--depsfile");
+            start.ArgumentList.Add(source.DependencyContextPath);
         }
 
-        int withHelp = rules.Count(r => !string.IsNullOrEmpty(r.Value.HelpLinkUri));
-        Console.WriteLine($"accepted: {accepted.Count}, skipped: {skipped.Count}, HelpLinkUri populated on {withHelp}/{rules.Count}");
-        foreach ((string id, string reason) in skipped) Console.WriteLine($"  skipped {id}: {reason}");
+        // The worker's own directory first, then every directory the assemblies live in, so a
+        // sibling an analyzer needs resolves whether or not the graph above mentions it. Distinct
+        // and ordinal for the same reason the assembly list is: the probing order must be a
+        // property of the request rather than of the disk.
+        foreach (string directory in ProbingPaths(workerDirectory, source))
+        {
+            start.ArgumentList.Add("--additionalprobingpath");
+            start.ArgumentList.Add(directory);
+        }
 
-        return accepted;
+        start.ArgumentList.Add(workerPath);
+        start.ArgumentList.Add(requestPath);
+        start.ArgumentList.Add(responsePath);
+
+        using Process process = Process.Start(start)!;
+        process.WaitForExit();
+
+        return process.ExitCode;
+    }
+
+    private static IEnumerable<string> ProbingPaths(string workerDirectory, AnalyzerAssemblySet source)
+    {
+        IEnumerable<string> assemblyDirectories = source.AssemblyPaths
+            .Select(p => Path.GetDirectoryName(p))
+            .Where(d => !string.IsNullOrEmpty(d))
+            .Select(d => d!)
+            .OrderBy(d => d, StringComparer.Ordinal);
+
+        List<string> paths = [workerDirectory, .. assemblyDirectories];
+
+        // A library's dependency graph names its packages by the path INSIDE the package, and
+        // nothing in a class library says where packages live — an application would answer that
+        // with a runtimeconfig.dev.json, and an analyzer, being netstandard2.0, has none. Without
+        // the cache on the probing path the graph resolves to nothing: measured, the worker died on
+        // "package: 'Microsoft.CodeAnalysis.Common', version: '4.8.0'".
+        //
+        // Best effort by nature. A machine whose cache does not hold what the analyzer was built
+        // against gets the worker's own Roslyn through the AssemblyResolve unification, which is
+        // what happened before any of this existed.
+        string? cache = NuGetPackageCache();
+        if (cache is not null) paths.Add(cache);
+
+        return paths.Distinct(StringComparer.Ordinal);
+    }
+
+    private static string? NuGetPackageCache()
+    {
+        string? configured = Environment.GetEnvironmentVariable("NUGET_PACKAGES");
+        if (!string.IsNullOrEmpty(configured) && Directory.Exists(configured)) return configured;
+
+        string home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        if (string.IsNullOrEmpty(home)) return null;
+
+        string standard = Path.Combine(home, ".nuget", "packages");
+
+        return Directory.Exists(standard) ? standard : null;
+    }
+
+    // Beside this assembly, which for the shipped tool is the directory PackAsTool lays the worker
+    // into, and for a test run is wherever the bundling props copied it.
+    private static string? ResolveWorker()
+    {
+        string candidate = Path.Combine(AppContext.BaseDirectory, WorkerAssemblyName);
+
+        return File.Exists(candidate) ? candidate : null;
+    }
+
+    // DOTNET_HOST_PATH is set by the SDK and by `dotnet` itself, and is the authoritative answer
+    // when present. Failing that, this process may already BE the host — a framework-dependent app
+    // launched by `dotnet` reports it as its own path — and failing that, the name on PATH is all
+    // that is left. Guessing wrong is survivable and reported: the process simply fails to start.
+    private static string DotnetHost()
+    {
+        string? declared = Environment.GetEnvironmentVariable("DOTNET_HOST_PATH");
+        if (!string.IsNullOrEmpty(declared) && File.Exists(declared)) return declared;
+
+        string? current = Environment.ProcessPath;
+        if (current is not null)
+        {
+            string name = Path.GetFileNameWithoutExtension(current);
+            if (string.Equals(name, "dotnet", StringComparison.OrdinalIgnoreCase)) return current;
+        }
+
+        return "dotnet";
+    }
+
+    private static void Delete(string path)
+    {
+        // A temp file left behind is untidy; a run that failed because it could not delete one
+        // would be absurd.
+        try { if (File.Exists(path)) File.Delete(path); }
+        catch (IOException) { }
+        catch (UnauthorizedAccessException) { }
     }
 }

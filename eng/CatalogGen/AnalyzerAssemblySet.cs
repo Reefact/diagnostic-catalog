@@ -22,5 +22,17 @@ namespace CatalogGen;
 /// you read, and at which release" — the one question only the acquisition can answer.
 /// </para>
 /// </remarks>
+/// <param name="DependencyContextPath">
+/// The <c>.deps.json</c> describing what these assemblies were built against, or null when they
+/// came without one. The reader hands it to the worker so the runtime resolves against the
+/// TARGET's dependency graph rather than the worker's own — which is how an analyzer compiled
+/// against a different Roslyn gets to bring its own along.
+/// <para>
+/// It is set by the acquisition rather than discovered by the reader, because whether such a graph
+/// exists at all is a property of where the assemblies came from: a project's build output has
+/// one, and assemblies extracted flat out of a package have none to find.
+/// </para>
+/// </param>
 internal sealed record AnalyzerAssemblySet(
-    IReadOnlyList<string> AssemblyPaths, string SourceName, string SourceVersion);
+    IReadOnlyList<string> AssemblyPaths, string SourceName, string SourceVersion,
+    string? DependencyContextPath = null);

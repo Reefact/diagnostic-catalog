@@ -80,6 +80,13 @@
     <ProjectReference Include="..\..\eng\CatalogGen\CatalogGen.csproj" />
   </ItemGroup>
 
+  <!--
+    Bundles the descriptor worker beside the executable. It is spawned rather than referenced, so it
+    is not a managed dependency and PackAsTool would not embed it on its own; the import places it
+    in the publish output, which is what PackAsTool zips under tools/<tfm>/any.
+  -->
+  <Import Project="..\..\build\BundleDescriptorWorker.props" />
+
   <ItemGroup>
     <InternalsVisibleTo Include="DiagnosticCatalog.Cli.UnitTests" />
   </ItemGroup>

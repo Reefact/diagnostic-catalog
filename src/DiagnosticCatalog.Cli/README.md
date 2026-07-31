@@ -54,6 +54,14 @@ dcat generate \
   --output src/My.Catalog/MyRules.g.cs
 ```
 
+If your analyzer was built with the SDK it will have a `.deps.json` beside it.
+`dcat` reads it and runs the descriptor worker against **your** dependency
+graph, so an analyzer compiled against a different Roslyn than the tool carries
+is read through its own rather than through ours. It falls back to the tool's
+Roslyn when there is no graph, or when your package cache does not hold what the
+graph asks for — which is what happens for analyzers unpacked from a NuGet
+package, since those travel without one.
+
 `--source-name` and `--source-version` are worth passing. A catalogue records
 which release it was generated from, and that record is what tells one snapshot
 from the next: the file is left untouched when neither it nor any rule moved. An
@@ -118,6 +126,13 @@ something else changed too.
 
 `dcat` targets **.NET 8** and rolls forward across majors, so one build runs on
 .NET 8 and everything newer.
+
+Descriptors are read in a **separate worker process**, which rolls forward to the
+*latest* installed major rather than the first one it finds. That is what stops
+the floor that makes `dcat` installable from deciding what it can read: an
+analyzer built for a newer target still loads, provided that runtime is present.
+It also means an analyzer whose construction crashes takes the worker down and
+leaves `dcat` to tell you which one — rather than the whole run vanishing.
 
 ---
 

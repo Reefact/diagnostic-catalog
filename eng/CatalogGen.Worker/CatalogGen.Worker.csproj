@@ -1,0 +1,66 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    The process that reads descriptors on the engine's behalf. It is spawned, never referenced:
+    nothing links against it, and it reaches users bundled beside the `dcat` executable rather than
+    as a package of its own (it declares no <ReleaseTrain>).
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <!--
+      LatestMajor, and the distinction from the tool's Major matters. Major only rolls up when the
+      requested major is ABSENT, so on a machine carrying both .NET 8 and .NET 10 a net8.0 worker
+      would bind to 8 and fail to load an analyzer built for 10. LatestMajor always selects the
+      highest installed major, so the floor that makes `dcat` installable everywhere (ADR-0017)
+      stops deciding what it is able to read.
+    -->
+    <RollForward>LatestMajor</RollForward>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <!--
+      Roslyn ships satellite resources for fourteen cultures, and they travel into the tool package
+      because the worker travels into it. Not one of them can ever be read: a descriptor's title is
+      formatted against the invariant culture on purpose, so that the same upstream release yields
+      the same bytes on a maintainer's laptop and on the nightly runner. Keeping them would put ~10 MB
+      of translations in a tool that is required never to use a translation.
+    -->
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <!--
+    Roslyn lives HERE and only here. Resolving DiagnosticAnalyzer and DiagnosticDescriptor is what
+    reading a descriptor is, and reading is all this process does — so the engine, and with it the
+    `dcat` process itself, no longer loads Roslyn at all.
+  -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
+  </ItemGroup>
+
+  <!--
+    LINKED SOURCE, not a project reference, and the distinction is load-bearing.
+
+    The worker is launched with `dotnet exec` against a target's own deps.json whenever the assemblies
+    it is given came with a dependency graph, so that an analyzer compiled against another Roslyn
+    resolves its own. That switch REPLACES the worker's dependency graph rather than adding to it —
+    so any managed dependency of the worker's own becomes unresolvable, because no analyzer's
+    deps.json will ever mention CatalogGen. Measured, not assumed: with a ProjectReference the
+    worker died with "File name: 'CatalogGen, Version=1.0.0.0'" on the first target that had a
+    graph.
+    (This is where the sibling repository's worker differs rather than disagrees: the library ITS
+    worker needs is one the target also references, so the target's graph carries it.)
+
+    Compiling the two files in means the worker's only managed dependency is Roslyn, which the
+    target's graph either supplies or the probing path does. Naming has to be the same code on both
+    sides of the wire — a title normalised one way and read back another would report every rule as
+    retitled on every run — and sharing the source is what guarantees that; the two copies cannot
+    drift because there is only one file.
+  -->
+  <ItemGroup>
+    <Compile Include="..\CatalogGen\Naming.cs" Link="Naming.cs" />
+    <Compile Include="..\CatalogGen\DescriptorReadContract.cs" Link="DescriptorReadContract.cs" />
+  </ItemGroup>
+
+</Project>
