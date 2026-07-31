@@ -83,8 +83,8 @@ internal static class RuleContract
     {
         RuleContractViolations violations = RuleContractViolations.None;
 
-        // §8.1 — a class, static, non-generic. TypeKind covers struct, interface, enum and delegate;
-        // IsStatic and Arity cover the rest.
+        // §8.1 — a class, static, non-generic. TypeKind covers struct, interface, enum and delegate,
+        // and IsStatic and Arity cover the rest.
         //
         // The TypeKind half looks unreachable and is not. The foundation's marker is declared
         // AttributeTargets.Class, so the compiler rejects it on a struct with CS0592 before any analyzer

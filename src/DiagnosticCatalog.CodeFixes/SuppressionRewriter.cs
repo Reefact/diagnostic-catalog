@@ -37,7 +37,7 @@ internal static class SuppressionRewriter
     {
         AttributeArgumentListSyntax arguments = attribute.ArgumentList!;
 
-        List<AttributeArgumentSyntax> rewritten = new();
+        List<AttributeArgumentSyntax> rewritten = [];
         int positional = 0;
 
         foreach (AttributeArgumentSyntax argument in arguments.Arguments)
@@ -76,9 +76,10 @@ internal static class SuppressionRewriter
     /// <summary>Builds <c>Container.RULE.Member</c> as a qualified member access.</summary>
     private static ExpressionSyntax Member(string reference, string member)
     {
-        ExpressionSyntax expression = SyntaxFactory.IdentifierName(reference.Split('.').First());
+        string[] parts = reference.Split('.');
+        ExpressionSyntax expression = SyntaxFactory.IdentifierName(parts[0]);
 
-        foreach (string part in reference.Split('.').Skip(1))
+        foreach (string part in parts.Skip(1))
         {
             expression = SyntaxFactory.MemberAccessExpression(
                 SyntaxKind.SimpleMemberAccessExpression,

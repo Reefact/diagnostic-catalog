@@ -25,9 +25,15 @@ public sealed record Job(
     /// What this job reads from, for the run's header line. The assemblies' file names when they
     /// are what was asked for, because a path list is what the caller will recognise.
     /// </summary>
-    public string SourceLabel =>
-        Assemblies is not null ? SourceName ?? string.Join(", ", Assemblies.Select(Path.GetFileName))
-        : Nupkg is not null ? SourceName ?? Path.GetFileName(Nupkg)
-        : Projects is not null ? SourceName ?? string.Join(", ", Projects.Select(Path.GetFileName))
-        : Package!;
+    public string SourceLabel
+    {
+        get
+        {
+            if (Assemblies is not null) return SourceName ?? string.Join(", ", Assemblies.Select(Path.GetFileName));
+            if (Nupkg is not null) return SourceName ?? Path.GetFileName(Nupkg);
+            if (Projects is not null) return SourceName ?? string.Join(", ", Projects.Select(Path.GetFileName));
+
+            return Package!;
+        }
+    }
 }

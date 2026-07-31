@@ -137,7 +137,7 @@ internal static class CodeFixHarness
         Document document,
         ImmutableArray<Diagnostic> reported)
     {
-        List<CodeAction> actions = new();
+        List<CodeAction> actions = [];
 
         foreach (Diagnostic diagnostic in reported.Where(d => provider.FixableDiagnosticIds.Contains(d.Id)))
         {

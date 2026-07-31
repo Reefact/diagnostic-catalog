@@ -200,10 +200,11 @@ internal static class DescriptorReader
 
     private static void Delete(string path)
     {
-        // A temp file left behind is untidy; a run that failed because it could not delete one
-        // would be absurd.
         try { if (File.Exists(path)) File.Delete(path); }
-        catch (IOException) { }
-        catch (UnauthorizedAccessException) { }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            // Swallowed on purpose: a temp file left behind is untidy, and a run that failed
+            // because it could not delete one would be absurd.
+        }
     }
 }
