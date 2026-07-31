@@ -157,11 +157,15 @@ is what unblocked the three vendor catalogues, which now ride their own trains.
 | | Status |
 | --- | --- |
 | `DiagnosticCatalog` | **Published**, on the `lib` train. |
-| `DiagnosticCatalog.Sonar` / `.NetAnalyzers` / `.StyleCop` | On their own trains, each versioning at its vendor's pace. |
-| `DiagnosticCatalog.Analyzers` | **Specified, not built yet** — the diagnostics that validate declarations and use sites. |
+| `DiagnosticCatalog.Sonar` / `.NetAnalyzers` / `.StyleCop` | **Published**, on their own trains, each versioning at its vendor's pace. |
+| `DiagnosticCatalog.Analyzers` | **Built, not published yet** — the diagnostics that validate declarations and use sites. It rides the `lib` train, so the next tag there ships it. |
+| `DiagnosticCatalog.Cli`, the `dcat` tool | **Built, not published yet** — the generator, packaged as a .NET tool on its own `cli` train ([ADR-0017](doc/adr/0017-publish-the-generator-as-a-cli-on-its-own-release-train.md)). |
 
 Referencing the foundation alone declares rules; it performs **no checking**. That part is
-the analyzer package, and it does not exist yet.
+the analyzer package, which exists in the repository but has no version on nuget.org yet —
+and nothing can point at a package that has none, which is why a catalogue does not carry
+the checks along to its own consumers so far. The same ordering that made the foundation
+ship first.
 
 ## 🏁 Getting started
 
