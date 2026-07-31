@@ -46,6 +46,14 @@
          Build-time only (PrivateAssets=all) and NOT part of the load contract, so unlike
          Microsoft.CodeAnalysis.CSharp this one is free to track the newest version. -->
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="5.6.0" />
+    <!-- The Sonar C# rules, so the build reports what SonarQube Cloud would report instead of the
+         dashboard being the first place anyone meets them (ADR-0021). Which rules are ON comes from
+         build/sonar-profile.globalconfig, generated from the server's quality profile — the package's
+         own default set is narrower. Build-time only (PrivateAssets=all).
+         Version drift is the cost: this pin follows SonarSource's release line while the profile
+         follows the server's, so a bump can introduce a rule the report does not have yet. The weekly
+         sonar-profile workflow is what makes the two visible to each other. -->
+    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.31.0.145097" />
     <!-- Used by eng/CatalogGen to resolve DiagnosticAnalyzer and DiagnosticDescriptor when it
          loads an upstream analyzer assembly reflectively. Build-time tooling only: the shipped
          catalogs carry no Roslyn dependency. Workspaces is needed because some upstream
