@@ -1,5 +1,8 @@
 # Publishing a catalogue
 
+🌍 **Languages:**  
+🇬🇧 English (this file) | 🇫🇷 [Français](./authoring-a-catalogue.fr.md)
+
 For anyone who ships an analyzer, or who wants their team's suppressions checked against rules
 nobody else publishes. Everything here is deliberately readable without opening the foundation's
 source.
@@ -42,7 +45,7 @@ Nest the rules in a container, so the use site reads well:
 ```csharp
 namespace Contoso.Analyzers.Suppressions;
 
-public static class ContosoRules
+public static class ContosoRule
 {
     [DiagnosticRule]
     public static class CTS0001
@@ -54,13 +57,14 @@ public static class ContosoRules
 ```
 
 ```csharp
-[SuppressMessage(ContosoRules.CTS0001.Category, ContosoRules.CTS0001.Id, Justification = "...")]
+[SuppressMessage(ContosoRule.CTS0001.Category, ContosoRule.CTS0001.Id, Justification = "...")]
 ```
 
 **Name the container for the use site, not for the file.** Every suppression pays for that name
 twice, and your users cannot shorten it — they can alias it, but the name you pick is the one that
-shows up in every code review. `ContosoRules` reads better than
-`ContosoAnalyzersDiagnosticRuleDefinitions`.
+shows up in every code review. `ContosoRule` reads better than
+`ContosoAnalyzersDiagnosticRuleDefinitions`. The catalogues in this repository are named the same
+way, and in the singular: the use site reads `SonarRule.S1144`, one rule, named.
 
 ## Declaring your categories once
 
@@ -76,7 +80,7 @@ public static class ContosoCategory
     public const string Design = "Design";
 }
 
-public static class ContosoRules
+public static class ContosoRule
 {
     [DiagnosticRule]
     public static class CTS0001
@@ -88,7 +92,7 @@ public static class ContosoRules
 ```
 
 **The indirection is free.** A `const` initialised from another `const` is still a compile-time
-constant, so `ContosoRules.CTS0001.Category` is still valid as an attribute argument and still ends
+constant, so `ContosoRule.CTS0001.Category` is still valid as an attribute argument and still ends
 up as the literal `"Usage"` in the compiled assembly. Nothing downstream changes.
 
 `[DiagnosticCategory]` is optional — the constants work without it. What it buys is that tooling can
@@ -133,14 +137,14 @@ If you own the analyzer as well as the catalogue, feed the descriptor **from the
 
 ```csharp
 private static readonly DiagnosticDescriptor Rule = new(
-    id:                 ContosoRules.CTS0001.Id,
-    title:              ContosoRules.CTS0001.Title,
-    messageFormat:      ContosoRules.CTS0001.MessageFormat,
-    category:           ContosoRules.CTS0001.Category,
+    id:                 ContosoRule.CTS0001.Id,
+    title:              ContosoRule.CTS0001.Title,
+    messageFormat:      ContosoRule.CTS0001.MessageFormat,
+    category:           ContosoRule.CTS0001.Category,
     defaultSeverity:    DiagnosticSeverity.Warning,
     isEnabledByDefault: true,
-    description:        ContosoRules.CTS0001.Description,
-    helpLinkUri:        ContosoRules.CTS0001.HelpLinkUri);
+    description:        ContosoRule.CTS0001.Description,
+    helpLinkUri:        ContosoRule.CTS0001.HelpLinkUri);
 ```
 
 Now the analyzer that *reports* the rule and every suppression that *silences* it read the same
@@ -205,7 +209,7 @@ If you would rather not impose analysis on everyone downstream, say so explicitl
 ## Versioning: the one rule that will bite you
 
 Constants are **inlined into your consumers at their compile time**. A consumer that referenced
-`ContosoRules.CTS0001.Id` did not record a link to your assembly — it copied the string `"CTS0001"`
+`ContosoRule.CTS0001.Id` did not record a link to your assembly — it copied the string `"CTS0001"`
 into its own.
 
 The consequence: **deleting a `const` breaks recompilation** for everyone who used it, and it breaks
@@ -262,4 +266,10 @@ output looks like with 465, 318 and 193 rules; the method is in §14 of
   generated, shipped, and checked on every pull request.
 * [`eng/catalogs.json`](../../eng/catalogs.json) — how each catalogue in this repository declares
   where its rules come from.
-* [The diagnostics reference](diagnostics.md) — what your users will be told, and when.
+* [The diagnostics reference](diagnostics.en.md) — what your users will be told, and when.
+
+---
+
+<div align="center">
+<a href="./zero-footprint.en.md">← The zero-footprint guarantee</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./diagnostics.en.md">The DCAT diagnostics →</a>
+</div>

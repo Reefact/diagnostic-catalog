@@ -151,6 +151,32 @@ you of — because nothing compiles a README.
    pointed at a version that does not exist
    ([ADR-0007](doc/adr/0007-depend-across-trains-through-published-packages.md)).
 
+## Documentation
+
+The repository is written in **English** — source, comments, commit messages,
+branch names, pull request titles, issues. [`doc/`](doc/) is the one exception,
+and it is bilingual: every document there exists as an `.en.md` / `.fr.md` pair,
+with the **English version canonical** wherever the two disagree
+([ADR-0022](doc/adr/0022-maintain-every-document-under-doc-in-english-and-french.md)).
+
+The package READMEs under `src/` stay English-only. nuget.org renders one file
+per package, offers no language switch, and resolves no relative link — which is
+also why those READMEs link outward with absolute addresses.
+
+A page and its translation land in the **same commit**. This is not a style
+preference: `tests/DiagnosticCatalog.Documentation.UnitTests` fails a pair
+missing a half, a relative link that does not resolve, a page nothing navigates
+to, a `DCAT` id documented but never shipped — or shipped and never documented —
+and a `dcat` option that exists in one of the two places only. Documentation is
+the artifact where an omission is least visible, because the reader who cannot
+find the page is not in a position to report that it is missing.
+
+The layout, the language banner, the navigation footer, the diagram rules and
+what each check actually asserts are in
+[`doc/CONVENTIONS.en.md`](doc/CONVENTIONS.en.md). Read it before adding a page.
+
+Documentation-only changes take the `docs` type, which requires no scope.
+
 ## Enabling the commit-message hook
 
 A `commit-msg` hook checks every message against the convention below before it

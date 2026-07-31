@@ -1,6 +1,6 @@
 # DiagnosticCatalog.Self
 
-The `DCAT` rules — the ones [`DiagnosticCatalog.Analyzers`](../DiagnosticCatalog.Analyzers/README.md)
+The `DCAT` rules — the ones [`DiagnosticCatalog.Analyzers`](https://github.com/Reefact/diagnostic-catalog/blob/main/src/DiagnosticCatalog.Analyzers/README.md)
 reports — as constants you can reference.
 
 It is the library applied to itself. The analyzers that check *your* suppressions publish their own
@@ -50,7 +50,7 @@ a new `DCAT` id cannot ship without the catalogue that publishes it.
 This catalogue rides the `lib` train, with the analyzers it mirrors, and that is deliberate: the two
 are generated from one source in one repository and must never describe different rule sets. The
 other three catalogues version independently because an outside vendor sets their pace
-([ADR-0015](../../doc/adr/0015-a-catalogues-version-runs-on-its-own-line.md)); nobody outside sets
+([ADR-0015](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/adr/0015-a-catalogues-version-runs-on-its-own-line.md)); nobody outside sets
 this one's.
 
 A retired rule is carried forward as `[Obsolete]` rather than deleted, like everywhere else here:
@@ -70,9 +70,9 @@ analyzer's own descriptors — the difference being that theirs belong to somebo
   — the StyleCop.Analyzers (`SAxxxx`) rules.
 
 **Want a catalogue of your own?** That is what
-[the catalogue author's guide](../../doc/guide/catalogue-authors.md) is for, and this package is its
+[the catalogue author's guide](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/authoring-a-catalogue.en.md) is for, and this package is its
 worked example: a static class of constants marked `[DiagnosticRule]`, generated from the analyzer
-that reports them. The marker ships in [`DiagnosticCatalog`](../DiagnosticCatalog/README.md).
+that reports them. The marker ships in [`DiagnosticCatalog`](https://github.com/Reefact/diagnostic-catalog/blob/main/src/DiagnosticCatalog/README.md).
 
 ## Licence
 
