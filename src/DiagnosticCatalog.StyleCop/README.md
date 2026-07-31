@@ -2,6 +2,7 @@
 
 The **StyleCop.Analyzers** rules as strongly referenced constants, so that
 `SuppressMessageAttribute` takes compile-checked references instead of magic strings.
+Mirrors the `1.2.0-beta` line, which is what projects run — see "A note on versions".
 
 > Unofficial. Not affiliated with or endorsed by the StyleCop.Analyzers project.
 
@@ -61,27 +62,34 @@ not redistributed — the help link takes you to them.
 
 ## A note on versions
 
-This catalogue mirrors **StyleCop.Analyzers 1.1.118**, the latest *stable* release. Many
-projects run `1.2.0-beta.556` instead, which is widely used despite the prerelease tag and
-carries additional rules. If that is you, regenerate against it:
+This catalogue mirrors **StyleCop.Analyzers.Unstable 1.2.0.556** — the `1.2.0-beta` line,
+which is what projects actually install.
 
-```
-dotnet run --project eng/CatalogGen -- \
-    --package StyleCop.Analyzers.Unstable --version 1.2.0.556 \
-    --namespace DiagnosticCatalog.StyleCop --container StyleCopRule \
-    --output src/DiagnosticCatalog.StyleCop/StyleCopRules.g.cs
-```
+That is a deliberate choice, and it is worth stating plainly. StyleCop.Analyzers' latest
+*stable* release is `1.1.118`, published in **April 2019**; the project has lived on
+`1.2.0-beta` ever since. Mirroring the stable meant mirroring a release almost nobody
+runs, and it was not merely incomplete — `SA1413` is declared under
+`StyleCop.CSharp.ReadabilityRules` in the stable and under
+`StyleCop.CSharp.MaintainabilityRules` in the beta. A consumer on the beta writing
+`StyleCopRule.SA1413.Category` from a stable-based catalogue would get the wrong string,
+and nothing in their build would ever say so. Being current beats being nominally stable
+when a category is wrong either way (ADR-0016).
 
-Note the package id: `StyleCop.Analyzers` 1.2.0-beta is a metapackage carrying no
-analyzer assembly of its own — the rules live in `StyleCop.Analyzers.Unstable`.
+Note the package id: `StyleCop.Analyzers` 1.2.0-beta is a metapackage carrying no analyzer
+assembly of its own — the rules live in `StyleCop.Analyzers.Unstable`, whose own versions
+carry no prerelease tag.
+
+**If you are on the stable `1.1.118`**, use `DiagnosticCatalog.StyleCop` **0.2.0**, the
+last version to mirror it. Its 193 rules are a subset of the 197 here, none was removed,
+and only `SA1413` changed category.
 
 The assembly records exactly what it mirrors:
 
 ```csharp
 [assembly: CatalogSource(
-    source:        "StyleCop.Analyzers",
-    sourceVersion: "1.1.118",
-    generatedOn:   "2026-07-30")]
+    source:        "StyleCop.Analyzers.Unstable",
+    sourceVersion: "1.2.0.556",
+    generatedOn:   "2026-07-31")]
 ```
 
 ## Categories declared once

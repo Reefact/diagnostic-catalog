@@ -22,7 +22,17 @@
       "output": "../src/DiagnosticCatalog.NetAnalyzers/NetAnalyzersRules.g.cs"
     },
     {
-      "package": "StyleCop.Analyzers",
+      "$comment": [
+        "StyleCop.Analyzers' latest STABLE is 1.1.118, published in April 2019; the project has",
+        "lived on 1.2.0-beta ever since, and that is what projects actually install. Mirroring the",
+        "stable therefore mirrored a release almost nobody runs — and one rule already disagreed:",
+        "SA1413's category differs between the two, which nothing in a consumer's build would ever",
+        "report (§3.2). The rules live in StyleCop.Analyzers.Unstable; 1.2.0-beta of the main",
+        "package is a metapackage carrying no analyzer assembly. ADR-0016.",
+        "",
+        "Every version of .Unstable is dash-free, so \"latest\" resolves within that line as usual."
+      ],
+      "package": "StyleCop.Analyzers.Unstable",
       "namespace": "DiagnosticCatalog.StyleCop",
       "container": "StyleCopRule",
       "output": "../src/DiagnosticCatalog.StyleCop/StyleCopRules.g.cs"

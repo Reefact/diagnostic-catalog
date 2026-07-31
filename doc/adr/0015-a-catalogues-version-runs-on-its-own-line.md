@@ -65,11 +65,14 @@ one in the second, and both inventions are the catalogue lying about its own
 provenance.
 
 The vendors' own schemes settle what remains. A four-segment version is not a
-SemVer value, so `10.31.0.145097` cannot be a package version at all; and the
-three vendors do not agree on a shape, so no single mapping serves the three
-catalogues. Encoding the upstream release beside a SemVer core is closed off too:
-build metadata is rejected by the release workflow because NuGet drops it from
-the package identity, and a prerelease tag would mark every release a prerelease.
+SemVer value, and the release workflow accepts exactly three segments, so
+`10.31.0.145097` cannot be a version this repository publishes — NuGet itself
+does accept four, as `StyleCop.Analyzers.Unstable 1.2.0.556` shows, but that is
+not the constraint that binds here. The three vendors also do not agree on a
+shape, so no single mapping serves the three catalogues. Encoding the upstream
+release beside a SemVer core is closed off too: build metadata is rejected by the
+release workflow because NuGet drops it from the package identity, and a
+prerelease tag would mark every release a prerelease.
 
 Metadata is the right home for the mirrored release because it cannot be
 truncated to fit. `[assembly: CatalogSource]` carries the vendor's version string

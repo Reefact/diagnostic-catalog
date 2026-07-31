@@ -19,6 +19,34 @@ assembly rather than inferring it from the number below.
 
 _Nothing yet._
 
+## [0.3.0] - 2026-07-31
+
+**This catalogue now mirrors the `1.2.0-beta` line** — `StyleCop.Analyzers.Unstable
+1.2.0.556` — instead of `StyleCop.Analyzers 1.1.118`. The stable it mirrored until
+now was published in April 2019 and the project has never left beta since, so the
+catalogue was describing a release almost nobody installs
+([ADR-0016](../../doc/adr/0016-mirror-stylecops-prerelease-line.md), proposed).
+
+If you are on `1.1.118`, stay on **0.2.0**, the last version to mirror it.
+
+### Added
+
+* Four rules the beta line declares and the stable does not: `SA1141` (use tuple
+  syntax), `SA1142` (refer to tuple fields by name), `SA1316` (tuple element names
+  should use correct casing) and `SA1414` (tuple types in signatures should have
+  element names).
+
+### Changed
+
+* **`SA1413` changed category** — `StyleCop.CSharp.ReadabilityRules` becomes
+  `StyleCop.CSharp.MaintainabilityRules`. This is the change to read twice: the
+  platform never validates a suppression's category, so a wrong one produces no
+  error, no warning and no failing test, ever. Anyone running the beta with a
+  stable-based catalogue has been passing the wrong string for this rule and had
+  no way to know.
+* No rule was removed: the stable's 193 are all still here, and the constant of
+  every one of them is unchanged.
+
 ## [0.2.0] - 2026-07-31
 
 Still mirroring **StyleCop.Analyzers 1.1.118**, unchanged since 0.1.0: no rule was
