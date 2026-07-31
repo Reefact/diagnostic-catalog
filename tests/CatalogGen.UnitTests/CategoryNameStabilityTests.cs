@@ -123,7 +123,7 @@ public sealed class CategoryNameStabilityTests : IDisposable
         Previous? reparsed = CatalogParser.ReadPrevious(output);
 
         Assert.NotNull(reparsed);
-        Assert.Equal("CodeSmell", reparsed!.CategoryNames["Code Smell"]);
+        Assert.Equal("CodeSmell", reparsed.CategoryNames["Code Smell"]);
         Assert.Equal("CodeSmell2", reparsed.CategoryNames["Code-Smell"]);
     }
 }

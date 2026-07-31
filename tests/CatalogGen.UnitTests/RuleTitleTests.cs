@@ -123,7 +123,7 @@ public sealed class RuleTitleTests : IDisposable
         Previous? reparsed = CatalogParser.ReadPrevious(output);
 
         Assert.NotNull(reparsed);
-        Assert.Equal(title, reparsed!.Rules["X0001"].Title);
+        Assert.Equal(title, reparsed.Rules["X0001"].Title);
     }
 
     [Fact]

@@ -54,7 +54,7 @@ public sealed partial class CatalogRoundTripTests : IDisposable
 
         // The parser is the only route by which the emitter learns what the previous run produced,
         // so the version it recovers has to be the one written.
-        Assert.Equal(version, parsed!.SourceVersion);
+        Assert.Equal(version, parsed.SourceVersion);
 
         string ns = NamespaceDeclaration().Match(original).Groups[1].Value;
         // Two classes sit at column 0: the categories first, the rules second.

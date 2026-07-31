@@ -137,9 +137,9 @@
 
     The EXCEPTIONS are in .editorconfig, which wins over a global AnalyzerConfig: `suggestion` for a
     rule whose existing violations are not cleared yet (with its count), `none` for one this codebase
-    refuses (with its reason). 374 of the 377 rules had zero violations and are enforced as of this
-    commit; the 3 that did not are parked there and named. Membership is generated; every exception
-    is written down. Decision: ADR-0021.
+    refuses (with its reason). All 377 rules are enforced as of this commit — the list is empty, and
+    that is the state to keep it in. Membership is generated; every exception is written down.
+    Decision: ADR-0021.
   -->
   <ItemGroup>
     <PackageReference Include="SonarAnalyzer.CSharp" PrivateAssets="all" />

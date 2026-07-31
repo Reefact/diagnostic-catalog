@@ -97,7 +97,7 @@ public sealed partial class RetiredRuleTests : IDisposable
         Previous? reparsed = CatalogParser.ReadPrevious(output);
 
         Assert.NotNull(reparsed);
-        Assert.True(reparsed!.Rules["X0002"].Retired, "the retirement should be recoverable from the file");
+        Assert.True(reparsed.Rules["X0002"].Retired, "the retirement should be recoverable from the file");
         Assert.False(reparsed.Rules["X0001"].Retired);
     }
 
