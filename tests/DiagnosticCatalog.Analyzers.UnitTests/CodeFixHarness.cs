@@ -90,6 +90,44 @@ internal static class CodeFixHarness
             chosen = Assert.Single(actions, action => action.EquivalenceKey == equivalenceKey);
         }
 
+        return await AppliedAsync(chosen, document).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Applies every offered fix to the ORIGINAL document, one at a time, and returns each result.
+    /// </summary>
+    /// <remarks>
+    /// For what a single-fix assertion cannot express: a rule missing both its constants raises two
+    /// diagnostics, so two actions are offered at once and neither of them is "the" fix. Each is applied to
+    /// the pristine document rather than in sequence, so what a test asserts does not depend on the order
+    /// the provider happened to register them in.
+    /// </remarks>
+    internal static async Task<ImmutableArray<string>> ApplyEachAsync(
+        DiagnosticAnalyzer analyzer,
+        CodeFixProvider provider,
+        string source)
+    {
+        (Document document, ImmutableArray<Diagnostic> reported) = await AnalyseAsync(analyzer, source)
+            .ConfigureAwait(false);
+
+        Assert.NotEmpty(reported);
+
+        List<CodeAction> actions = await OfferedAsync(provider, document, reported).ConfigureAwait(false);
+
+        Assert.NotEmpty(actions);
+
+        ImmutableArray<string>.Builder applied = ImmutableArray.CreateBuilder<string>(actions.Count);
+
+        foreach (CodeAction action in actions)
+        {
+            applied.Add(await AppliedAsync(action, document).ConfigureAwait(false));
+        }
+
+        return applied.ToImmutable();
+    }
+
+    private static async Task<string> AppliedAsync(CodeAction chosen, Document document)
+    {
         ImmutableArray<CodeActionOperation> operations = await chosen
             .GetOperationsAsync(CancellationToken.None)
             .ConfigureAwait(false);

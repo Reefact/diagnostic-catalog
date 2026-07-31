@@ -519,6 +519,66 @@ public sealed class DefinitionFixTests
     }
 
     [Fact]
+    public async Task A_declared_member_keeps_the_line_endings_the_file_uses()
+    {
+        // The regression this file exists to hold. Leaving the layout to Roslyn's formatter meant it
+        // reformatted a region AROUND the inserted member and wrote line endings with the platform's
+        // newline: enough to rewrite the ending above the type declaration, invisible on Linux, and a red
+        // Windows job. Written with explicit \r\n so it reproduces everywhere rather than on one runner.
+        string source =
+            "using DiagnosticCatalog;\r\n"
+            + "[DiagnosticRule]\r\n"
+            + "public static class JD0007\r\n"
+            + "{\r\n"
+            + "    public const string Category = \"Usage\";\r\n"
+            + "}\r\n";
+
+        string fixteds = await CodeFixHarness.ApplyAsync(Analyzer, Declare, source);
+
+        Assert.Equal(
+            "using DiagnosticCatalog;\r\n"
+            + "[DiagnosticRule]\r\n"
+            + "public static class JD0007\r\n"
+            + "{\r\n"
+            + "    public const string Id = nameof(JD0007);\r\n"
+            + "    public const string Category = \"Usage\";\r\n"
+            + "}\r\n",
+            fixteds);
+    }
+
+    [Fact]
+    public async Task Both_members_are_declared_into_an_empty_body()
+    {
+        // The one shape with no layout to copy: the type declares nothing, so neither indentation nor line
+        // placement can be read off a sibling. Four spaces is the assumption, and this is where it is
+        // written down rather than left in a comment.
+        ImmutableArray<string> results = await CodeFixHarness.ApplyEachAsync(Analyzer, Declare, UsingFoundation + """
+            [DiagnosticRule]
+            public static class JD0007
+            {
+            }
+            """);
+
+        Assert.Equal(2, results.Length);
+
+        Assert.Contains(UsingFoundation + """
+            [DiagnosticRule]
+            public static class JD0007
+            {
+                public const string Id = nameof(JD0007);
+            }
+            """, results);
+
+        Assert.Contains(UsingFoundation + """
+            [DiagnosticRule]
+            public static class JD0007
+            {
+                public const string Category = "TODO";
+            }
+            """, results);
+    }
+
+    [Fact]
     public async Task One_equivalence_key_covers_both_constants()
     {
         // §21.4 asks that *Fix all occurrences* honour the key consistently. A rule missing both constants

@@ -11,7 +11,6 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Formatting;
 
 namespace DiagnosticCatalog.CodeFixes;
 
@@ -64,6 +63,9 @@ public sealed class AddRuleMemberCodeFixProvider : CodeFixProvider
     /// </summary>
     private const string EquivalenceKey = "DiagnosticCatalog.AddRuleMember";
 
+    /// <summary>One level of indentation, used only where the document offers none to copy.</summary>
+    private const string Level = "    ";
+
     /// <inheritdoc />
     public override ImmutableArray<string> FixableDiagnosticIds { get; } =
         ImmutableArray.Create(DiagnosticIds.InvalidRuleId, DiagnosticIds.InvalidRuleCategory);
@@ -115,10 +117,11 @@ public sealed class AddRuleMemberCodeFixProvider : CodeFixProvider
 
         if (!CanDeclare(type, member)) { return document; }
 
-        FieldDeclarationSyntax addition = Declaration(type, member)
-            .WithAdditionalAnnotations(Formatter.Annotation);
+        int position = Position(type, member);
 
-        TypeDeclarationSyntax declared = type.WithMembers(type.Members.Insert(Position(type, member), addition));
+        FieldDeclarationSyntax addition = LaidOut(Declaration(type, member), type, position, root);
+
+        TypeDeclarationSyntax declared = type.WithMembers(type.Members.Insert(position, addition));
 
         return document.WithSyntaxRoot(root.ReplaceNode(type, declared));
     }
@@ -158,6 +161,95 @@ public sealed class AddRuleMemberCodeFixProvider : CodeFixProvider
         }
 
         return type.Members.Count;
+    }
+
+    /// <summary>
+    /// The new member, spelled to sit where it is going.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Written out rather than left to <c>Formatter.Annotation</c>, and the reason was measured rather
+    /// than anticipated: the formatter reformats a region around the annotated node, not the node alone,
+    /// and it writes line endings with the platform's newline. Inserting into a single-line type body was
+    /// therefore enough to rewrite the line ending <b>above the type declaration</b> — outside the change,
+    /// invisible on Linux, and a failing test on Windows.
+    /// </para>
+    /// <para>
+    /// So the layout is copied from the member the new one lands beside: its indentation, and whether it
+    /// sits on a line of its own. A type whose body holds nothing has nobody to copy, and only there is a
+    /// convention assumed.
+    /// </para>
+    /// </remarks>
+    private static FieldDeclarationSyntax LaidOut(
+        FieldDeclarationSyntax addition,
+        TypeDeclarationSyntax type,
+        int position,
+        SyntaxNode root)
+    {
+        if (Anchor(type, position) is not MemberDeclarationSyntax anchor)
+        {
+            // An empty body says nothing about how its members are laid out. The closing brace gives the
+            // type's own indentation and one level is added to it — four spaces, which is what every
+            // example in this repository and in the specification is written with.
+            return addition
+                .WithLeadingTrivia(Indent(type.CloseBraceToken.LeadingTrivia).Add(SyntaxFactory.Whitespace(Level)))
+                .WithTrailingTrivia(NewLine(root));
+        }
+
+        return addition
+            .WithLeadingTrivia(Indent(anchor.GetLeadingTrivia()))
+            .WithTrailingTrivia(OnItsOwnLine(anchor) ? NewLine(root) : SyntaxFactory.Space);
+    }
+
+    /// <summary>The member whose layout the new one copies, or null when the body is empty.</summary>
+    private static MemberDeclarationSyntax? Anchor(TypeDeclarationSyntax type, int position)
+    {
+        if (type.Members.Count == 0) { return null; }
+
+        // Appending has no member at the position, so the last one is what the new member follows.
+        return position < type.Members.Count
+            ? type.Members[position]
+            : type.Members[type.Members.Count - 1];
+    }
+
+    /// <summary>
+    /// The indentation a member's leading trivia ends with, and nothing else from it.
+    /// </summary>
+    /// <remarks>
+    /// Only the final run. Everything before it — a doc comment, an attribute, a directive — belongs to
+    /// the member being copied from, and carrying it over would declare it twice.
+    /// </remarks>
+    private static SyntaxTriviaList Indent(SyntaxTriviaList leading)
+    {
+        if (leading.Count == 0) { return SyntaxTriviaList.Empty; }
+
+        SyntaxTrivia last = leading[leading.Count - 1];
+
+        return last.IsKind(SyntaxKind.WhitespaceTrivia)
+            ? SyntaxFactory.TriviaList(last)
+            : SyntaxTriviaList.Empty;
+    }
+
+    private static bool OnItsOwnLine(MemberDeclarationSyntax member) =>
+        member.GetFirstToken().GetPreviousToken().TrailingTrivia
+            .Any(trivia => trivia.IsKind(SyntaxKind.EndOfLineTrivia))
+        || member.GetLeadingTrivia().Any(trivia => trivia.IsKind(SyntaxKind.EndOfLineTrivia));
+
+    /// <summary>The line ending the file already uses.</summary>
+    /// <remarks>
+    /// Read from the document rather than taken from <c>SyntaxFactory.CarriageReturnLineFeed</c> or from
+    /// the environment: a fix that wrote CRLF into an LF file, or the reverse, would show up in somebody's
+    /// diff as a change to a line it never touched.
+    /// </remarks>
+    private static SyntaxTrivia NewLine(SyntaxNode root)
+    {
+        SyntaxTrivia[] endings = root.DescendantTrivia()
+            .Where(trivia => trivia.IsKind(SyntaxKind.EndOfLineTrivia))
+            .Take(1)
+            .ToArray();
+
+        // No line ending anywhere means a single-line file, which has no layout to preserve.
+        return endings.Length > 0 ? endings[0] : SyntaxFactory.LineFeed;
     }
 
     /// <summary>The <c>nameof</c> token, as a contextual keyword rather than as a name.</summary>
