@@ -14,8 +14,14 @@ namespace CatalogGen;
 /// </para>
 /// <para>
 /// So the option was accepted, documented, and could not succeed — a promise the tool could not
-/// keep, discovered only after a package had been downloaded. It is refused up front instead. This
-/// is where that changes if the worker ever carries another language's Roslyn.
+/// keep, discovered only after a package had been downloaded. It is refused up front instead.
+/// </para>
+/// <para>
+/// This is the mechanism, not the whole reason. ADR-0020 records the other half: Visual Basic is
+/// closed to new language features, so its analyzer population is small and will not grow, and this
+/// project declines to carry a second Roslyn in every install to serve it. That is a settled
+/// position rather than a deferred task — which is why this list is not written to be extended
+/// lightly.
 /// </para>
 /// <para>
 /// Distinct from the languages a package LAYOUT is known to use, which still includes Visual Basic
