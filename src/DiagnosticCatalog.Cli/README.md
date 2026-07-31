@@ -99,10 +99,48 @@ when it builds one, because that is the build a consumer's compiler actually
 loads.
 
 Repeat `--project` when rules are split across projects, as an analyzer and its
-code fixes often are. **A solution is refused**: which of its projects declare
-analyzers cannot be told from the outside, and guessing short would emit a
-catalogue whose missing rules read as retired ones — with nothing anywhere to
-report the omission.
+code fixes often are.
+
+## Generating from a solution
+
+Point it at the solution, and let each project say whether its rules belong in a
+catalogue:
+
+```xml
+<PropertyGroup>
+  <ProducesDiagnosticRules>true</ProducesDiagnosticRules>
+</PropertyGroup>
+```
+
+```bash
+dcat generate --solution MySolution.slnx \
+  --namespace My.Catalog --container MyRule \
+  --output src/My.Catalog/MyRules.g.cs
+```
+
+**Nothing is inferred, and that is the point.** Which of a solution's projects
+produce analyzers cannot be told from the outside. Measured on this tool's own
+repository, *references `Microsoft.CodeAnalysis`* matches six projects of which one
+is an analyzer; *declares a `DiagnosticAnalyzer`* matches two, and the second is a
+fixture written to fail construction. Reading the wrong set is not a nuisance here:
+a project missed means its rules are absent, an absent rule is indistinguishable
+from a retired one, and they would be published as `[Obsolete]` — telling that
+vendor's users something false, with nothing anywhere to report it.
+
+So a project joins by saying so, in its own file. The property is read by MSBuild
+*evaluation*, so nothing is restored, nothing is built and no `obj/` is written —
+which is what keeps `dcat validate --solution` safe against a working copy. As with
+`--project`, the projects must already be built, and `--configuration` picks which
+build is read.
+
+A solution where **nobody** declares it is refused rather than read as empty:
+
+```
+no project in MySolution.slnx declares <ProducesDiagnosticRules>true</ProducesDiagnosticRules>.
+Add it to the projects whose analyzers should be catalogued, or name them with --project.
+Reading none of them and emitting nothing would report success for a catalogue that was
+never generated.
+```
 
 ## Generating from your own analyzers
 
@@ -146,8 +184,9 @@ claim an unmoved source while its rules move underneath.
 
 ## Generating several at once
 
-A manifest declares any number of catalogues, from any kind of source. Paths
-inside it are relative to the manifest, so it works from any directory:
+A manifest declares any number of catalogues, from any kind of source — `package`,
+`nupkg`, `projects`, `solution` or `assemblies`, one per entry. Paths inside it are
+relative to the manifest, so it works from any directory:
 
 ```json
 {
@@ -271,7 +310,17 @@ analyzer built for a newer target still loads, provided that runtime is present.
 It also means an analyzer whose construction crashes takes the worker down and
 leaves `dcat` to tell you which one — rather than the whole run vanishing.
 
-Both processes `dcat` spawns — that worker, and MSBuild for `--project` — are
+What that worker carries also decides which languages can be catalogued, and it
+carries **C# Roslyn only**. Reading descriptors means *constructing* each analyzer,
+and a Visual Basic analyzer derives from types in
+`Microsoft.CodeAnalysis.VisualBasic`, which is not there — so `--language` accepts
+`cs` and refuses anything else at the command line, rather than after a package has
+been downloaded. That is a settled position rather than a gap awaiting work, and
+the reasoning is recorded in
+[ADR-0020](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/adr/0020-a-catalogue-is-generated-for-c-sharp-only.md).
+
+Both processes `dcat` spawns — that worker, and MSBuild for `--project` and
+`--solution` — are
 given a budget and stopped if they outrun it. Constructing an analyzer is
 third-party code and is the one step here that can *hang* rather than fail; a
 child that wedges would otherwise take the tool with it, leaving a pipeline to run
