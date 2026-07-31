@@ -14,9 +14,9 @@ d'utilisation** regardent une suppression que vous avez écrite, ce qui concerne
 | Identifiant | Regarde | Titre | Défaut | Correctif |
 | --- | --- | --- | --- | --- |
 | [`DCAT0001`](#dcat0001) | site d'utilisation | `Category` et `Id` doivent référencer la même règle | Avertissement | deux, non classés |
-| [`DCAT0002`](#dcat0002) | déclaration | Une règle doit être déclarée comme classe statique non générique | Avertissement | — |
-| [`DCAT0003`](#dcat0003) | déclaration | Une règle doit exposer une constante `string` publique nommée `Id` | Avertissement | — |
-| [`DCAT0004`](#dcat0004) | déclaration | Une règle doit exposer une constante `string` publique nommée `Category` | Avertissement | — |
+| [`DCAT0002`](#dcat0002) | déclaration | Une règle doit être déclarée comme classe statique non générique | Avertissement | oui, sous condition |
+| [`DCAT0003`](#dcat0003) | déclaration | Une règle doit exposer une constante `string` publique nommée `Id` | Avertissement | oui, sous condition |
+| [`DCAT0004`](#dcat0004) | déclaration | Une règle doit exposer une constante `string` publique nommée `Category` | Avertissement | oui, sous condition |
 | [`DCAT0006`](#dcat0006) | site d'utilisation | Utiliser une référence de catalogue plutôt que des littéraux | Avertissement | oui |
 | [`DCAT0007`](#dcat0007) | site d'utilisation | La suppression mêle une référence de catalogue et un littéral | Avertissement | oui, sous condition |
 | [`DCAT0009`](#dcat0009) | site d'utilisation | `UnconditionalSuppressMessage` n'accepte que les identifiants `IL####` | Avertissement | — |
@@ -128,10 +128,27 @@ fonctionne.
 Ceux-ci se déclenchent sur du code qui déclare des règles. Voir
 [le guide de l'auteur de catalogue](authoring-a-catalogue.fr.md).
 
+Tous les trois proposent un correctif **quand la réparation est déjà écrite dans le code**, et se
+taisent sinon. Cette ligne n'est pas de la prudence pour elle-même : un correctif qui devinerait
+produirait une règle que le compilateur accepte et que personne ne vérifie, c'est-à-dire la
+défaillance que cette bibliothèque existe pour éliminer. Là où un correctif est refusé ci-dessous, le
+diagnostic nomme quand même le type et le membre — vous terminez avec ce que vous savez, et l'outil
+s'en abstient.
+
 ### `DCAT0002`
 
 **Marqué `[DiagnosticRule]` mais pas une classe statique non générique.** Une règle porte des
 constantes et n'est jamais instanciée ; une règle générique n'a aucun membre constant à offrir.
+
+**Correctif — *Make 'X' static*.** Proposé pour une classe ordinaire qui pourrait porter le mot-clé :
+pas de paramètres de type, pas de type de base ni d'interface, aucun membre d'instance, aucun
+constructeur d'instance, pas `partial`. Un `sealed` ou un `abstract` devenu redondant part avec, le
+compilateur rejetant l'un comme l'autre à côté de `static`.
+
+Rien n'est proposé pour un type générique ni pour un `struct`, une `interface`, une `enum` ou un
+`record` — retirer les paramètres de type, ou changer la nature du type, n'est pas une réparation de
+ce que vous avez écrit mais son remplacement. Une classe `partial` est refusée parce que les parties
+que le correctif ne voit pas peuvent porter les membres d'instance qui tranchent la question.
 
 ### `DCAT0003`
 
@@ -141,12 +158,40 @@ Une valeur vide ou faite d'espaces compte comme absente.
 
 Utilisez `nameof(LeTypeDeLaRègle)`, qui ne peut pas diverger du type qu'il nomme.
 
+**Correctif — *Make 'Id' a public constant*.** Proposé quand le membre est là et que seuls ses
+modificateurs sont mauvais : un champ `string` privé, `internal`, `static readonly`, ou autrement
+non constant mais de valeur constante, devient `public const string` en une étape. Les deux défauts
+d'un coup, délibérément — réparer l'accessibilité d'un `private static readonly` et s'arrêter là
+laisserait l'avertissement sur le membre qu'on vient d'éditer.
+
+**Correctif — *Declare 'public const string Id'*.** Proposé quand le membre est absent, et il écrit
+`nameof(LeTypeDeLaRègle)`. C'est la forme recommandée plutôt qu'un espace réservé : elle est lue sur
+la déclaration, et pour un catalogue dont les types portent le nom de leurs règles, c'est déjà la
+bonne valeur.
+
+Aucun des deux n'est proposé quand c'est la *valeur* qui est fausse — un `const int`, une chaîne
+vide, un initialiseur non constant, ou une propriété plutôt qu'un champ. Le code ne dit rien de ce
+que l'identifiant aurait dû être.
+
 ### `DCAT0004`
 
 **Pas de `const string Category` publique.** Mêmes règles que pour `Id`.
 
 Sa *valeur* devrait être celle que déclare le `DiagnosticDescriptor` de l'analyseur d'origine. Rien
 dans la plateforme ne le vérifie — ce qui est exactement pourquoi la constante vaut la peine.
+
+**Correctif — *Make 'Category' a public constant*.** Exactement comme pour `Id`.
+
+**Correctif — *Declare 'public const string Category'*.** Écrit l'espace réservé `"TODO"`. Prenez ce
+mot au pied de la lettre : la catégorie appartient à l'analyseur que cette règle reflète et le
+correctif n'a aucun moyen de la connaître ; il échafaude donc le membre et vous laisse la valeur.
+
+> **Ce que coûte l'espace réservé.** `"TODO"` est une chaîne non vide : `DCAT0004` cesse donc d'être
+> signalé dès que vous appliquez le correctif. Vous avez échangé un avertissement qui nommait le
+> problème contre un marqueur que seul un lecteur remarquera — et une mauvaise catégorie est
+> invisible dans tous les builds, pour toujours, parce que Roslyn apparie une suppression sur son
+> identifiant seul. Appliquez-le quand vous êtes sur le point de le remplir, pas pour raccourcir la
+> liste.
 
 ---
 
