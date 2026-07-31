@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    The negative half of docs §21.5, and the companion to DiagnosticCatalog.UnitTests: identical
+    subject, opposite compilation. That project defines CODE_ANALYSIS and asserts the folded values;
+    this one deliberately does NOT define it and asserts the attribute is absent from metadata
+    altogether. Together they are what turns §4's "no runtime behaviour in the consuming application"
+    from a claim about [Conditional] into a tested property.
+
+    It exercises the shipped netstandard2.0 foundation, so it joins the .NET Framework 4.7.2 floor and
+    owns no <TargetFramework> of its own (CONTRIBUTING.md). Reading metadata back on the real .NET
+    Framework reflection stack is exactly what that floor is for.
+  -->
+  <Import Project="..\..\build\Net472TestFloor.props" />
+
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <!--
+    NO <DefineConstants>...CODE_ANALYSIS</DefineConstants>, and that absence is the entire point of
+    this project existing separately. The symbol cannot be unset per-file, so proving what a normal
+    consumer's build emits takes a compilation that is normal — which means a second project.
+
+    Anyone adding it here deletes the test without failing it: every assertion below would still pass
+    except the one that matters, and it would start reading a real attribute instead of proving there
+    is none.
+  -->
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="coverlet.collector" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\DiagnosticCatalog\DiagnosticCatalog.csproj" />
+  </ItemGroup>
+
+</Project>
