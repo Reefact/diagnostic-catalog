@@ -74,7 +74,18 @@ Il y en a un pour [SonarAnalyzer](https://www.nuget.org/packages/DiagnosticCatal
 [les analyseurs .NET](https://www.nuget.org/packages/DiagnosticCatalog.NetAnalyzers) (`CAxxxx`) et
 un pour [StyleCop](https://www.nuget.org/packages/DiagnosticCatalog.StyleCop) (`SAxxxx`).
 
-C'est la seule ligne dont vous avez besoin. La vérification arrive avec le catalogue.
+C'est la seule ligne dont vous avez besoin pour la garantie elle-même. Une règle mal orthographiée
+est désormais une erreur de compilation, parce que `SonarRule.S1144.Id` est un membre que le
+compilateur résout — aucun analyseur n'intervient là-dedans.
+
+Les diagnostics `DCAT` ci-dessous sont un paquet séparé, `DiagnosticCatalog.Analyzers`, et ce sont
+eux qui trouvent les suppressions que vous n'avez *pas* encore converties. **Il n'a aujourd'hui
+aucune version sur nuget.org**, si bien qu'un catalogue ne l'amène pas avec lui — rien ne peut
+référencer un paquet qui n'a jamais été publié
+([ADR-0007](../adr/0007-depend-across-trains-through-published-packages.md)). Il roule sur le train
+`lib` : le prochain tag l'expédiera ;
+[l'état du projet](https://github.com/Reefact/diagnostic-catalog#-project-status) est la réponse à
+jour.
 
 ### 2. Écrire la suppression
 
@@ -231,5 +242,5 @@ que supprimer cette règle *à cet endroit* était une bonne idée. Ce jugement 
 ---
 
 <div align="center">
-<a href="./README.fr.md">↑ Table des matières</a> · <a href="./authoring-a-catalogue.fr.md">Publier un catalogue →</a>
+<a href="./alternatives.fr.md">← Les alternatives</a> · <a href="./README.fr.md">↑ Table des matières</a> · <a href="./authoring-a-catalogue.fr.md">Publier un catalogue →</a>
 </div>
