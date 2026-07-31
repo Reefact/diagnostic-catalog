@@ -64,13 +64,28 @@ internal static class LocalAssemblySource
         // Only the first is consulted. A second assembly's own graph is not merged in, because
         // there is no meaning to merging two: its directory is on the probing path, which is what
         // resolves a sibling either way.
+        //
+        // And only when it carries Roslyn. The handoff replaces the worker's graph rather than
+        // extending it (see DependencyGraph), so a graph without Roslyn does not leave the worker
+        // with its own — it leaves it with none. A netstandard2.0 library's .deps.json is exactly
+        // that: its runtime target lists the assembly and nothing else.
         string? dependencyContext = Path.ChangeExtension(resolved[0], ".deps.json");
-        if (!File.Exists(dependencyContext)) dependencyContext = null;
+        bool graphIsUnusable = dependencyContext is not null
+                               && File.Exists(dependencyContext)
+                               && !DependencyGraph.SuppliesRoslyn(dependencyContext);
+        if (dependencyContext is not null && !File.Exists(dependencyContext)) dependencyContext = null;
 
         Console.WriteLine($"resolved {name} => {version} (from {resolved.Count} assembly/assemblies on disk)");
         foreach (string full in resolved) Console.WriteLine($"  + {full}");
-        if (dependencyContext is not null)
+        if (graphIsUnusable)
+        {
+            Console.WriteLine($"  {Path.GetFileName(dependencyContext!)} names no Roslyn — reading through this tool's");
+            dependencyContext = null;
+        }
+        else if (dependencyContext is not null)
+        {
             Console.WriteLine($"  using the dependency graph of {Path.GetFileName(dependencyContext)}");
+        }
 
         // Ordinal and distinct, for the reason NuGetPackageSource states: when two assemblies declare
         // the same rule id the last read wins, so the order has to be a property of the request
