@@ -60,7 +60,7 @@ versions and publishes independently:
 
 | Train | Scopes | Pace |
 |---|---|---|
-| `lib` | `core`, `analyzers`, `testing` | The foundation. Deliberately very stable. |
+| `lib` | `core`, `analyzers` | The foundation. Deliberately very stable. |
 | `cli` | `cli`, `cataloggen` | The `dcat` tool. Follows Roslyn and upstream package layouts. |
 | `sonar` | `sonar` | Follows SonarSource's releases. |
 | `netanalyzers` | `netanalyzers` | Follows the .NET SDK's analyzer releases. |
@@ -68,9 +68,12 @@ versions and publishes independently:
 
 This is why `commit-lint` **requires a scope on `feat` and `fix`**: an unscoped
 one matches no train and is silently dropped from the release notes and the
-changelog. Every scope now routes somewhere — `cataloggen` joined the `cli` train
-when the generator was published inside `dcat` (ADR-0017), so there is no longer
-a scope for which reaching no release note is correct. The full table, with the
+changelog. The scope list and the train table name the same set, in both
+directions: `cataloggen` joined the `cli` train when the generator was published
+inside `dcat` (ADR-0017), and `testing` was dropped once it was clear it named a
+test-support package nobody was going to build. So there is neither a scope that
+reaches no release note nor a train that promises a package that does not exist.
+The full table, with the
 `analyzers` / `netanalyzers` distinction and why the shell and the engine keep
 separate scopes, is in [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
@@ -151,7 +154,7 @@ essentials, inlined so they hold even if `AGENTS.md` is not read:
 * PR titles, descriptions, commits, and branch names must be written in English.
 * Write every commit message per [`CONTRIBUTING.md`](CONTRIBUTING.md):
   Conventional Commits, a closed type list, the scopes
-  `analyzers, cataloggen, cli, core, netanalyzers, sonar, stylecop, testing`, an imperative
+  `analyzers, cataloggen, cli, core, netanalyzers, sonar, stylecop`, an imperative
   header within 72 characters, and `Refs: #NN` in a footer when a GitHub issue
   exists (issue-closing keywords belong in the PR description, not the commit).
 * Write every pull request title per [`CONTRIBUTING.md`](CONTRIBUTING.md): name
