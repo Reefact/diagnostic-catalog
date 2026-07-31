@@ -62,9 +62,10 @@ has exactly one published source of truth, read from the analyzer's own
 | **`DiagnosticCatalog.NetAnalyzers`** | The .NET code analysis (`CAxxxx`) rules, same treatment. |
 | **`DiagnosticCatalog.StyleCop`** | The [StyleCop.Analyzers](https://github.com/DotNetAnalyzers/StyleCopAnalyzers) (`SAxxxx`) rules, same treatment. |
 | **`DiagnosticCatalog.Analyzers`** | The checking. Diagnostics that read a rule declaration against the structural contract and a suppression against the rule it names — a category and an id taken from two different rules, a suppression left half migrated — and the code fixes that turn a literal into a catalogue reference, or complete a half-migrated one from the rule it already names. A build-time dependency: these assemblies never reach your runtime. |
-| **`DiagnosticCatalog.Cli`**, the `dcat` tool | The generator, as a .NET tool. Point it at an analyzer package or at assemblies on disk and it writes a catalogue the same way this repository writes the three above. |
+| **`DiagnosticCatalog.Self`** | The `DCATxxxx` rules the analyzers above report, catalogued the same way — so that suppressing one of *this* library's own diagnostics is a checked reference rather than the magic string everything here exists to remove. |
+| **`DiagnosticCatalog.Cli`**, the `dcat` tool | The generator, as a .NET tool. Point it at an analyzer package or at assemblies on disk and it writes a catalogue the same way this repository writes the four above. |
 
-The last two are built here but have no version on nuget.org yet; see **Project status** below.
+The last three are built here but have no version on nuget.org yet; see **Project status** below.
 
 The three vendor catalogues are **generated**, never hand-written, and carry ids,
 categories, help links and the rule's own title — the last as a documentation comment, so
@@ -72,6 +73,10 @@ that hovering a constant says what the rule is about. Rule descriptions and mess
 formats are the vendors' documentation and are deliberately left out
 ([ADR-0014](doc/adr/0014-ship-the-vendors-rule-title-as-a-catalogues-documentation.md)).
 How that generation works, and what keeps it honest, is the next section.
+
+`DiagnosticCatalog.Self` comes off the same generator, pointed at this repository's own
+analyzers. It is the shortest answer to "does this actually work": the rules the library
+reports are catalogued by the library, through the pipeline it asks everyone else to use.
 
 These catalogues are unofficial. They are not affiliated with, endorsed by, or supported
 by SonarSource, Microsoft, or the StyleCop.Analyzers project. "Sonar" and "SonarQube" are
@@ -163,6 +168,7 @@ is what unblocked the three vendor catalogues, which now ride their own trains.
 | `DiagnosticCatalog` | **Published**, on the `lib` train. |
 | `DiagnosticCatalog.Sonar` / `.NetAnalyzers` / `.StyleCop` | **Published**, on their own trains, each versioning at its vendor's pace. |
 | `DiagnosticCatalog.Analyzers` | **Built, not published yet** — the diagnostics that validate declarations and use sites. It rides the `lib` train, so the next tag there ships it. |
+| `DiagnosticCatalog.Self` | **Built, not published yet** — the `DCAT` rules as a catalogue, generated from the analyzers above. It rides the `lib` train with them, on purpose: the two must never describe different rule sets. |
 | `DiagnosticCatalog.Cli`, the `dcat` tool | **Built, not published yet** — the generator, packaged as a .NET tool on its own `cli` train ([ADR-0017](doc/adr/0017-publish-the-generator-as-a-cli-on-its-own-release-train.md)). |
 
 Referencing the foundation alone declares rules; it performs **no checking**. That part is
