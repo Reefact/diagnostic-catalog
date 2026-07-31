@@ -149,11 +149,19 @@ _without_xml_comments() {
 # projects_of <id> — echo the .csproj paths that declare this train, one per line.
 # Empty output means the train publishes nothing yet, which is a normal state for
 # a train whose project has not been created.
+#
+# bin/ and obj/ are skipped, because what a train publishes must be read from the
+# SOURCE tree alone. A project file copied into a build output — a test that reads
+# what this repository publishes does exactly that — is an ordinary .csproj to a
+# tree-wide grep, and the copy would be packed: `dotnet pack` gets a path with no
+# restore behind it and fails the release rehearsal, and a copy that HAD been
+# restored would publish the same package twice from one train.
 projects_of() {
   # grep first as a cheap filter over the tree, then re-check each candidate with its
   # comments removed. Only files that already mention the train pay for the second pass.
   grep -rl -E "<ReleaseTrain>[[:space:]]*$1[[:space:]]*</ReleaseTrain>" \
-    --include='*.csproj' . 2>/dev/null | sed 's|^\./||' | sort | while read -r _po_proj; do
+    --include='*.csproj' --exclude-dir=bin --exclude-dir=obj . 2>/dev/null \
+    | sed 's|^\./||' | sort | while read -r _po_proj; do
     if _without_xml_comments "$_po_proj" \
          | grep -q -E "<ReleaseTrain>[[:space:]]*$1[[:space:]]*</ReleaseTrain>"; then
       printf '%s\n' "$_po_proj"
@@ -166,7 +174,10 @@ projects_of() {
 # such a project would simply never be packed, silently, and a typo in a property
 # nothing validates is exactly the kind of mistake that surfaces at release time.
 declared_trains() {
-  grep -rl -E "<ReleaseTrain>[^<]*</ReleaseTrain>" --include='*.csproj' . 2>/dev/null \
+  # Build outputs are skipped here for the reason given on projects_of: a value only a
+  # copy declares would be reported as if a project had chosen it.
+  grep -rl -E "<ReleaseTrain>[^<]*</ReleaseTrain>" \
+    --include='*.csproj' --exclude-dir=bin --exclude-dir=obj . 2>/dev/null \
     | while read -r _dt_proj; do _without_xml_comments "$_dt_proj"; done \
     | grep -o -E "<ReleaseTrain>[^<]*</ReleaseTrain>" \
     | sed -E 's|.*<ReleaseTrain>[[:space:]]*([^<[:space:]]*)[[:space:]]*</ReleaseTrain>.*|\1|' \

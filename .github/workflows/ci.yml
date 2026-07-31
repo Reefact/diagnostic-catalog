@@ -140,7 +140,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          projects="$(grep -rlE '<Import[^>]*Net472TestFloor\.props' --include='*.csproj' . || true)"
+          # bin/ and obj/ are skipped: a project file copied into a build output is an ordinary
+          # .csproj to a tree-wide grep, and the copy would be tested from a path with no restore
+          # behind it. Membership is a property of the source tree, as it is for the release trains
+          # (tools/trains.sh, projects_of).
+          projects="$(grep -rlE '<Import[^>]*Net472TestFloor\.props' \
+            --include='*.csproj' --exclude-dir=bin --exclude-dir=obj . || true)"
           if [ -z "$projects" ]; then
             echo "::notice::No project imports build/Net472TestFloor.props yet; the floor has nothing to run."
             exit 0
