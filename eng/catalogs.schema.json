@@ -87,8 +87,8 @@
         },
         "language": {
           "type": "string",
-          "description": "Which language's analyzers to read out of a package. Selecting one EXCLUDES the others rather than keeping only its folder, because most rules often sit in a language-neutral assembly.",
-          "enum": ["cs", "vb", "fs"],
+          "description": "Which language's analyzers to read out of a package. Only \"cs\" can be read: constructing a Visual Basic analyzer needs a Roslyn the descriptor worker does not carry, so the run would refuse after downloading the package. Selecting a language EXCLUDES the others rather than keeping only its folder, because most rules often sit in a language-neutral assembly.",
+          "enum": ["cs"],
           "default": "cs"
         },
 
