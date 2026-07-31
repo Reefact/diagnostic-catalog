@@ -1,0 +1,76 @@
+name: Catalogue request
+description: Ask for a catalogue of an analyzer that is not mirrored yet.
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please write in **English**, like everything else recorded in this repository.
+
+        A catalogue is *generated* from an analyzer's own descriptors, never hand-written — so a
+        request is really a request to point the generator at a package. The questions below are the
+        ones that decide whether it can be pointed there at all. The procedure, if you want to read
+        ahead, is in
+        [CONTRIBUTING.md](https://github.com/Reefact/diagnostic-catalog/blob/main/CONTRIBUTING.md#adding-a-catalogue).
+
+  - type: input
+    id: package
+    attributes:
+      label: The analyzer package
+      description: >
+        The NuGet package id, exactly as it is written on nuget.org. Not the product name — the
+        generator downloads this string.
+      placeholder: "SonarAnalyzer.CSharp"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: availability
+    attributes:
+      label: Where is it published?
+      description: >
+        The generator acquires the package from nuget.org and reads the descriptors out of the
+        analyzer assembly it carries. A package it cannot download is a catalogue it cannot produce.
+      options:
+        - Public on nuget.org
+        - On a private or organisation feed
+        - Not published as a NuGet package at all
+        - Not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: rationale
+    attributes:
+      label: Who suppresses these rules?
+      description: >
+        A catalogue earns its place by the suppressions it makes checkable. Say who writes
+        `[SuppressMessage]` against this analyzer and what goes wrong today — a rule id retired
+        upstream, a category that quietly changed, a team that cannot tell a live suppression from a
+        dead one.
+    validations:
+      required: true
+
+  - type: textarea
+    id: quirks
+    attributes:
+      label: Anything unusual about the package
+      description: >
+        Optional, and the most useful box on this form when it applies. Some packages do not hold
+        what their name suggests: StyleCop.Analyzers 1.2.0-beta is a metapackage carrying no analyzer
+        assembly, and its rules actually live in StyleCop.Analyzers.Unstable — which is why that
+        catalogue mirrors a package almost nobody names. If you know of a split like that, a
+        long-stale stable release, or rules spread across several assemblies, say so here.
+
+  - type: dropdown
+    id: contribution
+    attributes:
+      label: Would you open the pull request?
+      description: >
+        Not a condition — the request stands either way. It only changes what happens next.
+      options:
+        - "Yes"
+        - "Yes, with some guidance on the steps"
+        - "No, I am asking for it"
+    validations:
+      required: true

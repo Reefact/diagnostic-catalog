@@ -1,0 +1,19 @@
+blank_issues_enabled: true
+
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/Reefact/diagnostic-catalog/security/advisories/new
+    about: >
+      Report it privately here, never as an issue. Supported versions and what to expect are in
+      SECURITY.md.
+
+  - name: Contributing a change
+    url: https://github.com/Reefact/diagnostic-catalog/blob/main/CONTRIBUTING.md
+    about: >
+      Commit convention, release trains, the .NET Framework floor, and how to add a catalogue.
+
+  - name: How the whole thing works
+    url: https://github.com/Reefact/diagnostic-catalog/tree/main/doc/guide
+    about: >
+      Three guides — using a catalogue, authoring one, and what each DCAT diagnostic means.
+      Worth a look before opening an issue about behaviour that may be deliberate.
