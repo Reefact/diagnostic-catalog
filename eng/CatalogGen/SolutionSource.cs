@@ -66,7 +66,7 @@ internal static class SolutionSource
 
     // The SDK enumerates the solution, rather than this tool parsing one. .sln and .slnx are
     // different formats with different parsers, and both are the SDK's to know.
-    private static IReadOnlyList<string>? ProjectsIn(string solutionPath)
+    private static List<string>? ProjectsIn(string solutionPath)
     {
         ProcessStartInfo start = new()
         {
