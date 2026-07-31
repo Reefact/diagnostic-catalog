@@ -57,7 +57,7 @@ public sealed class CatalogueSampleTests
     [MemberData(nameof(DocumentsShowingRules))]
     public void Every_rule_a_document_shows_is_published_by_its_catalogue(string path)
     {
-        MarkdownDocument document = Document(path);
+        MarkdownDocument document = Repository.Require(path);
 
         foreach (Catalogue catalogue in Declared.Value)
         {
@@ -66,10 +66,12 @@ public sealed class CatalogueSampleTests
 
             Type? container = assembly.GetType($"{catalogue.Namespace}.{catalogue.Container}", throwOnError: false);
 
-            Assert.True(
-                container is not null,
-                $"{catalogue.Namespace}.{catalogue.Container} is declared in eng/catalogs.json and " +
-                "is not in the assembly it generates into.");
+            if (container is null)
+            {
+                Assert.Fail(
+                    $"{catalogue.Namespace}.{catalogue.Container} is declared in eng/catalogs.json and " +
+                    "is not in the assembly it generates into.");
+            }
 
             IReadOnlyDictionary<string, string> deliberate = DeliberatelyMissing(document);
 
@@ -83,7 +85,7 @@ public sealed class CatalogueSampleTests
                 if (deliberate.ContainsKey($"{catalogue.Container}.{rule}")) continue;
 
                 Assert.True(
-                    container!.GetNestedType(rule, BindingFlags.Public) is not null,
+                    container.GetNestedType(rule, BindingFlags.Public) is not null,
                     $"{path} shows {catalogue.Container}.{rule}, which " +
                     $"{catalogue.Namespace} does not publish. A reader who copies that sample gets a " +
                     "compile error on the page telling them a checked reference beats a string.\n" +
@@ -109,7 +111,7 @@ public sealed class CatalogueSampleTests
     [MemberData(nameof(DocumentsShowingRules))]
     public void A_document_never_pluralises_a_container(string path)
     {
-        MarkdownDocument document = Document(path);
+        MarkdownDocument document = Repository.Require(path);
 
         foreach (Catalogue catalogue in Declared.Value)
         {
@@ -138,7 +140,7 @@ public sealed class CatalogueSampleTests
     [MemberData(nameof(DocumentsShowingRules))]
     public void A_deliberately_missing_reference_is_actually_shown(string path)
     {
-        MarkdownDocument document = Document(path);
+        MarkdownDocument document = Repository.Require(path);
 
         foreach (KeyValuePair<string, string> declaration in DeliberatelyMissing(document))
         {
@@ -254,11 +256,4 @@ public sealed class CatalogueSampleTests
         return catalogues;
     }
 
-    private static MarkdownDocument Document(string path)
-    {
-        MarkdownDocument? document = Repository.Find(path);
-        Assert.True(document is not null, $"{path} was discovered and then could not be read.");
-
-        return document!;
-    }
 }

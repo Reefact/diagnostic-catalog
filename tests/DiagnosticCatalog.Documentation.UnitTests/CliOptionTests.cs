@@ -92,7 +92,7 @@ public sealed class CliOptionTests
     [MemberData(nameof(DocumentsMentioningTheTool))]
     public void Every_documented_option_exists_on_the_tool(string path)
     {
-        MarkdownDocument document = Document(path);
+        MarkdownDocument document = Repository.Require(path);
         IReadOnlyCollection<string> declared = DeclaredOptions();
 
         foreach (Match option in Regex.Matches(document.Text, OptionPattern, RegexOptions.None, MatchTimeout))
@@ -150,23 +150,9 @@ public sealed class CliOptionTests
             foreach (PropertyInfo property in type.GetProperties(
                          BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
             {
-                foreach (CustomAttributeData attribute in property.GetCustomAttributesData())
+                foreach (string name in LongNamesOf(property))
                 {
-                    if (!string.Equals(
-                            attribute.AttributeType.Name,
-                            "CommandOptionAttribute",
-                            StringComparison.Ordinal))
-                    {
-                        continue;
-                    }
-
-                    if (attribute.ConstructorArguments.Count == 0) continue;
-                    if (attribute.ConstructorArguments[0].Value is not string template) continue;
-
-                    foreach (Match name in Regex.Matches(template, OptionPattern, RegexOptions.None, MatchTimeout))
-                    {
-                        options.Add(name.Groups["name"].Value);
-                    }
+                    options.Add(name);
                 }
             }
         }
@@ -174,11 +160,28 @@ public sealed class CliOptionTests
         return options;
     }
 
-    private static MarkdownDocument Document(string path)
+    /// <summary>
+    /// The long option names a property declares, or nothing when it declares no option. The
+    /// attribute's sole constructor argument is Spectre's own template — <c>"-s|--source
+    /// &lt;NAME&gt;"</c> — so the long names are the tokens in it that begin with two hyphens.
+    /// </summary>
+    private static IEnumerable<string> LongNamesOf(PropertyInfo property)
     {
-        MarkdownDocument? document = Repository.Find(path);
-        Assert.True(document is not null, $"{path} was discovered and then could not be read.");
+        foreach (CustomAttributeData attribute in property.GetCustomAttributesData())
+        {
+            if (!string.Equals(attribute.AttributeType.Name, "CommandOptionAttribute", StringComparison.Ordinal))
+            {
+                continue;
+            }
 
-        return document!;
+            if (attribute.ConstructorArguments.Count == 0) continue;
+            if (attribute.ConstructorArguments[0].Value is not string template) continue;
+
+            foreach (Match name in Regex.Matches(template, OptionPattern, RegexOptions.None, MatchTimeout))
+            {
+                yield return name.Groups["name"].Value;
+            }
+        }
     }
+
 }

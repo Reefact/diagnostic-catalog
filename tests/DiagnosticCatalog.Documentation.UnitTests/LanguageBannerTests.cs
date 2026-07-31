@@ -37,7 +37,7 @@ public sealed class LanguageBannerTests
     [MemberData(nameof(BilingualDocuments))]
     public void The_banner_follows_the_title(string path)
     {
-        MarkdownDocument document = Document(path);
+        MarkdownDocument document = Repository.Require(path);
 
         Assert.True(
             document.Title.Length > 0,
@@ -58,7 +58,7 @@ public sealed class LanguageBannerTests
     [MemberData(nameof(BilingualDocuments))]
     public void The_banner_offers_both_languages(string path)
     {
-        string banner = BannerOf(Document(path));
+        string banner = BannerOf(Repository.Require(path));
 
         Assert.True(
             banner.Contains(UnitedKingdom, StringComparison.Ordinal) &&
@@ -75,7 +75,7 @@ public sealed class LanguageBannerTests
     [MemberData(nameof(BilingualDocuments))]
     public void The_banner_links_to_the_translation(string path)
     {
-        MarkdownDocument document = Document(path);
+        MarkdownDocument document = Repository.Require(path);
         string expected = document.Sibling![(document.Sibling!.LastIndexOf('/') + 1)..];
 
         IReadOnlyList<MarkdownLink> links = document.Links
@@ -122,11 +122,4 @@ public sealed class LanguageBannerTests
         return string.Join("\n", banner);
     }
 
-    private static MarkdownDocument Document(string path)
-    {
-        MarkdownDocument? document = Repository.Find(path);
-        Assert.True(document is not null, $"{path} was discovered and then could not be read.");
-
-        return document!;
-    }
 }

@@ -80,6 +80,26 @@ internal static class Repository
             document => string.Equals(document.Path, relativePath, StringComparison.Ordinal));
 
     /// <summary>
+    /// The document at a repository-relative path, failing the test when there is none.
+    /// </summary>
+    /// <remarks>
+    /// Every theory here is parameterised by a path this class discovered, so a miss means the set
+    /// changed underneath the run rather than that the test was written wrong — worth saying out loud
+    /// rather than letting a null reference say it. <see cref="Assert.Fail(string)"/> does not return,
+    /// so the compiler narrows the result on its own and no null-forgiving operator is needed.
+    /// </remarks>
+    internal static MarkdownDocument Require(string relativePath)
+    {
+        MarkdownDocument? document = Find(relativePath);
+        if (document is null)
+        {
+            Assert.Fail($"{relativePath} was discovered and then could not be read under {Root}.");
+        }
+
+        return document;
+    }
+
+    /// <summary>
     /// Resolves a link target written inside <paramref name="from"/> to a repository-relative path,
     /// the way a Markdown renderer does: relative to the folder of the document that carries it.
     /// Returns <c>null</c> when the target climbs above the repository root, which is itself a
@@ -123,13 +143,15 @@ internal static class Repository
             .FirstOrDefault(metadata =>
                 string.Equals(metadata.Key, "DocumentationRepositoryRoot", StringComparison.Ordinal));
 
-        Assert.True(
-            stamp is not null,
-            "This assembly carries no DocumentationRepositoryRoot metadata, so the documentation " +
-            "tests cannot find the tree they read. The stamp is written by this project's .csproj; " +
-            "check that its <AssemblyMetadata> item is still there.");
+        if (stamp is null)
+        {
+            Assert.Fail(
+                "This assembly carries no DocumentationRepositoryRoot metadata, so the documentation " +
+                "tests cannot find the tree they read. The stamp is written by this project's .csproj; " +
+                "check that its <AssemblyMetadata> item is still there.");
+        }
 
-        string root = stamp!.Value ?? string.Empty;
+        string root = stamp.Value ?? string.Empty;
 
         Assert.True(
             Directory.Exists(root),

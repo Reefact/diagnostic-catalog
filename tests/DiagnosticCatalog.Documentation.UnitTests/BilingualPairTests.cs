@@ -36,7 +36,7 @@ public sealed class BilingualPairTests
     [MemberData(nameof(BilingualDocuments))]
     public void A_document_has_its_translation(string path)
     {
-        MarkdownDocument document = Document(path);
+        MarkdownDocument document = Repository.Require(path);
 
         Assert.True(
             Repository.Exists(document.Sibling!),
@@ -53,7 +53,7 @@ public sealed class BilingualPairTests
     [MemberData(nameof(BilingualDocuments))]
     public void A_document_and_its_translation_have_the_same_headings(string path)
     {
-        MarkdownDocument document = Document(path);
+        MarkdownDocument document = Repository.Require(path);
         MarkdownDocument? sibling = Repository.Find(document.Sibling!);
         if (sibling is null) return;   // A_document_has_its_translation reports the absence.
 
@@ -73,7 +73,7 @@ public sealed class BilingualPairTests
     [MemberData(nameof(BilingualDocuments))]
     public void A_document_and_its_translation_carry_the_same_code_samples(string path)
     {
-        MarkdownDocument document = Document(path);
+        MarkdownDocument document = Repository.Require(path);
         MarkdownDocument? sibling = Repository.Find(document.Sibling!);
         if (sibling is null) return;
 
@@ -105,11 +105,4 @@ public sealed class BilingualPairTests
         Assert.Contains(bilingual, document => document.Path.StartsWith("doc/guide/", StringComparison.Ordinal));
     }
 
-    private static MarkdownDocument Document(string path)
-    {
-        MarkdownDocument? document = Repository.Find(path);
-        Assert.True(document is not null, $"{path} was discovered and then could not be read.");
-
-        return document!;
-    }
 }
