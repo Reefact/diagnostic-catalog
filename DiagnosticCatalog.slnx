@@ -11,6 +11,7 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/CatalogGen.UnitTests/CatalogGen.UnitTests.csproj" />
+    <Project Path="tests/DiagnosticCatalog.Analyzers.UnitTests/DiagnosticCatalog.Analyzers.UnitTests.csproj" />
     <Project Path="tests/DiagnosticCatalog.Catalogs.UnitTests/DiagnosticCatalog.Catalogs.UnitTests.csproj" />
     <Project Path="tests/DiagnosticCatalog.UnitTests/DiagnosticCatalog.UnitTests.csproj" />
   </Folder>
