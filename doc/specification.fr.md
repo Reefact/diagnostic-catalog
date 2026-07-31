@@ -1120,6 +1120,25 @@ public const string Category = "TODO";
 
 Le code fixer ne doit jamais inventer une catégorie réelle.
 
+**Chacune de ces corrections est conditionnelle, et la condition est toujours la
+même : la réparation doit déjà être écrite dans le code.** `static` n'est
+proposé qu'à une classe capable de le porter — pas de paramètres de type, pas de
+liste de base, aucun membre ni constructeur d'instance — et jamais à un type
+`partial`, dont les autres parties tranchent la question sans être visibles du
+code fixer. Les corrections de modificateurs ne sont proposées que lorsque le
+membre est un champ à une seule variable portant une constante chaîne non vide,
+ce qui laisse la valeur intacte ; un type erroné, une valeur vide ou un
+initialiseur non constant sont refusés, parce que le code ne dit rien de ce qui
+était voulu. `Id` est ajouté sous la forme `nameof(LaRègle)` plutôt qu'en
+emplacement réservé — c'est la forme recommandée du §8.2, dérivée de la
+déclaration et non inventée ; `Category` n'a pas de telle source et reçoit le
+littéral ci-dessus.
+
+Une catégorie en emplacement réservé **fait cesser le signalement du
+diagnostic**, `"TODO"` n'étant pas vide. C'est le coût du dernier élément de la
+liste, et la raison pour laquelle la correction est nommée d'après la constante
+qu'elle déclare plutôt que d'après la règle qu'elle achèverait.
+
 ---
 
 ## 13. Découverte des catalogues
@@ -1609,6 +1628,12 @@ est une rupture binaire dans les deux sens (annexe B6).
 * la conservation de la justification ;
 * la conservation de `Scope`, `Target` et `MessageId` ;
 * l'absence de modification des autres attributs ;
+* les réparations de définition du §12.4, et — une assertion par cas — les
+  défauts de définition pour lesquels aucune correction n'est proposée. C'est
+  cette seconde moitié qui porte : un refus est une affirmation sur le code, et
+  le test correspondant doit montrer que le diagnostic a bien été signalé, afin
+  qu'un code fixer se mettant discrètement à réparer un cas qu'il déclinait ne
+  puisse pas passer pour un code fixer qui n'a jamais eu de réparation ;
 * *Corriger toutes les occurrences* respectant l'`EquivalenceKey` de façon
   cohérente.
 
@@ -1732,6 +1757,8 @@ La version `1.0` doit contenir uniquement les éléments indispensables.
 * le support de `SuppressMessageAttribute` ;
 * le support d'`UnconditionalSuppressMessageAttribute`, cadré selon le §9.1 ;
 * les deux code fixers pour les paires incohérentes ;
+* les corrections de définition du §12.4, chacune proposée uniquement là où la
+  réparation est déjà écrite dans le code ;
 * deux packages NuGet (§16.1) avec suivi des versions d'analyzers ;
 * la documentation ;
 * les tests d'analyzer, de compilation, de bout en bout et de packaging.
