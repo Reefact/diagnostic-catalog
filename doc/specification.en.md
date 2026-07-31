@@ -1221,9 +1221,12 @@ Rules for the generator, each of which is load-bearing:
 ### 14.2 Versioning a generated catalogue
 
 Because §7.6 records the exact upstream version in metadata, the package version
-does not have to encode it, and the two can move independently — a regeneration
-fix does not need an upstream release to hang off. Whichever scheme is chosen, a
-constant is never deleted (§23.1): a rule retired upstream becomes `[Obsolete]`.
+does not have to encode it — and it does not: a catalogue's version runs on its
+own Semantic Versioning line, incremented from what changed in the catalogue
+(ADR-0015). A regeneration fix therefore needs no upstream release to hang off,
+and an upstream release that changes no published rule moves no version. Either
+way a constant is never deleted (§23.1): a rule retired upstream becomes
+`[Obsolete]`.
 
 Synchronisation with upstream is automated (§14.3).
 
@@ -1874,10 +1877,10 @@ recalled. Re-verify before any major revision.
 
 | # | Question | Current position |
 | --- | --- | --- |
-| B1 | Final product name. `Catalog` names a library that deliberately contains no catalogue (§2.5). Alternatives: `SuppressionContracts`, `DiagnosticRefs`. | Deferred; renaming is a major version (§23). |
+| B1 | ~~Final product name. `Catalog` names a library that deliberately contains no catalogue (§2.5).~~ | **Settled** — the name stands. It says what the library is for, not what it holds; the alternatives each lose something, and four packages are published. |
 | B2 | Is the `DCAT` prefix free? Community analyzer prefixes are not centrally registered. | Check against known prefixes before 1.0. |
 | B3 | Should the purely structural fallback of §7.2 (no attribute) be enabled by default? | Attribute-only for 1.0; structural fallback documented but off. |
 | B4 | Are aliases and `using static` worth the analyzer complexity given §10.5? | Resolved, documented, not promoted. |
 | B5 | Does the ILLink Roslyn analyzer (`IL2xxx` at compile time) share the decoder verified in A4? | Assumed equivalent; verify before claiming full `UnconditionalSuppressMessage` coverage. |
-| B6 | Strong-name the `DiagnosticCatalog` assembly? Signing serves the strong-named .NET Framework consumers netstandard2.0 was chosen for; not signing avoids key management. Irreversible in both directions once published (§20). | Unsigned today. Must be decided before the first public release. |
-| B7 | Should `DiagnosticCatalog.Sonar`'s package version track `SonarAnalyzer.CSharp`, or run on its own line? §7.6 records the upstream version in metadata either way. | Own line for now; decide before the first public release. |
+| B6 | ~~Strong-name the `DiagnosticCatalog` assembly?~~ | **Settled** — unsigned, and it stays that way past 1.0. A catalogue's consumer is unaffected either way: they read `const` values, which the compiler inlines, so no reference to the catalogue assembly is emitted at all and the application runs without it. Only an assembly that is *itself* strong-named **and** uses the marker attributes to declare a catalogue of its own is affected, and only by `CS8002` — a warning, on any target framework, not a .NET Framework matter. That is not this library's primary audience. |
+| B7 | ~~Should `DiagnosticCatalog.Sonar`'s package version track `SonarAnalyzer.CSharp`, or run on its own line?~~ | **Settled** — its own line, for every catalogue: [ADR-0015](adr/0015-a-catalogues-version-runs-on-its-own-line.md). |
