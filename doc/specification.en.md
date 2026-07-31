@@ -1,8 +1,11 @@
 # DiagnosticCatalog — Foundation Library Specification
 
-> **Language versions** — This is the canonical version. A French translation is
-> maintained at [`specification.fr.md`](specification.fr.md). When the two
-> diverge, this document wins.
+🌍 **Languages:**  
+🇬🇧 English (this file) | 🇫🇷 [Français](./specification.fr.md)
+
+For anyone who needs the normative answer rather than the shortest one. This is the canonical
+version: when it and the French translation diverge, this document wins. The
+[guides](guide/README.en.md) teach the same material and are the better place to start.
 
 ---
 
