@@ -15,18 +15,18 @@ namespace DiagnosticCatalog.Cli;
 internal sealed class GenerateCommand : AsyncCommand<GenerateSettings>
 {
     protected override async Task<int> ExecuteAsync(
-        CommandContext context, GenerateSettings settings, CancellationToken cancellation)
+        CommandContext context, GenerateSettings settings, CancellationToken cancellationToken)
     {
-        IReadOnlyList<Job>? jobs = await CatalogueJobs.ReadAsync(settings, cancellation);
+        IReadOnlyList<Job>? jobs = await CatalogueJobs.ReadAsync(settings, cancellationToken);
         if (jobs is null) return ExitCodes.Failure;
 
-        RunOutcome outcome = await CatalogRun.ExecuteAsync(jobs, settings.Date, cancellation);
+        RunOutcome outcome = await CatalogRun.ExecuteAsync(jobs, settings.Date, cancellation: cancellationToken);
 
         if (settings.Summary is not null)
         {
             await File.WriteAllTextAsync(Path.GetFullPath(settings.Summary),
                                          outcome.Summary.ReplaceLineEndings("\n") + "\n",
-                                         new UTF8Encoding(false), cancellation);
+                                         new UTF8Encoding(false), cancellationToken);
             Console.WriteLine();
             Console.WriteLine($"summary written to {settings.Summary}");
         }

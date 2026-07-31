@@ -31,6 +31,14 @@ using Microsoft.CodeAnalysis.Diagnostics;
 // Usage: CatalogGen.Worker <request.json> <response.json>
 // ---------------------------------------------------------------------------
 
+// This file's diagnostics stay synchronous, and the disable is never restored because the reason
+// covers every one of them. Console.Out and Console.Error are synchronized writers whose async
+// overloads complete synchronously, and Console.WriteLine — used all around them — is a static
+// method with no async counterpart at all. Awaiting the few calls S6966 can see would yield to
+// nothing and leave this worker's log half-async on a technicality of where the method happens to
+// be declared. The same call is made, and the same reasoning written out, in CatalogRun.ExecuteAsync.
+#pragma warning disable S6966 // Awaitable method should be used
+
 if (args.Length != 2)
 {
     Console.Error.WriteLine("usage: CatalogGen.Worker <request.json> <response.json>");

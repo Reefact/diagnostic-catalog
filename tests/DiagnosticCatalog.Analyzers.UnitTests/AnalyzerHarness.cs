@@ -141,7 +141,7 @@ internal static class AnalyzerHarness
         Assert.Equal(expected, actual);
     }
 
-    private static MetadataReference CompileToReference(string source, bool mayUseFoundation)
+    private static PortableExecutableReference CompileToReference(string source, bool mayUseFoundation)
     {
         IEnumerable<MetadataReference> references = mayUseFoundation
             ? References

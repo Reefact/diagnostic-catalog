@@ -34,7 +34,7 @@ internal sealed class RuleIndex
     /// <summary>Sweeps <paramref name="compilation"/> and the assemblies it references.</summary>
     internal static RuleIndex Build(Compilation compilation)
     {
-        Dictionary<FunctionalKey, List<RuleDefinition>> collected = new();
+        Dictionary<FunctionalKey, List<RuleDefinition>> collected = [];
 
         foreach (IAssemblySymbol assembly in Candidates(compilation))
         {
@@ -88,15 +88,8 @@ internal sealed class RuleIndex
 
         if (module is null) { return false; }
 
-        foreach (AssemblyIdentity identity in module.ReferencedAssemblies)
-        {
-            if (string.Equals(identity.Name, FoundationAssemblyName, StringComparison.Ordinal))
-            {
-                return true;
-            }
-        }
-
-        return false;
+        return module.ReferencedAssemblies.Any(
+            identity => string.Equals(identity.Name, FoundationAssemblyName, StringComparison.Ordinal));
     }
 
     private static void Collect(
@@ -141,7 +134,7 @@ internal sealed class RuleIndex
 
         if (!collected.TryGetValue(key, out List<RuleDefinition>? bucket))
         {
-            bucket = new List<RuleDefinition>();
+            bucket = [];
             collected.Add(key, bucket);
         }
 

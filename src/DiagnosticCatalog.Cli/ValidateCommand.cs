@@ -25,19 +25,19 @@ namespace DiagnosticCatalog.Cli;
 internal sealed class ValidateCommand : AsyncCommand<ValidateSettings>
 {
     protected override async Task<int> ExecuteAsync(
-        CommandContext context, ValidateSettings settings, CancellationToken cancellation)
+        CommandContext context, ValidateSettings settings, CancellationToken cancellationToken)
     {
-        IReadOnlyList<Job>? jobs = await CatalogueJobs.ReadAsync(settings, cancellation);
+        IReadOnlyList<Job>? jobs = await CatalogueJobs.ReadAsync(settings, cancellationToken);
         if (jobs is null) return ExitCodes.Failure;
 
-        RunOutcome outcome = await CatalogRun.ExecuteAsync(jobs, dateOverride: null, cancellation,
-                                                           writeChanges: false);
+        RunOutcome outcome = await CatalogRun.ExecuteAsync(jobs, dateOverride: null, writeChanges: false,
+                                                           cancellation: cancellationToken);
 
         if (settings.Summary is not null)
         {
             await File.WriteAllTextAsync(Path.GetFullPath(settings.Summary),
                                          outcome.Summary.ReplaceLineEndings("\n") + "\n",
-                                         new UTF8Encoding(false), cancellation);
+                                         new UTF8Encoding(false), cancellationToken);
             Console.WriteLine();
             Console.WriteLine($"summary written to {settings.Summary}");
         }

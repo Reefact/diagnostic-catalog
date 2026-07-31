@@ -212,7 +212,7 @@ public sealed class ProjectSourceTests : IDisposable
     // a fixture would test the SDK; what is under test is that this tool asks MSBuild for the path
     // and reads what is at it, so a real assembly file at that path is the whole requirement —
     // LocalAssemblySource reads its manifest, and nothing loads it.
-    private string Build(string project, string configuration, string framework, string name = "Fixture")
+    private static string Build(string project, string configuration, string framework, string name = "Fixture")
     {
         string directory = Path.Combine(Path.GetDirectoryName(project)!, "bin", configuration, framework);
         Directory.CreateDirectory(directory);

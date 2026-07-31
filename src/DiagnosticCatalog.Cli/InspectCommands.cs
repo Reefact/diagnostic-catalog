@@ -32,10 +32,11 @@ internal sealed class ExplainSettings : CatalogueFileSettings
     public override ValidationResult Validate()
     {
         ValidationResult catalogue = base.Validate();
+        if (!catalogue.Successful) return catalogue;
 
-        return !catalogue.Successful ? catalogue
-             : string.IsNullOrWhiteSpace(RuleId) ? ValidationResult.Error("name the rule to explain.")
-             : ValidationResult.Success();
+        return string.IsNullOrWhiteSpace(RuleId)
+                   ? ValidationResult.Error("name the rule to explain.")
+                   : ValidationResult.Success();
     }
 }
 
@@ -45,7 +46,7 @@ internal sealed class ExplainSettings : CatalogueFileSettings
 internal sealed class ListCommand : Command<CatalogueFileSettings>
 {
     protected override int Execute(
-        CommandContext context, CatalogueFileSettings settings, CancellationToken cancellation)
+        CommandContext context, CatalogueFileSettings settings, CancellationToken cancellationToken)
     {
         CatalogueContents? contents = CatalogueInspector.Read(settings.Catalogue);
         if (contents is null) return ExitCodes.Failure;
@@ -69,7 +70,7 @@ internal sealed class ListCommand : Command<CatalogueFileSettings>
 internal sealed class ExplainCommand : Command<ExplainSettings>
 {
     protected override int Execute(
-        CommandContext context, ExplainSettings settings, CancellationToken cancellation)
+        CommandContext context, ExplainSettings settings, CancellationToken cancellationToken)
     {
         CatalogueContents? contents = CatalogueInspector.Read(settings.Catalogue);
         if (contents is null) return ExitCodes.Failure;
