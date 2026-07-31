@@ -35,6 +35,10 @@ internal sealed class GenerateSettings : CommandSettings
     [DefaultValue("latest")]
     public string PackageVersion { get; init; } = "latest";
 
+    [CommandOption("--source <NAME-OR-URL>")]
+    [Description("Which configured feed to read --package from. Defaults to every enabled source in NuGet.config.")]
+    public string? Source { get; init; }
+
     [CommandOption("--nupkg <PATH>")]
     [Description("A .nupkg already on disk. Its .nuspec names the source unless you say otherwise.")]
     public string? Nupkg { get; init; }
@@ -125,6 +129,13 @@ internal sealed class GenerateSettings : CommandSettings
         {
             return ValidationResult.Error(
                 "--source-name and --source-version describe a source on disk; a feed states its own.");
+        }
+
+        // Same reason, the other way round: a caller who names a feed for a source that is not a
+        // feed believes it took effect. Nothing would be read from it, and nothing would say so.
+        if (Source is not null && Package is null)
+        {
+            return ValidationResult.Error("--source selects a feed for --package; it means nothing for the others.");
         }
 
         return ValidationResult.Success();

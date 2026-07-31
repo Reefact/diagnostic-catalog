@@ -62,7 +62,8 @@ public static class CatalogRun
                 Assemblies: assemblies,
                 SourceName: e.TryGetProperty("sourceName", out JsonElement sn) ? sn.GetString() : null,
                 SourceVersion: e.TryGetProperty("sourceVersion", out JsonElement sv) ? sv.GetString() : null,
-                Nupkg: nupkg));
+                Nupkg: nupkg,
+                Source: e.TryGetProperty("source", out JsonElement src) ? src.GetString() : null));
         }
 
         return jobs;
@@ -83,7 +84,6 @@ public static class CatalogRun
     public static async Task<RunOutcome> ExecuteAsync(
         IReadOnlyList<Job> jobs, string? dateOverride, CancellationToken cancellation = default)
     {
-        using HttpClient http = new();
         List<string> summaries = [];
         bool changedAny = false;
         int exitCode = 0;
@@ -94,7 +94,7 @@ public static class CatalogRun
             Console.WriteLine($"=== {job.Namespace} <- {job.SourceLabel} ===");
             try
             {
-                GenerateResult? result = await GenerateAsync(job, dateOverride, http, cancellation);
+                GenerateResult? result = await GenerateAsync(job, dateOverride, cancellation);
                 if (result is null) { exitCode = 1; continue; }
                 if (result.Changed)
                 {
@@ -130,7 +130,7 @@ public static class CatalogRun
     // One catalogue, end to end: acquire, read, emit. Only the acquisition differs per source; what
     // follows it is the same two calls either way, which is the property the split exists to give.
     private static async Task<GenerateResult?> GenerateAsync(
-        Job job, string? dateOverride, HttpClient http, CancellationToken cancellation)
+        Job job, string? dateOverride, CancellationToken cancellation)
     {
         Previous? previous = CatalogParser.ReadPrevious(job.Output);
 
@@ -151,7 +151,7 @@ public static class CatalogRun
                 ? LocalPackageSource.Acquire(job.Nupkg, job.SourceName, job.SourceVersion, job.Language,
                                              work.FullName)
                 : await NuGetPackageSource.AcquireAsync(job.Package!, job.Version!, job.Language, work.FullName,
-                                                        http, cancellation);
+                                                        job.Source, cancellation);
 
             return fetched is null ? null : EmitFrom(fetched);
         }

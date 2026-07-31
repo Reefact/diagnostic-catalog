@@ -82,7 +82,8 @@ internal sealed class GenerateCommand : AsyncCommand<GenerateSettings>
                 Assemblies: settings.Assemblies.Length > 0 ? settings.Assemblies : null,
                 SourceName: settings.SourceName,
                 SourceVersion: settings.SourceVersion,
-                Nupkg: settings.Nupkg is null ? null : Path.GetFullPath(settings.Nupkg)),
+                Nupkg: settings.Nupkg is null ? null : Path.GetFullPath(settings.Nupkg),
+                Source: settings.Source),
         ];
     }
 }

@@ -40,6 +40,19 @@ dcat generate \
 release) or `latest-any` (including prereleases). `--version` is left to mean
 what it means everywhere else: which version of `dcat` you are running.
 
+**Your sources, not ours.** `dcat` resolves through NuGet's own client, so it
+reads the `NuGet.config` hierarchy exactly as `dotnet restore` does — machine,
+user, and every folder up from where you run it — and honours the credentials
+configured there, including the encrypted and provider-supplied kinds. A package
+on a private feed works with no extra flag. Add `--source <name-or-url>` to pin
+one feed when several are configured:
+
+```bash
+dcat generate --package Vendor.Analyzers --source maison \
+  --namespace My.Catalog --container VendorRule \
+  --output src/My.Catalog/VendorRules.g.cs
+```
+
 ## Generating from a package on disk
 
 A `.nupkg` you built, fetched by hand, or keep on a share — anything that never

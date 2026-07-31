@@ -58,6 +58,15 @@
          reported, and it offered no help switch at all. Both are acceptable in build tooling nobody
          else runs, and neither is acceptable in a tool somebody installs. -->
     <PackageVersion Include="Spectre.Console.Cli" Version="0.55.0" />
+    <!-- NuGet's own client, used by the generator to resolve and download a package from the sources
+         the machine is actually configured with rather than from a hardcoded api.nuget.org. The
+         reason to take the dependency rather than keep hand-rolling HTTP is that everything below
+         the flat-container call is what this library exists for: the NuGet.config hierarchy
+         (machine, user, and every folder up from the working directory), service-index discovery,
+         and credentials — including the encrypted and provider-supplied kinds, which cannot be read
+         by hand at all. Version 7.6.0 and not 6.14.0: the latter carries advisory
+         GHSA-g4vj-cjjj-v7hg. -->
+    <PackageVersion Include="NuGet.Protocol" Version="7.6.0" />
   </ItemGroup>
 
 </Project>
