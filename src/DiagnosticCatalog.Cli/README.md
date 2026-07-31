@@ -119,6 +119,13 @@ something else changed too.
 `dcat` targets **.NET 8** and rolls forward across majors, so one build runs on
 .NET 8 and everything newer.
 
+Descriptors are read in a **separate worker process**, which rolls forward to the
+*latest* installed major rather than the first one it finds. That is what stops
+the floor that makes `dcat` installable from deciding what it can read: an
+analyzer built for a newer target still loads, provided that runtime is present.
+It also means an analyzer whose construction crashes takes the worker down and
+leaves `dcat` to tell you which one — rather than the whole run vanishing.
+
 ---
 
 Unofficial with respect to every analyzer vendor it reads; not affiliated with or

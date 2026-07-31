@@ -79,8 +79,6 @@ public static class CatalogRun
     public static async Task<RunOutcome> ExecuteAsync(
         IReadOnlyList<Job> jobs, string? dateOverride, CancellationToken cancellation = default)
     {
-        DescriptorReader.InstallAssemblyResolver();
-
         using HttpClient http = new();
         List<string> summaries = [];
         bool changedAny = false;

@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/eng/">
     <Project Path="eng/CatalogGen/CatalogGen.csproj" />
+    <Project Path="eng/CatalogGen.Worker/CatalogGen.Worker.csproj" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/DiagnosticCatalog.Analyzers/DiagnosticCatalog.Analyzers.csproj" />

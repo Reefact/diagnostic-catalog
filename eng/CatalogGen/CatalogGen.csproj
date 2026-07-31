@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <!--
-    The generation engine. It reads the DiagnosticDescriptor instances of an analyzer assembly and
+    The generation engine. It acquires analyzer assemblies, has their descriptors read for it, and
     emits a catalogue as C# source.
 
     It is not a package of its own: it declares no <ReleaseTrain>, so tools/packaging/pack.sh treats
@@ -29,23 +29,26 @@
   </PropertyGroup>
 
   <!--
-    Roslyn is needed to resolve DiagnosticAnalyzer and DiagnosticDescriptor when the
-    upstream analyzer assembly is loaded reflectively. Workspaces is needed because some
-    analyzers derive from types that reference it.
+    No Roslyn here, deliberately. Resolving DiagnosticAnalyzer and DiagnosticDescriptor is what
+    reading a descriptor is, and reading happens in CatalogGen.Worker — so the reference lives
+    there, and neither this assembly nor the `dcat` process that hosts it ever loads Roslyn.
+
+    This does not make the tool package smaller: the worker ships inside it and brings Roslyn along.
+    What it moves is the version conflict. Whatever Roslyn an upstream analyzer drags in is resolved
+    in a process whose only job is to survive it, and never against the assemblies the tool itself
+    is running on.
   -->
-  <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
-  </ItemGroup>
 
   <!--
     The generator's parsing, naming and emitting logic is internal: it is an engine's implementation,
     not an API. Only Job, CatalogRun and RunOutcome are public, which is the whole surface the tool
-    needs. Exposing the rest to its own test project is what lets those parts be exercised without
-    widening what the shell — or anything else — could take a dependency on.
+    needs. The worker sees the internals because it answers the wire contract declared here and
+    shares this assembly's title normalisation — the same code has to run on both sides of that
+    wire, or a title would be written one way and read back another.
   -->
   <ItemGroup>
     <InternalsVisibleTo Include="CatalogGen.UnitTests" />
+    <InternalsVisibleTo Include="CatalogGen.Worker" />
   </ItemGroup>
 
 </Project>

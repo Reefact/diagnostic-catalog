@@ -28,6 +28,17 @@ namespace CatalogGen.UnitTests;
 public sealed class DescriptorReaderTests
 {
     [Fact]
+    public void The_worker_is_deployed_beside_whatever_reads()
+    {
+        // Named rather than inferred, because its absence is invisible in the tests that matter:
+        // reading with no worker returns null, which is exactly what the two refusal tests below
+        // assert. Without this they would keep passing while nothing was ever read.
+        Assert.True(
+            File.Exists(Path.Combine(AppContext.BaseDirectory, "CatalogGen.Worker.dll")),
+            "the descriptor worker should be bundled beside its caller by build/BundleDescriptorWorker.props");
+    }
+
+    [Fact]
     public void An_analyzer_that_cannot_be_constructed_fails_the_read()
     {
         // The fixture below lives in this assembly, so reading this assembly reaches an analyzer

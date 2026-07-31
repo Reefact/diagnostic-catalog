@@ -1,0 +1,55 @@
+<Project>
+
+  <!--
+    Puts CatalogGen.Worker beside the importing project's output, so DescriptorReader can find it at
+    AppContext.BaseDirectory.
+
+    The worker is SPAWNED, never referenced: nothing links against it, so a plain ProjectReference
+    would leave it out of the consumer's output entirely. ReferenceOutputAssembly="false" keeps it
+    off the compile and runtime graph while still forcing it to be built; the two targets below then
+    place its files where the running code looks for them.
+
+    Two targets rather than one, because they feed different directories and both are needed:
+    _CopyDescriptorWorker (AfterTargets="Build") feeds $(OutDir), which is what a `dotnet run` or a
+    test binary sees; _PublishDescriptorWorker (AfterTargets="Publish") feeds $(PublishDir), which is
+    what PackAsTool zips into the tool package under tools/<tfm>/any.
+
+    Do NOT rely on `dotnet build` or `dotnet publish` to prove the tool ships its worker: neither
+    exercises the .nupkg, so both stay green even if the worker never reaches the package. The gate
+    is the worker-present assertion in tools/packaging/pack.sh.
+  -->
+
+  <ItemGroup>
+    <ProjectReference Include="$(MSBuildThisFileDirectory)..\eng\CatalogGen.Worker\CatalogGen.Worker.csproj"
+                      ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <!--
+      Anchored on this file's own directory — the repository's build/ folder — rather than written
+      relative to the importing project, which sits at two different depths (src/… and tests/…).
+    -->
+    <_DescriptorWorkerOutput>$(MSBuildThisFileDirectory)..\eng\CatalogGen.Worker\bin\$(Configuration)\net8.0\</_DescriptorWorkerOutput>
+  </PropertyGroup>
+
+  <Target Name="_CopyDescriptorWorker" AfterTargets="Build">
+    <ItemGroup>
+      <_DescriptorWorkerFiles Include="$(_DescriptorWorkerOutput)**\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_DescriptorWorkerFiles)"
+          DestinationFiles="@(_DescriptorWorkerFiles->'$(OutDir)%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true"
+          OverwriteReadOnlyFiles="true" />
+  </Target>
+
+  <Target Name="_PublishDescriptorWorker" AfterTargets="Publish">
+    <ItemGroup>
+      <_DescriptorWorkerFiles Include="$(_DescriptorWorkerOutput)**\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_DescriptorWorkerFiles)"
+          DestinationFiles="@(_DescriptorWorkerFiles->'$(PublishDir)%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true"
+          OverwriteReadOnlyFiles="true" />
+  </Target>
+
+</Project>

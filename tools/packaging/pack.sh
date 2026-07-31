@@ -130,3 +130,22 @@ for package in artifacts/*.nupkg; do
     exit 1
   fi
 done
+
+# --- guard: the tool actually carries its descriptor worker ---------------------
+# The `dcat` tool SPAWNS CatalogGen.Worker to read descriptors; it does not reference it, so the
+# worker is not a managed dependency and PackAsTool would not embed it on its own. It reaches the
+# package only because build/BundleDescriptorWorker.props copies it into the publish output.
+#
+# Neither `dotnet build` nor `dotnet publish` can prove that: neither looks inside the .nupkg, so
+# both stay green if the copy target ever stops firing. The failure would surface as a tool that
+# installs, runs, and refuses every catalogue with "the descriptor worker is not beside this tool".
+# This is the one check placed where it can see.
+for package in artifacts/DiagnosticCatalog.Cli.*.nupkg; do
+  [ -f "$package" ] || continue
+  if unzip -l "$package" | grep -q 'tools/.*/any/CatalogGen.Worker.dll'; then
+    echo "ok: descriptor worker present in $package"
+  else
+    echo "error: CatalogGen.Worker.dll missing from $package; the tool would refuse every read." >&2
+    exit 1
+  fi
+done
