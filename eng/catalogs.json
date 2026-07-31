@@ -10,6 +10,22 @@
   ],
   "catalogs": [
     {
+      "$comment": [
+        "This repository's own analyzers, catalogued by this repository's own generator. It reads an",
+        "assembly ALREADY BUILT rather than a NuGet package, because the analyzer it mirrors ships",
+        "from here: waiting for a published package would mean a new DCAT id could not be catalogued",
+        "until after it was released.",
+        "",
+        "Consequence for any workflow running this manifest: DiagnosticCatalog.Analyzers must be built",
+        "first, or the generator stops on a missing assembly rather than emitting a catalogue short of",
+        "rules. Both callers do that today."
+      ],
+      "assemblies": ["../src/DiagnosticCatalog.Analyzers/bin/Release/netstandard2.0/DiagnosticCatalog.Analyzers.dll"],
+      "namespace": "DiagnosticCatalog.Self",
+      "container": "DcatRule",
+      "output": "../src/DiagnosticCatalog.Self/DcatRules.g.cs"
+    },
+    {
       "package": "SonarAnalyzer.CSharp",
       "namespace": "DiagnosticCatalog.Sonar",
       "container": "SonarRule",

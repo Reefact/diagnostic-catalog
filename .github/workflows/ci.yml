@@ -76,6 +76,31 @@ jobs:
         if: steps.solution.outputs.present == 'true'
         run: dotnet build -c Release --no-restore
 
+      # DiagnosticCatalog.Self is generated from this repository's OWN analyzers, so unlike the three
+      # vendor catalogues it goes stale through an ordinary pull request rather than an upstream
+      # release: add a DCAT id, forget to regenerate, and the catalogue silently stops describing the
+      # analyzer that ships beside it. The nightly sync would fix it a day later, on main, which is a
+      # day of main saying two different things.
+      #
+      # Regenerating needs the analyzer built, which the step above has just done. Only the ubuntu leg
+      # runs it — the check is about file content, and the same diff on two platforms is noise.
+      - name: The self catalogue is in step with the analyzers
+        if: steps.solution.outputs.present == 'true' && matrix.os == 'ubuntu-latest'
+        shell: bash
+        run: |
+          set -euo pipefail
+          dotnet run --project src/DiagnosticCatalog.Cli -c Release --no-build -v minimal -- generate \
+            --assembly src/DiagnosticCatalog.Analyzers/bin/Release/netstandard2.0/DiagnosticCatalog.Analyzers.dll \
+            --namespace DiagnosticCatalog.Self \
+            --container DcatRule \
+            --output src/DiagnosticCatalog.Self/DcatRules.g.cs
+          if ! git diff --quiet -- src/DiagnosticCatalog.Self/DcatRules.g.cs; then
+            echo "::error::DcatRules.g.cs is stale. Regenerate it with:"
+            echo "::error::  dotnet run --project src/DiagnosticCatalog.Cli -- generate --manifest eng/catalogs.json"
+            git --no-pager diff -- src/DiagnosticCatalog.Self/DcatRules.g.cs
+            exit 1
+          fi
+
       - name: Test
         if: steps.solution.outputs.present == 'true'
         # Collect OpenCover coverage via coverlet.collector (configured in coverage.runsettings).

@@ -210,13 +210,16 @@ constant. This package covers Sonar's `Sxxxx` analyzer rules only.
 
 ## See also
 
-Two sibling catalogues are generated from this repository the same way, each read from one
+Three sibling catalogues are generated from this repository the same way, each read from one
 analyzer's own descriptors:
 
 - [`DiagnosticCatalog.NetAnalyzers`](https://www.nuget.org/packages/DiagnosticCatalog.NetAnalyzers)
   — the .NET code analysis (`CAxxxx`) rules.
 - [`DiagnosticCatalog.StyleCop`](https://www.nuget.org/packages/DiagnosticCatalog.StyleCop)
   — the StyleCop.Analyzers (`SAxxxx`) rules.
+- [`DiagnosticCatalog.Self`](https://www.nuget.org/packages/DiagnosticCatalog.Self)
+  — this library's own `DCATxxxx` rules, for suppressing a diagnostic the catalogue analyzers
+  themselves report.
 
 **Want a catalogue of your own?** Your analyzer's rules, or an internal ruleset, are declared
 exactly the way these are: a static class of constants marked `[DiagnosticRule]`, referenced by
