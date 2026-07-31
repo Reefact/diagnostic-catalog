@@ -19,7 +19,7 @@ assembly rather than inferring it from the number below.
 
 _Nothing yet._
 
-## [1.0.0] - 2026-07-31
+## [0.3.0] - 2026-07-31
 
 **This catalogue now mirrors the `1.2.0-beta` line** — `StyleCop.Analyzers.Unstable
 1.2.0.556` — instead of `StyleCop.Analyzers 1.1.118`. The stable it mirrored until
