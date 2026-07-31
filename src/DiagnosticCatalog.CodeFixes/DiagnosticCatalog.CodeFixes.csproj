@@ -1,0 +1,75 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    netstandard2.0 for the same reason as the analyzer: this assembly is loaded by an IDE's host, and
+    that host reads only netstandard2.0 extension assemblies.
+  -->
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>DiagnosticCatalog.CodeFixes</AssemblyName>
+    <RootNamespace>DiagnosticCatalog.CodeFixes</RootNamespace>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+  </PropertyGroup>
+
+  <!--
+    NO <ReleaseTrain>, deliberately, and this is the one project shape ADR-0007 blesses for it: the
+    assembly is BUNDLED into DiagnosticCatalog.Analyzers' package rather than published as a package of
+    its own. Declaring a train here would make it packable and give it a version nobody would ever
+    reference. tools/trains.sh leaves an untrained project alone by design, exactly as it does for
+    eng/CatalogGen.
+
+    The consequence to remember: nothing publishes this assembly on its own, so the analyzer project
+    both orders its build and packs its output. See the ProjectReference there.
+  -->
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!--
+      Workspaces, and this dependency is the whole reason the assembly exists separately.
+
+      RS1022 forbids Workspaces types inside an assembly that also declares analyzers, and the rule is
+      not stylistic: the command-line compiler loads analyzer assemblies without Workspaces present, so
+      an analyzer assembly reaching for CodeFixProvider risks failing to load — and an analyzer that
+      fails to load reports nothing, which reads as a clean codebase. Two assemblies in one package is
+      what §16.1 shows, and it is forced rather than chosen.
+
+      Held at the same $(RoslynFloorVersion) as the analyzer. The load contract is identical: the version
+      compiled against is the minimum host able to load this.
+    -->
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" VersionOverride="$(RoslynFloorVersion)" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" PrivateAssets="all">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Tracked on the same terms as the analyzer's surface, even though this assembly ships inside
+         that package rather than as one of its own. An IDE loads this type by name through MEF, so
+         renaming it silently stops offering the fix — the failure mode the whole library is about. -->
+    <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="PublicAPI.Shipped.txt" />
+    <AdditionalFiles Include="PublicAPI.Unshipped.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!--
+      Linked, not referenced. A ProjectReference to the analyzer would be the natural direction — the
+      ids live there — but it would then forbid the analyzer's own build-order reference to this
+      project, and that one is what guarantees a bare `dotnet pack` produces a package containing the
+      code fixes. Sharing the source keeps one spelling of every id across the gap.
+    -->
+    <Compile Include="..\DiagnosticCatalog.Analyzers\DiagnosticIds.cs" Link="DiagnosticIds.cs" />
+    <Compile Include="..\DiagnosticCatalog.Analyzers\FixProperties.Keys.cs" Link="FixProperties.Keys.cs" />
+    <!-- Which argument is the category and which the identifier. Shared rather than restated, because
+         the analyzer deciding one way and the fix the other is a silent corruption: the fix would write
+         the category into the slot the analyzer read the identifier from. -->
+    <Compile Include="..\DiagnosticCatalog.Analyzers\SuppressionArgumentOrder.cs" Link="SuppressionArgumentOrder.cs" />
+  </ItemGroup>
+
+</Project>

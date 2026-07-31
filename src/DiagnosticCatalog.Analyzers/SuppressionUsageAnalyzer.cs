@@ -92,6 +92,7 @@ public sealed class SuppressionUsageAnalyzer : DiagnosticAnalyzer
         context.ReportDiagnostic(Diagnostic.Create(
             Descriptors.ReplaceableStringLiterals,
             attribute.GetLocation(),
+            FixProperties.ForMatches(matches),
             category.Value,
             checkId.Value,
             Describe(matches)));
