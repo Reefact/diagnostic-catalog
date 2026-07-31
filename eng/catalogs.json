@@ -1,12 +1,17 @@
 {
+  "$schema": "./catalogs.schema.json",
   "$comment": [
-    "The catalogues this repository generates. Read by eng/CatalogGen (--manifest) and by",
-    "the scheduled workflow in .github/workflows/nightly-catalogs.yml, so the list lives",
-    "here as data rather than being duplicated in CI configuration.",
+    "The catalogues this repository generates. Read by `dcat` (--manifest) and by the",
+    "scheduled workflow in .github/workflows/nightly-catalogs.yml, so the list lives here",
+    "as data rather than being duplicated in CI configuration.",
     "",
     "output paths are relative to this file.",
     "version defaults to \"latest\", which resolves to the latest *stable* release.",
-    "language defaults to \"cs\"."
+    "language defaults to \"cs\".",
+    "",
+    "The schema beside this file documents every key and is what an editor reads: a typo",
+    "is reported where it is typed, rather than by the tool after a package has been",
+    "downloaded."
   ],
   "catalogs": [
     {

@@ -46,6 +46,16 @@
              Link="catalogs\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
+  <!--
+    The real manifest and the schema beside it, for the tests that hold the two to the same contract.
+    Copied rather than reached for by repository path, for the reason above: the deterministic CI
+    build rewrites compile-time source paths, so a path computed from one resolves to nothing there.
+  -->
+  <ItemGroup>
+    <Content Include="..\..\eng\catalogs.json;..\..\eng\catalogs.schema.json"
+             Link="manifest\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\eng\CatalogGen\CatalogGen.csproj" />
   </ItemGroup>
