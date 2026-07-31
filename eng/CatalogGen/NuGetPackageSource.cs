@@ -15,18 +15,19 @@ internal static class NuGetPackageSource
     private const string FlatContainer = "https://api.nuget.org/v3-flatcontainer";
 
     internal static async Task<AnalyzerAssemblySet?> AcquireAsync(
-        string packageId, string requestedVersion, string language, string workDir, HttpClient http)
+        string packageId, string requestedVersion, string language, string workDir, HttpClient http,
+        CancellationToken cancellation = default)
     {
-        string? version = await ResolveVersionAsync(packageId, requestedVersion, http);
+        string? version = await ResolveVersionAsync(packageId, requestedVersion, http, cancellation);
         if (version is null) return null;
 
         string nupkg = Path.Combine(workDir, "package.nupkg");
         string url = $"{FlatContainer}/{packageId.ToLowerInvariant()}/{version}/" +
                      $"{packageId.ToLowerInvariant()}.{version}.nupkg";
         Console.WriteLine($"downloading {url}");
-        await using (Stream s = await http.GetStreamAsync(url))
+        await using (Stream s = await http.GetStreamAsync(url, cancellation))
         await using (FileStream f = File.Create(nupkg))
-            await s.CopyToAsync(f);
+            await s.CopyToAsync(f, cancellation);
 
         using ZipArchive zip = ZipFile.OpenRead(nupkg);
         List<ZipArchiveEntry>? entries = SelectAnalyzerAssemblies(zip, packageId, version, language);
@@ -57,11 +58,13 @@ internal static class NuGetPackageSource
 
     // The release to mirror: the requested one, or the newest matching what "latest" is allowed to
     // mean. Null when the package has none that qualifies.
-    private static async Task<string?> ResolveVersionAsync(string packageId, string requested, HttpClient http)
+    private static async Task<string?> ResolveVersionAsync(
+        string packageId, string requested, HttpClient http, CancellationToken cancellation)
     {
         if (requested is not ("latest" or "latest-any")) return requested;
 
-        string index = await http.GetStringAsync($"{FlatContainer}/{packageId.ToLowerInvariant()}/index.json");
+        string index = await http.GetStringAsync($"{FlatContainer}/{packageId.ToLowerInvariant()}/index.json",
+                                                 cancellation);
         List<string> all = JsonDocument.Parse(index)
             .RootElement.GetProperty("versions").EnumerateArray()
             .Select(v => v.GetString()!).ToList();

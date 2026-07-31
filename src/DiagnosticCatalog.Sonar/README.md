@@ -134,8 +134,8 @@ cannot be wrong — and because the platform never validates a category, a value
 from documentation that had drifted would produce no symptom anywhere.
 
 ```
-dotnet run --project eng/CatalogGen -- \
-    --package SonarAnalyzer.CSharp --version latest \
+dotnet run --project src/DiagnosticCatalog.Cli -- generate \
+    --package SonarAnalyzer.CSharp --package-version latest \
     --namespace DiagnosticCatalog.Sonar --container SonarRule \
     --output src/DiagnosticCatalog.Sonar/SonarRules.g.cs
 ```
@@ -188,7 +188,7 @@ breaks their recompilation.
 To regenerate every catalogue at once:
 
 ```
-dotnet run --project eng/CatalogGen -- --manifest eng/catalogs.json
+dotnet run --project src/DiagnosticCatalog.Cli -- generate --manifest eng/catalogs.json
 ```
 
 ## How it reaches nuget.org

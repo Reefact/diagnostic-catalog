@@ -21,8 +21,15 @@ internal static class DescriptorReader
     //
     // Installed once for the process rather than per read: the handler answers from the assemblies
     // already loaded, so a second registration would only add a redundant hop to every resolution.
+    // Idempotent because the run is now callable rather than a process entry point, and a caller
+    // that runs twice must not stack a second handler onto the first.
+    private static bool resolverInstalled;
+
     internal static void InstallAssemblyResolver()
     {
+        if (resolverInstalled) return;
+        resolverInstalled = true;
+
         HashSet<string> resolving = new(StringComparer.Ordinal);
         AppDomain.CurrentDomain.AssemblyResolve += (_, e) => ResolveAgainstLoaded(e, resolving);
         _ = typeof(Workspace); // force Workspaces into the load context before the analyzer needs it

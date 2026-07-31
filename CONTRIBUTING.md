@@ -337,12 +337,12 @@ When present it MUST be lowercase and MUST be one of:
 |---|---|
 | `core` | The foundation library — defining, generating and validating catalogs |
 | `analyzers` | The Roslyn analyzers **this repository publishes**, and their diagnostics |
-| `cli` | The command-line tool |
+| `cli` | The **`dcat` command-line tool** — its command tree, arguments and exit codes |
 | `testing` | The test-support package |
 | `sonar` | The **catalog of SonarQube/SonarAnalyzer rules** |
 | `netanalyzers` | The **catalog of Microsoft .NET analyzer (CAxxxx) rules** |
 | `stylecop` | The **catalog of StyleCop analyzer rules** |
-| `cataloggen` | The **catalog generator** (`eng/CatalogGen`) — build tooling that ships nothing |
+| `cataloggen` | The **generation engine** (`eng/CatalogGen`) — acquiring analyzer assemblies, reading their descriptors, emitting a catalog |
 
 > `analyzers` and `netanalyzers` are close in spelling and far apart in meaning.
 > `analyzers` is *code this repository ships* — Roslyn analyzers that enforce our
@@ -361,24 +361,26 @@ independently:
 
 | Train | Scopes | Why it moves at its own pace |
 |---|---|---|
-| `lib` | `core`, `analyzers`, `cli`, `testing` | The foundation. Deliberately very stable — a catalog contract rests on it. |
+| `lib` | `core`, `analyzers`, `testing` | The foundation. Deliberately very stable — a catalog contract rests on it. |
+| `cli` | `cli`, `cataloggen` | The `dcat` tool. Follows Roslyn and upstream package layouts, which move for their own reasons. |
 | `sonar` | `sonar` | Follows SonarSource's release cadence. |
 | `netanalyzers` | `netanalyzers` | Follows the .NET SDK's analyzer releases. |
 | `stylecop` | `stylecop` | Follows StyleCop's releases. |
-| — | `cataloggen` | **No train.** The generator ships nothing, so nothing it does can move a published version. |
 
-`cataloggen` is the one scope that belongs to no train, and that is the whole
-reason it exists. The generator produces the catalogs but is never packed, so a
-correction to it changes no published assembly. Scoped `core` it would ride the
-`lib` train and bump the foundation's version for work its consumers never see;
-scoped here it is recorded, linted and reviewed like any other commit, and moves
-nobody's version.
+Two scopes ride the `cli` train, and the distinction between them is worth
+keeping. `cli` is the shell — the command tree, the arguments, the exit codes;
+`cataloggen` is the engine behind it — obtaining analyzer assemblies, reading the
+descriptors they declare, emitting the catalog. They are one published package,
+so they version together, but a change to how descriptors are read and a change
+to how a command line is parsed are different facts about it, and the release
+record reads better for saying which.
 
-That makes it the one place where a `feat` or `fix` reaching no release notes is
-**correct** rather than a mistake. Everywhere else, a versioning type that routes
-to no train is the accident the required-scope rule exists to prevent — see the
-warning under *Scope* above. The difference is intent, and the scope is what
-states it.
+`cataloggen` belonged to no train until the generator was published: it produced
+the catalogs and was never packed, so nothing it did could move a version.
+ADR-0017 changed that premise rather than the reasoning — the engine now reaches
+users inside `dcat`, so its corrections reach them too. What did not change is
+why it stays off `lib`: the foundation's version must say something about the
+foundation, and generation work reaches none of its consumers.
 
 A catalog moves when its vendor ships rules; the foundation moves when its own
 contract changes. Folding them into one version number would force a release of

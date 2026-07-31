@@ -8,6 +8,7 @@ on:
     # no train is rejected by "Resolve version" below, so the two cannot drift silently.
     tags:
       - 'lib-v*.*.*'
+      - 'cli-v*.*.*'
       - 'sonar-v*.*.*'
       - 'netanalyzers-v*.*.*'
       - 'stylecop-v*.*.*'
@@ -18,6 +19,7 @@ on:
         type: choice
         options:
           - lib
+          - cli
           - sonar
           - netanalyzers
           - stylecop

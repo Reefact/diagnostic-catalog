@@ -42,7 +42,8 @@
 # from every row here is therefore not evidence of a mistake.
 trains_rows() {
   cat <<'ROWS'
-lib|lib-v|analyzers,cli,core,testing|the DiagnosticCatalog foundation, its analyzers, its CLI and its test-support package
+lib|lib-v|analyzers,core,testing|the DiagnosticCatalog foundation, its analyzers and its test-support package
+cli|cli-v|cataloggen,cli|the DiagnosticCatalog CLI (the dcat .NET tool)
 sonar|sonar-v|sonar|the SonarQube rule catalog
 netanalyzers|netanalyzers-v|netanalyzers|the Microsoft .NET analyzer rule catalog
 stylecop|stylecop-v|stylecop|the StyleCop rule catalog

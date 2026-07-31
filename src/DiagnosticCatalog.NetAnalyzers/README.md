@@ -115,8 +115,8 @@ constructs every `DiagnosticAnalyzer` they contain, and reads the `DiagnosticDes
 instances they actually declare — the only source that cannot have drifted.
 
 ```
-dotnet run --project eng/CatalogGen -- \
-    --package Microsoft.CodeAnalysis.NetAnalyzers --version latest \
+dotnet run --project src/DiagnosticCatalog.Cli -- generate \
+    --package Microsoft.CodeAnalysis.NetAnalyzers --package-version latest \
     --namespace DiagnosticCatalog.NetAnalyzers --container NetAnalyzersRule \
     --output src/DiagnosticCatalog.NetAnalyzers/NetAnalyzersRules.g.cs
 ```
@@ -145,7 +145,7 @@ breaks their recompilation.
 To regenerate every catalogue at once:
 
 ```
-dotnet run --project eng/CatalogGen -- --manifest eng/catalogs.json
+dotnet run --project src/DiagnosticCatalog.Cli -- generate --manifest eng/catalogs.json
 ```
 
 ## How it reaches nuget.org
