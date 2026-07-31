@@ -166,7 +166,7 @@ maintained alongside its own analyzer does not need this — the two ship at one
 
 ## See also
 
-Three catalogues built on this package are already published, generated from the analyzers' own
+Four catalogues built on this package are already published, generated from the analyzers' own
 descriptors rather than hand-written. If you run one of these, its rules do not need declaring:
 
 - [`DiagnosticCatalog.Sonar`](https://www.nuget.org/packages/DiagnosticCatalog.Sonar)
@@ -175,10 +175,15 @@ descriptors rather than hand-written. If you run one of these, its rules do not 
   — the .NET code analysis (`CAxxxx`) rules.
 - [`DiagnosticCatalog.StyleCop`](https://www.nuget.org/packages/DiagnosticCatalog.StyleCop)
   — the StyleCop.Analyzers (`SAxxxx`) rules.
+- [`DiagnosticCatalog.Self`](https://www.nuget.org/packages/DiagnosticCatalog.Self)
+  — the `DCATxxxx` rules the catalogue analyzers report, catalogued the same way.
 
 They are also worth reading as worked examples of the contract above: a container of rules, the
 categories declared once, and the upstream release the whole thing mirrors recorded in
 `[assembly: CatalogSource]`.
+
+For the contract explained from scratch rather than by example, see
+[the catalogue author's guide](../../doc/guide/catalogue-authors.md).
 
 ## Documentation
 

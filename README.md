@@ -229,8 +229,20 @@ be an attribute argument. That is also why the contract is structural rather tha
 interface or a base class — see
 [ADR-0008](doc/adr/0008-express-a-rule-as-a-marked-static-class-of-constants.md).
 
+## 📖 Guides
+
+Three, by what you are trying to do.
+
+| If you… | Read |
+| --- | --- |
+| write `[SuppressMessage(...)]` and want it checked | [Writing suppressions that the compiler checks](doc/guide/consumers.md) |
+| ship an analyzer, or own rules nobody else publishes | [Publishing a catalogue](doc/guide/catalogue-authors.md) |
+| saw a `DCATxxxx` and want to know what it means | [The `DCAT` diagnostics](doc/guide/diagnostics.md) |
+
 Per-package guides:
 [`DiagnosticCatalog`](src/DiagnosticCatalog/README.md) ·
+[`.Analyzers`](src/DiagnosticCatalog.Analyzers/README.md) ·
+[`.Self`](src/DiagnosticCatalog.Self/README.md) ·
 [`.Sonar`](src/DiagnosticCatalog.Sonar/README.md) ·
 [`.NetAnalyzers`](src/DiagnosticCatalog.NetAnalyzers/README.md) ·
 [`.StyleCop`](src/DiagnosticCatalog.StyleCop/README.md)

@@ -54,6 +54,13 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
+      # One manifest entry — DiagnosticCatalog.Self — reads an analyzer assembly already on disk
+      # rather than a NuGet package, because the analyzer it mirrors ships from this repository. On a
+      # fresh runner that assembly does not exist yet, and the generator stops on a missing file
+      # rather than quietly emitting a catalogue short of rules. So it is built first.
+      - name: Build the analyzers the self catalogue is read from
+        run: dotnet build src/DiagnosticCatalog.Analyzers/DiagnosticCatalog.Analyzers.csproj -c Release --nologo
+
       - name: Regenerate catalogues
         id: generate
         run: |

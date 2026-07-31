@@ -18,6 +18,28 @@ project:
 
 ## [Unreleased]
 
+### Added
+
+* **`DiagnosticCatalog.Analyzers`** — the checking. Seven diagnostics and four code fixes: a
+  suppression whose category and id come from two different rules (`DCAT0001`), a rule declaration
+  that fails the structural contract (`DCAT0002`–`DCAT0004`), string literals a catalogue reference
+  would replace (`DCAT0006`), a suppression left half migrated (`DCAT0007`), and an
+  `UnconditionalSuppressMessage` the trimmer silently discards (`DCAT0009`). The assemblies are
+  build-time only and never reach a consumer's output, which
+  [a real restore asserts](tools/packaging/verify-consumption.sh) rather than the package merely
+  claiming it.
+
+* **`DiagnosticCatalog.Self`** — those `DCAT` rules as a catalogue, generated from the analyzers'
+  own descriptors by this repository's own generator. It rides this train rather than one of its
+  own, because a catalogue describing a different rule set from the analyzer shipped beside it is
+  precisely the silent mismatch the library exists to prevent; CI regenerates it on every pull
+  request and fails if the committed file has gone stale.
+
+* **Guides** for [consumers](doc/guide/consumers.md), for
+  [catalogue authors](doc/guide/catalogue-authors.md), and a
+  [reference for every `DCAT` diagnostic](doc/guide/diagnostics.md) including its `.editorconfig`
+  configuration.
+
 ### Fixed
 
 * The catalogue generator can no longer rename a category constant it has already
