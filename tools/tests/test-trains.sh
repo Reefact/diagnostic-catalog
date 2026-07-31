@@ -47,6 +47,28 @@ cat > "$fixture/spanning/Spanning.csproj" <<'XML'
 </Project>
 XML
 
+# A project file that reached a build output — a test copying what the repository publishes
+# beside its binary put these there, and `dotnet pack` was duly handed one and failed on it for
+# want of a restore. It is a real .csproj by every test a grep can make; only where it sits says
+# otherwise.
+mkdir -p "$fixture/built/bin/Release/net10.0" "$fixture/built/obj/Debug"
+
+cat > "$fixture/built/bin/Release/net10.0/Copied.csproj" <<'XML'
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <ReleaseTrain>netanalyzers</ReleaseTrain>
+  </PropertyGroup>
+</Project>
+XML
+
+cat > "$fixture/built/obj/Debug/Copied.csproj" <<'XML'
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <ReleaseTrain>netanalyzers</ReleaseTrain>
+  </PropertyGroup>
+</Project>
+XML
+
 cat > "$fixture/other/Other.csproj" <<'XML'
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
@@ -73,6 +95,9 @@ assert_equals 'trains do not bleed into each other' \
 assert_empty 'a train nothing declares publishes nothing' \
   "$(projects_of stylecop)"
 
+assert_empty 'a project file under bin/ or obj/ enrols nothing' \
+  "$(projects_of netanalyzers)"
+
 # --- declared_trains -----------------------------------------------------------
 assert_equals 'only declared trains are reported' \
   'lib
@@ -80,6 +105,12 @@ sonar' "$(declared_trains)"
 
 assert_empty 'a comment contributes no declared train' \
   "$(cd "$fixture/commented" && declared_trains)"
+
+# 'only declared trains are reported' above covers this too — the copies declare netanalyzers,
+# which that assertion would report were they read. Stated separately so a failure names the
+# build output rather than the table.
+assert_empty 'a project file under bin/ or obj/ declares no train' \
+  "$(cd "$fixture/built" && declared_trains)"
 
 # --- the row table ---------------------------------------------------------------
 cd "$root"
