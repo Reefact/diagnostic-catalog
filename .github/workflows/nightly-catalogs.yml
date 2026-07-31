@@ -11,9 +11,20 @@ name: Nightly catalogue sync
 
 on:
   schedule:
-    # 03:17 UTC. Off the hour on purpose: scheduled jobs at :00 queue behind everyone
-    # else's, and nothing here is time-critical.
-    - cron: '17 3 * * *'
+    # 23:17 UTC — 01:17 in Paris in summer, 00:17 in winter, since cron is UTC and this
+    # repository's maintainer is not. The drift across daylight saving is accepted: nothing
+    # here is time-critical.
+    #
+    # Early in the night rather than late, because GitHub schedules on a best-effort basis
+    # and can run a job hours after its slot — the first occurrence of this one fired three
+    # hours late. What the hour buys is that even a long delay still lands overnight, so the
+    # pull request is waiting at the start of the day rather than arriving during it. It is
+    # not a correction for the delay: the same hour is the better one even when the
+    # scheduler is punctual.
+    #
+    # The minute stays off the hour, and for its own reason: jobs at :00 queue behind
+    # everybody else's, which is the delay this cannot afford to add to.
+    - cron: '17 23 * * *'
   workflow_dispatch:
     inputs:
       force-pr:
