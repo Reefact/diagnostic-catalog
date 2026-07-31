@@ -1,0 +1,87 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <!--
+      Floor TFM: `dcat` ships as a net8.0 tool so a shop whose newest runtime is .NET 8 can install
+      and run it. RollForward=Major lets that same build run on any newer major — a machine carrying
+      only .NET 10 rolls 8->10 — so one floor build covers every supported runtime from .NET 8 up,
+      with no per-release target matrix. Without Major the default Minor policy would not cross a
+      major boundary, and the tool would fail to start on the (common) machine that has a newer .NET
+      but not .NET 8. ADR-0017.
+    -->
+    <TargetFramework>net8.0</TargetFramework>
+    <RollForward>Major</RollForward>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Keep modern C# despite the net8.0 floor, as the netstandard2.0 projects already do. -->
+    <LangVersion>latest</LangVersion>
+    <!-- The project keeps its name; only the produced executable is called "dcat". -->
+    <AssemblyName>dcat</AssemblyName>
+    <RootNamespace>DiagnosticCatalog.Cli</RootNamespace>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <!--
+    This tool ships on the 'cli' train, which versions independently of the foundation so it can
+    follow Roslyn and upstream package layouts without moving a contract every catalogue rests on
+    (ADR-0017). Declaring the train here is the whole membership (Directory.Build.targets); it is
+    also what makes the project packable, what gives it an embedded SBOM, and what puts the icon on
+    the package.
+  -->
+  <PropertyGroup>
+    <ReleaseTrain>cli</ReleaseTrain>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Package">
+    <PackageId>DiagnosticCatalog.Cli</PackageId>
+    <!--
+      PackAsTool bundles the app and its managed dependency closure under tools/<tfm>/any, so
+      `dotnet tool install DiagnosticCatalog.Cli` yields a runnable `dcat`. The generation engine
+      reaches the package this way: it declares no train of its own, so pack.sh reads its
+      ProjectReference as bundled rather than depended upon (ADR-0007).
+    -->
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>dcat</ToolCommandName>
+    <!--
+      No separate symbol package for the tool. A .snupkg exists so consumers can debug into a
+      LIBRARY they reference; a tool is executed, not referenced, and its PDBs already travel inside
+      the tool package. Overrides IncludeSymbols from Directory.Build.props so the release neither
+      builds nor pushes a DiagnosticCatalog.Cli.snupkg, which nuget.org's symbol validation does not
+      expect for a tool package.
+    -->
+    <IncludeSymbols>false</IncludeSymbols>
+    <DevelopmentDependency>false</DevelopmentDependency>
+    <Title>DiagnosticCatalog.Cli</Title>
+    <Description>dcat generates a DiagnosticCatalog rule catalogue from the analyzers you point it at — a package on NuGet, or assemblies already on disk — by reading the DiagnosticDescriptor instances those analyzers actually declare, never their documentation. The result is a set of strongly referenced constants, so SuppressMessageAttribute takes compile-checked references instead of magic strings.</Description>
+    <PackageTags>roslyn;analyzers;diagnostics;suppressmessage;code-analysis;catalog;cli;dotnet-tool;dcat</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <Authors>Reefact</Authors>
+    <Copyright>Copyright (c) Reefact</Copyright>
+    <PackageProjectUrl>https://github.com/Reefact/diagnostic-catalog</PackageProjectUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="/" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Spectre.Console.Cli" />
+  </ItemGroup>
+
+  <!--
+    A PROJECT reference, unlike the catalogue packages' reference to the foundation. The engine
+    declares no <ReleaseTrain>, so it is not a package anybody can depend on: it is bundled into
+    this tool, which is exactly the case pack.sh's cross-train guard exempts ("on no train: bundled,
+    not depended upon"). Referencing it as a package would mean publishing it, and an engine
+    published separately would be an API this repository does not want to owe anyone.
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\eng\CatalogGen\CatalogGen.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="DiagnosticCatalog.Cli.UnitTests" />
+  </ItemGroup>
+
+</Project>

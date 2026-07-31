@@ -58,7 +58,7 @@ jobs:
         id: generate
         run: |
           set -euo pipefail
-          dotnet run --project eng/CatalogGen -c Release -v minimal -- \
+          dotnet run --project src/DiagnosticCatalog.Cli -c Release -v minimal -- generate \
             --manifest eng/catalogs.json \
             --summary "$RUNNER_TEMP/summary.md"
 
@@ -110,7 +110,7 @@ jobs:
         run: |
           set -euo pipefail
           cp -r src "$RUNNER_TEMP/src-first"
-          dotnet run --project eng/CatalogGen -c Release -v minimal -- \
+          dotnet run --project src/DiagnosticCatalog.Cli -c Release -v minimal -- generate \
             --manifest eng/catalogs.json
           if ! diff -r "$RUNNER_TEMP/src-first" src > "$RUNNER_TEMP/stability.diff"; then
             echo "::error::Regeneration is not deterministic; a second run changed the output."

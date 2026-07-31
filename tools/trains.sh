@@ -29,7 +29,11 @@
 #    the scope and train tables in CONTRIBUTING.md;
 # 3. add its tag pattern to the `on: push: tags:` list and its id to the
 #    workflow_dispatch choice in .github/workflows/release.yml — GitHub requires
-#    both to be literal, so they cannot be derived from this file.
+#    both to be literal, so they cannot be derived from this file;
+# 4. add it to the "Release train" checklist in .github/pull_request_template.md,
+#    which lists the trains literally for the same reason. Missed once already:
+#    a train can exist, route and publish while every pull request describing it
+#    still has to tick "None".
 # A tag whose prefix is unknown here is rejected by the release workflow, so a
 # missed step 1 fails the release rather than publishing something unrouted.
 #
@@ -42,7 +46,8 @@
 # from every row here is therefore not evidence of a mistake.
 trains_rows() {
   cat <<'ROWS'
-lib|lib-v|analyzers,cli,core,testing|the DiagnosticCatalog foundation, its analyzers, its CLI and its test-support package
+lib|lib-v|analyzers,core,testing|the DiagnosticCatalog foundation, its analyzers and its test-support package
+cli|cli-v|cataloggen,cli|the DiagnosticCatalog CLI (the dcat .NET tool)
 sonar|sonar-v|sonar|the SonarQube rule catalog
 netanalyzers|netanalyzers-v|netanalyzers|the Microsoft .NET analyzer rule catalog
 stylecop|stylecop-v|stylecop|the StyleCop rule catalog

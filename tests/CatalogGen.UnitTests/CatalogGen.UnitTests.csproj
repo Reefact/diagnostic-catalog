@@ -28,7 +28,16 @@
     build, which rewrites compile-time source paths.
   -->
   <ItemGroup>
-    <Content Include="..\..\src\**\*.g.cs" Link="catalogs\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <!--
+      bin/ and obj/ are excluded because ".g.cs" is not only a catalogue's extension: it is what the
+      SDK names its own generated sources too, and one of those under src/ is swept up by a glob that
+      only says "*.g.cs". The theory below then runs over a file that is not a catalogue and fails
+      for the right reason with the wrong cause. It went unnoticed while no project under src/
+      produced any — enabling ImplicitUsings on one is all it took.
+    -->
+    <Content Include="..\..\src\**\*.g.cs"
+             Exclude="..\..\src\**\bin\**\*.g.cs;..\..\src\**\obj\**\*.g.cs"
+             Link="catalogs\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>
