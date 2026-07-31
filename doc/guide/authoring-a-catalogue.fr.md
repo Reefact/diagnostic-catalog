@@ -39,6 +39,29 @@ Trois détails de cet extrait méritent leur place :
 * **`nameof(CTS0001)`** plutôt que `"CTS0001"` — cela résout vers le nom du type conteneur, si bien
   que l'identifiant et la classe ne peuvent pas diverger. Renommez l'un dans l'IDE et l'autre suit.
 
+## Quand vous vous trompez, l'analyseur propose de corriger
+
+`DCAT0002`, `DCAT0003` et `DCAT0004` signalent une déclaration qui rate le contrat, et chacun porte un
+correctif — **proposé uniquement là où la réparation est déjà écrite dans le code**, et muet sinon :
+
+| Ce que vous avez écrit | Ce qui est proposé |
+| --- | --- |
+| `public sealed class CTS0001` | *Make 'CTS0001' static* — pour une classe ordinaire qui pourrait porter le mot-clé : pas de paramètres de type, pas de type de base, aucun membre d'instance, pas `partial` |
+| `private static readonly string Id = ...` | *Make 'Id' a public constant* — les modificateurs seulement ; la valeur est laissée telle quelle |
+| aucun membre `Id` | *Declare 'public const string Id'*, écrit `nameof(CTS0001)` — lu sur votre déclaration plutôt qu'inventé |
+
+Rien n'est proposé quand c'est la **valeur** qui est fausse — un `const int`, une chaîne vide, un
+initialiseur non constant. Le code ne dit rien de ce que vous vouliez, et un correctif qui devinerait
+produirait une règle que le compilateur accepte et que personne ne vérifie.
+
+> **Celui auquel réfléchir avant d'appuyer.** *Declare 'public const string Category'* écrit `"TODO"`.
+> C'est une vraie chaîne : `DCAT0004` cesse donc d'être signalé dès que vous l'appliquez — vous avez
+> échangé un avertissement qui nommait le problème contre un marqueur que seul un lecteur remarquera,
+> et une mauvaise catégorie est invisible dans tous les builds, pour toujours. Appliquez-le quand vous
+> êtes sur le point de le remplir.
+
+Détail complet dans [la référence des diagnostics](diagnostics.fr.md#diagnostics-de-déclaration).
+
 ## La forme à livrer réellement
 
 Imbriquez les règles dans un conteneur, pour que le site d'utilisation se lise bien :

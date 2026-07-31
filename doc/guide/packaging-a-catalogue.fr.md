@@ -149,5 +149,5 @@ dépôt.
 ---
 
 <div align="center">
-<a href="./versioning-a-catalogue.fr.md">← Versionner un catalogue</a> · <a href="./README.fr.md">↑ Table des matières</a> · <a href="./diagnostics.fr.md">Les diagnostics DCAT →</a>
+<a href="./versioning-a-catalogue.fr.md">← Versionner un catalogue</a> · <a href="./README.fr.md">↑ Table des matières</a> · <a href="./dcat.fr.md">L'outil dcat →</a>
 </div>
