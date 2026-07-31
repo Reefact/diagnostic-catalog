@@ -1,0 +1,154 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    netstandard2.0 and nothing else, and not for the reason the shipped libraries have. An analyzer is
+    loaded into the host compiler's process — VBCSCompiler, Visual Studio, Rider — and that host reads
+    only netstandard2.0 analyzer assemblies. Multi-targeting here would produce assemblies no host ever
+    loads. ADR-0001 governs the libraries' floor; this one is Roslyn's own requirement.
+  -->
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>DiagnosticCatalog.Analyzers</AssemblyName>
+    <RootNamespace>DiagnosticCatalog.Analyzers</RootNamespace>
+    <!-- Nobody calls these types: the compiler instantiates them by reflection. XML docs would be
+         published for an API no consumer writes against, and would turn every missing <summary> on an
+         internal helper into CS1591 noise. The reasoning that matters lives in comments, next to the
+         code. -->
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <!-- Turns on the analyzer-authoring rules (RS1xxx) and release tracking (RS2008). Without it, a
+         diagnostic declared in code but absent from AnalyzerReleases.*.md ships unrecorded. -->
+    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+  </PropertyGroup>
+
+  <!--
+    Ships on the lib train. Declaring it here is the whole membership (Directory.Build.targets), and it
+    is also what makes the project packable, gives it an embedded SBOM and puts the icon on the package.
+
+    Consequence worth stating: a lib-vX.Y.Z tag publishes the foundation AND this analyzer at one
+    version, so DiagnosticCatalog's version moves whenever the analyzer ships, even when
+    DiagnosticCatalog.dll is byte-identical. That is the cost of one train, accepted deliberately.
+  -->
+  <PropertyGroup>
+    <ReleaseTrain>lib</ReleaseTrain>
+  </PropertyGroup>
+
+  <!--
+    A development dependency, which the foundation deliberately is not (docs §16.1). The two packages
+    serve opposite audiences: this one carries analysis assemblies that must never reach a consumer's
+    runtime, so NuGet marks it build-time-only and applies PrivateAssets="all" by default. The
+    foundation must flow the other way — to the consumers of a catalogue, so [DiagnosticRule] resolves
+    for them. One package cannot carry both settings, which is why there are two.
+
+    How a consumer gets these analyzers WITHOUT knowing this package exists is a separate mechanism:
+    each catalogue references it with PrivateAssets="none" (§16.3), so referencing
+    DiagnosticCatalog.Sonar brings the checking along. That wiring cannot be added until this package
+    has a published version to point at — the same ordering ADR-0007 imposed on the catalogues
+    themselves — so it lands in its own change after the first release.
+  -->
+  <PropertyGroup Label="Package">
+    <PackageId>DiagnosticCatalog.Analyzers</PackageId>
+    <DevelopmentDependency>true</DevelopmentDependency>
+    <Title>DiagnosticCatalog.Analyzers</Title>
+    <Description>Roslyn analyzers that check diagnostic rule declarations and the suppressions that reference them: a suppression whose category and id come from different rules, a rule that does not satisfy the structural contract, and string literals that a catalogue reference would replace.</Description>
+    <PackageTags>roslyn;analyzers;diagnostics;suppressmessage;code-analysis;static-analysis;catalog</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <Authors>Reefact</Authors>
+    <Copyright>Copyright (c) Reefact</Copyright>
+    <PackageProjectUrl>https://github.com/Reefact/diagnostic-catalog</PackageProjectUrl>
+  </PropertyGroup>
+
+  <!--
+    The package layout of docs §16.1: the assembly goes under analyzers/dotnet/cs/, never lib/.
+    IncludeBuildOutput=false is what keeps it out of lib/ — an assembly there would be compiled
+    against, and would become a runtime dependency of the consuming application, which §16 forbids in
+    its opening line. The analyzer is then packed explicitly at the path the compiler looks in.
+  -->
+  <PropertyGroup>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <!--
+      With no lib/, NuGet still emits an empty netstandard2.0 dependency group, and pack then fails
+      with NU5128 because the group matches no lib folder. The fix is to drop the group, not to silence
+      the message: this package genuinely declares no dependencies — every PackageReference above is
+      PrivateAssets="all" — so an empty group was describing something that does not exist. Suppressing
+      NU5128 instead would leave the mismatch in the nuspec and hide the next, real one.
+    -->
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    <!--
+      No .snupkg either. Directory.Build.props ships symbols separately for every project, but a symbol
+      package describes the assemblies in lib/ and this package has none — pack fails with NU5017,
+      "cannot create a package that has no dependencies nor content". The symbols are not lost: the pdb
+      is packed beside the analyzer below, which is where a debugger attached to the compiler looks for
+      it, rather than on a symbol server that would never be consulted for an analyzer.
+    -->
+    <IncludeSymbols>false</IncludeSymbols>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="$(OutputPath)$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <!-- The pdb travels with the assembly rather than in a symbol package, so anyone debugging the
+         analyzer inside a compiler host has it where the host looks. -->
+    <None Include="$(OutputPath)$(AssemblyName).pdb" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <None Include="README.md" Pack="true" PackagePath="/" />
+    <!-- Shipped at the package root per §16.1: it is the released list of diagnostics, and a consumer
+         deciding whether to upgrade reads it without unpacking the analyzer. -->
+    <None Include="AnalyzerReleases.Shipped.md" Pack="true" PackagePath="/" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!--
+      THE LOAD CONTRACT — do not bump to match the central pin.
+
+      Microsoft.CodeAnalysis.CSharp is held at $(RoslynFloorVersion) through a VersionOverride, because
+      the version this assembly is compiled against becomes the minimum Roslyn able to load it. A
+      higher one fails to load with CS8032 on older SDKs and IDEs, and an analyzer that fails to load
+      reports nothing — which looks exactly like a codebase with no problems. The floor lives in
+      Directory.Build.props and RoslynFloorTests asserts against it.
+
+      The central 4.14.0 pin exists for eng/CatalogGen, a build-time tool that constrains nobody. The
+      VersionOverride is what lets the two coexist under Central Package Management.
+    -->
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" VersionOverride="$(RoslynFloorVersion)" PrivateAssets="all" />
+    <!-- Authoring analyzers only, not part of the load contract, so free to track the newest version. -->
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" PrivateAssets="all">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Surfaces the floor to RoslynFloorTests as assembly metadata, so the test asserts against the
+         single value in Directory.Build.props rather than a second copy that could drift from it. -->
+    <AssemblyMetadata Include="RoslynFloorVersion" Value="$(RoslynFloorVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Release tracking (RS2008): every declared diagnostic must appear here, verified at build time.
+         Both files are required even while empty — their absence is itself an RS2008 failure. -->
+    <AdditionalFiles Include="AnalyzerReleases.Shipped.md" />
+    <AdditionalFiles Include="AnalyzerReleases.Unshipped.md" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The DCAT ids are the contract this package publishes, and the analyzer types are its public
+         surface. Renaming either is a breaking change (CLAUDE.md), and RS0016/RS0017 make that a build
+         failure rather than a review oversight. -->
+    <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="PublicAPI.Shipped.txt" />
+    <AdditionalFiles Include="PublicAPI.Unshipped.txt" />
+  </ItemGroup>
+
+  <!--
+    NO reference to DiagnosticCatalog, and that is deliberate rather than an omission. §7.2 requires
+    the marker to be matched by its fully qualified metadata name, never by symbol identity, so the
+    analyzer never needs the attribute TYPE — only its name. Referencing the foundation would add a
+    dependency this package promises not to have, and would tempt an implementation into the
+    SymbolEqualityComparer shortcut that breaks a catalogue embedding its own attribute.
+
+    pack.sh's cross-train guard would not catch it either: both projects are on the lib train, so the
+    guard skips the reference by design. This one rests on judgement, which is why it is written down.
+  -->
+
+</Project>
