@@ -67,7 +67,16 @@ There is one for [SonarAnalyzer](https://www.nuget.org/packages/DiagnosticCatalo
 [the .NET analyzers](https://www.nuget.org/packages/DiagnosticCatalog.NetAnalyzers) (`CAxxxx`) and
 one for [StyleCop](https://www.nuget.org/packages/DiagnosticCatalog.StyleCop) (`SAxxxx`).
 
-That is the only line you need. The checking arrives with the catalogue.
+That is the only line you need for the guarantee itself. A misspelled rule is now a compile error,
+because `SonarRule.S1144.Id` is a member the compiler resolves — no analyzer is involved in that.
+
+The `DCAT` diagnostics below are a separate package, `DiagnosticCatalog.Analyzers`, and they are what
+finds the suppressions you have *not* converted yet. **It has no version on nuget.org today**, so a
+catalogue does not bring it along — nothing can reference a package that has never been published
+([ADR-0007](../adr/0007-depend-across-trains-through-published-packages.md)). It rides the `lib`
+train, so the next tag there ships it;
+[project status](https://github.com/Reefact/diagnostic-catalog#-project-status) is the current
+answer.
 
 ### 2. Write the suppression
 
@@ -218,5 +227,5 @@ rule *there* was a good idea. That judgement stays yours, which is what `Justifi
 ---
 
 <div align="center">
-<a href="./README.en.md">↑ Table of contents</a> · <a href="./authoring-a-catalogue.en.md">Publishing a catalogue →</a>
+<a href="./alternatives.en.md">← The alternatives</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./authoring-a-catalogue.en.md">Publishing a catalogue →</a>
 </div>
