@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
@@ -24,6 +26,11 @@ namespace DiagnosticCatalog.Documentation.UnitTests;
 /// </remarks>
 public sealed class LinkTests
 {
+    private static readonly TimeSpan MatchTimeout = TimeSpan.FromSeconds(10);
+
+    /// <summary>The HTML attributes a figure can be shown through.</summary>
+    private static readonly string[] ImageAttributes = ["src", "srcset"];
+
     public static TheoryData<string> LinkedDocuments()
     {
         TheoryData<string> paths = new();
@@ -54,7 +61,7 @@ public sealed class LinkTests
     [MemberData(nameof(LinkedDocuments))]
     public void Every_relative_link_resolves(string path)
     {
-        MarkdownDocument document = Document(path);
+        MarkdownDocument document = Repository.Require(path);
 
         foreach (MarkdownLink link in document.Links)
         {
@@ -62,12 +69,14 @@ public sealed class LinkTests
 
             string? target = Repository.Resolve(document, link.PathPart);
 
-            Assert.True(
-                target is not null,
-                $"{path}: the link \"{link.Text}\" climbs above the repository root ({link.Target}).");
+            if (target is null)
+            {
+                Assert.Fail(
+                    $"{path}: the link \"{link.Text}\" climbs above the repository root ({link.Target}).");
+            }
 
             Assert.True(
-                Repository.Exists(target!) || Directory(target!),
+                Repository.Exists(target) || IsDirectory(target),
                 $"{path}: the link \"{link.Text}\" points at {link.Target}, which resolves to " +
                 $"{target} — and nothing is there.");
         }
@@ -77,7 +86,7 @@ public sealed class LinkTests
     [MemberData(nameof(LinkedDocuments))]
     public void Every_anchor_resolves(string path)
     {
-        MarkdownDocument document = Document(path);
+        MarkdownDocument document = Repository.Require(path);
 
         foreach (MarkdownLink link in document.Links)
         {
@@ -103,7 +112,7 @@ public sealed class LinkTests
     [MemberData(nameof(PackageReadmes))]
     public void A_package_readme_carries_no_relative_link(string path)
     {
-        MarkdownDocument document = Document(path);
+        MarkdownDocument document = Repository.Require(path);
 
         IReadOnlyList<MarkdownLink> relative = document.Links
             .Where(link => !link.IsExternal && !link.IsLocalAnchor && link.PathPart.Length > 0)
@@ -126,45 +135,60 @@ public sealed class LinkTests
     [Fact]
     public void Every_committed_image_is_displayed()
     {
-        string images = System.IO.Path.Combine(Repository.Root, "doc", "images");
-        if (!System.IO.Directory.Exists(images)) return;
+        string images = Path.Combine(Repository.Root, "doc", "images");
+        if (!Directory.Exists(images)) return;
 
-        HashSet<string> referenced = new(StringComparer.Ordinal);
-        foreach (MarkdownDocument document in Repository.Documents)
+        IReadOnlySet<string> referenced = EverythingReferenced();
+
+        foreach (string file in Directory.EnumerateFiles(images, "*", SearchOption.AllDirectories))
         {
-            foreach (MarkdownLink link in document.Links)
-            {
-                if (link.IsExternal || link.PathPart.Length == 0) continue;
-
-                string? target = Repository.Resolve(document, link.PathPart);
-                if (target is not null) referenced.Add(target);
-            }
-
-            // <img src="..."> and <source srcset="..."> inside a <picture>, which is how a figure
-            // offers a light and a dark rendering.
-            foreach (string attribute in new[] { "src", "srcset" })
-            {
-                foreach (System.Text.RegularExpressions.Match match in System.Text.RegularExpressions.Regex.Matches(
-                             document.Text,
-                             attribute + "=\"(?<target>[^\"]+)\"",
-                             System.Text.RegularExpressions.RegexOptions.None,
-                             TimeSpan.FromSeconds(10)))
-                {
-                    string? target = Repository.Resolve(document, match.Groups["target"].Value);
-                    if (target is not null) referenced.Add(target);
-                }
-            }
-        }
-
-        foreach (string file in System.IO.Directory.EnumerateFiles(images, "*", System.IO.SearchOption.AllDirectories))
-        {
-            string relative = file[Repository.Root.Length..].Replace(System.IO.Path.DirectorySeparatorChar, '/');
+            string relative = file[Repository.Root.Length..].Replace(Path.DirectorySeparatorChar, '/');
 
             Assert.True(
                 referenced.Contains(relative),
                 $"{relative} is committed but no document displays it. Either a page lost its figure " +
                 "or the figure outlived the page.");
         }
+    }
+
+    /// <summary>
+    /// Every repository path any document points at, whether through a Markdown link or through the
+    /// HTML a figure needs — <c>&lt;img src&gt;</c>, and the <c>&lt;source srcset&gt;</c> of a
+    /// <c>&lt;picture&gt;</c> offering a light and a dark rendering.
+    /// </summary>
+    private static IReadOnlySet<string> EverythingReferenced()
+    {
+        HashSet<string> referenced = new(StringComparer.Ordinal);
+
+        foreach (MarkdownDocument document in Repository.Documents)
+        {
+            foreach (MarkdownLink link in document.Links)
+            {
+                Remember(referenced, document, link.IsExternal ? string.Empty : link.PathPart);
+            }
+
+            foreach (string attribute in ImageAttributes)
+            {
+                foreach (Match match in Regex.Matches(
+                             document.Text,
+                             attribute + "=\"(?<target>[^\"]+)\"",
+                             RegexOptions.None,
+                             MatchTimeout))
+                {
+                    Remember(referenced, document, match.Groups["target"].Value);
+                }
+            }
+        }
+
+        return referenced;
+    }
+
+    private static void Remember(HashSet<string> referenced, MarkdownDocument document, string target)
+    {
+        if (target.Length == 0) return;
+
+        string? resolved = Repository.Resolve(document, target);
+        if (resolved is not null) referenced.Add(resolved);
     }
 
     [Fact]
@@ -176,17 +200,8 @@ public sealed class LinkTests
             $"{Repository.Root}. These theories would assert almost nothing.");
     }
 
-    private static bool Directory(string relativePath) =>
-        System.IO.Directory.Exists(
-            System.IO.Path.Combine(
-                Repository.Root,
-                relativePath.Replace('/', System.IO.Path.DirectorySeparatorChar)));
+    private static bool IsDirectory(string relativePath) =>
+        Directory.Exists(
+            Path.Combine(Repository.Root, relativePath.Replace('/', Path.DirectorySeparatorChar)));
 
-    private static MarkdownDocument Document(string path)
-    {
-        MarkdownDocument? document = Repository.Find(path);
-        Assert.True(document is not null, $"{path} was discovered and then could not be read.");
-
-        return document!;
-    }
 }

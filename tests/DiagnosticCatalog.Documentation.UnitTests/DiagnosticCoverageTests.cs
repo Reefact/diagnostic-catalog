@@ -58,7 +58,7 @@ public sealed class DiagnosticCoverageTests
     [MemberData(nameof(ShippedByLanguage))]
     public void Every_shipped_diagnostic_is_documented(string id, string language)
     {
-        MarkdownDocument reference = Document(string.Format(Reference, language));
+        MarkdownDocument reference = Repository.Require(string.Format(Reference, language));
 
         Assert.True(
             reference.HasAnchor(id.ToLowerInvariant()),
@@ -70,7 +70,7 @@ public sealed class DiagnosticCoverageTests
     [MemberData(nameof(Languages))]
     public void Every_documented_diagnostic_is_shipped(string language)
     {
-        MarkdownDocument reference = Document(string.Format(Reference, language));
+        MarkdownDocument reference = Repository.Require(string.Format(Reference, language));
         IReadOnlyCollection<string> shipped = Shipped();
 
         foreach (string heading in reference.Headings)
@@ -95,7 +95,7 @@ public sealed class DiagnosticCoverageTests
     [MemberData(nameof(Languages))]
     public void The_gaps_in_the_sequence_are_accounted_for(string language)
     {
-        MarkdownDocument reference = Document(string.Format(Reference, language));
+        MarkdownDocument reference = Repository.Require(string.Format(Reference, language));
         IReadOnlyCollection<string> shipped = Shipped();
 
         int highest = shipped.Select(id => int.Parse(id[4..])).Max();
@@ -152,11 +152,4 @@ public sealed class DiagnosticCoverageTests
         return ids;
     }
 
-    private static MarkdownDocument Document(string path)
-    {
-        MarkdownDocument? document = Repository.Find(path);
-        Assert.True(document is not null, $"{path} was not found under {Repository.Root}.");
-
-        return document!;
-    }
 }

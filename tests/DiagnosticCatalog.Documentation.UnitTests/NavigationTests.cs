@@ -44,7 +44,7 @@ public sealed class NavigationTests
     [MemberData(nameof(GuidePages))]
     public void A_guide_page_ends_with_a_navigation_footer(string path)
     {
-        MarkdownDocument document = Document(path);
+        MarkdownDocument document = Repository.Require(path);
         Navigation navigation = Navigation.Of(document);
 
         Assert.True(
@@ -61,7 +61,7 @@ public sealed class NavigationTests
     [MemberData(nameof(GuidePages))]
     public void A_guide_page_points_back_at_the_map(string path)
     {
-        MarkdownDocument document = Document(path);
+        MarkdownDocument document = Repository.Require(path);
         if (IsMap(document)) return;
 
         Navigation navigation = Navigation.Of(document);
@@ -153,7 +153,7 @@ public sealed class NavigationTests
     [MemberData(nameof(Languages))]
     public void The_map_opens_onto_the_first_page_of_the_order(string language)
     {
-        MarkdownDocument map = Document($"doc/guide/README.{language}.md");
+        MarkdownDocument map = Repository.Require($"doc/guide/README.{language}.md");
         Navigation navigation = Navigation.Of(map);
         List<string> order = OrderIn(language);
 
@@ -192,7 +192,7 @@ public sealed class NavigationTests
     [MemberData(nameof(Languages))]
     public void The_map_lists_the_reading_order_it_threads(string language)
     {
-        MarkdownDocument map = Document($"doc/guide/README.{language}.md");
+        MarkdownDocument map = Repository.Require($"doc/guide/README.{language}.md");
         List<string> listed = NumberedTargets(map);
         List<string> threaded = OrderIn(language);
 
@@ -324,13 +324,6 @@ public sealed class NavigationTests
         return targets;
     }
 
-    private static MarkdownDocument Document(string path)
-    {
-        MarkdownDocument? document = Repository.Find(path);
-        Assert.True(document is not null, $"{path} was not found under {Repository.Root}.");
-
-        return document!;
-    }
 }
 
 /// <summary>
