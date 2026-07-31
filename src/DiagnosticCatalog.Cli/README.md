@@ -271,6 +271,15 @@ analyzer built for a newer target still loads, provided that runtime is present.
 It also means an analyzer whose construction crashes takes the worker down and
 leaves `dcat` to tell you which one — rather than the whole run vanishing.
 
+Both processes `dcat` spawns — that worker, and MSBuild for `--project` — are
+given a budget and stopped if they outrun it. Constructing an analyzer is
+third-party code and is the one step here that can *hang* rather than fail; a
+child that wedges would otherwise take the tool with it, leaving a pipeline to run
+until its own timeout with nothing to read. The defaults are 10 minutes for a
+descriptor read and 2 minutes for a project evaluation, against measured times of
+seconds. Set `DCAT_TIMEOUT_SECONDS` to a positive whole number of seconds to give
+both longer.
+
 ---
 
 Unofficial with respect to every analyzer vendor it reads; not affiliated with or
