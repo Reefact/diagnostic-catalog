@@ -40,6 +40,13 @@ Le cas courant, et celui qui ne demande de connaître rien d'autre ici.
 * [**Publier un catalogue**](authoring-a-catalogue.fr.md) — le contrat structurel, la forme à livrer
   réellement, déclarer les catégories une seule fois, l'empaquetage, et la règle de versionnement qui
   vous mordra si vous la sautez.
+* [**Boucler la boucle avec votre propre analyseur**](first-party-analyzers.fr.md) — alimenter votre
+  `DiagnosticDescriptor` depuis votre propre catalogue, et le membre qui imposerait Roslyn à tous vos
+  consommateurs.
+* [**Versionner un catalogue**](versioning-a-catalogue.fr.md) — ne jamais supprimer une règle, ne
+  jamais renommer un membre, et ce que chaque changement fait au numéro de version.
+* [**Empaqueter un catalogue**](packaging-a-catalogue.fr.md) — quoi référencer, ce qui se propage, et
+  ce que nuget.org fait de votre README.
 * [Les diagnostics `DCAT`](diagnostics.fr.md) — ce qu'on dira à vos utilisateurs, et quand.
 
 ## J'ai vu passer un `DCATxxxx` et je veux savoir ce que c'est
@@ -102,7 +109,10 @@ votre propre catalogue :
 8. [Configuration](configuration.fr.md)
 9. [La garantie d'empreinte nulle](zero-footprint.fr.md)
 10. [Publier un catalogue](authoring-a-catalogue.fr.md)
-11. [Les diagnostics `DCAT`](diagnostics.fr.md)
+11. [Boucler la boucle avec votre propre analyseur](first-party-analyzers.fr.md)
+12. [Versionner un catalogue](versioning-a-catalogue.fr.md)
+13. [Empaqueter un catalogue](packaging-a-catalogue.fr.md)
+14. [Les diagnostics `DCAT`](diagnostics.fr.md)
 
 ---
 

@@ -117,10 +117,12 @@ Not `.editorconfig`, but the configuration people get wrong most often.
 `PrivateAssets="all"` on the analyzers is right: analysis assemblies must not become runtime
 dependencies of whatever consumes you.
 
-`PrivateAssets="all"` on the **foundation**, from inside a catalogue you publish, is the mistake that
-matters. Your consumers then cannot resolve `DiagnosticRuleAttribute`, `[DiagnosticRule]` degrades to
-an error type, the analyzers find **no rules at all**, and everything looks clean. That is the exact
-silent failure this library exists to remove.
+`PrivateAssets="all"` on the **foundation**, from inside a catalogue you publish, is the one to
+avoid. Your consumers then cannot resolve `DiagnosticRuleAttribute` in their own source, so anyone
+declaring rules of their own gets `CS0246` until they add a dependency your package already had.
+The analyzers still find the rules in your catalogue — that is asserted, and
+[packaging a catalogue](packaging-a-catalogue.en.md) says what the guarantee rests on — so the
+failure is loud rather than silent. Avoid it anyway: it misstates what your package needs.
 
 If a catalogue references the analyzers, they reach that catalogue's own consumers — measured against
 a real restore rather than read from NuGet's documentation, which says the opposite:

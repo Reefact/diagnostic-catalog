@@ -37,6 +37,13 @@ The common case, and the one that needs no knowledge of anything else here.
 * [**Publishing a catalogue**](authoring-a-catalogue.en.md) — the structural contract, the shape to
   actually ship, declaring categories once, packaging, and the versioning rule that will bite you if
   you skip it.
+* [**Closing the loop with your own analyzer**](first-party-analyzers.en.md) — feeding your
+  `DiagnosticDescriptor` from your own catalogue, and the member that would force Roslyn on every
+  consumer.
+* [**Versioning a catalogue**](versioning-a-catalogue.en.md) — never delete a rule, never rename a
+  member, and what each change does to the version number.
+* [**Packaging a catalogue**](packaging-a-catalogue.en.md) — what to reference, what propagates, and
+  what nuget.org does to your README.
 * [The `DCAT` diagnostics](diagnostics.en.md) — what your users will be told, and when.
 
 ## I saw a `DCATxxxx` and want to know what it means
@@ -96,7 +103,10 @@ own:
 8. [Configuration](configuration.en.md)
 9. [The zero-footprint guarantee](zero-footprint.en.md)
 10. [Publishing a catalogue](authoring-a-catalogue.en.md)
-11. [The `DCAT` diagnostics](diagnostics.en.md)
+11. [Closing the loop with your own analyzer](first-party-analyzers.en.md)
+12. [Versioning a catalogue](versioning-a-catalogue.en.md)
+13. [Packaging a catalogue](packaging-a-catalogue.en.md)
+14. [The `DCAT` diagnostics](diagnostics.en.md)
 
 ---
 

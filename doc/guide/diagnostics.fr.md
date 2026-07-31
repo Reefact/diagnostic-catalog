@@ -245,5 +245,5 @@ vraie règle, de façon cohérente. Ils ne font pas, et ne feront pas :
 ---
 
 <div align="center">
-<a href="./authoring-a-catalogue.fr.md">← Publier un catalogue</a> · <a href="./README.fr.md">↑ Table des matières</a>
+<a href="./packaging-a-catalogue.fr.md">← Empaqueter un catalogue</a> · <a href="./README.fr.md">↑ Table des matières</a>
 </div>
