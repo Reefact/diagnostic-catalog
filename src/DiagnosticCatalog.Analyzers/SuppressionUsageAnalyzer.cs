@@ -189,6 +189,9 @@ public sealed class SuppressionUsageAnalyzer : DiagnosticAnalyzer
         context.ReportDiagnostic(Diagnostic.Create(
             Descriptors.MembersFromDifferentRules,
             attribute.GetLocation(),
+            // Both corrections, always. §12.1 forbids the fix from guessing which rule was intended,
+            // and sending one of them would be exactly that guess made a step earlier.
+            FixProperties.ForIncoherentPair(category.RuleType!, checkId.RuleType!),
             category.RuleType!.Name,
             checkId.RuleType!.Name));
     }

@@ -9,3 +9,8 @@ DiagnosticCatalog.CodeFixes.CompleteCatalogReferenceCodeFixProvider.CompleteCata
 override DiagnosticCatalog.CodeFixes.CompleteCatalogReferenceCodeFixProvider.FixableDiagnosticIds.get -> System.Collections.Immutable.ImmutableArray<string!>
 override DiagnosticCatalog.CodeFixes.CompleteCatalogReferenceCodeFixProvider.GetFixAllProvider() -> Microsoft.CodeAnalysis.CodeFixes.FixAllProvider!
 override DiagnosticCatalog.CodeFixes.CompleteCatalogReferenceCodeFixProvider.RegisterCodeFixesAsync(Microsoft.CodeAnalysis.CodeFixes.CodeFixContext context) -> System.Threading.Tasks.Task!
+DiagnosticCatalog.CodeFixes.AlignIncoherentPairCodeFixProvider
+DiagnosticCatalog.CodeFixes.AlignIncoherentPairCodeFixProvider.AlignIncoherentPairCodeFixProvider() -> void
+override DiagnosticCatalog.CodeFixes.AlignIncoherentPairCodeFixProvider.FixableDiagnosticIds.get -> System.Collections.Immutable.ImmutableArray<string!>
+override DiagnosticCatalog.CodeFixes.AlignIncoherentPairCodeFixProvider.GetFixAllProvider() -> Microsoft.CodeAnalysis.CodeFixes.FixAllProvider!
+override DiagnosticCatalog.CodeFixes.AlignIncoherentPairCodeFixProvider.RegisterCodeFixesAsync(Microsoft.CodeAnalysis.CodeFixes.CodeFixContext context) -> System.Threading.Tasks.Task!

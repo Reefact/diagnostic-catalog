@@ -28,7 +28,38 @@ internal static partial class FixProperties
     internal static ImmutableDictionary<string, string?> ForCompletion(INamedTypeSymbol ruleType, int slot) =>
         Render(ruleType).Add(Slot, slot.ToString(CultureInfo.InvariantCulture));
 
+    /// <summary>
+    /// The properties for an incoherent pair: one reference per correction, both always present.
+    /// </summary>
+    /// <remarks>
+    /// §12.1 requires two fixes and forbids guessing which rule was intended, so sending both is the
+    /// contract rather than a convenience. Which slot each rewrites follows from its own name and is
+    /// not carried: aligning on the category corrects the identifier, and the reverse.
+    /// </remarks>
+    internal static ImmutableDictionary<string, string?> ForIncoherentPair(
+        INamedTypeSymbol categoryRule,
+        INamedTypeSymbol checkIdRule)
+    {
+        (string Reference, string Namespace) category = Describe(categoryRule);
+        (string Reference, string Namespace) checkId = Describe(checkIdRule);
+
+        return ImmutableDictionary<string, string?>.Empty
+            .Add(ReferenceKey(AlignOnCategory), category.Reference)
+            .Add(NamespaceKey(AlignOnCategory), category.Namespace)
+            .Add(ReferenceKey(AlignOnId), checkId.Reference)
+            .Add(NamespaceKey(AlignOnId), checkId.Namespace);
+    }
+
     private static ImmutableDictionary<string, string?> Render(INamedTypeSymbol ruleType)
+    {
+        (string Reference, string Namespace) described = Describe(ruleType);
+
+        return ImmutableDictionary<string, string?>.Empty
+            .Add(Reference, described.Reference)
+            .Add(Namespace, described.Namespace);
+    }
+
+    private static (string Reference, string Namespace) Describe(INamedTypeSymbol ruleType)
     {
         string @namespace = ruleType.ContainingNamespace is { IsGlobalNamespace: false } containing
             ? containing.ToDisplayString()
@@ -37,12 +68,7 @@ internal static partial class FixProperties
         // The qualified name minus its namespace: SonarRules.S1144, not the fully qualified form. That
         // is the shape §12.2 shows, and it is why the fix has a using directive to insert at all.
         string qualified = ruleType.ToDisplayString();
-        string reference = @namespace.Length == 0
-            ? qualified
-            : qualified.Substring(@namespace.Length + 1);
 
-        return ImmutableDictionary<string, string?>.Empty
-            .Add(Reference, reference)
-            .Add(Namespace, @namespace);
+        return (@namespace.Length == 0 ? qualified : qualified.Substring(@namespace.Length + 1), @namespace);
     }
 }
