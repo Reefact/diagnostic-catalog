@@ -21,7 +21,7 @@ project:
 
 ### Added
 
-* **`DiagnosticCatalog.Analyzers`** — the checking. Seven diagnostics and four code fixes: a
+* **`DiagnosticCatalog.Analyzers`** — the checking. Seven diagnostics and seven code fixes: a
   suppression whose category and id come from two different rules (`DCAT0001`), a rule declaration
   that fails the structural contract (`DCAT0002`–`DCAT0004`), string literals a catalogue reference
   would replace (`DCAT0006`), a suppression left half migrated (`DCAT0007`), and an
@@ -29,6 +29,15 @@ project:
   build-time only and never reach a consumer's output, which
   [a real restore asserts](tools/packaging/verify-consumption.sh) rather than the package merely
   claiming it.
+
+  The three fixes for a rule *declaration* (§12.4) are each offered only where the repair is already
+  written in the code — a class that could carry `static`, a member whose modifiers are wrong but
+  whose value is not, an absent `Id` whose type name supplies it. Where the value itself is what is
+  missing or wrong, the diagnostic is reported with no fix, and that refusal is asserted case by case
+  ([ADR-0018](doc/adr/0018-a-code-fix-never-decides-what-only-the-author-can.md)). The one exception
+  is the `Category` placeholder §12.4 specifies: `"TODO"` is not blank, so applying it stops
+  `DCAT0004` being reported. The diagnostics guide says so where somebody about to press it will
+  read it.
 
 * **`DiagnosticCatalog.Self`** — those `DCAT` rules as a catalogue, generated from the analyzers'
   own descriptors by this repository's own generator. It rides this train rather than one of its

@@ -10,9 +10,9 @@ people.
 | Id | Looks at | Title | Default | Fix |
 | --- | --- | --- | --- | --- |
 | [`DCAT0001`](#dcat0001) | use site | Category and Id must reference the same diagnostic rule | Warning | two, unranked |
-| [`DCAT0002`](#dcat0002) | definition | A diagnostic rule must be declared as a static non-generic class | Warning | — |
-| [`DCAT0003`](#dcat0003) | definition | A diagnostic rule must expose a public constant string named `Id` | Warning | — |
-| [`DCAT0004`](#dcat0004) | definition | A diagnostic rule must expose a public constant string named `Category` | Warning | — |
+| [`DCAT0002`](#dcat0002) | definition | A diagnostic rule must be declared as a static non-generic class | Warning | yes, conditionally |
+| [`DCAT0003`](#dcat0003) | definition | A diagnostic rule must expose a public constant string named `Id` | Warning | yes, conditionally |
+| [`DCAT0004`](#dcat0004) | definition | A diagnostic rule must expose a public constant string named `Category` | Warning | yes, conditionally |
 | [`DCAT0006`](#dcat0006) | use site | Use a diagnostic catalog reference instead of string literals | Warning | yes |
 | [`DCAT0007`](#dcat0007) | use site | Suppression mixes a catalog reference with a string literal | Warning | yes, conditionally |
 | [`DCAT0009`](#dcat0009) | use site | `UnconditionalSuppressMessage` only accepts `IL####` identifiers | Warning | — |
@@ -118,10 +118,25 @@ telling you to change something that works.
 
 These fire on code that declares rules. See [the catalogue author's guide](catalogue-authors.md).
 
+All three offer a fix **when the repair is written in the code already**, and stay silent about it
+otherwise. That line is not caution for its own sake: a fix that guessed would produce a rule the
+compiler accepts and nobody checks, which is the failure this library exists to remove. Where a fix is
+refused below, the diagnostic still names the type and the member — you finish it with what you know
+and the tool does not.
+
 ### `DCAT0002`
 
 **Marked `[DiagnosticRule]` but not a static non-generic class.** A rule holds constants and is never
 instantiated; a generic one has no constant members to offer at all.
+
+**Fix — *Make 'X' static*.** Offered for a plain class that could carry the keyword: no type
+parameters, no base type or interface, no instance member, no instance constructor, not `partial`. A
+redundant `sealed` or `abstract` goes with it, since the compiler rejects either beside `static`.
+
+Nothing is offered for a generic type or for a `struct`, `interface`, `enum` or `record` — removing the
+type parameters, or changing what kind of type it is, is not a repair of what you wrote but a
+replacement of it. A `partial` class is refused because the parts the fix cannot see may hold the
+instance members that decide the question.
 
 ### `DCAT0003`
 
@@ -131,12 +146,37 @@ whitespace-only value counts as absent.
 
 Use `nameof(TheRuleType)`, which cannot drift from the type it names.
 
+**Fix — *Make 'Id' a public constant*.** Offered when the member is there and only its modifiers are
+wrong: a private, `internal`, `static readonly`, or otherwise non-constant-but-constant-valued `string`
+field becomes `public const string` in one step. Both faults at once, deliberately — repairing the
+accessibility of a `private static readonly` and stopping there would leave the warning on the member
+just edited.
+
+**Fix — *Declare 'public const string Id'*.** Offered when the member is absent, and it writes
+`nameof(TheRuleType)`. That is the recommended form rather than a placeholder: it is read off the
+declaration, and for a catalogue whose types are named after their rules it is already the right value.
+
+Neither is offered when the value is the thing that is wrong — a `const int`, a blank string, an
+initialiser that is not constant, or a property rather than a field. The code says nothing about what
+the identifier should have been.
+
 ### `DCAT0004`
 
 **No public `const string Category`.** Same rules as `Id`.
 
 Its *value* should be the one the originating analyzer's `DiagnosticDescriptor` declares. Nothing in
 the platform verifies that — which is exactly why the constant is worth having.
+
+**Fix — *Make 'Category' a public constant*.** Exactly as for `Id`.
+
+**Fix — *Declare 'public const string Category'*.** Writes the placeholder `"TODO"`. Read that word
+literally: the category belongs to the analyzer this rule mirrors and the fix has no way to know it, so
+it scaffolds the member and leaves the value to you.
+
+> **What the placeholder costs.** `"TODO"` is a non-blank string, so `DCAT0004` stops being reported as
+> soon as you apply the fix. You have traded a warning that named the problem for a marker only a reader
+> will notice — and a wrong category is invisible in every build, forever, because Roslyn matches a
+> suppression on its id alone. Apply it when you are about to fill it in, not to make the list shorter.
 
 ---
 
