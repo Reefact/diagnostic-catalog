@@ -709,6 +709,13 @@ attribute". It also yields a cheap, useful diagnostic: warn when a rule whose
 `Id` does not match `IL####` is used in `UnconditionalSuppressMessage`
 (`DCAT0009`) — a silent no-op that nothing else reports today.
 
+**Two decoders read this attribute, and the one quoted above is only the
+linker's.** The compile-time trim analyzer — the source of the `IL2xxx` warnings
+seen during an ordinary build — implements its own rule: truncate at the first
+colon, then match the id exactly. Measured rather than assumed, and the
+divergence is one shape wide (A13). §11.9 records which of the two `DCAT0009`
+mirrors and what that leaves uncovered.
+
 ### 9.2 Placement
 
 Suppressions may be placed on a type, a method, a property, a field, an
@@ -965,6 +972,21 @@ be flooded.
 Reported when a rule whose `Id` does not match `IL####` is used in
 `UnconditionalSuppressMessageAttribute` (§9.1). The suppression is a silent
 no-op that no other tool reports.
+
+**The attribute is read by two different decoders, and they are not the same
+one** (A13). The linker reads it from the compiled assembly, accepting anything
+whose characters 3–6 parse as a number; the compile-time trim analyzer truncates
+at the first colon and then matches the id exactly. They agree on everything a
+generated catalogue can produce — an `Id` of `nameof(IL2026)` is `IL2026` — and
+diverge on one shape: `IL####` followed by anything that is not a colon.
+`IL20265` is honoured by the linker as `IL2026` and ignored at compile time.
+
+The check mirrors the **linker**, so it stays quiet on that shape. Reporting it
+would say "this is not an IL identifier", which is false: it is one, malformed.
+The consequence is bounded and worth stating — a suppression of that shape works
+when publishing and not when building, and `DCAT0009` does not name it. It is
+unreachable from a generated catalogue, and a hand-written rule declaring
+`Id = "IL20265"` has a larger problem than this diagnostic.
 
 ### 11.10 `DCAT0010` — malformed referenced rule
 
@@ -1903,6 +1925,7 @@ recalled. Re-verify before any major revision.
 | A10 | A `const string` initialised from another `const string` remains a compile-time constant: it is accepted as an attribute argument and folds to the literal in metadata. Verified by reflecting over a `[SuppressMessage]` whose category came through `SonarCategory.MajorCodeSmell` — `Category` read back as `"Major Code Smell"`. | Compilation + reflection test (§7.7) |
 | A12 | Rules do get retired upstream: `CA2109` and `CA2229` are declared by `Microsoft.CodeAnalysis.NetAnalyzers 6.0.0` and no longer by `10.0.302`. Carried forward as `[Obsolete]`, a consumer still referencing one gets `CS0618` naming the rule, rather than a hard `CS0117` from a deleted member. | Regeneration across the two versions, plus a compile of the consuming form (§14.1) |
 | A11 | `Microsoft.CodeAnalysis.NetAnalyzers 10.0.302` declares 318 descriptors over 10 categories, all with help links, and splits its analyzers between a language-neutral assembly at `analyzers/dotnet/` and per-language ones under `cs/` and `vb/`. `StyleCop.Analyzers 1.1.118` declares 193 over 8 categories of the `StyleCop.CSharp.*Rules` shape, all with help links. `StyleCop.Analyzers 1.2.0-beta.556` is a metapackage carrying no analyzer assembly; the rules live in `StyleCop.Analyzers.Unstable`. | Same method as A9 |
+| A13 | The **compile-time** trim analyzer does **not** use the linker decoder of A4. It truncates `checkId` at the first colon and then requires an exact, case-sensitive match against the diagnostic id. So `IL2026:FriendlyName`, `IL2026:` and `IL2026:a:b` are honoured, while `IL20265` — which A4's decoder accepts as `IL2026` — is ignored, as are `il2026` and `" IL2026"`. Both paths ignore the category, agreeing with A2 and A4. | Compilation with `EnableTrimAnalyzer`, suppressing a real `IL2026` one identifier shape at a time and observing which warnings survive (§9.1) |
 
 ## Appendix B — Open decisions
 
@@ -1912,6 +1935,6 @@ recalled. Re-verify before any major revision.
 | B2 | Is the `DCAT` prefix free? Community analyzer prefixes are not centrally registered. | Check against known prefixes before 1.0. |
 | B3 | Should the purely structural fallback of §7.2 (no attribute) be enabled by default? | Attribute-only for 1.0; structural fallback documented but off. |
 | B4 | Are aliases and `using static` worth the analyzer complexity given §10.5? | Resolved, documented, not promoted. |
-| B5 | Does the ILLink Roslyn analyzer (`IL2xxx` at compile time) share the decoder verified in A4? | Assumed equivalent; verify before claiming full `UnconditionalSuppressMessage` coverage. |
+| B5 | ~~Does the ILLink Roslyn analyzer (`IL2xxx` at compile time) share the decoder verified in A4?~~ | **Settled — it does not** (A13). The two agree on everything a generated catalogue can produce, and diverge on one shape: `IL####` followed by anything that is not a colon. `DCAT0009` mirrors the linker, so it stays quiet there; see §11.9. |
 | B6 | ~~Strong-name the `DiagnosticCatalog` assembly?~~ | **Settled** — unsigned, and it stays that way past 1.0. A catalogue's consumer is unaffected either way: they read `const` values, which the compiler inlines, so no reference to the catalogue assembly is emitted at all and the application runs without it. Only an assembly that is *itself* strong-named **and** uses the marker attributes to declare a catalogue of its own is affected, and only by `CS8002` — a warning, on any target framework, not a .NET Framework matter. That is not this library's primary audience. |
 | B7 | ~~Should `DiagnosticCatalog.Sonar`'s package version track `SonarAnalyzer.CSharp`, or run on its own line?~~ | **Settled** — its own line, for every catalogue: [ADR-0015](adr/0015-a-catalogues-version-runs-on-its-own-line.md). |
