@@ -62,14 +62,14 @@ public static class CatalogRun
             string? nupkg = e.TryGetProperty("nupkg", out JsonElement n)
                 ? Path.GetFullPath(Path.Combine(manifestDir, Text(n, where, "nupkg")))
                 : null;
-            string? project = e.TryGetProperty("project", out JsonElement pr)
-                ? Path.GetFullPath(Path.Combine(manifestDir, Text(pr, where, "project")))
+            IReadOnlyList<string>? projects = e.TryGetProperty("projects", out JsonElement pr)
+                ? [.. pr.EnumerateArray().Select(x => Path.GetFullPath(Path.Combine(manifestDir, Text(x, where, "projects"))))]
                 : null;
 
-            int named = (assemblies is not null ? 1 : 0) + (nupkg is not null ? 1 : 0) + (project is not null ? 1 : 0);
+            int named = (assemblies is not null ? 1 : 0) + (nupkg is not null ? 1 : 0) + (projects is not null ? 1 : 0);
             if (named > 1)
                 throw new ManifestException($"{where}: names more than one source; give one of " +
-                                            "\"package\", \"nupkg\", \"project\" or \"assemblies\".");
+                                            "\"package\", \"nupkg\", \"projects\" or \"assemblies\".");
 
             bool fromFeed = named == 0;
 
@@ -85,7 +85,8 @@ public static class CatalogRun
                 SourceVersion: Optional(e, "sourceVersion", where),
                 Nupkg: nupkg,
                 Source: Optional(e, "source", where),
-                Project: project));
+                Projects: projects,
+                Configuration: Optional(e, "configuration", where) ?? "Release"));
         }
 
         if (jobs.Count == 0) throw new ManifestException($"{file}: \"catalogs\" declares no entry.");
@@ -183,6 +184,14 @@ public static class CatalogRun
             AnalyzerAssemblySet? local = LocalAssemblySource.Acquire(job.Assemblies, job.SourceName, job.SourceVersion);
 
             return local is null ? null : EmitFrom(local);
+        }
+
+        if (job.Projects is not null)
+        {
+            AnalyzerAssemblySet? built = ProjectSource.Acquire(job.Projects, job.Configuration, job.SourceName,
+                                                               job.SourceVersion);
+
+            return built is null ? null : EmitFrom(built);
         }
 
         // Only a package needs scratch space: it has to be unzipped — and, from a feed, downloaded

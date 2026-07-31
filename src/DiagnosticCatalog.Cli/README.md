@@ -71,6 +71,39 @@ catalogue records as the release it was generated from. Pass `--source-name` or
 `--source-version` when you know better, which happens when a package is rebuilt
 without its version moving.
 
+## Generating from your own project
+
+Point it at the project instead of at its output, and MSBuild works out where the
+assembly is:
+
+```bash
+dcat generate --project src/My.Analyzers/My.Analyzers.csproj \
+  --namespace My.Catalog --container MyRule \
+  --output src/My.Catalog/MyRules.g.cs
+```
+
+What this removes from a manifest is the `bin/Release/net8.0/` path — the one part
+of a catalogue's declaration that says nothing about the catalogue and breaks when
+the project retargets, is renamed, or is built somewhere else. The source is
+recorded from what the project declares: its `AssemblyName` and its `Version`, not
+the numbers stamped into the assembly, because `AssemblyVersion` is routinely
+pinned to a major while the release moves.
+
+**It reads; it does not build.** The project must already be built, and `dcat`
+says so — naming the path it looked at and the `dotnet build` that would produce
+it — rather than building on your behalf. That is what keeps `dcat validate
+--project` safe to run against a working copy: it restores nothing, writes no
+`obj/`, and touches no output. `--configuration` picks which build to read and
+defaults to `Release`. A multi-targeted project is read through `netstandard2.0`
+when it builds one, because that is the build a consumer's compiler actually
+loads.
+
+Repeat `--project` when rules are split across projects, as an analyzer and its
+code fixes often are. **A solution is refused**: which of its projects declare
+analyzers cannot be told from the outside, and guessing short would emit a
+catalogue whose missing rules read as retired ones — with nothing anywhere to
+report the omission.
+
 ## Generating from your own analyzers
 
 Point it at assemblies you have already built. Repeat `--assembly` when a
@@ -102,11 +135,12 @@ claim an unmoved source while its rules move underneath.
 
 ## Generating several at once
 
-A manifest declares any number of catalogues, from either kind of source. Paths
+A manifest declares any number of catalogues, from any kind of source. Paths
 inside it are relative to the manifest, so it works from any directory:
 
 ```json
 {
+  "$schema": "https://raw.githubusercontent.com/Reefact/diagnostic-catalog/main/eng/catalogs.schema.json",
   "catalogs": [
     {
       "package": "SonarAnalyzer.CSharp",
@@ -115,9 +149,7 @@ inside it are relative to the manifest, so it works from any directory:
       "output": "../src/MyCompany.Catalog/SonarRules.g.cs"
     },
     {
-      "assemblies": ["../src/My.Analyzers/bin/Release/net8.0/My.Analyzers.dll"],
-      "sourceName": "My.Analyzers",
-      "sourceVersion": "1.4.0",
+      "projects": ["../src/My.Analyzers/My.Analyzers.csproj"],
       "namespace": "My.Catalog",
       "container": "MyRule",
       "output": "../src/My.Catalog/MyRules.g.cs"
@@ -128,6 +160,15 @@ inside it are relative to the manifest, so it works from any directory:
 
 ```bash
 dcat generate --manifest eng/catalogs.json --summary "$RUNNER_TEMP/summary.md"
+```
+
+The `$schema` line is worth the two seconds it costs. It documents every key
+inside your editor and reports a mistyped one where you typed it — rather than
+after a package has been downloaded, which is where `dcat` reports it. `dcat`
+names the file, the entry and the key either way:
+
+```
+error: catalogs.json: catalogs[2]: "namespace" is missing.
 ```
 
 `--summary` writes a Markdown report of what changed — rules added,

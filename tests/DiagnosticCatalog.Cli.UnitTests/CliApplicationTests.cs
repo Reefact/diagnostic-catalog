@@ -79,6 +79,42 @@ public sealed class CliApplicationTests
         => Assert.Equal(ExitCodes.Failure, await CliApplication.RunAsync(["list", "no-such-catalogue.dll"]));
 
     [Fact]
+    public async Task A_command_line_naming_two_sources_is_a_usage_error()
+    {
+        // Refused rather than resolved by precedence: each names a source, and picking one silently
+        // would generate a catalogue from something the caller did not ask for.
+        int exitCode = await CliApplication.RunAsync(
+            ["generate", "--project", "a.csproj", "--assembly", "a.dll",
+             "--namespace", "N", "--container", "C", "--output", "o.g.cs"]);
+
+        Assert.Equal(ExitCodes.UsageError, exitCode);
+    }
+
+    [Fact]
+    public async Task A_configuration_without_a_project_is_a_usage_error()
+    {
+        // It selects among a project's build outputs, and nothing else has any. Accepted and
+        // discarded, it would have been passed by somebody who believed it chose what was read.
+        int exitCode = await CliApplication.RunAsync(
+            ["generate", "--package", "P", "--configuration", "Debug",
+             "--namespace", "N", "--container", "C", "--output", "o.g.cs"]);
+
+        Assert.Equal(ExitCodes.UsageError, exitCode);
+    }
+
+    [Fact]
+    public async Task A_project_that_is_not_there_fails_rather_than_generating_an_empty_catalogue()
+    {
+        // Failure, not usage: the command line is well formed, and it is the project that is absent.
+        // A pipeline branches on the difference — no retry fixes a usage error.
+        int exitCode = await CliApplication.RunAsync(
+            ["generate", "--project", "no-such-project.csproj",
+             "--namespace", "N", "--container", "C", "--output", "o.g.cs"]);
+
+        Assert.Equal(ExitCodes.Failure, exitCode);
+    }
+
+    [Fact]
     public async Task An_option_left_without_a_value_is_a_usage_error()
     {
         // The pair-reading parser this replaced stopped when fewer than two arguments remained, so

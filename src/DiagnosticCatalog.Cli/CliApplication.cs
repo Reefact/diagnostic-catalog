@@ -48,7 +48,7 @@ internal static class CliApplication
         config.SetInterceptor(new RefuseUndeclaredArguments());
 
         config.AddCommand<GenerateCommand>("generate")
-              .WithDescription("Generate a catalogue from a NuGet package or from analyzer assemblies on disk.");
+              .WithDescription("Generate a catalogue from a NuGet package, a project, or analyzer assemblies on disk.");
 
         config.AddCommand<ValidateCommand>("validate")
               .WithDescription("Check that a catalogue still matches its source, without writing anything.");

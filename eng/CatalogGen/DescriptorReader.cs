@@ -94,7 +94,7 @@ internal static class DescriptorReader
         string workerDirectory = Path.GetDirectoryName(workerPath)!;
         ProcessStartInfo start = new()
         {
-            FileName = DotnetHost(),
+            FileName = DotnetCli.Host(),
             UseShellExecute = false,
             WorkingDirectory = workerDirectory,
         };
@@ -179,25 +179,6 @@ internal static class DescriptorReader
         string candidate = Path.Combine(AppContext.BaseDirectory, WorkerAssemblyName);
 
         return File.Exists(candidate) ? candidate : null;
-    }
-
-    // DOTNET_HOST_PATH is set by the SDK and by `dotnet` itself, and is the authoritative answer
-    // when present. Failing that, this process may already BE the host — a framework-dependent app
-    // launched by `dotnet` reports it as its own path — and failing that, the name on PATH is all
-    // that is left. Guessing wrong is survivable and reported: the process simply fails to start.
-    private static string DotnetHost()
-    {
-        string? declared = Environment.GetEnvironmentVariable("DOTNET_HOST_PATH");
-        if (!string.IsNullOrEmpty(declared) && File.Exists(declared)) return declared;
-
-        string? current = Environment.ProcessPath;
-        if (current is not null)
-        {
-            string name = Path.GetFileNameWithoutExtension(current);
-            if (string.Equals(name, "dotnet", StringComparison.OrdinalIgnoreCase)) return current;
-        }
-
-        return "dotnet";
     }
 
     private static void Delete(string path)
