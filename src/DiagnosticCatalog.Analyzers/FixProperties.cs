@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Globalization;
 
 using Microsoft.CodeAnalysis;
 
@@ -18,12 +19,17 @@ internal static partial class FixProperties
     /// (§11.6). Returning empty properties is what makes that happen: the code fix finds nothing to act
     /// on and offers nothing, rather than picking one of them on the author's behalf.
     /// </remarks>
-    internal static ImmutableDictionary<string, string?> ForMatches(ImmutableArray<RuleDefinition> matches)
+    internal static ImmutableDictionary<string, string?> ForMatches(ImmutableArray<RuleDefinition> matches) =>
+        matches.Length == 1 ? Render(matches[0].RuleType) : ImmutableDictionary<string, string?>.Empty;
+
+    /// <summary>
+    /// The properties for completing a half-migrated suppression, rewriting <paramref name="slot"/>.
+    /// </summary>
+    internal static ImmutableDictionary<string, string?> ForCompletion(INamedTypeSymbol ruleType, int slot) =>
+        Render(ruleType).Add(Slot, slot.ToString(CultureInfo.InvariantCulture));
+
+    private static ImmutableDictionary<string, string?> Render(INamedTypeSymbol ruleType)
     {
-        if (matches.Length != 1) { return ImmutableDictionary<string, string?>.Empty; }
-
-        INamedTypeSymbol ruleType = matches[0].RuleType;
-
         string @namespace = ruleType.ContainingNamespace is { IsGlobalNamespace: false } containing
             ? containing.ToDisplayString()
             : string.Empty;

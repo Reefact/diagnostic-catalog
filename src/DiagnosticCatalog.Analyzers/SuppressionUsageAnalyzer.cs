@@ -10,7 +10,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 namespace DiagnosticCatalog.Analyzers;
 
 /// <summary>
-/// Checks the suppressions that reference diagnostic rules. Currently DCAT0001, DCAT0006 and DCAT0009.
+/// Checks the suppressions that reference diagnostic rules: DCAT0001, DCAT0006, DCAT0007 and DCAT0009.
 /// </summary>
 /// <remarks>
 /// Separate from the definition analyzer because ConfigureGeneratedCodeAnalysis is per-ANALYZER and the
@@ -25,6 +25,7 @@ public sealed class SuppressionUsageAnalyzer : DiagnosticAnalyzer
         ImmutableArray.Create(
             Descriptors.MembersFromDifferentRules,
             Descriptors.ReplaceableStringLiterals,
+            Descriptors.MixedReferenceAndLiteral,
             Descriptors.NonIlUnconditionalSuppression);
 
     /// <inheritdoc />
@@ -61,9 +62,68 @@ public sealed class SuppressionUsageAnalyzer : DiagnosticAnalyzer
 
         // Independent faults, all reported. Fixing the pairing must not hide the fact that the whole
         // attribute is discarded, and vice versa.
+        //
+        // The first three partition the pair by what its two halves are, so at most one can fire:
+        // two references is DCAT0001's, two values is DCAT0006's, one of each is DCAT0007's. Only
+        // DCAT0009 can accompany another, because it asks a different question entirely.
         ReportIncoherentPair(context, attribute, pair.Category, pair.CheckId);
         ReportReplaceableLiterals(context, attribute, pair.Category, pair.CheckId, index);
+        ReportMixedPair(context, attribute, pair.Category, pair.CheckId);
         ReportNonIlIdentifier(context, attribute, attributeName, pair.CheckId);
+    }
+
+    private static void ReportMixedPair(
+        SyntaxNodeAnalysisContext context,
+        AttributeSyntax attribute,
+        SuppressionArgument category,
+        SuppressionArgument checkId)
+    {
+        bool categoryIsReference = category.Kind == SuppressionArgumentKind.RuleMember;
+        bool checkIdIsReference = checkId.Kind == SuppressionArgumentKind.RuleMember;
+
+        // Exactly one side migrated. Neither, or both, belongs to a different diagnostic.
+        if (categoryIsReference == checkIdIsReference) { return; }
+
+        SuppressionArgument reference = categoryIsReference ? category : checkId;
+        SuppressionArgument literal = categoryIsReference ? checkId : category;
+
+        // An unresolved argument is nobody's business: nothing can be said about what it meant.
+        if (literal.Kind != SuppressionArgumentKind.ConstantValue) { return; }
+
+        INamedTypeSymbol ruleType = reference.RuleType!;
+
+        // No index lookup anywhere here — the rule is named by the migrated argument, which is exactly
+        // what §11.7 means by the only fully deterministic case. A malformed rule is left to the
+        // definition diagnostics rather than half-reported by this one.
+        RuleContractResult contract = RuleContract.Check(ruleType);
+
+        if (!contract.IsSatisfied) { return; }
+
+        // The literal stands in for the member the OTHER side did not migrate.
+        int slot = categoryIsReference
+            ? SuppressionArgumentOrder.CheckIdSlot
+            : SuppressionArgumentOrder.CategorySlot;
+
+        string declared = categoryIsReference ? contract.Id! : contract.Category!;
+
+        // Normalised on the identifier side only, so "S1144:Unused private members should be removed"
+        // is recognised as naming S1144 — and replaced by the reference, dropping the suffix (§11.6).
+        string written = categoryIsReference ? CheckId.Normalise(literal.Value!) : literal.Value!;
+
+        bool agrees = string.Equals(declared, written, StringComparison.Ordinal);
+
+        context.ReportDiagnostic(Diagnostic.Create(
+            Descriptors.MixedReferenceAndLiteral,
+            attribute.GetLocation(),
+            // A fix only when completing it cannot change meaning. When the literal names something
+            // else the suppression is reported and left alone: rewriting it would silence a different
+            // diagnostic than the one silenced today, which no migration should decide by itself.
+            agrees ? FixProperties.ForCompletion(ruleType, slot) : ImmutableDictionary<string, string?>.Empty,
+            ruleType.Name,
+            literal.Value,
+            agrees
+                ? "complete it from that rule"
+                : "the literal names something else, so completing it would change what is suppressed"));
     }
 
     private static void ReportReplaceableLiterals(

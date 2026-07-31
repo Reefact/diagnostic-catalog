@@ -20,10 +20,20 @@ namespace DiagnosticCatalog.CodeFixes;
 internal static class SuppressionRewriter
 {
     /// <summary>
-    /// Replaces the category and identifier literals with <c>reference.Category</c> and
-    /// <c>reference.Id</c>.
+    /// Replaces the category and identifier with <c>reference.Category</c> and <c>reference.Id</c>.
     /// </summary>
-    internal static AttributeSyntax WithCatalogReference(AttributeSyntax attribute, string reference)
+    /// <param name="rewriteCategory">False to leave the category exactly as written.</param>
+    /// <param name="rewriteCheckId">False to leave the identifier exactly as written.</param>
+    /// <remarks>
+    /// Completing a half-migrated suppression rewrites one side only (§12.3). The other is already a
+    /// reference and must survive character for character — rewriting it from the same rule would look
+    /// harmless and would still discard whatever spelling the author chose, an alias among them.
+    /// </remarks>
+    internal static AttributeSyntax WithCatalogReference(
+        AttributeSyntax attribute,
+        string reference,
+        bool rewriteCategory = true,
+        bool rewriteCheckId = true)
     {
         AttributeArgumentListSyntax arguments = attribute.ArgumentList!;
 
@@ -44,8 +54,8 @@ internal static class SuppressionRewriter
             // rewriting by position would put the category where the identifier belongs.
             string? member = SuppressionArgumentOrder.SlotOf(argument, positional) switch
             {
-                SuppressionArgumentOrder.CategorySlot => "Category",
-                SuppressionArgumentOrder.CheckIdSlot => "Id",
+                SuppressionArgumentOrder.CategorySlot when rewriteCategory => "Category",
+                SuppressionArgumentOrder.CheckIdSlot when rewriteCheckId => "Id",
                 _ => null,
             };
 
