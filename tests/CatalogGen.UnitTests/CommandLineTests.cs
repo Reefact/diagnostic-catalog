@@ -77,4 +77,63 @@ public sealed class CommandLineTests
         Assert.NotNull(cli);
         Assert.Null(cli!.Date);
     }
+
+    // --- reading assemblies already on disk rather than a package ------------------
+
+    private static readonly string[] Destination =
+    [
+        "--namespace", "Vendor.Catalog",
+        "--container", "VendorRule",
+        "--output", "src/Vendor.Catalog/VendorRules.g.cs",
+    ];
+
+    [Fact]
+    public void An_assembly_and_a_destination_are_accepted_without_a_package()
+    {
+        Cli? cli = CommandLine.ParseArgs(["--assembly", "bin/My.Analyzers.dll", .. Destination]);
+
+        Assert.NotNull(cli);
+        Assert.Equal(["bin/My.Analyzers.dll"], cli!.Assemblies);
+        Assert.Null(cli.Package);
+    }
+
+    [Fact]
+    public void Repeating_the_assembly_switch_accumulates_rather_than_overwrites()
+    {
+        // A vendor's rules are routinely split across assemblies that have to be read together:
+        // StyleCop declares its across the analyzer and the code-fix assembly. Overwriting would
+        // generate a catalogue silently missing every rule declared by all but the last.
+        Cli? cli = CommandLine.ParseArgs(
+            ["--assembly", "a.dll", "--assembly", "b.dll", .. Destination]);
+
+        Assert.NotNull(cli);
+        Assert.Equal(["a.dll", "b.dll"], cli!.Assemblies);
+    }
+
+    [Fact]
+    public void A_package_and_an_assembly_together_are_refused()
+    {
+        // Both name a source. Resolving it by precedence would generate a catalogue from something
+        // the caller did not ask for, and nothing in the output would say which one was read.
+        Assert.Null(CommandLine.ParseArgs([.. SingleCatalogue, "--assembly", "a.dll"]));
+    }
+
+    [Fact]
+    public void An_assembly_with_nowhere_to_write_it_is_refused()
+        => Assert.Null(CommandLine.ParseArgs(["--assembly", "bin/My.Analyzers.dll"]));
+
+    [Fact]
+    public void The_source_name_and_version_overrides_are_carried_through()
+    {
+        Cli? cli = CommandLine.ParseArgs(
+            ["--assembly", "a.dll", .. Destination, "--source-name", "My.Analyzers", "--source-version", "1.4.0"]);
+
+        Assert.NotNull(cli);
+        Assert.Equal("My.Analyzers", cli!.SourceName);
+        Assert.Equal("1.4.0", cli.SourceVersion);
+    }
+
+    [Fact]
+    public void A_package_invocation_names_no_assembly()
+        => Assert.Empty(CommandLine.ParseArgs(SingleCatalogue)!.Assemblies);
 }

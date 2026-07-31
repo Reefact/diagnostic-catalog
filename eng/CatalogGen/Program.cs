@@ -1,13 +1,6 @@
-using System.Globalization;
-using System.IO.Compression;
-using System.Reflection;
 using System.Text;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 using CatalogGen;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Diagnostics;
 
 // ---------------------------------------------------------------------------
 // CatalogGen — generates a DiagnosticCatalog catalogue from an upstream
@@ -20,6 +13,16 @@ using Microsoft.CodeAnalysis.Diagnostics;
 // divergence produces no symptom anywhere. The descriptors are the only source
 // that cannot be wrong.
 //
+// The run is three stages, and they are separate files for a reason:
+//
+//   acquire   NuGetPackageSource   → AnalyzerAssemblySet   (where the assemblies come from)
+//             LocalAssemblySource  →
+//   read      DescriptorReader     → the rules they declare (loads and constructs third-party code)
+//   emit      CatalogEmitter       → the catalogue as C# source
+//
+// Only the first differs per source. A further way of obtaining analyzer assemblies is a new
+// acquisition beside those two; it is never a second reader.
+//
 // Usage:
 //   dotnet run --project eng/CatalogGen -- --manifest eng/catalogs.json
 //   dotnet run --project eng/CatalogGen -- \
@@ -27,16 +30,16 @@ using Microsoft.CodeAnalysis.Diagnostics;
 //       --namespace DiagnosticCatalog.Sonar --container SonarRule \
 //       --output src/DiagnosticCatalog.Sonar/SonarRules.g.cs \
 //       [--date 2026-07-30] [--language cs] [--summary out.md]
+//   dotnet run --project eng/CatalogGen -- \
+//       --assembly bin/Release/net10.0/My.Analyzers.dll \
+//       --namespace My.Catalog --container MyRule --output src/My.Catalog/MyRules.g.cs \
+//       [--source-name My.Analyzers] [--source-version 1.4.0] [--date 2026-07-30] [--summary out.md]
 // ---------------------------------------------------------------------------
 
 Cli? cli = CommandLine.ParseArgs(args);
 if (cli is null) return 2;
 
-// .NET Core has no binding redirects. Upstream analyzers are compiled against older
-// Roslyn versions, so map every Microsoft.CodeAnalysis request onto the loaded one.
-HashSet<string> resolving = new(StringComparer.Ordinal);
-AppDomain.CurrentDomain.AssemblyResolve += (_, e) => ResolveAgainstLoaded(e, resolving);
-_ = typeof(Workspace); // force Workspaces into the load context before the analyzer needs it
+DescriptorReader.InstallAssemblyResolver();
 
 List<Job> jobs;
 if (cli.Manifest is not null)
@@ -46,8 +49,11 @@ if (cli.Manifest is not null)
 }
 else
 {
-    jobs = [new Job(cli.Package!, cli.Version!, cli.Namespace!, cli.Container!,
-                    Path.GetFullPath(cli.Output!), cli.Language)];
+    bool fromAssemblies = cli.Assemblies.Count > 0;
+    jobs = [new Job(fromAssemblies ? null : cli.Package!, fromAssemblies ? null : cli.Version!,
+                    cli.Namespace!, cli.Container!, Path.GetFullPath(cli.Output!), cli.Language,
+                    Assemblies: fromAssemblies ? cli.Assemblies : null,
+                    SourceName: cli.SourceName, SourceVersion: cli.SourceVersion)];
 }
 
 using HttpClient http = new();
@@ -58,7 +64,7 @@ int exitCode = 0;
 foreach (Job job in jobs)
 {
     Console.WriteLine();
-    Console.WriteLine($"=== {job.Namespace} <- {job.Package} ===");
+    Console.WriteLine($"=== {job.Namespace} <- {job.SourceLabel} ===");
     try
     {
         GenerateResult? result = await GenerateAsync(job, cli.Date, http);
@@ -74,12 +80,11 @@ foreach (Job job in jobs)
         // One unreachable or restructured upstream package must not silently take the
         // whole run down: report it, keep going, and fail the process at the end.
         //
-        // S6966 asks for WriteLineAsync here and at the other Console.Error site below, but on
-        // none of the ~20 Console.WriteLine calls around them — Console.WriteLine is a static
-        // method with no async counterpart, while Console.Error is a TextWriter that has one.
-        // Both streams are synchronized writers whose async overloads complete synchronously,
-        // so awaiting would yield to nothing and leave this tool's diagnostics half-async on a
-        // technicality of where the method happens to be declared.
+        // S6966 asks for WriteLineAsync here, but on none of the ~20 Console.WriteLine calls around
+        // it — Console.WriteLine is a static method with no async counterpart, while Console.Error is
+        // a TextWriter that has one. Both streams are synchronized writers whose async overloads
+        // complete synchronously, so awaiting would yield to nothing and leave this tool's
+        // diagnostics half-async on a technicality of where the method happens to be declared.
 #pragma warning disable S6966 // Awaitable method should be used
         Console.Error.WriteLine($"FAILED {job.Namespace}: {ex.GetType().Name}: {ex.Message}");
 #pragma warning restore S6966
@@ -104,28 +109,6 @@ return exitCode;
 
 // ---------------------------------------------------------------------------
 
-// The handler behind the hook above. Answers with the assembly already loaded, and with null —
-// meaning "not mine" — for anything outside the Microsoft.CodeAnalysis family, which leaves the
-// runtime's own resolution in charge of it.
-static Assembly? ResolveAgainstLoaded(ResolveEventArgs e, HashSet<string> resolving)
-{
-    string? want = new AssemblyName(e.Name).Name;
-    if (want is null) return null;
-    Assembly? loaded = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.GetName().Name == want);
-    if (loaded is not null) return loaded;
-    if (!want.StartsWith("Microsoft.CodeAnalysis", StringComparison.Ordinal)) return null;
-
-    // Assembly.Load raises AssemblyResolve again when it fails, so without this guard a
-    // genuinely missing assembly recurses until the stack overflows.
-    lock (resolving)
-    {
-        if (!resolving.Add(want)) return null;
-    }
-    try { return Assembly.Load(want); }
-    catch { return null; }
-    finally { lock (resolving) { resolving.Remove(want); } }
-}
-
 static List<Job> JobsFromManifest(string json, string manifestPath)
 {
     string manifestDir = Path.GetDirectoryName(manifestPath)!;
@@ -133,231 +116,67 @@ static List<Job> JobsFromManifest(string json, string manifestPath)
     using JsonDocument doc = JsonDocument.Parse(json);
     foreach (JsonElement e in doc.RootElement.GetProperty("catalogs").EnumerateArray())
     {
+        // An entry names either a package to fetch or assemblies already on disk. "assemblies"
+        // decides, so an entry carrying it needs no "package" — and paths in it are resolved
+        // against the manifest, exactly as "output" is.
+        IReadOnlyList<string>? assemblies = e.TryGetProperty("assemblies", out JsonElement a)
+            ? [.. a.EnumerateArray().Select(x => Path.GetFullPath(Path.Combine(manifestDir, x.GetString()!)))]
+            : null;
+
         jobs.Add(new Job(
-            Package: e.GetProperty("package").GetString()!,
-            Version: e.TryGetProperty("version", out JsonElement v) ? v.GetString()! : "latest",
+            Package: assemblies is null ? e.GetProperty("package").GetString()! : null,
+            Version: assemblies is not null ? null
+                     : e.TryGetProperty("version", out JsonElement v) ? v.GetString()! : "latest",
             Namespace: e.GetProperty("namespace").GetString()!,
             Container: e.GetProperty("container").GetString()!,
             // Manifest paths are relative to the manifest, so the tool can be run from
             // anywhere without the paths depending on the caller's working directory.
             Output: Path.GetFullPath(Path.Combine(manifestDir, e.GetProperty("output").GetString()!)),
-            Language: e.TryGetProperty("language", out JsonElement l) ? l.GetString()! : "cs"));
+            Language: e.TryGetProperty("language", out JsonElement l) ? l.GetString()! : "cs",
+            Assemblies: assemblies,
+            SourceName: e.TryGetProperty("sourceName", out JsonElement sn) ? sn.GetString() : null,
+            SourceVersion: e.TryGetProperty("sourceVersion", out JsonElement sv) ? sv.GetString() : null));
     }
 
     return jobs;
 }
 
+// One catalogue, end to end: acquire, read, emit. Only the acquisition differs per source; what
+// follows it is the same two calls either way, which is the property the split exists to give.
 static async Task<GenerateResult?> GenerateAsync(Job job, string? dateOverride, HttpClient http)
 {
-    string packageId = job.Package;
-    string version = job.Version;
-
-    if (version is "latest" or "latest-any")
-    {
-        string index = await http.GetStringAsync(
-            $"https://api.nuget.org/v3-flatcontainer/{packageId.ToLowerInvariant()}/index.json");
-        List<string> all = JsonDocument.Parse(index)
-            .RootElement.GetProperty("versions").EnumerateArray()
-            .Select(v => v.GetString()!).ToList();
-
-        // "latest" means latest *stable*. A catalogue mirrors a release people actually
-        // consume; resolving to a preview would silently pin the catalogue to one.
-        List<string> candidates = version == "latest" ? all.Where(v => !v.Contains('-')).ToList() : all;
-        if (candidates.Count == 0)
-        {
-            // Synchronous for the reason given at the other Console.Error site above.
-#pragma warning disable S6966 // Awaitable method should be used
-            Console.Error.WriteLine($"{packageId} has no stable version; use latest-any or an explicit version");
-#pragma warning restore S6966
-            return null;
-        }
-        version = candidates[^1];
-        Console.WriteLine($"resolved {packageId} => {version}" +
-                          (version == all[^1] ? "" : $" (latest overall is {all[^1]}, a prerelease)"));
-    }
-
     Previous? previous = CatalogParser.ReadPrevious(job.Output);
 
+    if (job.Assemblies is not null)
+    {
+        AnalyzerAssemblySet? local = LocalAssemblySource.Acquire(job.Assemblies, job.SourceName, job.SourceVersion);
+
+        return local is null ? null : EmitFrom(local);
+    }
+
+    // Only a package needs scratch space: it has to be downloaded and unzipped before it can be
+    // read, and the directory has to go whether that succeeded, returned nothing, or threw.
     DirectoryInfo work = Directory.CreateTempSubdirectory("cataloggen");
     try
     {
-        string nupkg = Path.Combine(work.FullName, "package.nupkg");
-        string url = $"https://api.nuget.org/v3-flatcontainer/{packageId.ToLowerInvariant()}/{version}/" +
-                  $"{packageId.ToLowerInvariant()}.{version}.nupkg";
-        Console.WriteLine($"downloading {url}");
-        await using (Stream s = await http.GetStreamAsync(url))
-        await using (FileStream f = File.Create(nupkg))
-            await s.CopyToAsync(f);
+        AnalyzerAssemblySet? fetched =
+            await NuGetPackageSource.AcquireAsync(job.Package!, job.Version!, job.Language, work.FullName, http);
 
-        SortedDictionary<string, RuleInfo>? accepted =
-            ExtractRules(nupkg, work.FullName, packageId, version, job.Language, out bool ok);
-        if (!ok) return null;
-
-        return CatalogEmitter.Emit(job, packageId, version, accepted, previous, dateOverride);
+        return fetched is null ? null : EmitFrom(fetched);
     }
     finally
     {
         work.Delete(recursive: true);
     }
-}
 
-static SortedDictionary<string, RuleInfo>? ExtractRules(
-    string nupkg, string workDir, string packageId, string version, string language, out bool ok)
-{
-    ok = false;
-    using ZipArchive zip = ZipFile.OpenRead(nupkg);
-
-    List<ZipArchiveEntry>? entries = SelectAnalyzerAssemblies(zip, packageId, version, language);
-    if (entries is null) return null;
-
-    foreach (ZipArchiveEntry e in entries)
-        e.ExtractToFile(Path.Combine(workDir, Path.GetFileName(e.FullName)), overwrite: true);
-
-    SortedDictionary<string, RuleInfo> accepted = AcceptSuppressable(ReadDescriptors(workDir));
-
-    ok = true;
-    return accepted;
-}
-
-// The assemblies in the package that carry this language's descriptors, or null when the package
-// carries none at all — which is a failure, not an empty result.
-static List<ZipArchiveEntry>? SelectAnalyzerAssemblies(
-    ZipArchive zip, string packageId, string version, string language)
-{
-    // Satellite assemblies hold localized rule text, never descriptors, and they sit in
-    // culture-named folders that would otherwise be mistaken for language folders — note
-    // that "cs" is both C# and Czech.
-    List<ZipArchiveEntry> candidateDlls = zip.Entries
-        .Where(e => e.FullName.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
-        .Where(e => !e.FullName.EndsWith(".resources.dll", StringComparison.OrdinalIgnoreCase))
-        .Where(e => e.FullName.StartsWith("analyzers/", StringComparison.OrdinalIgnoreCase))
-        .ToList();
-
-    if (candidateDlls.Count == 0)
+    GenerateResult? EmitFrom(AnalyzerAssemblySet source)
     {
-        Console.Error.WriteLine(
-            $"no analyzer assemblies under analyzers/ in {packageId} {version}. " +
-            "If this is a metapackage, point --package at the one that actually carries them.");
-        return null;
+        SortedDictionary<string, RuleInfo>? rules = DescriptorReader.Read(source);
+
+        return rules is null
+            ? null
+            : CatalogEmitter.Emit(job, source.SourceName, source.SourceVersion, rules, previous, dateOverride);
     }
-
-    // Layouts differ, and the difference matters. Sonar ships one assembly straight under
-    // analyzers/. StyleCop uses analyzers/dotnet/cs/. Microsoft.CodeAnalysis.NetAnalyzers
-    // uses BOTH: the language-specific analyzers live under cs/ and vb/, but the bulk of the
-    // rules sit in a language-neutral assembly at analyzers/dotnet/.
-    //
-    // So the rule is to exclude the OTHER languages, never to keep only the requested one:
-    // keeping only .../cs/ would silently drop most of the CA rules, and keeping everything
-    // would silently absorb Visual Basic rules into a C# catalogue. Both failures are
-    // invisible in the output — you would just get a catalogue with the wrong rules in it.
-    string[] knownLanguages = ["cs", "vb", "fs"];
-    string[] otherLanguages = knownLanguages
-        .Where(l => !string.Equals(l, language, StringComparison.OrdinalIgnoreCase))
-        .ToArray();
-
-    List<ZipArchiveEntry> excluded = candidateDlls
-        .Where(e => otherLanguages.Contains(Naming.ParentDir(e.FullName), StringComparer.OrdinalIgnoreCase))
-        .ToList();
-    List<ZipArchiveEntry> entries = candidateDlls.Except(excluded).ToList();
-
-    Console.WriteLine($"analyzer assemblies for language '{language}': {entries.Count}");
-    foreach (ZipArchiveEntry e in entries) Console.WriteLine($"  + {e.FullName}");
-    foreach (ZipArchiveEntry e in excluded) Console.WriteLine($"  - {e.FullName} (other language)");
-
-    return entries;
-}
-
-// Descriptors are instance state, so every analyzer type has to be constructed.
-static SortedDictionary<string, RuleInfo> ReadDescriptors(string workDir)
-{
-    SortedDictionary<string, RuleInfo> rules = new(StringComparer.Ordinal);
-    int analyzerTypes = 0, constructed = 0;
-
-    foreach (string dll in Directory.GetFiles(workDir, "*.dll"))
-    {
-        foreach (Type t in AnalyzerTypesIn(dll))
-        {
-            analyzerTypes++;
-            if (TryAddDescriptors(t, rules)) constructed++;
-        }
-    }
-
-    Console.WriteLine($"analyzer types: {analyzerTypes}, constructed: {constructed}, descriptors: {rules.Count}");
-    if (constructed != analyzerTypes)
-        Console.WriteLine($"WARNING: {analyzerTypes - constructed} analyzer type(s) could not be constructed");
-
-    return rules;
-}
-
-static IEnumerable<Type> AnalyzerTypesIn(string dll)
-{
-    Assembly asm;
-    // S3885 asks for Assembly.Load. It cannot do this: Load resolves an assembly by NAME through
-    // the runtime's probing paths, and this path is a file the process extracted moments ago into
-    // its own temp directory, deliberately outside them. LoadFrom is the API that takes a path —
-    // the required one here, not a lax alternative. What makes the upstream assembly's older
-    // Roslyn references resolve is the AssemblyResolve handler above, not the choice of loader.
-#pragma warning disable S3885 // "Assembly.Load" should be used
-    try { asm = Assembly.LoadFrom(dll); } catch { return []; }
-#pragma warning restore S3885
-
-    Type[] types;
-    try { types = asm.GetTypes(); }
-    catch (ReflectionTypeLoadException ex) { types = ex.Types.Where(t => t is not null).ToArray()!; }
-
-    return types.Where(t => !t.IsAbstract && typeof(DiagnosticAnalyzer).IsAssignableFrom(t));
-}
-
-// True when the type was constructed, whether or not it declared any descriptor. An analyzer that
-// cannot be constructed contributes none; the caller counts the difference so it stays visible
-// rather than being silently absorbed.
-static bool TryAddDescriptors(Type analyzer, SortedDictionary<string, RuleInfo> rules)
-{
-    try
-    {
-        DiagnosticAnalyzer instance = (DiagnosticAnalyzer)Activator.CreateInstance(analyzer)!;
-        foreach (DiagnosticDescriptor d in instance.SupportedDiagnostics)
-        {
-            // A title is a LocalizableString, and the .NET analyzers back theirs with resources.
-            // Formatting one against the current culture would make the generated catalogue depend
-            // on the machine that produced it, which is the one property a generated file may not
-            // have: the same upstream release has to yield the same bytes on a maintainer's laptop
-            // and on the nightly runner.
-            rules[d.Id] = new RuleInfo(
-                d.Category,
-                d.HelpLinkUri ?? string.Empty,
-                Retired: false,
-                Naming.Sentence(d.Title.ToString(CultureInfo.InvariantCulture)));
-        }
-
-        return true;
-    }
-    catch
-    {
-        return false;
-    }
-}
-
-// Filtering. Only two things disqualify a descriptor, and both are reported: an empty
-// category means the entry is not a suppressable diagnostic (analyzers use such entries
-// for internal metrics and telemetry channels), and a non-identifier id would need a
-// mangled container name.
-static SortedDictionary<string, RuleInfo> AcceptSuppressable(SortedDictionary<string, RuleInfo> rules)
-{
-    SortedDictionary<string, RuleInfo> accepted = new(StringComparer.Ordinal);
-    List<(string Id, string Reason)> skipped = [];
-    foreach ((string id, RuleInfo info) in rules)
-    {
-        if (string.IsNullOrWhiteSpace(info.Category)) { skipped.Add((id, "empty category — not a suppressable diagnostic")); continue; }
-        if (!SyntaxFacts.IsValidIdentifier(id)) { skipped.Add((id, "id is not a valid C# identifier")); continue; }
-        accepted[id] = info;
-    }
-
-    int withHelp = rules.Count(r => !string.IsNullOrEmpty(r.Value.HelpLinkUri));
-    Console.WriteLine($"accepted: {accepted.Count}, skipped: {skipped.Count}, HelpLinkUri populated on {withHelp}/{rules.Count}");
-    foreach ((string id, string reason) in skipped) Console.WriteLine($"  skipped {id}: {reason}");
-
-    return accepted;
 }
 
 
@@ -368,10 +187,23 @@ namespace CatalogGen
 {
     internal sealed record Cli(
         string? Package, string? Version, string? Namespace, string? Container, string? Output,
-        string? Date, string Language, string? Manifest, string? Summary);
+        string? Date, string Language, string? Manifest, string? Summary,
+        IReadOnlyList<string> Assemblies, string? SourceName, string? SourceVersion);
 
+    // Package/Version and Assemblies are the two ways to name a source, and exactly one is set —
+    // the same shape Cli already uses for its mutually exclusive modes. Assemblies is what decides:
+    // when it is set the other two are null and never read.
     internal sealed record Job(
-        string Package, string Version, string Namespace, string Container, string Output, string Language);
+        string? Package, string? Version, string Namespace, string Container, string Output, string Language,
+        IReadOnlyList<string>? Assemblies = null, string? SourceName = null, string? SourceVersion = null)
+    {
+        // What this job reads from, for the run's header line. The assemblies' file names when they
+        // are what was asked for, because a path list is what the caller will recognise.
+        internal string SourceLabel =>
+            Assemblies is null
+                ? Package!
+                : SourceName ?? string.Join(", ", Assemblies.Select(Path.GetFileName));
+    }
 
     // Title defaults to empty because a rule can genuinely have none to state: one the vendor
     // retired before this generator emitted titles at all is carried forward from a file that
