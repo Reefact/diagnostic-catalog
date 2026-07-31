@@ -87,6 +87,43 @@ public sealed class MirrorBannerTests : IDisposable
         Assert.Equal("# Vendor catalogue\n\nNo markers here.\n", File.ReadAllText(path).Replace("\r\n", "\n"));
     }
 
+    [Fact]
+    public void A_document_carrying_no_block_is_noted_without_claiming_anything_about_the_reader()
+    {
+        // This line now ships inside `dcat`, so it reaches repositories that have none of our
+        // tests. Announcing to a stranger that "the tests will say so" is wrong twice over: nothing
+        // failed, and the tests it names are this repository's, not theirs. Saying it at WARNING
+        // compounds it — a document with no markers has asked for no banner, which is not a fault.
+        File.WriteAllText(Path.Combine(_temp, "README.md"), "# Vendor catalogue\n\nNo markers here.\n");
+
+        string said = Capture(Emit);
+
+        Assert.Contains("README.md", said, StringComparison.Ordinal);
+        Assert.DoesNotContain("the tests will say so", said, StringComparison.Ordinal);
+        Assert.DoesNotContain($"WARNING: no {MirrorBegin}", said, StringComparison.Ordinal);
+    }
+
+    // Matches the marker the emitter opens a banner with, so the assertion above names the exact
+    // line rather than any word that happens to read WARNING.
+    private const string MirrorBegin = "<!-- mirror:begin -->";
+
+    private static string Capture(Action action)
+    {
+        TextWriter original = Console.Out;
+        using StringWriter captured = new();
+        Console.SetOut(captured);
+        try
+        {
+            action();
+        }
+        finally
+        {
+            Console.SetOut(original);
+        }
+
+        return captured.ToString();
+    }
+
     private void Emit()
     {
         SortedDictionary<string, RuleInfo> before = new(StringComparer.Ordinal)
