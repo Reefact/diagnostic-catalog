@@ -57,6 +57,28 @@ jobs:
             echo "changed=false" >> "$GITHUB_OUTPUT"
           fi
 
+          # WHICH trains moved, not just whether anything did. Merging this pull request
+          # publishes nothing, so until each affected train is tagged, main and the package
+          # on nuget.org describe different rule sets — with nothing anywhere to say so. The
+          # pull request body names the trains and the command, so the next step is written
+          # down at the moment it becomes necessary rather than remembered later.
+          #
+          # Computed here, while the changes are still unstaged and attributable to a
+          # directory; by the time the body is written they are one commit.
+          # shellcheck source=tools/trains.sh
+          . tools/trains.sh
+          trains=''
+          for train in $(train_ids); do
+            for project in $(projects_of "$train"); do
+              if [ -n "$(git status --porcelain -- "$(dirname "$project")")" ]; then
+                trains="${trains}${trains:+ }${train}"
+                break
+              fi
+            done
+          done
+          echo "trains=$trains" >> "$GITHUB_OUTPUT"
+          echo "trains touched: ${trains:-none}"
+
           {
             echo "## Catalogue sync"
             echo
@@ -89,8 +111,13 @@ jobs:
         if: steps.generate.outputs.changed == 'true' || inputs.force-pr
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Empty when force-pr opened a pull request with nothing changed, which is why the
+          # reminder below is written only when it is not.
+          TRAINS: ${{ steps.generate.outputs.trains }}
         run: |
           set -euo pipefail
+          # shellcheck source=tools/trains.sh
+          . tools/trains.sh
           git config user.name  'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
 
@@ -130,6 +157,41 @@ jobs:
 
           EOF
           cat "$RUNNER_TEMP/summary.md" >> "$BODY_FILE"
+          # The release reminder. Built with printf rather than a heredoc because it
+          # interpolates the train names, and the quoted heredocs above exist precisely to
+          # stop interpolation: single-quoted printf formats keep backticks and $ literal
+          # while %s carries the values in.
+          #
+          # Tags are fetched explicitly — actions/checkout does not bring them, and without
+          # them every train would report "never published" on a repository that has in fact
+          # published all four.
+          # SC2016 fires on every backtick and $ inside these single-quoted formats, which is
+          # precisely what they are for: the backticks are Markdown and must reach the pull
+          # request as characters, not be read as command substitution. Disabling it here is
+          # the same call the quoted heredocs above make, for the same reason.
+          # shellcheck disable=SC2016
+          if [ -n "$TRAINS" ]; then
+            git fetch --tags --force --quiet origin
+            {
+              printf '\n### After merging\n\n'
+              printf 'Merging this publishes nothing. Until each train below is tagged, `main`\n'
+              printf 'and the package on nuget.org describe different rule sets, and no check\n'
+              printf 'anywhere reports the gap.\n'
+            } >> "$BODY_FILE"
+            for train in $TRAINS; do
+              prefix="$(prefix_of "$train")"
+              package="$(basename "$(projects_of "$train")" .csproj)"
+              latest="$(git tag --list "${prefix}*" --sort=-v:refname | head -1)"
+              {
+                printf '\n**`%s`** — last published: `%s`\n\n' "$train" "${latest:-none}"
+                printf '    git tag -a %sX.Y.Z -m "%s X.Y.Z"\n' "$prefix" "$package"
+                printf '    git push origin %sX.Y.Z\n' "$prefix"
+              } >> "$BODY_FILE"
+            done
+            printf '\nThe version is left blank on purpose: whether a sync is a patch or a minor\n' >> "$BODY_FILE"
+            printf 'depends on what actually moved, and a pre-filled number invites pasting.\n' >> "$BODY_FILE"
+          fi
+
           cat >> "$BODY_FILE" <<'EOF'
 
           ---
