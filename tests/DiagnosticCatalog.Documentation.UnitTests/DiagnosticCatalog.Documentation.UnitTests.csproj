@@ -1,0 +1,71 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Deliberately does NOT import build/Net472TestFloor.props. That file enrols a project in the
+    .NET Framework 4.7.2 floor, which exists to prove that a SHIPPED netstandard2.0 assembly behaves
+    on the real .NET Framework CLR. Nothing here loads a shipped assembly: these tests read Markdown
+    and the `dcat` settings types, so running them a second time on another CLR would cost minutes
+    and prove nothing. See CONTRIBUTING.md, "The .NET Framework floor".
+  -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <RootNamespace>DiagnosticCatalog.Documentation.UnitTests</RootNamespace>
+  </PropertyGroup>
+
+  <!--
+    The documentation is read from the working tree, not from a copy staged beside the tests.
+    Every other test project copies what it reads, because it reads a handful of named files; these
+    tests read the WHOLE tree and follow the links out of it — a link from doc/guide/ into
+    src/DiagnosticCatalog.Self/README.md resolves only against the real layout, and a staged copy
+    would have to reproduce the layout it is meant to be checking.
+
+    The root therefore travels as assembly metadata, stamped at build time, exactly as
+    DiagnosticCatalog.Analyzers stamps RoslynFloorVersion for RoslynFloorTests to read back. The
+    alternative — walking up from AppContext.BaseDirectory looking for a marker file — guesses, and
+    guesses wrong the day the output path changes.
+  -->
+  <PropertyGroup>
+    <DocumentationRepositoryRoot>$([MSBuild]::NormalizeDirectory('$(MSBuildThisFileDirectory)..\..'))</DocumentationRepositoryRoot>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AssemblyMetadata Include="DocumentationRepositoryRoot" Value="$(DocumentationRepositoryRoot)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="coverlet.collector" />
+  </ItemGroup>
+
+  <!--
+    The CLI is referenced so that a documented option is checked against the settings type that
+    declares it, rather than against another document. Reading the attributes off the compiled types
+    is the same standard ADR-0009 sets for catalogue content: compare against what the tool actually
+    declares, never against prose describing it.
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\DiagnosticCatalog.Cli\DiagnosticCatalog.Cli.csproj" />
+  </ItemGroup>
+
+  <!--
+    The catalogues, so that a rule a sample shows is resolved against the type the catalogue really
+    publishes. Nothing here is executed: the types are read reflectively, exactly as a consumer's
+    compiler reads them.
+
+    Taken as project references and not as packages on purpose. The published versions lag the
+    working tree by a release, and a sample added today for a rule generated today would be reported
+    as naming something that does not exist — which is a true statement about last month's package
+    and a false one about the repository.
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\DiagnosticCatalog.Sonar\DiagnosticCatalog.Sonar.csproj" />
+    <ProjectReference Include="..\..\src\DiagnosticCatalog.NetAnalyzers\DiagnosticCatalog.NetAnalyzers.csproj" />
+    <ProjectReference Include="..\..\src\DiagnosticCatalog.StyleCop\DiagnosticCatalog.StyleCop.csproj" />
+    <ProjectReference Include="..\..\src\DiagnosticCatalog.Self\DiagnosticCatalog.Self.csproj" />
+  </ItemGroup>
+
+</Project>
