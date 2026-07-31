@@ -3,10 +3,11 @@
 //     StyleCop.Analyzers 1.1.118 (language: cs).
 //     Do not edit by hand: rerun the generator.
 //
-//     Only Id, Category and HelpLinkUri are emitted, and only when the descriptor
-//     actually supplies them. All are facts read from the descriptors. Rule titles
-//     and descriptions are the upstream vendor's authored content and are
-//     deliberately not redistributed here.
+//     Only Id, Category, Title and HelpLinkUri are emitted, and only when the
+//     descriptor actually supplies them. A rule's title is reproduced verbatim as its
+//     documentation comment: it is the one sentence that says what the rule is about,
+//     and it is StyleCop.Analyzers's own wording. Rule descriptions and message
+//     formats are the vendor's documentation and are not redistributed here.
 // </auto-generated>
 
 using DiagnosticCatalog;
@@ -14,7 +15,7 @@ using DiagnosticCatalog;
 [assembly: CatalogSource(
     source:        "StyleCop.Analyzers",
     sourceVersion: "1.1.118",
-    generatedOn:   "2026-07-30")]
+    generatedOn:   "2026-07-31")]
 
 namespace DiagnosticCatalog.StyleCop;
 
@@ -54,10 +55,8 @@ public static class StyleCopCategory
 /// </summary>
 public static class StyleCopRule
 {
-    /// <summary>
-    /// Rule <c>SA0001</c>, category <c>StyleCop.CSharp.SpecialRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA0001.md"/>.
-    /// </summary>
+    /// <summary>XML comment analysis disabled.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA0001.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA0001
     {
@@ -71,10 +70,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA0001.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA0002</c>, category <c>StyleCop.CSharp.SpecialRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA0002.md"/>.
-    /// </summary>
+    /// <summary>Invalid settings file.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA0002.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA0002
     {
@@ -88,10 +85,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA0002.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1000</c>, category <c>StyleCop.CSharp.SpacingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1000.md"/>.
-    /// </summary>
+    /// <summary>Keywords should be spaced correctly.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1000.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1000
     {
@@ -105,10 +100,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1000.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1001</c>, category <c>StyleCop.CSharp.SpacingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1001.md"/>.
-    /// </summary>
+    /// <summary>Commas should be spaced correctly.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1001.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1001
     {
@@ -122,10 +115,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1001.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1002</c>, category <c>StyleCop.CSharp.SpacingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1002.md"/>.
-    /// </summary>
+    /// <summary>Semicolons should be spaced correctly.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1002.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1002
     {
@@ -139,10 +130,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1002.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1003</c>, category <c>StyleCop.CSharp.SpacingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1003.md"/>.
-    /// </summary>
+    /// <summary>Symbols should be spaced correctly.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1003.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1003
     {
@@ -156,10 +145,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1003.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1004</c>, category <c>StyleCop.CSharp.SpacingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1004.md"/>.
-    /// </summary>
+    /// <summary>Documentation lines should begin with single space.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1004.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1004
     {
@@ -173,10 +160,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1004.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1005</c>, category <c>StyleCop.CSharp.SpacingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1005.md"/>.
-    /// </summary>
+    /// <summary>Single line comments should begin with single space.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1005.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1005
     {
@@ -190,10 +175,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1005.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1006</c>, category <c>StyleCop.CSharp.SpacingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1006.md"/>.
-    /// </summary>
+    /// <summary>Preprocessor keywords should not be preceded by space.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1006.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1006
     {
@@ -207,10 +190,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1006.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1007</c>, category <c>StyleCop.CSharp.SpacingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1007.md"/>.
-    /// </summary>
+    /// <summary>Operator keyword should be followed by space.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1007.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1007
     {
@@ -224,10 +205,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1007.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1008</c>, category <c>StyleCop.CSharp.SpacingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1008.md"/>.
-    /// </summary>
+    /// <summary>Opening parenthesis should be spaced correctly.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1008.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1008
     {
@@ -241,10 +220,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1008.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1009</c>, category <c>StyleCop.CSharp.SpacingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1009.md"/>.
-    /// </summary>
+    /// <summary>Closing parenthesis should be spaced correctly.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1009.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1009
     {
@@ -258,10 +235,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1009.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1010</c>, category <c>StyleCop.CSharp.SpacingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1010.md"/>.
-    /// </summary>
+    /// <summary>Opening square brackets should be spaced correctly.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1010.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1010
     {
@@ -275,10 +250,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1010.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1011</c>, category <c>StyleCop.CSharp.SpacingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1011.md"/>.
-    /// </summary>
+    /// <summary>Closing square brackets should be spaced correctly.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1011.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1011
     {
@@ -292,10 +265,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1011.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1012</c>, category <c>StyleCop.CSharp.SpacingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1012.md"/>.
-    /// </summary>
+    /// <summary>Opening braces should be spaced correctly.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1012.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1012
     {
@@ -309,10 +280,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1012.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1013</c>, category <c>StyleCop.CSharp.SpacingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1013.md"/>.
-    /// </summary>
+    /// <summary>Closing braces should be spaced correctly.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1013.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1013
     {
@@ -326,10 +295,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1013.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1014</c>, category <c>StyleCop.CSharp.SpacingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1014.md"/>.
-    /// </summary>
+    /// <summary>Opening generic brackets should be spaced correctly.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1014.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1014
     {
@@ -343,10 +310,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1014.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1015</c>, category <c>StyleCop.CSharp.SpacingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1015.md"/>.
-    /// </summary>
+    /// <summary>Closing generic brackets should be spaced correctly.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1015.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1015
     {
@@ -360,10 +325,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1015.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1016</c>, category <c>StyleCop.CSharp.SpacingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1016.md"/>.
-    /// </summary>
+    /// <summary>Opening attribute brackets should be spaced correctly.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1016.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1016
     {
@@ -377,10 +340,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1016.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1017</c>, category <c>StyleCop.CSharp.SpacingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1017.md"/>.
-    /// </summary>
+    /// <summary>Closing attribute brackets should be spaced correctly.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1017.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1017
     {
@@ -394,10 +355,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1017.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1018</c>, category <c>StyleCop.CSharp.SpacingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1018.md"/>.
-    /// </summary>
+    /// <summary>Nullable type symbols should be spaced correctly.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1018.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1018
     {
@@ -411,10 +370,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1018.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1019</c>, category <c>StyleCop.CSharp.SpacingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1019.md"/>.
-    /// </summary>
+    /// <summary>Member access symbols should be spaced correctly.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1019.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1019
     {
@@ -428,10 +385,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1019.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1020</c>, category <c>StyleCop.CSharp.SpacingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1020.md"/>.
-    /// </summary>
+    /// <summary>Increment decrement symbols should be spaced correctly.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1020.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1020
     {
@@ -445,10 +400,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1020.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1021</c>, category <c>StyleCop.CSharp.SpacingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1021.md"/>.
-    /// </summary>
+    /// <summary>Negative signs should be spaced correctly.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1021.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1021
     {
@@ -462,10 +415,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1021.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1022</c>, category <c>StyleCop.CSharp.SpacingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1022.md"/>.
-    /// </summary>
+    /// <summary>Positive signs should be spaced correctly.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1022.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1022
     {
@@ -479,10 +430,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1022.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1023</c>, category <c>StyleCop.CSharp.SpacingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1023.md"/>.
-    /// </summary>
+    /// <summary>Dereference and access of symbols should be spaced correctly.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1023.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1023
     {
@@ -496,10 +445,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1023.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1024</c>, category <c>StyleCop.CSharp.SpacingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1024.md"/>.
-    /// </summary>
+    /// <summary>Colons Should Be Spaced Correctly.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1024.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1024
     {
@@ -513,10 +460,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1024.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1025</c>, category <c>StyleCop.CSharp.SpacingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1025.md"/>.
-    /// </summary>
+    /// <summary>Code should not contain multiple whitespace in a row.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1025.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1025
     {
@@ -530,10 +475,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1025.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1026</c>, category <c>StyleCop.CSharp.SpacingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1026.md"/>.
-    /// </summary>
+    /// <summary>Code should not contain space after new or stackalloc keyword in implicitly typed array allocation.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1026.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1026
     {
@@ -547,10 +490,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1026.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1027</c>, category <c>StyleCop.CSharp.SpacingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1027.md"/>.
-    /// </summary>
+    /// <summary>Use tabs correctly.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1027.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1027
     {
@@ -564,10 +505,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1027.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1028</c>, category <c>StyleCop.CSharp.SpacingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1028.md"/>.
-    /// </summary>
+    /// <summary>Code should not contain trailing whitespace.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1028.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1028
     {
@@ -581,10 +520,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1028.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1100</c>, category <c>StyleCop.CSharp.ReadabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1100.md"/>.
-    /// </summary>
+    /// <summary>Do not prefix calls with base unless local implementation exists.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1100.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1100
     {
@@ -598,10 +535,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1100.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1101</c>, category <c>StyleCop.CSharp.ReadabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1101.md"/>.
-    /// </summary>
+    /// <summary>Prefix local calls with this.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1101.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1101
     {
@@ -615,10 +550,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1101.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1102</c>, category <c>StyleCop.CSharp.ReadabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1102.md"/>.
-    /// </summary>
+    /// <summary>Query clause should follow previous clause.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1102.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1102
     {
@@ -632,10 +565,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1102.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1103</c>, category <c>StyleCop.CSharp.ReadabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1103.md"/>.
-    /// </summary>
+    /// <summary>Query clauses should be on separate lines or all on one line.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1103.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1103
     {
@@ -649,10 +580,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1103.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1104</c>, category <c>StyleCop.CSharp.ReadabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1104.md"/>.
-    /// </summary>
+    /// <summary>Query clause should begin on new line when previous clause spans multiple lines.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1104.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1104
     {
@@ -666,10 +595,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1104.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1105</c>, category <c>StyleCop.CSharp.ReadabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1105.md"/>.
-    /// </summary>
+    /// <summary>Query clauses spanning multiple lines should begin on own line.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1105.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1105
     {
@@ -683,10 +610,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1105.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1106</c>, category <c>StyleCop.CSharp.ReadabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1106.md"/>.
-    /// </summary>
+    /// <summary>Code should not contain empty statements.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1106.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1106
     {
@@ -700,10 +625,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1106.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1107</c>, category <c>StyleCop.CSharp.ReadabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1107.md"/>.
-    /// </summary>
+    /// <summary>Code should not contain multiple statements on one line.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1107.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1107
     {
@@ -717,10 +640,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1107.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1108</c>, category <c>StyleCop.CSharp.ReadabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1108.md"/>.
-    /// </summary>
+    /// <summary>Block statements should not contain embedded comments.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1108.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1108
     {
@@ -734,10 +655,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1108.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1109</c>, category <c>StyleCop.CSharp.ReadabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1109.md"/>.
-    /// </summary>
+    /// <summary>Block statements should not contain embedded regions.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1109.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1109
     {
@@ -751,10 +670,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1109.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1110</c>, category <c>StyleCop.CSharp.ReadabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1110.md"/>.
-    /// </summary>
+    /// <summary>Opening parenthesis or bracket should be on declaration line.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1110.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1110
     {
@@ -768,10 +685,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1110.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1111</c>, category <c>StyleCop.CSharp.ReadabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1111.md"/>.
-    /// </summary>
+    /// <summary>Closing parenthesis should be on line of last parameter.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1111.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1111
     {
@@ -785,10 +700,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1111.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1112</c>, category <c>StyleCop.CSharp.ReadabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1112.md"/>.
-    /// </summary>
+    /// <summary>Closing parenthesis should be on line of opening parenthesis.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1112.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1112
     {
@@ -802,10 +715,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1112.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1113</c>, category <c>StyleCop.CSharp.ReadabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1113.md"/>.
-    /// </summary>
+    /// <summary>Comma should be on the same line as previous parameter.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1113.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1113
     {
@@ -819,10 +730,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1113.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1114</c>, category <c>StyleCop.CSharp.ReadabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1114.md"/>.
-    /// </summary>
+    /// <summary>Parameter list should follow declaration.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1114.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1114
     {
@@ -836,10 +745,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1114.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1115</c>, category <c>StyleCop.CSharp.ReadabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1115.md"/>.
-    /// </summary>
+    /// <summary>Parameter should follow comma.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1115.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1115
     {
@@ -853,10 +760,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1115.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1116</c>, category <c>StyleCop.CSharp.ReadabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1116.md"/>.
-    /// </summary>
+    /// <summary>Split parameters should start on line after declaration.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1116.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1116
     {
@@ -870,10 +775,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1116.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1117</c>, category <c>StyleCop.CSharp.ReadabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1117.md"/>.
-    /// </summary>
+    /// <summary>Parameters should be on same line or separate lines.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1117.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1117
     {
@@ -887,10 +790,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1117.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1118</c>, category <c>StyleCop.CSharp.ReadabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1118.md"/>.
-    /// </summary>
+    /// <summary>Parameter should not span multiple lines.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1118.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1118
     {
@@ -904,10 +805,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1118.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1119</c>, category <c>StyleCop.CSharp.MaintainabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1119.md"/>.
-    /// </summary>
+    /// <summary>Statement should not use unnecessary parenthesis.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1119.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1119
     {
@@ -921,10 +820,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1119.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1119_p</c>, category <c>StyleCop.CSharp.MaintainabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1119.md"/>.
-    /// </summary>
+    /// <summary>Statement should not use unnecessary parenthesis.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1119.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1119_p
     {
@@ -938,10 +835,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1119.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1120</c>, category <c>StyleCop.CSharp.ReadabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1120.md"/>.
-    /// </summary>
+    /// <summary>Comments should contain text.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1120.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1120
     {
@@ -955,10 +850,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1120.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1121</c>, category <c>StyleCop.CSharp.ReadabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1121.md"/>.
-    /// </summary>
+    /// <summary>Use built-in type alias.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1121.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1121
     {
@@ -972,10 +865,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1121.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1122</c>, category <c>StyleCop.CSharp.ReadabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1122.md"/>.
-    /// </summary>
+    /// <summary>Use string.Empty for empty strings.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1122.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1122
     {
@@ -989,10 +880,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1122.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1123</c>, category <c>StyleCop.CSharp.ReadabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1123.md"/>.
-    /// </summary>
+    /// <summary>Do not place regions within elements.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1123.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1123
     {
@@ -1006,10 +895,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1123.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1124</c>, category <c>StyleCop.CSharp.ReadabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1124.md"/>.
-    /// </summary>
+    /// <summary>Do not use regions.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1124.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1124
     {
@@ -1023,10 +910,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1124.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1125</c>, category <c>StyleCop.CSharp.ReadabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1125.md"/>.
-    /// </summary>
+    /// <summary>Use shorthand for nullable types.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1125.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1125
     {
@@ -1040,10 +925,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1125.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1126</c>, category <c>StyleCop.CSharp.ReadabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1126.md"/>.
-    /// </summary>
+    /// <summary>Prefix calls correctly.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1126.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1126
     {
@@ -1057,10 +940,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1126.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1127</c>, category <c>StyleCop.CSharp.ReadabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1127.md"/>.
-    /// </summary>
+    /// <summary>Generic type constraints should be on their own line.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1127.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1127
     {
@@ -1074,10 +955,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1127.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1128</c>, category <c>StyleCop.CSharp.ReadabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1128.md"/>.
-    /// </summary>
+    /// <summary>Put constructor initializers on their own line.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1128.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1128
     {
@@ -1091,10 +970,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1128.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1129</c>, category <c>StyleCop.CSharp.ReadabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1129.md"/>.
-    /// </summary>
+    /// <summary>Do not use default value type constructor.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1129.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1129
     {
@@ -1108,10 +985,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1129.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1130</c>, category <c>StyleCop.CSharp.ReadabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1130.md"/>.
-    /// </summary>
+    /// <summary>Use lambda syntax.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1130.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1130
     {
@@ -1125,10 +1000,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1130.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1131</c>, category <c>StyleCop.CSharp.ReadabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1131.md"/>.
-    /// </summary>
+    /// <summary>Use readable conditions.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1131.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1131
     {
@@ -1142,10 +1015,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1131.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1132</c>, category <c>StyleCop.CSharp.ReadabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1132.md"/>.
-    /// </summary>
+    /// <summary>Do not combine fields.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1132.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1132
     {
@@ -1159,10 +1030,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1132.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1133</c>, category <c>StyleCop.CSharp.ReadabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1133.md"/>.
-    /// </summary>
+    /// <summary>Do not combine attributes.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1133.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1133
     {
@@ -1176,10 +1045,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1133.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1134</c>, category <c>StyleCop.CSharp.ReadabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1134.md"/>.
-    /// </summary>
+    /// <summary>Attributes should not share line.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1134.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1134
     {
@@ -1193,10 +1060,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1134.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1135</c>, category <c>StyleCop.CSharp.ReadabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1135.md"/>.
-    /// </summary>
+    /// <summary>Using directives should be qualified.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1135.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1135
     {
@@ -1210,10 +1075,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1135.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1136</c>, category <c>StyleCop.CSharp.ReadabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1136.md"/>.
-    /// </summary>
+    /// <summary>Enum values should be on separate lines.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1136.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1136
     {
@@ -1227,10 +1090,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1136.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1137</c>, category <c>StyleCop.CSharp.ReadabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1137.md"/>.
-    /// </summary>
+    /// <summary>Elements should have the same indentation.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1137.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1137
     {
@@ -1244,10 +1105,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1137.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1139</c>, category <c>StyleCop.CSharp.ReadabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1139.md"/>.
-    /// </summary>
+    /// <summary>Use literal suffix notation instead of casting.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1139.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1139
     {
@@ -1261,10 +1120,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1139.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1200</c>, category <c>StyleCop.CSharp.OrderingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1200.md"/>.
-    /// </summary>
+    /// <summary>Using directives should be placed correctly.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1200.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1200
     {
@@ -1278,10 +1135,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1200.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1201</c>, category <c>StyleCop.CSharp.OrderingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1201.md"/>.
-    /// </summary>
+    /// <summary>Elements should appear in the correct order.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1201.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1201
     {
@@ -1295,10 +1150,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1201.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1202</c>, category <c>StyleCop.CSharp.OrderingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1202.md"/>.
-    /// </summary>
+    /// <summary>Elements should be ordered by access.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1202.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1202
     {
@@ -1312,10 +1165,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1202.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1203</c>, category <c>StyleCop.CSharp.OrderingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1203.md"/>.
-    /// </summary>
+    /// <summary>Constants should appear before fields.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1203.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1203
     {
@@ -1329,10 +1180,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1203.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1204</c>, category <c>StyleCop.CSharp.OrderingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1204.md"/>.
-    /// </summary>
+    /// <summary>Static elements should appear before instance elements.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1204.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1204
     {
@@ -1346,10 +1195,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1204.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1205</c>, category <c>StyleCop.CSharp.OrderingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1205.md"/>.
-    /// </summary>
+    /// <summary>Partial elements should declare access.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1205.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1205
     {
@@ -1363,10 +1210,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1205.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1206</c>, category <c>StyleCop.CSharp.OrderingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1206.md"/>.
-    /// </summary>
+    /// <summary>Declaration keywords should follow order.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1206.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1206
     {
@@ -1380,10 +1225,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1206.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1207</c>, category <c>StyleCop.CSharp.OrderingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1207.md"/>.
-    /// </summary>
+    /// <summary>Protected should come before internal.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1207.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1207
     {
@@ -1397,10 +1240,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1207.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1208</c>, category <c>StyleCop.CSharp.OrderingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1208.md"/>.
-    /// </summary>
+    /// <summary>System using directives should be placed before other using directives.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1208.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1208
     {
@@ -1414,10 +1255,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1208.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1209</c>, category <c>StyleCop.CSharp.OrderingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1209.md"/>.
-    /// </summary>
+    /// <summary>Using alias directives should be placed after other using directives.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1209.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1209
     {
@@ -1431,10 +1270,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1209.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1210</c>, category <c>StyleCop.CSharp.OrderingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1210.md"/>.
-    /// </summary>
+    /// <summary>Using directives should be ordered alphabetically by namespace.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1210.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1210
     {
@@ -1448,10 +1285,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1210.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1211</c>, category <c>StyleCop.CSharp.OrderingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1211.md"/>.
-    /// </summary>
+    /// <summary>Using alias directives should be ordered alphabetically by alias name.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1211.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1211
     {
@@ -1465,10 +1300,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1211.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1212</c>, category <c>StyleCop.CSharp.OrderingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1212.md"/>.
-    /// </summary>
+    /// <summary>Property accessors should follow order.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1212.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1212
     {
@@ -1482,10 +1315,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1212.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1213</c>, category <c>StyleCop.CSharp.OrderingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1213.md"/>.
-    /// </summary>
+    /// <summary>Event accessors should follow order.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1213.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1213
     {
@@ -1499,10 +1330,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1213.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1214</c>, category <c>StyleCop.CSharp.OrderingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1214.md"/>.
-    /// </summary>
+    /// <summary>Readonly fields should appear before non-readonly fields.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1214.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1214
     {
@@ -1516,10 +1345,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1214.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1216</c>, category <c>StyleCop.CSharp.OrderingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1216.md"/>.
-    /// </summary>
+    /// <summary>Using static directives should be placed at the correct location.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1216.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1216
     {
@@ -1533,10 +1360,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1216.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1217</c>, category <c>StyleCop.CSharp.OrderingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1217.md"/>.
-    /// </summary>
+    /// <summary>Using static directives should be ordered alphabetically.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1217.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1217
     {
@@ -1550,10 +1375,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1217.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1300</c>, category <c>StyleCop.CSharp.NamingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1300.md"/>.
-    /// </summary>
+    /// <summary>Element should begin with upper-case letter.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1300.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1300
     {
@@ -1567,10 +1390,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1300.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1301</c>, category <c>StyleCop.CSharp.NamingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1301.md"/>.
-    /// </summary>
+    /// <summary>Element should begin with lower-case letter.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1301.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1301
     {
@@ -1584,10 +1405,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1301.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1302</c>, category <c>StyleCop.CSharp.NamingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1302.md"/>.
-    /// </summary>
+    /// <summary>Interface names should begin with I.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1302.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1302
     {
@@ -1601,10 +1420,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1302.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1303</c>, category <c>StyleCop.CSharp.NamingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1303.md"/>.
-    /// </summary>
+    /// <summary>Const field names should begin with upper-case letter.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1303.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1303
     {
@@ -1618,10 +1435,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1303.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1304</c>, category <c>StyleCop.CSharp.NamingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1304.md"/>.
-    /// </summary>
+    /// <summary>Non-private readonly fields should begin with upper-case letter.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1304.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1304
     {
@@ -1635,10 +1450,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1304.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1305</c>, category <c>StyleCop.CSharp.NamingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1305.md"/>.
-    /// </summary>
+    /// <summary>Field names should not use Hungarian notation.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1305.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1305
     {
@@ -1652,10 +1465,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1305.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1306</c>, category <c>StyleCop.CSharp.NamingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1306.md"/>.
-    /// </summary>
+    /// <summary>Field names should begin with lower-case letter.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1306.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1306
     {
@@ -1669,10 +1480,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1306.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1307</c>, category <c>StyleCop.CSharp.NamingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1307.md"/>.
-    /// </summary>
+    /// <summary>Accessible fields should begin with upper-case letter.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1307.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1307
     {
@@ -1686,10 +1495,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1307.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1308</c>, category <c>StyleCop.CSharp.NamingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1308.md"/>.
-    /// </summary>
+    /// <summary>Variable names should not be prefixed.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1308.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1308
     {
@@ -1703,10 +1510,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1308.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1309</c>, category <c>StyleCop.CSharp.NamingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1309.md"/>.
-    /// </summary>
+    /// <summary>Field names should not begin with underscore.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1309.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1309
     {
@@ -1720,10 +1525,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1309.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1310</c>, category <c>StyleCop.CSharp.NamingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1310.md"/>.
-    /// </summary>
+    /// <summary>Field names should not contain underscore.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1310.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1310
     {
@@ -1737,10 +1540,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1310.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1311</c>, category <c>StyleCop.CSharp.NamingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1311.md"/>.
-    /// </summary>
+    /// <summary>Static readonly fields should begin with upper-case letter.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1311.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1311
     {
@@ -1754,10 +1555,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1311.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1312</c>, category <c>StyleCop.CSharp.NamingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1312.md"/>.
-    /// </summary>
+    /// <summary>Variable names should begin with lower-case letter.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1312.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1312
     {
@@ -1771,10 +1570,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1312.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1313</c>, category <c>StyleCop.CSharp.NamingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1313.md"/>.
-    /// </summary>
+    /// <summary>Parameter names should begin with lower-case letter.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1313.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1313
     {
@@ -1788,10 +1585,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1313.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1314</c>, category <c>StyleCop.CSharp.NamingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1314.md"/>.
-    /// </summary>
+    /// <summary>Type parameter names should begin with T.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1314.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1314
     {
@@ -1805,10 +1600,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1314.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1400</c>, category <c>StyleCop.CSharp.MaintainabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1400.md"/>.
-    /// </summary>
+    /// <summary>Access modifier should be declared.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1400.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1400
     {
@@ -1822,10 +1615,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1400.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1401</c>, category <c>StyleCop.CSharp.MaintainabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1401.md"/>.
-    /// </summary>
+    /// <summary>Fields should be private.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1401.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1401
     {
@@ -1839,10 +1630,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1401.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1402</c>, category <c>StyleCop.CSharp.MaintainabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1402.md"/>.
-    /// </summary>
+    /// <summary>File may only contain a single type.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1402.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1402
     {
@@ -1856,10 +1645,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1402.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1403</c>, category <c>StyleCop.CSharp.MaintainabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1403.md"/>.
-    /// </summary>
+    /// <summary>File may only contain a single namespace.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1403.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1403
     {
@@ -1873,10 +1660,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1403.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1404</c>, category <c>StyleCop.CSharp.MaintainabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1404.md"/>.
-    /// </summary>
+    /// <summary>Code analysis suppression should have justification.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1404.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1404
     {
@@ -1890,10 +1675,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1404.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1405</c>, category <c>StyleCop.CSharp.MaintainabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1405.md"/>.
-    /// </summary>
+    /// <summary>Debug.Assert should provide message text.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1405.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1405
     {
@@ -1907,10 +1690,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1405.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1406</c>, category <c>StyleCop.CSharp.MaintainabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1406.md"/>.
-    /// </summary>
+    /// <summary>Debug.Fail should provide message text.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1406.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1406
     {
@@ -1924,10 +1705,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1406.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1407</c>, category <c>StyleCop.CSharp.MaintainabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1407.md"/>.
-    /// </summary>
+    /// <summary>Arithmetic expressions should declare precedence.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1407.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1407
     {
@@ -1941,10 +1720,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1407.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1408</c>, category <c>StyleCop.CSharp.MaintainabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1408.md"/>.
-    /// </summary>
+    /// <summary>Conditional expressions should declare precedence.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1408.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1408
     {
@@ -1958,10 +1735,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1408.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1409</c>, category <c>StyleCop.CSharp.MaintainabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1409.md"/>.
-    /// </summary>
+    /// <summary>Remove unnecessary code.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1409.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1409
     {
@@ -1975,10 +1750,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1409.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1410</c>, category <c>StyleCop.CSharp.MaintainabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1410.md"/>.
-    /// </summary>
+    /// <summary>Remove delegate parenthesis when possible.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1410.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1410
     {
@@ -1992,10 +1765,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1410.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1411</c>, category <c>StyleCop.CSharp.MaintainabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1411.md"/>.
-    /// </summary>
+    /// <summary>Attribute constructor should not use unnecessary parenthesis.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1411.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1411
     {
@@ -2009,10 +1780,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1411.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1412</c>, category <c>StyleCop.CSharp.MaintainabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1412.md"/>.
-    /// </summary>
+    /// <summary>Store files as UTF-8 with byte order mark.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1412.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1412
     {
@@ -2026,10 +1795,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1412.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1413</c>, category <c>StyleCop.CSharp.ReadabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1413.md"/>.
-    /// </summary>
+    /// <summary>Use trailing comma in multi-line initializers.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1413.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1413
     {
@@ -2043,10 +1810,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1413.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1500</c>, category <c>StyleCop.CSharp.LayoutRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1500.md"/>.
-    /// </summary>
+    /// <summary>Braces for multi-line statements should not share line.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1500.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1500
     {
@@ -2060,10 +1825,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1500.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1501</c>, category <c>StyleCop.CSharp.LayoutRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1501.md"/>.
-    /// </summary>
+    /// <summary>Statement should not be on a single line.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1501.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1501
     {
@@ -2077,10 +1840,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1501.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1502</c>, category <c>StyleCop.CSharp.LayoutRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1502.md"/>.
-    /// </summary>
+    /// <summary>Element should not be on a single line.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1502.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1502
     {
@@ -2094,10 +1855,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1502.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1503</c>, category <c>StyleCop.CSharp.LayoutRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1503.md"/>.
-    /// </summary>
+    /// <summary>Braces should not be omitted.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1503.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1503
     {
@@ -2111,10 +1870,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1503.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1504</c>, category <c>StyleCop.CSharp.LayoutRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1504.md"/>.
-    /// </summary>
+    /// <summary>All accessors should be single-line or multi-line.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1504.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1504
     {
@@ -2128,10 +1885,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1504.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1505</c>, category <c>StyleCop.CSharp.LayoutRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1505.md"/>.
-    /// </summary>
+    /// <summary>Opening braces should not be followed by blank line.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1505.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1505
     {
@@ -2145,10 +1900,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1505.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1506</c>, category <c>StyleCop.CSharp.LayoutRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1506.md"/>.
-    /// </summary>
+    /// <summary>Element documentation headers should not be followed by blank line.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1506.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1506
     {
@@ -2162,10 +1915,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1506.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1507</c>, category <c>StyleCop.CSharp.LayoutRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1507.md"/>.
-    /// </summary>
+    /// <summary>Code should not contain multiple blank lines in a row.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1507.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1507
     {
@@ -2179,10 +1930,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1507.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1508</c>, category <c>StyleCop.CSharp.LayoutRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1508.md"/>.
-    /// </summary>
+    /// <summary>Closing braces should not be preceded by blank line.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1508.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1508
     {
@@ -2196,10 +1945,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1508.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1509</c>, category <c>StyleCop.CSharp.LayoutRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1509.md"/>.
-    /// </summary>
+    /// <summary>Opening braces should not be preceded by blank line.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1509.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1509
     {
@@ -2213,10 +1960,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1509.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1510</c>, category <c>StyleCop.CSharp.LayoutRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1510.md"/>.
-    /// </summary>
+    /// <summary>Chained statement blocks should not be preceded by blank line.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1510.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1510
     {
@@ -2230,10 +1975,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1510.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1511</c>, category <c>StyleCop.CSharp.LayoutRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1511.md"/>.
-    /// </summary>
+    /// <summary>While-do footer should not be preceded by blank line.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1511.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1511
     {
@@ -2247,10 +1990,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1511.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1512</c>, category <c>StyleCop.CSharp.LayoutRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1512.md"/>.
-    /// </summary>
+    /// <summary>Single-line comments should not be followed by blank line.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1512.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1512
     {
@@ -2264,10 +2005,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1512.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1513</c>, category <c>StyleCop.CSharp.LayoutRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1513.md"/>.
-    /// </summary>
+    /// <summary>Closing brace should be followed by blank line.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1513.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1513
     {
@@ -2281,10 +2020,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1513.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1514</c>, category <c>StyleCop.CSharp.LayoutRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1514.md"/>.
-    /// </summary>
+    /// <summary>Element documentation header should be preceded by blank line.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1514.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1514
     {
@@ -2298,10 +2035,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1514.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1515</c>, category <c>StyleCop.CSharp.LayoutRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1515.md"/>.
-    /// </summary>
+    /// <summary>Single-line comment should be preceded by blank line.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1515.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1515
     {
@@ -2315,10 +2050,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1515.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1516</c>, category <c>StyleCop.CSharp.LayoutRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1516.md"/>.
-    /// </summary>
+    /// <summary>Elements should be separated by blank line.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1516.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1516
     {
@@ -2332,10 +2065,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1516.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1517</c>, category <c>StyleCop.CSharp.LayoutRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1517.md"/>.
-    /// </summary>
+    /// <summary>Code should not contain blank lines at start of file.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1517.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1517
     {
@@ -2349,10 +2080,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1517.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1518</c>, category <c>StyleCop.CSharp.LayoutRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1518.md"/>.
-    /// </summary>
+    /// <summary>Use line endings correctly at end of file.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1518.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1518
     {
@@ -2366,10 +2095,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1518.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1519</c>, category <c>StyleCop.CSharp.LayoutRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1519.md"/>.
-    /// </summary>
+    /// <summary>Braces should not be omitted from multi-line child statement.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1519.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1519
     {
@@ -2383,10 +2110,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1519.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1520</c>, category <c>StyleCop.CSharp.LayoutRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1520.md"/>.
-    /// </summary>
+    /// <summary>Use braces consistently.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1520.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1520
     {
@@ -2400,10 +2125,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1520.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1600</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1600.md"/>.
-    /// </summary>
+    /// <summary>Elements should be documented.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1600.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1600
     {
@@ -2417,10 +2140,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1600.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1601</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1601.md"/>.
-    /// </summary>
+    /// <summary>Partial elements should be documented.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1601.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1601
     {
@@ -2434,10 +2155,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1601.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1602</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1602.md"/>.
-    /// </summary>
+    /// <summary>Enumeration items should be documented.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1602.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1602
     {
@@ -2451,10 +2170,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1602.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1603</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1603.md"/>.
-    /// </summary>
+    /// <summary>Documentation should contain valid XML.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1603.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1603
     {
@@ -2468,10 +2185,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1603.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1604</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1604.md"/>.
-    /// </summary>
+    /// <summary>Element documentation should have summary.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1604.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1604
     {
@@ -2485,10 +2200,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1604.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1605</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1605.md"/>.
-    /// </summary>
+    /// <summary>Partial element documentation should have summary.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1605.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1605
     {
@@ -2502,10 +2215,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1605.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1606</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1606.md"/>.
-    /// </summary>
+    /// <summary>Element documentation should have summary text.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1606.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1606
     {
@@ -2519,10 +2230,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1606.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1607</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1607.md"/>.
-    /// </summary>
+    /// <summary>Partial element documentation should have summary text.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1607.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1607
     {
@@ -2536,10 +2245,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1607.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1608</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1608.md"/>.
-    /// </summary>
+    /// <summary>Element documentation should not have default summary.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1608.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1608
     {
@@ -2553,10 +2260,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1608.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1609</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1609.md"/>.
-    /// </summary>
+    /// <summary>Property documentation should have value.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1609.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1609
     {
@@ -2570,10 +2275,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1609.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1610</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1610.md"/>.
-    /// </summary>
+    /// <summary>Property documentation should have value text.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1610.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1610
     {
@@ -2587,10 +2290,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1610.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1611</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1611.md"/>.
-    /// </summary>
+    /// <summary>Element parameters should be documented.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1611.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1611
     {
@@ -2604,10 +2305,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1611.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1612</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1612.md"/>.
-    /// </summary>
+    /// <summary>Element parameter documentation should match element parameters.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1612.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1612
     {
@@ -2621,10 +2320,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1612.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1613</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1613.md"/>.
-    /// </summary>
+    /// <summary>Element parameter documentation should declare parameter name.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1613.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1613
     {
@@ -2638,10 +2335,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1613.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1614</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1614.md"/>.
-    /// </summary>
+    /// <summary>Element parameter documentation should have text.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1614.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1614
     {
@@ -2655,10 +2350,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1614.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1615</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1615.md"/>.
-    /// </summary>
+    /// <summary>Element return value should be documented.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1615.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1615
     {
@@ -2672,10 +2365,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1615.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1616</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1616.md"/>.
-    /// </summary>
+    /// <summary>Element return value documentation should have text.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1616.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1616
     {
@@ -2689,10 +2380,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1616.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1617</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1617.md"/>.
-    /// </summary>
+    /// <summary>Void return value should not be documented.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1617.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1617
     {
@@ -2706,10 +2395,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1617.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1618</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1618.md"/>.
-    /// </summary>
+    /// <summary>Generic type parameters should be documented.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1618.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1618
     {
@@ -2723,10 +2410,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1618.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1619</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1619.md"/>.
-    /// </summary>
+    /// <summary>Generic type parameters should be documented partial class.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1619.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1619
     {
@@ -2740,10 +2425,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1619.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1620</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1620.md"/>.
-    /// </summary>
+    /// <summary>Generic type parameter documentation should match type parameters.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1620.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1620
     {
@@ -2757,10 +2440,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1620.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1621</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1621.md"/>.
-    /// </summary>
+    /// <summary>Generic type parameter documentation should declare parameter name.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1621.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1621
     {
@@ -2774,10 +2455,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1621.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1622</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1622.md"/>.
-    /// </summary>
+    /// <summary>Generic type parameter documentation should have text.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1622.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1622
     {
@@ -2791,10 +2470,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1622.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1623</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1623.md"/>.
-    /// </summary>
+    /// <summary>Property summary documentation should match accessors.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1623.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1623
     {
@@ -2808,10 +2485,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1623.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1624</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1624.md"/>.
-    /// </summary>
+    /// <summary>Property summary documentation should omit accessor with restricted access.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1624.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1624
     {
@@ -2825,10 +2500,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1624.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1625</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1625.md"/>.
-    /// </summary>
+    /// <summary>Element documentation should not be copied and pasted.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1625.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1625
     {
@@ -2842,10 +2515,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1625.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1626</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1626.md"/>.
-    /// </summary>
+    /// <summary>Single-line comments should not use documentation style slashes.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1626.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1626
     {
@@ -2859,10 +2530,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1626.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1627</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1627.md"/>.
-    /// </summary>
+    /// <summary>Documentation text should not be empty.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1627.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1627
     {
@@ -2876,10 +2545,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1627.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1628</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1628.md"/>.
-    /// </summary>
+    /// <summary>Documentation text should begin with a capital letter.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1628.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1628
     {
@@ -2893,10 +2560,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1628.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1629</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1629.md"/>.
-    /// </summary>
+    /// <summary>Documentation text should end with a period.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1629.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1629
     {
@@ -2910,10 +2575,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1629.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1630</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1630.md"/>.
-    /// </summary>
+    /// <summary>Documentation text should contain whitespace.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1630.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1630
     {
@@ -2927,10 +2590,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1630.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1631</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1631.md"/>.
-    /// </summary>
+    /// <summary>Documentation should meet character percentage.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1631.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1631
     {
@@ -2944,10 +2605,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1631.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1632</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1632.md"/>.
-    /// </summary>
+    /// <summary>Documentation text should meet minimum character length.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1632.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1632
     {
@@ -2961,10 +2620,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1632.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1633</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1633.md"/>.
-    /// </summary>
+    /// <summary>File should have header.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1633.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1633
     {
@@ -2978,10 +2635,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1633.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1634</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1634.md"/>.
-    /// </summary>
+    /// <summary>File header should show copyright.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1634.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1634
     {
@@ -2995,10 +2650,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1634.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1635</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1635.md"/>.
-    /// </summary>
+    /// <summary>File header should have copyright text.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1635.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1635
     {
@@ -3012,10 +2665,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1635.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1636</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1636.md"/>.
-    /// </summary>
+    /// <summary>File header copyright text should match.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1636.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1636
     {
@@ -3029,10 +2680,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1636.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1637</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1637.md"/>.
-    /// </summary>
+    /// <summary>File header should contain file name.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1637.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1637
     {
@@ -3046,10 +2695,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1637.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1638</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1638.md"/>.
-    /// </summary>
+    /// <summary>File header file name documentation should match file name.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1638.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1638
     {
@@ -3063,10 +2710,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1638.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1639</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1639.md"/>.
-    /// </summary>
+    /// <summary>File header should have summary.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1639.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1639
     {
@@ -3080,10 +2725,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1639.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1640</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1640.md"/>.
-    /// </summary>
+    /// <summary>File header should have valid company text.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1640.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1640
     {
@@ -3097,10 +2740,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1640.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1641</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1641.md"/>.
-    /// </summary>
+    /// <summary>File header company name text should match.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1641.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1641
     {
@@ -3114,10 +2755,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1641.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1642</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1642.md"/>.
-    /// </summary>
+    /// <summary>Constructor summary documentation should begin with standard text.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1642.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1642
     {
@@ -3131,10 +2770,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1642.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1643</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1643.md"/>.
-    /// </summary>
+    /// <summary>Destructor summary documentation should begin with standard text.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1643.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1643
     {
@@ -3148,10 +2785,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1643.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1644</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1644.md"/>.
-    /// </summary>
+    /// <summary>Documentation headers should not contain blank lines.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1644.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1644
     {
@@ -3165,10 +2800,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1644.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1645</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1645.md"/>.
-    /// </summary>
+    /// <summary>Included documentation file does not exist.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1645.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1645
     {
@@ -3182,10 +2815,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1645.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1646</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1646.md"/>.
-    /// </summary>
+    /// <summary>Included documentation XPath does not exist.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1646.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1646
     {
@@ -3199,10 +2830,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1646.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1647</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1647.md"/>.
-    /// </summary>
+    /// <summary>Include node does not contain valid file and path.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1647.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1647
     {
@@ -3216,10 +2845,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1647.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1648</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1648.md"/>.
-    /// </summary>
+    /// <summary>inheritdoc should be used with inheriting class.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1648.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1648
     {
@@ -3233,10 +2860,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1648.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1649</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1649.md"/>.
-    /// </summary>
+    /// <summary>File name should match first type name.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1649.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1649
     {
@@ -3250,10 +2875,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1649.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1650</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1650.md"/>.
-    /// </summary>
+    /// <summary>Element documentation should be spelled correctly.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1650.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1650
     {
@@ -3267,10 +2890,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1650.md";
     }
 
-    /// <summary>
-    /// Rule <c>SA1651</c>, category <c>StyleCop.CSharp.DocumentationRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1651.md"/>.
-    /// </summary>
+    /// <summary>Do not use placeholder elements.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1651.md"/>.</remarks>
     [DiagnosticRule]
     public static class SA1651
     {
@@ -3284,10 +2905,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1651.md";
     }
 
-    /// <summary>
-    /// Rule <c>SX1101</c>, category <c>StyleCop.CSharp.ReadabilityRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SX1101.md"/>.
-    /// </summary>
+    /// <summary>Do not prefix local calls with 'this.'.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SX1101.md"/>.</remarks>
     [DiagnosticRule]
     public static class SX1101
     {
@@ -3301,10 +2920,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SX1101.md";
     }
 
-    /// <summary>
-    /// Rule <c>SX1309</c>, category <c>StyleCop.CSharp.NamingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SX1309.md"/>.
-    /// </summary>
+    /// <summary>Field names should begin with underscore.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SX1309.md"/>.</remarks>
     [DiagnosticRule]
     public static class SX1309
     {
@@ -3318,10 +2935,8 @@ public static class StyleCopRule
         public const string HelpLinkUri = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SX1309.md";
     }
 
-    /// <summary>
-    /// Rule <c>SX1309S</c>, category <c>StyleCop.CSharp.NamingRules</c>.
-    /// See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SX1309S.md"/>.
-    /// </summary>
+    /// <summary>Static field names should begin with underscore.</summary>
+    /// <remarks>See <see href="https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SX1309S.md"/>.</remarks>
     [DiagnosticRule]
     public static class SX1309S
     {
