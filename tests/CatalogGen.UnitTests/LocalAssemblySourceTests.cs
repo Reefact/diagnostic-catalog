@@ -36,7 +36,7 @@ public sealed class LocalAssemblySourceTests
         AnalyzerAssemblySet? set = LocalAssemblySource.Acquire([Generator], null, null);
 
         Assert.NotNull(set);
-        Assert.Equal(AssemblyName.GetAssemblyName(Generator).Name, set!.SourceName);
+        Assert.Equal(AssemblyName.GetAssemblyName(Generator).Name, set.SourceName);
     }
 
     [Fact]
@@ -45,7 +45,7 @@ public sealed class LocalAssemblySourceTests
         AnalyzerAssemblySet? set = LocalAssemblySource.Acquire([Generator], null, null);
 
         Assert.NotNull(set);
-        Assert.Equal(AssemblyName.GetAssemblyName(Generator).Version!.ToString(), set!.SourceVersion);
+        Assert.Equal(AssemblyName.GetAssemblyName(Generator).Version!.ToString(), set.SourceVersion);
     }
 
     [Fact]
@@ -57,7 +57,7 @@ public sealed class LocalAssemblySourceTests
         AnalyzerAssemblySet? set = LocalAssemblySource.Acquire([Generator], "My.Analyzers", "1.4.0");
 
         Assert.NotNull(set);
-        Assert.Equal("My.Analyzers", set!.SourceName);
+        Assert.Equal("My.Analyzers", set.SourceName);
         Assert.Equal("1.4.0", set.SourceVersion);
     }
 
@@ -71,7 +71,7 @@ public sealed class LocalAssemblySourceTests
 
         Assert.NotNull(one);
         Assert.NotNull(other);
-        Assert.Equal(one!.AssemblyPaths, other!.AssemblyPaths);
+        Assert.Equal(one.AssemblyPaths, other.AssemblyPaths);
     }
 
     [Fact]
@@ -82,7 +82,7 @@ public sealed class LocalAssemblySourceTests
         AnalyzerAssemblySet? set = LocalAssemblySource.Acquire([Generator, Generator], "n", "v");
 
         Assert.NotNull(set);
-        Assert.Single(set!.AssemblyPaths);
+        Assert.Single(set.AssemblyPaths);
     }
 
     [Fact]
@@ -97,7 +97,7 @@ public sealed class LocalAssemblySourceTests
         AnalyzerAssemblySet? set = LocalAssemblySource.Acquire([withGraph], "n", "v");
 
         Assert.NotNull(set);
-        Assert.Equal(Path.ChangeExtension(withGraph, ".deps.json"), set!.DependencyContextPath);
+        Assert.Equal(Path.ChangeExtension(withGraph, ".deps.json"), set.DependencyContextPath);
     }
 
     [Fact]
@@ -111,7 +111,7 @@ public sealed class LocalAssemblySourceTests
         Assert.NotNull(set);
         Assert.False(File.Exists(Path.ChangeExtension(Generator, ".deps.json")),
                      "the fixture only means anything while the generator has no graph beside it");
-        Assert.Null(set!.DependencyContextPath);
+        Assert.Null(set.DependencyContextPath);
     }
 
     [Fact]
@@ -124,6 +124,6 @@ public sealed class LocalAssemblySourceTests
         AnalyzerAssemblySet? set = LocalAssemblySource.Acquire([relative], "n", "v");
 
         Assert.NotNull(set);
-        Assert.Equal(Generator, Assert.Single(set!.AssemblyPaths));
+        Assert.Equal(Generator, Assert.Single(set.AssemblyPaths));
     }
 }

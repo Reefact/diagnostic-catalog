@@ -60,7 +60,7 @@ public sealed class CategoryCollisionTests : IDisposable
         Previous? reparsed = CatalogParser.ReadPrevious(output);
 
         Assert.NotNull(reparsed);
-        Assert.Equal("Major Code Smell", reparsed!.Rules["X0001"].Category);
+        Assert.Equal("Major Code Smell", reparsed.Rules["X0001"].Category);
         Assert.Equal("Major-Code-Smell", reparsed.Rules["X0002"].Category);
     }
 }

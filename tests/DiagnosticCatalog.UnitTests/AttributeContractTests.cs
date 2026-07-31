@@ -71,9 +71,10 @@ public sealed class AttributeContractTests
     [Fact]
     public void DiagnosticRuleAttribute_targets_a_class_once()
     {
-        AttributeUsageAttribute usage = typeof(DiagnosticRuleAttribute)
-            .GetCustomAttribute<AttributeUsageAttribute>()!;
+        AttributeUsageAttribute? usage = typeof(DiagnosticRuleAttribute)
+            .GetCustomAttribute<AttributeUsageAttribute>();
 
+        Assert.NotNull(usage);
         Assert.Equal(AttributeTargets.Class, usage.ValidOn);
         Assert.False(usage.AllowMultiple);
         Assert.False(usage.Inherited);
@@ -82,9 +83,10 @@ public sealed class AttributeContractTests
     [Fact]
     public void DiagnosticCategoryAttribute_targets_a_class_once()
     {
-        AttributeUsageAttribute usage = typeof(DiagnosticCategoryAttribute)
-            .GetCustomAttribute<AttributeUsageAttribute>()!;
+        AttributeUsageAttribute? usage = typeof(DiagnosticCategoryAttribute)
+            .GetCustomAttribute<AttributeUsageAttribute>();
 
+        Assert.NotNull(usage);
         Assert.Equal(AttributeTargets.Class, usage.ValidOn);
         Assert.False(usage.AllowMultiple);
         Assert.False(usage.Inherited);
@@ -97,9 +99,10 @@ public sealed class AttributeContractTests
     [Fact]
     public void CatalogSourceAttribute_targets_an_assembly_and_allows_several()
     {
-        AttributeUsageAttribute usage = typeof(CatalogSourceAttribute)
-            .GetCustomAttribute<AttributeUsageAttribute>()!;
+        AttributeUsageAttribute? usage = typeof(CatalogSourceAttribute)
+            .GetCustomAttribute<AttributeUsageAttribute>();
 
+        Assert.NotNull(usage);
         Assert.Equal(AttributeTargets.Assembly, usage.ValidOn);
         Assert.True(usage.AllowMultiple);
     }

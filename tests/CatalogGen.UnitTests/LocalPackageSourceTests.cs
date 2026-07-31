@@ -30,7 +30,7 @@ public sealed class LocalPackageSourceTests : IDisposable
         AnalyzerAssemblySet? set = LocalPackageSource.Acquire(package, null, null, "cs", Work());
 
         Assert.NotNull(set);
-        Assert.Equal("Vendor.Analyzers", set!.SourceName);
+        Assert.Equal("Vendor.Analyzers", set.SourceName);
         Assert.Equal("3.1.4", set.SourceVersion);
     }
 
@@ -44,7 +44,7 @@ public sealed class LocalPackageSourceTests : IDisposable
         AnalyzerAssemblySet? set = LocalPackageSource.Acquire(package, "Chosen", "9.9.9", "cs", Work());
 
         Assert.NotNull(set);
-        Assert.Equal("Chosen", set!.SourceName);
+        Assert.Equal("Chosen", set.SourceName);
         Assert.Equal("9.9.9", set.SourceVersion);
     }
 
@@ -56,7 +56,7 @@ public sealed class LocalPackageSourceTests : IDisposable
         AnalyzerAssemblySet? set = LocalPackageSource.Acquire(package, null, null, "cs", Work());
 
         Assert.NotNull(set);
-        Assert.Equal("Vendor.Analyzers.dll", Path.GetFileName(Assert.Single(set!.AssemblyPaths)));
+        Assert.Equal("Vendor.Analyzers.dll", Path.GetFileName(Assert.Single(set.AssemblyPaths)));
     }
 
     [Fact]
