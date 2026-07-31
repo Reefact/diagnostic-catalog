@@ -25,6 +25,13 @@ Le cas courant, et celui qui ne demande de connaître rien d'autre ici.
 * [**Écrire des suppressions que le compilateur vérifie**](writing-suppressions.fr.md) — référencer
   un catalogue, écrire la suppression contre des constantes, migrer les littéraux que vous avez déjà,
   et voir ce que cela coûte à l'exécution (rien).
+* [**Adopter un catalogue sur une base de code existante**](adopting-a-catalogue.fr.md) — la rampe de
+  gravité, *Corriger toutes les occurrences*, le cantonnement par dossier, et dans quel ordre
+  convertir.
+* [**Configuration**](configuration.fr.md) — chaque clé de gravité, le commutateur par catégorie, le
+  code généré, et l'erreur de `PrivateAssets` qui fait tout taire.
+* [**La garantie d'empreinte nulle**](zero-footprint.fr.md) — ce qui atteint l'assemblage que vous
+  livrez, et ce que le test asserte réellement.
 * [Concepts](concepts.fr.md) — si un mot de ce guide vous est étranger.
 * [Les diagnostics `DCAT`](diagnostics.fr.md) — quand l'un d'eux apparaît.
 
@@ -91,8 +98,11 @@ votre propre catalogue :
 4. [Quand ne pas s'en servir](when-not-to-use.fr.md)
 5. [Les alternatives](alternatives.fr.md)
 6. [Écrire des suppressions que le compilateur vérifie](writing-suppressions.fr.md)
-7. [Publier un catalogue](authoring-a-catalogue.fr.md)
-8. [Les diagnostics `DCAT`](diagnostics.fr.md)
+7. [Adopter un catalogue sur une base de code existante](adopting-a-catalogue.fr.md)
+8. [Configuration](configuration.fr.md)
+9. [La garantie d'empreinte nulle](zero-footprint.fr.md)
+10. [Publier un catalogue](authoring-a-catalogue.fr.md)
+11. [Les diagnostics `DCAT`](diagnostics.fr.md)
 
 ---
 

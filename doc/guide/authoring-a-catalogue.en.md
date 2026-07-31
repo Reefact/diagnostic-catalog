@@ -271,5 +271,5 @@ output looks like with 465, 318 and 193 rules; the method is in §14 of
 ---
 
 <div align="center">
-<a href="./writing-suppressions.en.md">← Writing suppressions that the compiler checks</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./diagnostics.en.md">The DCAT diagnostics →</a>
+<a href="./zero-footprint.en.md">← The zero-footprint guarantee</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./diagnostics.en.md">The DCAT diagnostics →</a>
 </div>
