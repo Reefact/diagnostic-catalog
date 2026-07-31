@@ -202,3 +202,4 @@ Optional supporting material:
 | [ADR-0019](0019-resolve-packages-through-the-users-own-nuget-configuration.md) | Resolve packages through the user's own NuGet configuration | Accepted |
 | [ADR-0020](0020-a-catalogue-is-generated-for-c-sharp-only.md) | A catalogue is generated for C# only | Accepted |
 | [ADR-0021](0021-derive-the-build-rule-set-from-the-quality-profile.md) | Derive the build's Sonar rule set from the server's quality profile | Accepted |
+| [ADR-0022](0022-maintain-every-document-under-doc-in-english-and-french.md) | Maintain every document under `doc/` in English and French | Proposed |
