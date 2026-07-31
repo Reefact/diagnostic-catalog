@@ -29,16 +29,20 @@ internal static class CatalogueJobs
             // here: report the reason on one line rather than a stack trace.
             // A ManifestException already names the file and the entry, so prefixing the path
             // again would say it twice.
+#pragma warning disable S6966 // Console diagnostics are synchronous by design — see CatalogRun.ExecuteAsync
             Console.Error.WriteLine(ex is ManifestException
                                         ? $"error: {ex.Message}"
                                         : $"error: {settings.Manifest}: {ex.Message}");
+#pragma warning restore S6966
 
             return null;
         }
 
         if (jobs.Count == 0)
         {
+#pragma warning disable S6966 // Console diagnostics are synchronous by design — see CatalogRun.ExecuteAsync
             Console.Error.WriteLine("error: the manifest declares no catalogue.");
+#pragma warning restore S6966
 
             return null;
         }

@@ -25,31 +25,14 @@ internal static class DependencyGraph
             using FileStream stream = File.OpenRead(depsJsonPath);
             using JsonDocument document = JsonDocument.Parse(stream);
 
-            if (!document.RootElement.TryGetProperty("targets", out JsonElement targets)) return false;
-
-            foreach (JsonProperty target in targets.EnumerateObject())
-            {
-                if (target.Value.ValueKind != JsonValueKind.Object) continue;
-
-                foreach (JsonProperty library in target.Value.EnumerateObject())
-                {
-                    if (library.Value.ValueKind != JsonValueKind.Object) continue;
-                    if (!library.Value.TryGetProperty("runtime", out JsonElement runtime)) continue;
-                    if (runtime.ValueKind != JsonValueKind.Object) continue;
-
-                    foreach (JsonProperty asset in runtime.EnumerateObject())
-                    {
-                        // The key is a path inside the package, so the file name is what identifies
-                        // the assembly: lib/netstandard2.0/Microsoft.CodeAnalysis.dll.
-                        if (Path.GetFileName(asset.Name).Equals(Roslyn, StringComparison.OrdinalIgnoreCase))
-                        {
-                            return true;
-                        }
-                    }
-                }
-            }
-
-            return false;
+            // A .deps.json declares one library set per target framework, and the question is asked
+            // of the file rather than of a target: any of them carrying Roslyn is enough, because
+            // the worker resolves against whichever one it is launched for.
+            return document.RootElement.TryGetProperty("targets", out JsonElement targets)
+                && targets.EnumerateObject()
+                          .Where(target => target.Value.ValueKind == JsonValueKind.Object)
+                          .SelectMany(target => target.Value.EnumerateObject())
+                          .Any(CarriesRoslyn);
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException
                                              or JsonException)
@@ -58,5 +41,19 @@ internal static class DependencyGraph
             // Refusing to use it costs the analyzer's own Roslyn; using it risks the worker's.
             return false;
         }
+    }
+
+    // Whether one library entry lays a Roslyn assembly down at runtime. An entry with no "runtime"
+    // section contributes nothing to the worker's resolution, whatever else it declares.
+    private static bool CarriesRoslyn(JsonProperty library)
+    {
+        if (library.Value.ValueKind != JsonValueKind.Object) return false;
+        if (!library.Value.TryGetProperty("runtime", out JsonElement runtime)) return false;
+        if (runtime.ValueKind != JsonValueKind.Object) return false;
+
+        // The key is a path inside the package, so the file name is what identifies the assembly:
+        // lib/netstandard2.0/Microsoft.CodeAnalysis.dll.
+        return runtime.EnumerateObject()
+                      .Any(asset => Path.GetFileName(asset.Name).Equals(Roslyn, StringComparison.OrdinalIgnoreCase));
     }
 }

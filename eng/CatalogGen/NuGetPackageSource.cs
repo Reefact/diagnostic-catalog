@@ -43,7 +43,9 @@ internal static class NuGetPackageSource
                 packageId, resolved.Version, file, cache, log, cancellation);
             if (!copied)
             {
+#pragma warning disable S6966 // Console diagnostics are synchronous by design — see CatalogRun.ExecuteAsync
                 Console.Error.WriteLine($"{packageId} {resolved.Version} could not be downloaded");
+#pragma warning restore S6966
 
                 return null;
             }
@@ -115,11 +117,7 @@ internal static class NuGetPackageSource
             NuGetVersion sourceNewest = available.Max()!;
             if (newestOverall is null || sourceNewest > newestOverall) newestOverall = sourceNewest;
 
-            // "latest" means latest *stable*. A catalogue mirrors a release people actually
-            // consume; resolving to a preview would silently pin the catalogue to one.
-            NuGetVersion? candidate = pinned is not null
-                ? available.FirstOrDefault(v => v == pinned)
-                : (requested == "latest" ? available.Where(v => !v.IsPrerelease) : available).Max();
+            NuGetVersion? candidate = Candidate(available, pinned, requested == "latest");
 
             // Ordered by NuGetVersion rather than by position in the feed's answer: SemVer ordering
             // is not string ordering, and taking the last element of a list was only ever correct
@@ -130,30 +128,55 @@ internal static class NuGetPackageSource
 
         if (best is null)
         {
-            // Three different failures, and telling them apart is the whole value of the message.
-            // "Not on this source at all" is the one a private feed makes common, and answering it
-            // with "use latest-any" — which cannot help, since there is nothing to fall back to —
-            // sends the reader to change a switch instead of looking at their sources.
-            Console.Error.WriteLine(
-                newestOverall is null
-                    ? $"{packageId} was not found on any configured source"
-                    : pinned is not null
-                        ? $"{packageId} {requested} was not found on any configured source; " +
-                          $"the newest available is {newestOverall.ToNormalizedString()}"
-                        : $"{packageId} has no stable version on any configured source " +
-                          $"(newest is {newestOverall.ToNormalizedString()}, a prerelease); " +
-                          "use latest-any or an explicit version");
+#pragma warning disable S6966 // Console diagnostics are synchronous by design — see CatalogRun.ExecuteAsync
+            Console.Error.WriteLine(NotResolved(packageId, requested, pinned, newestOverall));
+#pragma warning restore S6966
 
             return null;
         }
 
-        Console.WriteLine($"resolved {packageId} => {best.Version.ToNormalizedString()}" +
-                          (newestOverall is null || best.Version == newestOverall
-                               ? ""
-                               : $" (newest overall is {newestOverall.ToNormalizedString()}, a prerelease)"));
+        Console.WriteLine(Resolution(packageId, best.Version, newestOverall));
 
         return best;
     }
+
+    // The release one source offers, among those it has. Null when it has none that qualifies,
+    // which is not the same as having none at all — a feed carrying only previews answers null
+    // to "latest" and the version itself to "latest-any".
+    internal static NuGetVersion? Candidate(IReadOnlyList<NuGetVersion> available, NuGetVersion? pinned, bool stableOnly)
+    {
+        if (pinned is not null) return available.FirstOrDefault(v => v == pinned);
+
+        // "latest" means latest *stable*. A catalogue mirrors a release people actually consume,
+        // and resolving to a preview would silently pin the catalogue to one.
+        return (stableOnly ? available.Where(v => !v.IsPrerelease) : available).Max();
+    }
+
+    // Three different failures, and telling them apart is the whole value of the message. "Not on
+    // this source at all" is the one a private feed makes common, and answering it with "use
+    // latest-any" — which cannot help, since there is nothing to fall back to — sends the reader to
+    // change a switch instead of looking at their sources.
+    internal static string NotResolved(
+        string packageId, string requested, NuGetVersion? pinned, NuGetVersion? newestOverall)
+    {
+        if (newestOverall is null) return $"{packageId} was not found on any configured source";
+
+        if (pinned is not null)
+            return $"{packageId} {requested} was not found on any configured source; " +
+                   $"the newest available is {newestOverall.ToNormalizedString()}";
+
+        return $"{packageId} has no stable version on any configured source " +
+               $"(newest is {newestOverall.ToNormalizedString()}, a prerelease); " +
+               "use latest-any or an explicit version";
+    }
+
+    // What was resolved, and — when the two differ — what was passed over, so a run that mirrors an
+    // older release than the feed's newest says why on the line that reports it.
+    internal static string Resolution(string packageId, NuGetVersion resolved, NuGetVersion? newestOverall)
+        => $"resolved {packageId} => {resolved.ToNormalizedString()}" +
+           (newestOverall is null || resolved == newestOverall
+                ? ""
+                : $" (newest overall is {newestOverall.ToNormalizedString()}, a prerelease)");
 
     private sealed record Resolved(NuGetVersion Version, SourceRepository Repository);
 }

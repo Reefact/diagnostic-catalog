@@ -54,44 +54,51 @@ public static class CatalogRun
             string where = $"{file}: catalogs[{index}]";
             index++;
 
-            // An entry names a package to fetch, a .nupkg on disk, or assemblies on disk. Paths in
-            // any of them are resolved against the manifest, exactly as "output" is.
-            IReadOnlyList<string>? assemblies = e.TryGetProperty("assemblies", out JsonElement a)
-                ? [.. a.EnumerateArray().Select(x => Path.GetFullPath(Path.Combine(manifestDir, Text(x, where, "assemblies"))))]
-                : null;
-            string? nupkg = e.TryGetProperty("nupkg", out JsonElement n)
-                ? Path.GetFullPath(Path.Combine(manifestDir, Text(n, where, "nupkg")))
-                : null;
-            IReadOnlyList<string>? projects = e.TryGetProperty("projects", out JsonElement pr)
-                ? [.. pr.EnumerateArray().Select(x => Path.GetFullPath(Path.Combine(manifestDir, Text(x, where, "projects"))))]
-                : null;
-
-            int named = (assemblies is not null ? 1 : 0) + (nupkg is not null ? 1 : 0) + (projects is not null ? 1 : 0);
-            if (named > 1)
-                throw new ManifestException($"{where}: names more than one source; give one of " +
-                                            "\"package\", \"nupkg\", \"projects\" or \"assemblies\".");
-
-            bool fromFeed = named == 0;
-
-            jobs.Add(new Job(
-                Package: fromFeed ? Required(e, "package", where) : null,
-                Version: fromFeed ? Optional(e, "version", where) ?? "latest" : null,
-                Namespace: Required(e, "namespace", where),
-                Container: Required(e, "container", where),
-                Output: Path.GetFullPath(Path.Combine(manifestDir, Required(e, "output", where))),
-                Language: Optional(e, "language", where) ?? "cs",
-                Assemblies: assemblies,
-                SourceName: Optional(e, "sourceName", where),
-                SourceVersion: Optional(e, "sourceVersion", where),
-                Nupkg: nupkg,
-                Source: Optional(e, "source", where),
-                Projects: projects,
-                Configuration: Optional(e, "configuration", where) ?? "Release"));
+            jobs.Add(JobFrom(e, where, manifestDir));
         }
 
         if (jobs.Count == 0) throw new ManifestException($"{file}: \"catalogs\" declares no entry.");
 
         return jobs;
+    }
+
+    // One manifest entry, read into the job it declares. Named apart from the loop so the entry's
+    // own rules — which source it may carry, and what each key resolves to — read as one thing.
+    private static Job JobFrom(JsonElement entry, string where, string manifestDir)
+    {
+        // An entry names a package to fetch, a .nupkg on disk, or assemblies on disk. Paths in
+        // any of them are resolved against the manifest, exactly as "output" is.
+        IReadOnlyList<string>? assemblies = entry.TryGetProperty("assemblies", out JsonElement a)
+            ? [.. a.EnumerateArray().Select(x => Path.GetFullPath(Path.Combine(manifestDir, Text(x, where, "assemblies"))))]
+            : null;
+        string? nupkg = entry.TryGetProperty("nupkg", out JsonElement n)
+            ? Path.GetFullPath(Path.Combine(manifestDir, Text(n, where, "nupkg")))
+            : null;
+        IReadOnlyList<string>? projects = entry.TryGetProperty("projects", out JsonElement pr)
+            ? [.. pr.EnumerateArray().Select(x => Path.GetFullPath(Path.Combine(manifestDir, Text(x, where, "projects"))))]
+            : null;
+
+        int named = (assemblies is not null ? 1 : 0) + (nupkg is not null ? 1 : 0) + (projects is not null ? 1 : 0);
+        if (named > 1)
+            throw new ManifestException($"{where}: names more than one source; give one of " +
+                                        "\"package\", \"nupkg\", \"projects\" or \"assemblies\".");
+
+        bool fromFeed = named == 0;
+
+        return new Job(
+            Package: fromFeed ? Required(entry, "package", where) : null,
+            Version: fromFeed ? Optional(entry, "version", where) ?? "latest" : null,
+            Namespace: Required(entry, "namespace", where),
+            Container: Required(entry, "container", where),
+            Output: Path.GetFullPath(Path.Combine(manifestDir, Required(entry, "output", where))),
+            Language: Optional(entry, "language", where) ?? "cs",
+            Assemblies: assemblies,
+            SourceName: Optional(entry, "sourceName", where),
+            SourceVersion: Optional(entry, "sourceVersion", where),
+            Nupkg: nupkg,
+            Source: Optional(entry, "source", where),
+            Projects: projects,
+            Configuration: Optional(entry, "configuration", where) ?? "Release");
     }
 
     private static string Required(JsonElement entry, string name, string where)
@@ -115,17 +122,17 @@ public static class CatalogRun
     /// The generation date to stamp, or null for today. Pinning it is what makes regenerating the
     /// same inputs twice produce the same bytes.
     /// </param>
-    /// <param name="cancellation">
-    /// Observed while a package is being resolved and downloaded, which is where a run spends
-    /// almost all of its time and the only place interrupting it has anything to interrupt.
-    /// </param>
     /// <param name="writeChanges">
     /// False to compare without touching anything, which is what asking "is this catalogue still
     /// true?" means. <see cref="RunOutcome.ChangedAny"/> then reports drift rather than work done.
     /// </param>
+    /// <param name="cancellation">
+    /// Observed while a package is being resolved and downloaded, which is where a run spends
+    /// almost all of its time and the only place interrupting it has anything to interrupt.
+    /// </param>
     public static async Task<RunOutcome> ExecuteAsync(
-        IReadOnlyList<Job> jobs, string? dateOverride, CancellationToken cancellation = default,
-        bool writeChanges = true)
+        IReadOnlyList<Job> jobs, string? dateOverride, bool writeChanges = true,
+        CancellationToken cancellation = default)
     {
         List<string> summaries = [];
         bool changedAny = false;
@@ -137,7 +144,7 @@ public static class CatalogRun
             Console.WriteLine($"=== {job.Namespace} <- {job.SourceLabel} ===");
             try
             {
-                GenerateResult? result = await GenerateAsync(job, dateOverride, cancellation, writeChanges);
+                GenerateResult? result = await GenerateAsync(job, dateOverride, writeChanges, cancellation);
                 if (result is null) { exitCode = 1; continue; }
                 if (result.Changed)
                 {
@@ -163,19 +170,25 @@ public static class CatalogRun
             }
         }
 
-        string summary = changedAny
-            ? string.Join("\n", summaries)
-            : writeChanges
-                ? "No catalogue changed: every upstream package still resolves to the version already mirrored."
-                : "Every catalogue is current with its source.";
+        return new RunOutcome(exitCode, changedAny, Summarise(changedAny, writeChanges, summaries));
+    }
 
-        return new RunOutcome(exitCode, changedAny, summary);
+    // The run's report. "Nothing changed" is two different answers to two different questions: a
+    // generation says the mirror is already the one upstream offers, a validation says the
+    // catalogue on disk still tells the truth.
+    private static string Summarise(bool changedAny, bool writeChanges, IReadOnlyList<string> summaries)
+    {
+        if (changedAny) return string.Join("\n", summaries);
+
+        return writeChanges
+                   ? "No catalogue changed: every upstream package still resolves to the version already mirrored."
+                   : "Every catalogue is current with its source.";
     }
 
     // One catalogue, end to end: acquire, read, emit. Only the acquisition differs per source; what
     // follows it is the same two calls either way, which is the property the split exists to give.
     private static async Task<GenerateResult?> GenerateAsync(
-        Job job, string? dateOverride, CancellationToken cancellation, bool writeChanges)
+        Job job, string? dateOverride, bool writeChanges, CancellationToken cancellation)
     {
         Previous? previous = CatalogParser.ReadPrevious(job.Output);
 

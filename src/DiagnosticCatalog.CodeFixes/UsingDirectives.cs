@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using Microsoft.CodeAnalysis;
@@ -68,17 +69,18 @@ internal static class UsingDirectives
     /// <summary>The declaration's full name, since a nested block declares only its own segment.</summary>
     private static string FullName(BaseNamespaceDeclarationSyntax declaration)
     {
-        string name = declaration.Name.ToString();
+        // Innermost first, because that is the order Ancestors() walks; reversed once at the end
+        // rather than prepended segment by segment.
+        List<string> segments = [declaration.Name.ToString()];
 
-        foreach (SyntaxNode ancestor in declaration.Ancestors())
+        foreach (BaseNamespaceDeclarationSyntax outer in declaration.Ancestors().OfType<BaseNamespaceDeclarationSyntax>())
         {
-            if (ancestor is BaseNamespaceDeclarationSyntax outer)
-            {
-                name = outer.Name + "." + name;
-            }
+            segments.Add(outer.Name.ToString());
         }
 
-        return name;
+        segments.Reverse();
+
+        return string.Join(".", segments);
     }
 
     /// <summary>True when code inside <paramref name="declared"/> can see <paramref name="wanted"/>.</summary>

@@ -90,11 +90,7 @@ internal abstract class CatalogueSettings : CommandSettings
     /// </summary>
     public override ValidationResult Validate()
     {
-        List<string> named = [];
-        if (Package is not null) named.Add("--package");
-        if (Nupkg is not null) named.Add("--nupkg");
-        if (Projects.Length > 0) named.Add("--project");
-        if (Assemblies.Length > 0) named.Add("--assembly");
+        List<string> named = NamedSources();
 
         if (Manifest is not null)
         {
@@ -105,6 +101,26 @@ internal abstract class CatalogueSettings : CommandSettings
                 : ValidationResult.Success();
         }
 
+        ValidationResult source = OneSourceAndSomewhereToWriteIt(named);
+
+        return source.Successful ? SwitchesMatchTheSource() : source;
+    }
+
+    /// <summary>The source switches this command line carries, named as the caller wrote them.</summary>
+    private List<string> NamedSources()
+    {
+        List<string> named = [];
+        if (Package is not null) named.Add("--package");
+        if (Nupkg is not null) named.Add("--nupkg");
+        if (Projects.Length > 0) named.Add("--project");
+        if (Assemblies.Length > 0) named.Add("--assembly");
+
+        return named;
+    }
+
+    /// <summary>Exactly one source, and the three switches that say where the result goes.</summary>
+    private ValidationResult OneSourceAndSomewhereToWriteIt(List<string> named)
+    {
         // Refused rather than resolved by precedence: each names a source, and picking one silently
         // would generate a catalogue from something the caller did not ask for.
         if (named.Count > 1)
@@ -123,11 +139,18 @@ internal abstract class CatalogueSettings : CommandSettings
         if (Namespace is null) missing.Add("--namespace");
         if (Container is null) missing.Add("--container");
         if (Output is null) missing.Add("--output");
-        if (missing.Count > 0)
-        {
-            return ValidationResult.Error($"nowhere to write the catalogue: {string.Join(", ", missing)} missing.");
-        }
 
+        return missing.Count > 0
+            ? ValidationResult.Error($"nowhere to write the catalogue: {string.Join(", ", missing)} missing.")
+            : ValidationResult.Success();
+    }
+
+    /// <summary>
+    /// The switches that only mean something against one kind of source, refused rather than
+    /// ignored when they are passed against another.
+    /// </summary>
+    private ValidationResult SwitchesMatchTheSource()
+    {
         // Reported rather than ignored: a caller who passed one of these with --package believes it
         // took effect, and a catalogue whose recorded source silently came from somewhere else is
         // exactly the drift a recorded source exists to prevent. A .nupkg on disk accepts them —

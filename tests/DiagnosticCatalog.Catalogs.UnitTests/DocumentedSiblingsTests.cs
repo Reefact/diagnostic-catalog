@@ -54,8 +54,8 @@ public sealed class DocumentedSiblingsTests
     /// </summary>
     public static TheoryData<string, string> Siblings()
     {
-        TheoryData<string, string> pairs = new();
-        IReadOnlyList<Catalogue> catalogues = Catalogues();
+        TheoryData<string, string> pairs = [];
+        List<Catalogue> catalogues = Catalogues();
         foreach (Catalogue catalogue in catalogues)
         {
             foreach (Catalogue sibling in catalogues)
@@ -73,7 +73,7 @@ public sealed class DocumentedSiblingsTests
     /// <summary>The project folder of each catalogue.</summary>
     public static TheoryData<string> CatalogueFolders()
     {
-        TheoryData<string> folders = new();
+        TheoryData<string> folders = [];
         foreach (Catalogue catalogue in Catalogues())
         {
             folders.Add(catalogue.Folder);
@@ -85,7 +85,7 @@ public sealed class DocumentedSiblingsTests
     /// <summary>Each catalogue, by published package id.</summary>
     public static TheoryData<string> CatalogueIds()
     {
-        TheoryData<string> ids = new();
+        TheoryData<string> ids = [];
         foreach (Catalogue catalogue in Catalogues())
         {
             ids.Add(catalogue.PackageId);
@@ -97,7 +97,7 @@ public sealed class DocumentedSiblingsTests
     /// <summary>Every project this repository packs, catalogue or not.</summary>
     public static TheoryData<string> PackagedFolders()
     {
-        TheoryData<string> folders = new();
+        TheoryData<string> folders = [];
         foreach (KeyValuePair<string, string> package in Packaged())
         {
             folders.Add(package.Key);
@@ -180,7 +180,7 @@ public sealed class DocumentedSiblingsTests
     [Fact]
     public void The_catalogues_are_discovered_from_the_manifest_that_generates_them()
     {
-        IReadOnlyList<Catalogue> catalogues = Catalogues();
+        List<Catalogue> catalogues = Catalogues();
 
         Assert.True(
             catalogues.Count >= 2,
@@ -201,12 +201,12 @@ public sealed class DocumentedSiblingsTests
     /// written into; that project gives the name it is published under, so neither is assumed to
     /// match the other.
     /// </summary>
-    private static IReadOnlyList<Catalogue> Catalogues()
+    private static List<Catalogue> Catalogues()
     {
         string manifest = Path.Combine(AppContext.BaseDirectory, "catalogmanifest", "catalogs.json");
         if (!File.Exists(manifest)) return [];
 
-        IReadOnlyDictionary<string, string> packaged = Packaged();
+        Dictionary<string, string> packaged = Packaged();
         List<Catalogue> catalogues = [];
         foreach (Match entry in Regex.Matches(
                      File.ReadAllText(manifest),
@@ -233,7 +233,7 @@ public sealed class DocumentedSiblingsTests
     /// nowhere else. Wider than the catalogues on purpose — it answers whether a nuget.org address
     /// resolves to something of ours, which the foundation and the analyzers also do.
     /// </summary>
-    private static IReadOnlyDictionary<string, string> Packaged()
+    private static Dictionary<string, string> Packaged()
     {
         string root = Path.Combine(AppContext.BaseDirectory, "catalogprojects");
         if (!Directory.Exists(root)) return new Dictionary<string, string>(StringComparer.Ordinal);
