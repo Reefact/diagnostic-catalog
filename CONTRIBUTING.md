@@ -114,6 +114,40 @@ Adding a train is four edits: a row in `tools/trains.sh`, its scope in the commi
 linter and in the tables below, and its tag pattern plus dispatch option in
 `.github/workflows/release.yml` — GitHub requires those last two to be literal.
 
+## Adding a catalogue
+
+A catalogue is generated from an analyzer's own descriptors, never hand-written.
+Adding one is five steps, and the last two are the ones nothing else would remind
+you of — because nothing compiles a README.
+
+1. **Declare it in the manifest.** One entry in
+   [`eng/catalogs.json`](eng/catalogs.json): the upstream package, the namespace,
+   the container type, the output path. Both the generator and the nightly
+   workflow read that file, so the catalogues are never listed twice.
+2. **Create the project** under `src/`, declaring its own `<ReleaseTrain>` (see
+   *How a project joins a train*), a `<PackageId>`, and a `PackageReadmeFile`. A
+   catalogue rides its own train because it follows its vendor's pace, not the
+   foundation's:
+   [ADR-0015](doc/adr/0015-a-catalogues-version-runs-on-its-own-line.md).
+3. **Generate it**:
+   `dotnet run --project src/DiagnosticCatalog.Cli -- generate --manifest eng/catalogs.json`,
+   or `dcat generate --manifest eng/catalogs.json` with the tool installed.
+4. **Give its README and CHANGELOG a mirror block** —
+   `<!-- mirror:begin --> … <!-- mirror:end -->`. The generator writes which
+   upstream release the catalogue reflects between those markers, and
+   `DocumentedMirrorTests` fails a document that carries none: a banner the
+   generator cannot reach states nothing. That test lists the catalogues by hand,
+   so add the new one to its theory data.
+5. **Name the other catalogues and the foundation** in that README, and add the
+   catalogue to the repository README. A catalogue's README *is* its page on
+   nuget.org, and a package page has no siblings beside it — a reader landing
+   there from a search sees that catalogue and nothing else.
+   `DocumentedSiblingsTests` reads the manifest from step 1 and fails every
+   README that has not heard of the newcomer, in both directions. Name the
+   package id; link it only once it is published, since an address cannot be
+   pointed at a version that does not exist
+   ([ADR-0007](doc/adr/0007-depend-across-trains-through-published-packages.md)).
+
 ## Enabling the commit-message hook
 
 A `commit-msg` hook checks every message against the convention below before it
