@@ -9,12 +9,19 @@ documented, and close to the code that uses it.
 
 * The repository language is **English** by default: source code, code comments,
   commit messages, branch names, PR titles and descriptions, and issues.
-* You may reply to me in French in the chat, but never write repository content
-  in French.
-* One documented exception: the specification under [`doc/`](doc/) is maintained
-  in English (`specification.en.md`, canonical) alongside a courtesy French
-  translation (`specification.fr.md`). The English version wins wherever the two
-  disagree, and that pair is the only French content the repository carries.
+* You may reply to me in French in the chat. Outside [`doc/`](doc/), never write
+  repository content in French.
+* **[`doc/`](doc/) is bilingual**, and it is the only place that is. Every
+  document there exists as an `.en.md` / `.fr.md` pair — the guides, the
+  specification, the decision records. **English is canonical**: where the two
+  disagree, the English version wins. A page and its translation land in the same
+  commit; `tests/DiagnosticCatalog.Documentation.UnitTests` fails a pair that is
+  missing a half, a link that does not resolve, or a page nothing navigates to.
+  The layout, the language banner and the navigation footer are specified in
+  [`doc/CONVENTIONS.en.md`](doc/CONVENTIONS.en.md); the decision is
+  [ADR-0020](doc/adr/0020-maintain-every-document-under-doc-in-english-and-french.md).
+* The package READMEs under `src/` stay **English-only**. nuget.org renders one
+  file per package, offers no language switch, and resolves no relative link.
 
 ## Build & test
 
