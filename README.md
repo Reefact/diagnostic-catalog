@@ -301,7 +301,8 @@ release does not move the foundation's version. Verification details are in
 
 Found a bug, or want a catalogue that is not here yet? Open an issue on the
 [issue tracker](https://github.com/Reefact/diagnostic-catalog/issues). Contributions are
-welcome — start with [CONTRIBUTING.md](CONTRIBUTING.md).
+welcome — start with [CONTRIBUTING.md](CONTRIBUTING.md), and with the
+[Code of Conduct](CODE_OF_CONDUCT.md) that everyone taking part here accepts.
 
 For security vulnerabilities, follow the private process in [SECURITY.md](SECURITY.md).
 
