@@ -46,6 +46,7 @@
   -->
   <ItemGroup>
     <PackageReference Include="NuGet.Protocol" />
+    <PackageReference Include="System.Reflection.MetadataLoadContext" />
   </ItemGroup>
 
   <!--

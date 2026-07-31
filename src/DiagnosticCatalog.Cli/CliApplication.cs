@@ -49,6 +49,15 @@ internal static class CliApplication
 
         config.AddCommand<GenerateCommand>("generate")
               .WithDescription("Generate a catalogue from a NuGet package or from analyzer assemblies on disk.");
+
+        config.AddCommand<ValidateCommand>("validate")
+              .WithDescription("Check that a catalogue still matches its source, without writing anything.");
+
+        config.AddCommand<ListCommand>("list")
+              .WithDescription("List the rules a compiled catalogue publishes.");
+
+        config.AddCommand<ExplainCommand>("explain")
+              .WithDescription("Explain one rule, and print the suppression that references it.");
     }
 
     /// <summary>

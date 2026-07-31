@@ -81,8 +81,13 @@ public static class CatalogRun
     /// Observed while a package is being resolved and downloaded, which is where a run spends
     /// almost all of its time and the only place interrupting it has anything to interrupt.
     /// </param>
+    /// <param name="writeChanges">
+    /// False to compare without touching anything, which is what asking "is this catalogue still
+    /// true?" means. <see cref="RunOutcome.ChangedAny"/> then reports drift rather than work done.
+    /// </param>
     public static async Task<RunOutcome> ExecuteAsync(
-        IReadOnlyList<Job> jobs, string? dateOverride, CancellationToken cancellation = default)
+        IReadOnlyList<Job> jobs, string? dateOverride, CancellationToken cancellation = default,
+        bool writeChanges = true)
     {
         List<string> summaries = [];
         bool changedAny = false;
@@ -94,7 +99,7 @@ public static class CatalogRun
             Console.WriteLine($"=== {job.Namespace} <- {job.SourceLabel} ===");
             try
             {
-                GenerateResult? result = await GenerateAsync(job, dateOverride, cancellation);
+                GenerateResult? result = await GenerateAsync(job, dateOverride, cancellation, writeChanges);
                 if (result is null) { exitCode = 1; continue; }
                 if (result.Changed)
                 {
@@ -122,7 +127,9 @@ public static class CatalogRun
 
         string summary = changedAny
             ? string.Join("\n", summaries)
-            : "No catalogue changed: every upstream package still resolves to the version already mirrored.";
+            : writeChanges
+                ? "No catalogue changed: every upstream package still resolves to the version already mirrored."
+                : "Every catalogue is current with its source.";
 
         return new RunOutcome(exitCode, changedAny, summary);
     }
@@ -130,7 +137,7 @@ public static class CatalogRun
     // One catalogue, end to end: acquire, read, emit. Only the acquisition differs per source; what
     // follows it is the same two calls either way, which is the property the split exists to give.
     private static async Task<GenerateResult?> GenerateAsync(
-        Job job, string? dateOverride, CancellationToken cancellation)
+        Job job, string? dateOverride, CancellationToken cancellation, bool writeChanges)
     {
         Previous? previous = CatalogParser.ReadPrevious(job.Output);
 
@@ -166,7 +173,8 @@ public static class CatalogRun
 
             return rules is null
                 ? null
-                : CatalogEmitter.Emit(job, source.SourceName, source.SourceVersion, rules, previous, dateOverride);
+                : CatalogEmitter.Emit(job, source.SourceName, source.SourceVersion, rules, previous, dateOverride,
+                                      writeChanges);
         }
     }
 }

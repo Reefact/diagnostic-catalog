@@ -134,6 +134,59 @@ dcat generate --manifest eng/catalogs.json --summary "$RUNNER_TEMP/summary.md"
 recategorised, retitled, retired — which is what makes a scheduled regeneration
 open a pull request a human can review rather than merge blind.
 
+## Checking a catalogue is still true
+
+`validate` does everything `generate` does and stops one step short: it acquires the
+source, reads its descriptors, computes the catalogue that would be written — and writes
+nothing. It answers whether what you have on disk still matches what your source declares.
+
+```bash
+dcat validate --manifest eng/catalogs.json
+```
+
+| Exit | Meaning |
+|---|---|
+| `0` | Current. |
+| `2` | Out of date — regenerate. |
+| `1` | Could not be checked: the source would not resolve. Distinct on purpose, so a feed outage is never reported as a drifted contract. |
+
+This is the question no analyzer can answer for you. `DCAT0001`–`DCAT0007` check that a
+catalogue is well formed and correctly used, at compile time, which is the better place
+for those — but none of them can check that it is still *current*, because that needs the
+vendor's package and a compiler has no business fetching one. And staleness is the failure
+with no symptom: a category that moved upstream still compiles, suppresses nothing, and
+says nothing.
+
+## Reading a catalogue
+
+`list` and `explain` read a **compiled** catalogue — the assembly from a package you
+reference, not a source file you would have to have generated yourself. Nothing in it is
+executed: a catalogue declares everything it publishes as metadata constants, so it is
+read reflection-only.
+
+```bash
+dcat list  ~/.nuget/packages/diagnosticcatalog.stylecop/0.2.1/lib/netstandard2.0/DiagnosticCatalog.StyleCop.dll
+dcat explain <that same path> SA1000
+```
+
+```
+StyleCop.Analyzers.Unstable 1.2.0.556, generated 2026-07-31
+
+id        SA1000
+category  StyleCop.CSharp.SpacingRules
+help      https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1000.md
+
+[SuppressMessage(
+    StyleCopRule.SA1000.Category,
+    StyleCopRule.SA1000.Id,
+    Justification = "…")]
+```
+
+The snippet is the point: it is the line to copy, fully qualified as you would write it.
+Both commands state which upstream release the catalogue mirrors and when it was generated
+before answering, because a catalogue is a snapshot and its age decides whether its answer
+can be trusted.
+
 ## Reproducibility
 
 The same upstream release yields the same bytes: rules and categories are
@@ -151,6 +204,7 @@ something else changed too.
 |---|---|
 | `0` | The catalogues were generated. |
 | `1` | The run could not finish: an upstream package that would not resolve, an analyzer that could not be constructed, an output that could not be written. |
+| `2` | `validate` only: the catalogue no longer matches its source. |
 | `64` | The command line is wrong. No retry will fix it. |
 
 ## Runtime
