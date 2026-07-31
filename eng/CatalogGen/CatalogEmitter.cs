@@ -100,8 +100,17 @@ internal static class CatalogEmitter
         int end = text.IndexOf(MirrorEnd, StringComparison.Ordinal);
         if (start < 0 || end < start)
         {
-            Console.WriteLine($"  WARNING: no {MirrorBegin} … {MirrorEnd} block in {Path.GetFileName(path)}; " +
-                              "the mirrored release is not stated there and the tests will say so");
+            // A note rather than a warning, and it says only what is true anywhere. The markers are
+            // how a document ASKS for a banner, so a document without them has asked for nothing and
+            // nothing is wrong. This line ships inside `dcat`: it is read in repositories that never
+            // adopted the convention, where announcing a fault — still worse, naming tests that only
+            // exist here — would report a problem its reader does not have and cannot act on.
+            //
+            // What makes reporting enough for THIS repository is not said here but done next door:
+            // DocumentedMirrorTests fails the build when a shipped document stops agreeing with its
+            // catalogue. That check belongs to the repository, so it is the repository that states it.
+            Console.WriteLine($"  note: no {MirrorBegin} … {MirrorEnd} block in {Path.GetFileName(path)} " +
+                              "— no banner written");
             return;
         }
 
