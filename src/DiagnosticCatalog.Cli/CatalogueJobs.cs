@@ -22,11 +22,16 @@ internal static class CatalogueJobs
         {
             jobs = await FromAsync(settings, cancellation);
         }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.Text.Json.JsonException)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException
+                                      or System.Text.Json.JsonException or ManifestException)
         {
             // A manifest that cannot be read or does not parse is the caller's file, not a defect
             // here: report the reason on one line rather than a stack trace.
-            Console.Error.WriteLine($"error: {settings.Manifest}: {ex.Message}");
+            // A ManifestException already names the file and the entry, so prefixing the path
+            // again would say it twice.
+            Console.Error.WriteLine(ex is ManifestException
+                                        ? $"error: {ex.Message}"
+                                        : $"error: {settings.Manifest}: {ex.Message}");
 
             return null;
         }

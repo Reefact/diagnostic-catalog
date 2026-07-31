@@ -17,7 +17,7 @@ namespace CatalogGen;
 public sealed record Job(
     string? Package, string? Version, string Namespace, string Container, string Output, string Language,
     IReadOnlyList<string>? Assemblies = null, string? SourceName = null, string? SourceVersion = null,
-    string? Nupkg = null, string? Source = null)
+    string? Nupkg = null, string? Source = null, string? Project = null)
 {
     /// <summary>
     /// What this job reads from, for the run's header line. The assemblies' file names when they

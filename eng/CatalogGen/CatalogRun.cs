@@ -37,37 +37,74 @@ public static class CatalogRun
     public static IReadOnlyList<Job> JobsFromManifest(string json, string manifestPath)
     {
         string manifestDir = Path.GetDirectoryName(Path.GetFullPath(manifestPath))!;
+        string file = Path.GetFileName(manifestPath);
         List<Job> jobs = [];
         using JsonDocument doc = JsonDocument.Parse(json);
-        foreach (JsonElement e in doc.RootElement.GetProperty("catalogs").EnumerateArray())
+
+        if (!doc.RootElement.TryGetProperty("catalogs", out JsonElement catalogs))
+            throw new ManifestException($"{file}: no \"catalogs\" array.");
+
+        int index = 0;
+        foreach (JsonElement e in catalogs.EnumerateArray())
         {
-            // An entry names either a package to fetch or assemblies already on disk. "assemblies"
-            // decides, so an entry carrying it needs no "package" — and paths in it are resolved
-            // against the manifest, exactly as "output" is.
+            // Every entry names itself in its own errors. A manifest is edited by hand, so the
+            // likeliest fault is a mistyped key — and the answer to one used to be "The given key
+            // was not present in the dictionary", which named neither the key, nor the file, nor
+            // which of several entries carried it.
+            string where = $"{file}: catalogs[{index}]";
+            index++;
+
+            // An entry names a package to fetch, a .nupkg on disk, or assemblies on disk. Paths in
+            // any of them are resolved against the manifest, exactly as "output" is.
             IReadOnlyList<string>? assemblies = e.TryGetProperty("assemblies", out JsonElement a)
-                ? [.. a.EnumerateArray().Select(x => Path.GetFullPath(Path.Combine(manifestDir, x.GetString()!)))]
+                ? [.. a.EnumerateArray().Select(x => Path.GetFullPath(Path.Combine(manifestDir, Text(x, where, "assemblies"))))]
                 : null;
             string? nupkg = e.TryGetProperty("nupkg", out JsonElement n)
-                ? Path.GetFullPath(Path.Combine(manifestDir, n.GetString()!))
+                ? Path.GetFullPath(Path.Combine(manifestDir, Text(n, where, "nupkg")))
+                : null;
+            string? project = e.TryGetProperty("project", out JsonElement pr)
+                ? Path.GetFullPath(Path.Combine(manifestDir, Text(pr, where, "project")))
                 : null;
 
+            int named = (assemblies is not null ? 1 : 0) + (nupkg is not null ? 1 : 0) + (project is not null ? 1 : 0);
+            if (named > 1)
+                throw new ManifestException($"{where}: names more than one source; give one of " +
+                                            "\"package\", \"nupkg\", \"project\" or \"assemblies\".");
+
+            bool fromFeed = named == 0;
+
             jobs.Add(new Job(
-                Package: assemblies is null && nupkg is null ? e.GetProperty("package").GetString()! : null,
-                Version: assemblies is not null || nupkg is not null ? null
-                         : e.TryGetProperty("version", out JsonElement v) ? v.GetString()! : "latest",
-                Namespace: e.GetProperty("namespace").GetString()!,
-                Container: e.GetProperty("container").GetString()!,
-                Output: Path.GetFullPath(Path.Combine(manifestDir, e.GetProperty("output").GetString()!)),
-                Language: e.TryGetProperty("language", out JsonElement l) ? l.GetString()! : "cs",
+                Package: fromFeed ? Required(e, "package", where) : null,
+                Version: fromFeed ? Optional(e, "version", where) ?? "latest" : null,
+                Namespace: Required(e, "namespace", where),
+                Container: Required(e, "container", where),
+                Output: Path.GetFullPath(Path.Combine(manifestDir, Required(e, "output", where))),
+                Language: Optional(e, "language", where) ?? "cs",
                 Assemblies: assemblies,
-                SourceName: e.TryGetProperty("sourceName", out JsonElement sn) ? sn.GetString() : null,
-                SourceVersion: e.TryGetProperty("sourceVersion", out JsonElement sv) ? sv.GetString() : null,
+                SourceName: Optional(e, "sourceName", where),
+                SourceVersion: Optional(e, "sourceVersion", where),
                 Nupkg: nupkg,
-                Source: e.TryGetProperty("source", out JsonElement src) ? src.GetString() : null));
+                Source: Optional(e, "source", where),
+                Project: project));
         }
+
+        if (jobs.Count == 0) throw new ManifestException($"{file}: \"catalogs\" declares no entry.");
 
         return jobs;
     }
+
+    private static string Required(JsonElement entry, string name, string where)
+        => entry.TryGetProperty(name, out JsonElement value)
+               ? Text(value, where, name)
+               : throw new ManifestException($"{where}: \"{name}\" is missing.");
+
+    private static string? Optional(JsonElement entry, string name, string where)
+        => entry.TryGetProperty(name, out JsonElement value) ? Text(value, where, name) : null;
+
+    private static string Text(JsonElement value, string where, string name)
+        => value.ValueKind == JsonValueKind.String
+               ? value.GetString()!
+               : throw new ManifestException($"{where}: \"{name}\" should be a string, not {value.ValueKind}.");
 
     /// <summary>
     /// Generates every catalogue in <paramref name="jobs"/>.
@@ -176,5 +213,27 @@ public static class CatalogRun
                 : CatalogEmitter.Emit(job, source.SourceName, source.SourceVersion, rules, previous, dateOverride,
                                       writeChanges);
         }
+    }
+}
+
+/// <summary>
+/// A manifest the tool cannot act on, described in terms of the manifest rather than of the parser.
+/// </summary>
+/// <remarks>
+/// It exists so the shell can tell a file it was handed from a defect in the tool: the first is the
+/// caller's to fix and deserves one legible line, the second is not and deserves a stack trace.
+/// </remarks>
+public sealed class ManifestException : Exception
+{
+    public ManifestException(string message) : base(message)
+    {
+    }
+
+    public ManifestException()
+    {
+    }
+
+    public ManifestException(string message, Exception innerException) : base(message, innerException)
+    {
     }
 }
