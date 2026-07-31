@@ -59,6 +59,35 @@ choose: Roslyn matches a suppression on the **identifier alone** and never looks
 correcting the category leaves what is suppressed exactly as it is, while correcting the identifier
 changes it.
 
+## Writing a rule by hand
+
+A catalogue is normally generated, and generated code satisfies the contract by construction. When you
+write one yourself, three fixes are there for the mechanical part:
+
+```csharp
+[DiagnosticRule]
+public sealed class JD0007                      // → Make 'JD0007' static
+{
+    private static readonly string Id = "JD0007";   // → Make 'Id' a public constant
+                                                    // → Declare 'public const string Category'
+}
+```
+
+Each is offered **only where the repair is already written in the code**. `static` is not offered to a
+generic type, to a `struct`, or to a class holding an instance member — the keyword would not compile
+there, and removing what blocks it is a change to your design rather than a repair of it. A `partial`
+class is refused too: the parts the fix cannot see are the ones that decide.
+
+The member repairs correct modifiers and never the value. A `const int Id`, a blank string, an
+initialiser that is not constant — those are reported with no fix, because the code says nothing about
+what you meant.
+
+> **The one to think about before pressing it.** *Declare 'public const string Category'* writes
+> `"TODO"`. That is a real string, so `DCAT0004` stops being reported — you have swapped a warning for
+> a marker. A category nobody fills in is wrong forever and invisible in every build, because Roslyn
+> matches a suppression on its identifier alone. `Id` is different: it is written `nameof(JD0007)`,
+> read off the declaration rather than invented.
+
 ## Referencing it
 
 Analysis assemblies must never become runtime dependencies, so reference it privately:

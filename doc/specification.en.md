@@ -1082,6 +1082,23 @@ public const string Category = "TODO";
 
 The code fix must never invent a real category.
 
+**Each of these is conditional, and the condition is the same one every time:
+the repair must be written in the code already.** `static` is offered only to a
+class that could carry it — no type parameters, no base list, no instance member
+or constructor — and never to a `partial` type, whose other parts decide the
+question and are not visible to the fix. The modifier repairs are offered only
+when the member is a single-variable field holding a non-blank constant string,
+which is what leaves the value untouched; a wrong type, a blank value or a
+non-constant initialiser is refused, because the code says nothing about what
+was meant. `Id` is added as `nameof(TheRule)` rather than as a placeholder,
+being §8.2's recommended form and derived from the declaration rather than
+invented; `Category` has no such source and takes the literal above.
+
+A placeholder category **stops the diagnostic being reported**, since `"TODO"`
+is not blank. That is the cost of the last item on the list, and it is the
+reason the fix is named for the constant it declares rather than for the rule it
+completes.
+
 ---
 
 ## 13. Catalogue discovery
@@ -1557,7 +1574,12 @@ either direction (Appendix B6).
 * justification preservation;
 * `Scope`, `Target` and `MessageId` preservation;
 * no modification of other attributes;
-* *Fix all occurrences* honouring `EquivalenceKey` consistently.
+* *Fix all occurrences* honouring `EquivalenceKey` consistently;
+* the definition repairs of §12.4, and — one assertion per case — the definition
+  faults for which no fix is offered. The second half is the load-bearing one: a
+  refusal is a claim about the code, and the test for it must show the diagnostic
+  was still reported, so that a fix which quietly starts repairing a case it had
+  declined cannot pass as one that never had a repair.
 
 ### 21.5 Real compilation tests
 
@@ -1674,6 +1696,8 @@ Version `1.0` must contain only the essentials.
 * `SuppressMessageAttribute` support;
 * `UnconditionalSuppressMessageAttribute` support, scoped per §9.1;
 * the two code fixes for incoherent pairs;
+* the definition fixes of §12.4, each offered only where the repair is written
+  in the code already;
 * two NuGet packages (§16.1) with analyzer release tracking;
 * documentation;
 * analyzer, compilation, end-to-end and packaging tests.
