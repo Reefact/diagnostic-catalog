@@ -152,7 +152,7 @@ internal static class ProjectSource
     // its output.
     private static Evaluation? Evaluate(string project, string configuration, string? targetFramework)
     {
-        IReadOnlyDictionary<string, string>? properties = Properties(project, configuration, targetFramework, Wanted);
+        Dictionary<string, string>? properties = Properties(project, configuration, targetFramework, Wanted);
 
         return properties is null
                    ? null
@@ -176,7 +176,7 @@ internal static class ProjectSource
     // second property asked for below: -getProperty answers a BARE VALUE for one name and JSON for
     // two or more, so asking for a companion keeps a single parsing path rather than two that would
     // diverge the first time one was tested and the other was not.
-    private static IReadOnlyDictionary<string, string>? Properties(
+    private static Dictionary<string, string>? Properties(
         string project, string configuration, string? targetFramework, IReadOnlyList<string> names)
     {
         ProcessStartInfo start = new()
