@@ -41,6 +41,11 @@
          public member into a build error, which is what makes §23's "renaming the attribute is
          a major version" a mechanical check rather than a review habit. -->
     <PackageVersion Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="5.6.0" />
+    <!-- The authoring analyzers for analyzer authors (RS1xxx, RS2xxx): they check that a
+         DiagnosticAnalyzer is well formed and that every declared id appears in AnalyzerReleases.*.md.
+         Build-time only (PrivateAssets=all) and NOT part of the load contract, so unlike
+         Microsoft.CodeAnalysis.CSharp this one is free to track the newest version. -->
+    <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="5.6.0" />
     <!-- Used by eng/CatalogGen to resolve DiagnosticAnalyzer and DiagnosticDescriptor when it
          loads an upstream analyzer assembly reflectively. Build-time tooling only: the shipped
          catalogs carry no Roslyn dependency. Workspaces is needed because some upstream

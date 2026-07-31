@@ -3,6 +3,7 @@
     <Project Path="eng/CatalogGen/CatalogGen.csproj" />
   </Folder>
   <Folder Name="/src/">
+    <Project Path="src/DiagnosticCatalog.Analyzers/DiagnosticCatalog.Analyzers.csproj" />
     <Project Path="src/DiagnosticCatalog.NetAnalyzers/DiagnosticCatalog.NetAnalyzers.csproj" />
     <Project Path="src/DiagnosticCatalog.Sonar/DiagnosticCatalog.Sonar.csproj" />
     <Project Path="src/DiagnosticCatalog.StyleCop/DiagnosticCatalog.StyleCop.csproj" />
