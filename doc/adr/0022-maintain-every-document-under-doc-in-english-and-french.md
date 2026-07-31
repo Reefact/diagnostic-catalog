@@ -1,7 +1,8 @@
 # ADR-0022 | Maintain every document under `doc/` in English and French
 
-**Status:** Proposed
+**Status:** Accepted
 **Proposed:** 2026-07-31
+**Accepted:** 2026-07-31
 **Decision Makers:** Reefact
 
 ## Context
