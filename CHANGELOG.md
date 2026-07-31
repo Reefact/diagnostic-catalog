@@ -18,7 +18,18 @@ project:
 
 ## [Unreleased]
 
-_Nothing yet._
+### Fixed
+
+* The catalogue generator can no longer rename a category constant it has already
+  published. A category arriving upstream that both flattened to an existing
+  identifier and sorted before it would have taken that name, pushing the
+  incumbent onto a numbered suffix — breaking every consumer that referenced it,
+  through an unattended nightly run
+  ([ADR-0012](doc/adr/0012-a-catalogue-never-renames-a-member-it-published.md)).
+
+  **No shipped assembly changes.** `eng/CatalogGen` is build tooling and rides no
+  train; the entry appears here because the commit's `core` scope routes it to
+  `lib`. What it protects is the catalogues, not this package.
 
 ## [0.1.0] - 2026-07-30
 
