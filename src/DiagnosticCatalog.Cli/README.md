@@ -40,6 +40,24 @@ dcat generate \
 release) or `latest-any` (including prereleases). `--version` is left to mean
 what it means everywhere else: which version of `dcat` you are running.
 
+## Generating from a package on disk
+
+A `.nupkg` you built, fetched by hand, or keep on a share — anything that never
+came through a feed this tool can reach:
+
+```bash
+dcat generate \
+  --nupkg packages/Vendor.Analyzers.3.1.4.nupkg \
+  --namespace My.Catalog --container VendorRule \
+  --output src/My.Catalog/VendorRules.g.cs
+```
+
+The package names itself: `dcat` reads the id and version out of its `.nuspec`,
+not out of the file name — a renamed file must not quietly rewrite what a
+catalogue records as the release it was generated from. Pass `--source-name` or
+`--source-version` when you know better, which happens when a package is rebuilt
+without its version moving.
+
 ## Generating from your own analyzers
 
 Point it at assemblies you have already built. Repeat `--assembly` when a

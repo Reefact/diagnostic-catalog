@@ -66,20 +66,23 @@ internal sealed class GenerateCommand : AsyncCommand<GenerateSettings>
             return jobs;
         }
 
-        bool fromAssemblies = settings.Assemblies.Length > 0;
+        // Validation has already established that exactly one source is named, so "not the other
+        // two" is enough to identify it here.
+        bool fromFeed = settings.Assemblies.Length == 0 && settings.Nupkg is null;
 
         return
         [
             new Job(
-                Package: fromAssemblies ? null : settings.Package,
-                Version: fromAssemblies ? null : settings.PackageVersion,
+                Package: fromFeed ? settings.Package : null,
+                Version: fromFeed ? settings.PackageVersion : null,
                 Namespace: settings.Namespace!,
                 Container: settings.Container!,
                 Output: Path.GetFullPath(settings.Output!),
                 Language: settings.Language,
-                Assemblies: fromAssemblies ? settings.Assemblies : null,
+                Assemblies: settings.Assemblies.Length > 0 ? settings.Assemblies : null,
                 SourceName: settings.SourceName,
-                SourceVersion: settings.SourceVersion),
+                SourceVersion: settings.SourceVersion,
+                Nupkg: settings.Nupkg is null ? null : Path.GetFullPath(settings.Nupkg)),
         ];
     }
 }

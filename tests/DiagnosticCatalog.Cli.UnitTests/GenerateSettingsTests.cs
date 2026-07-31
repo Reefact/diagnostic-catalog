@@ -72,7 +72,9 @@ public sealed class GenerateSettingsTests
         ValidationResult result = settings.Validate();
 
         Assert.False(result.Successful);
-        Assert.Contains("two different sources", result.Message);
+        Assert.Contains("different sources", result.Message);
+        Assert.Contains("--package", result.Message);
+        Assert.Contains("--assembly", result.Message);
     }
 
     [Fact]
@@ -80,6 +82,71 @@ public sealed class GenerateSettingsTests
     {
         // The manifest carries its own sources, so this command line contradicts its own input.
         GenerateSettings settings = new() { Manifest = "catalogs.json", Package = "SonarAnalyzer.CSharp" };
+
+        Assert.False(settings.Validate().Successful);
+    }
+
+    [Fact]
+    public void A_package_on_disk_with_a_destination_is_accepted()
+    {
+        GenerateSettings settings = new()
+        {
+            Nupkg = "packages/Vendor.Analyzers.1.0.0.nupkg",
+            Namespace = "Vendor.Catalog",
+            Container = "VendorRule",
+            Output = "src/Vendor.Catalog/VendorRules.g.cs",
+        };
+
+        Assert.True(settings.Validate().Successful);
+    }
+
+    [Fact]
+    public void Describing_the_source_of_a_package_on_disk_is_allowed()
+    {
+        // Unlike a feed, which states its own release: a .nupkg can be rebuilt without its version
+        // moving, and can be renamed, so what its .nuspec says is a default rather than the last word.
+        GenerateSettings settings = new()
+        {
+            Nupkg = "v.nupkg",
+            SourceName = "Vendor.Analyzers",
+            SourceVersion = "9.9.9",
+            Namespace = "N",
+            Container = "C",
+            Output = "o.g.cs",
+        };
+
+        Assert.True(settings.Validate().Successful);
+    }
+
+    [Fact]
+    public void A_package_on_disk_and_a_feed_together_are_refused()
+    {
+        GenerateSettings settings = new()
+        {
+            Package = "SonarAnalyzer.CSharp",
+            Nupkg = "v.nupkg",
+            Namespace = "N",
+            Container = "C",
+            Output = "o.g.cs",
+        };
+
+        ValidationResult result = settings.Validate();
+
+        Assert.False(result.Successful);
+        Assert.Contains("different sources", result.Message);
+    }
+
+    [Fact]
+    public void A_package_on_disk_and_an_assembly_together_are_refused()
+    {
+        GenerateSettings settings = new()
+        {
+            Nupkg = "v.nupkg",
+            Assemblies = ["a.dll"],
+            Namespace = "N",
+            Container = "C",
+            Output = "o.g.cs",
+        };
 
         Assert.False(settings.Validate().Successful);
     }

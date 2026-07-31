@@ -47,10 +47,13 @@ public static class CatalogRun
             IReadOnlyList<string>? assemblies = e.TryGetProperty("assemblies", out JsonElement a)
                 ? [.. a.EnumerateArray().Select(x => Path.GetFullPath(Path.Combine(manifestDir, x.GetString()!)))]
                 : null;
+            string? nupkg = e.TryGetProperty("nupkg", out JsonElement n)
+                ? Path.GetFullPath(Path.Combine(manifestDir, n.GetString()!))
+                : null;
 
             jobs.Add(new Job(
-                Package: assemblies is null ? e.GetProperty("package").GetString()! : null,
-                Version: assemblies is not null ? null
+                Package: assemblies is null && nupkg is null ? e.GetProperty("package").GetString()! : null,
+                Version: assemblies is not null || nupkg is not null ? null
                          : e.TryGetProperty("version", out JsonElement v) ? v.GetString()! : "latest",
                 Namespace: e.GetProperty("namespace").GetString()!,
                 Container: e.GetProperty("container").GetString()!,
@@ -58,7 +61,8 @@ public static class CatalogRun
                 Language: e.TryGetProperty("language", out JsonElement l) ? l.GetString()! : "cs",
                 Assemblies: assemblies,
                 SourceName: e.TryGetProperty("sourceName", out JsonElement sn) ? sn.GetString() : null,
-                SourceVersion: e.TryGetProperty("sourceVersion", out JsonElement sv) ? sv.GetString() : null));
+                SourceVersion: e.TryGetProperty("sourceVersion", out JsonElement sv) ? sv.GetString() : null,
+                Nupkg: nupkg));
         }
 
         return jobs;
@@ -137,14 +141,17 @@ public static class CatalogRun
             return local is null ? null : EmitFrom(local);
         }
 
-        // Only a package needs scratch space: it has to be downloaded and unzipped before it can be
-        // read, and the directory has to go whether that succeeded, returned nothing, or threw.
+        // Only a package needs scratch space: it has to be unzipped — and, from a feed, downloaded
+        // first — before it can be read, and the directory has to go whether that succeeded,
+        // returned nothing, or threw.
         DirectoryInfo work = Directory.CreateTempSubdirectory("cataloggen");
         try
         {
-            AnalyzerAssemblySet? fetched =
-                await NuGetPackageSource.AcquireAsync(job.Package!, job.Version!, job.Language, work.FullName, http,
-                                                      cancellation);
+            AnalyzerAssemblySet? fetched = job.Nupkg is not null
+                ? LocalPackageSource.Acquire(job.Nupkg, job.SourceName, job.SourceVersion, job.Language,
+                                             work.FullName)
+                : await NuGetPackageSource.AcquireAsync(job.Package!, job.Version!, job.Language, work.FullName,
+                                                        http, cancellation);
 
             return fetched is null ? null : EmitFrom(fetched);
         }
