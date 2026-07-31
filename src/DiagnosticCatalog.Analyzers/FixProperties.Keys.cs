@@ -24,4 +24,14 @@ internal static partial class FixProperties
 
     /// <summary>The namespace the reference needs imported, empty when it needs none.</summary>
     internal const string Namespace = "Namespace";
+
+    /// <summary>
+    /// Which argument the fix must rewrite, as the slot number: absent means both.
+    /// </summary>
+    /// <remarks>
+    /// DCAT0007 rewrites one side and must leave the other exactly as written — it is already a
+    /// reference. Which side that is cannot be re-derived from syntax alone, since a constant declared
+    /// outside any rule looks like a member access too, so the analyzer says.
+    /// </remarks>
+    internal const string Slot = "Slot";
 }

@@ -1,6 +1,5 @@
 using System.Collections.Immutable;
 using System.Composition;
-using System.Threading;
 using System.Threading.Tasks;
 
 using DiagnosticCatalog.Analyzers;
@@ -9,7 +8,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace DiagnosticCatalog.CodeFixes;
 
@@ -62,46 +60,18 @@ public sealed class UseCatalogReferenceCodeFixProvider : CodeFixProvider
             context.RegisterCodeFix(
                 CodeAction.Create(
                     title: "Use the '" + reference + "' catalog reference",
-                    createChangedDocument: cancellation =>
-                        FixAsync(context.Document, diagnostic, reference!, @namespace, cancellation),
+                    createChangedDocument: cancellation => SuppressionFix.ApplyAsync(
+                        context.Document,
+                        diagnostic,
+                        reference!,
+                        @namespace,
+                        rewriteCategory: true,
+                        rewriteCheckId: true,
+                        cancellation),
                     equivalenceKey: EquivalenceKey),
                 diagnostic);
         }
 
         return Task.CompletedTask;
-    }
-
-    private static async Task<Document> FixAsync(
-        Document document,
-        Diagnostic diagnostic,
-        string reference,
-        string? @namespace,
-        CancellationToken cancellation)
-    {
-        SyntaxNode? root = await document.GetSyntaxRootAsync(cancellation).ConfigureAwait(false);
-
-        if (root is null) { return document; }
-
-        if (root.FindNode(diagnostic.Location.SourceSpan) is not AttributeSyntax attribute
-            || attribute.ArgumentList is null)
-        {
-            return document;
-        }
-
-        // Asked before the rewrite, while the attribute is still the node the document knows: the
-        // answer depends on where the suppression SITS, not on what the file happens to declare
-        // elsewhere.
-        bool imported = UsingDirectives.IsInScope(attribute, @namespace);
-
-        AttributeSyntax rewritten = SuppressionRewriter.WithCatalogReference(attribute, reference);
-
-        SyntaxNode updated = root.ReplaceNode(attribute, rewritten);
-
-        if (!imported && updated is CompilationUnitSyntax unit)
-        {
-            updated = UsingDirectives.Add(unit, @namespace!);
-        }
-
-        return document.WithSyntaxRoot(updated);
     }
 }

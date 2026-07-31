@@ -51,6 +51,20 @@ internal static class Descriptors
             + "suffix is dropped by the replacement, its content belonging to the rule's own "
             + "documentation.");
 
+    internal static readonly DiagnosticDescriptor MixedReferenceAndLiteral = new(
+        id: DiagnosticIds.MixedReferenceAndLiteral,
+        title: "Suppression mixes a catalog reference with a string literal",
+        messageFormat: "This suppression references '{0}' on one side and writes the literal \"{1}\" on the other: {2}",
+        category: Category,
+        defaultSeverity: DiagnosticSeverity.Warning,
+        isEnabledByDefault: true,
+        description:
+            "The most common half-migrated state, and the one case where the intended rule is known "
+            + "without ambiguity — the already-migrated argument names it. Completing it is offered only "
+            + "when the literal agrees with what that rule declares: replacing a literal that names "
+            + "something else would change which diagnostic is suppressed, which is a decision for the "
+            + "author rather than a mechanical migration.");
+
     internal static readonly DiagnosticDescriptor NonIlUnconditionalSuppression = new(
         id: DiagnosticIds.NonIlUnconditionalSuppression,
         title: "UnconditionalSuppressMessage only accepts IL#### identifiers",

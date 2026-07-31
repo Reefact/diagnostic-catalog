@@ -154,11 +154,12 @@ public sealed class SuppressionCoherenceTests
 
     [Fact]
     public Task A_half_migrated_suppression_is_not_this_diagnostic_s_business() =>
-        // One reference, one literal: DCAT0007, which lands in a later increment.
-        AnalyzerHarness.ReportsNothingAsync(Analyzer, SameCategoryRules + """
+        // One reference, one literal: DCAT0007's, and naming it alone in the expected set is what
+        // asserts DCAT0001 stayed out of a pair that references exactly one rule.
+        AnalyzerHarness.ReportsAsync(Analyzer, SameCategoryRules + """
             [SuppressMessage(SomeRules.RULE001.Category, "RULE001", Justification = "...")]
             public sealed class Target { }
-            """);
+            """, "DCAT0007");
 
     [Fact]
     public Task An_attribute_that_is_not_a_suppression_is_ignored() =>

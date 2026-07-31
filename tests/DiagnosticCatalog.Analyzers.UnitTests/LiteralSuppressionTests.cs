@@ -167,11 +167,11 @@ public sealed class LiteralSuppressionTests
     [Fact]
     public Task A_half_migrated_pair_is_left_to_DCAT0007() =>
         // §21.3's last case. One reference, one literal: reporting it here would offer to rewrite the
-        // half that is already correct.
-        AnalyzerHarness.ReportsNothingAsync(Analyzer, Usings + Rules + """
+        // half that is already correct. DCAT0007 alone in the expected set is that assertion.
+        AnalyzerHarness.ReportsAsync(Analyzer, Usings + Rules + """
             [SuppressMessage(SonarRules.S1144.Category, "S1144", Justification = "...")]
             public sealed class Target { }
-            """);
+            """, "DCAT0007");
 
     [Fact]
     public Task An_intermediate_constant_is_compared_by_value() =>
