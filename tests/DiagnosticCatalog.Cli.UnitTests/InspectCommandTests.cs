@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using CatalogGen.UnitTests;
+using Spectre.Console;
 using Xunit;
 
 namespace DiagnosticCatalog.Cli.UnitTests;
@@ -31,16 +32,38 @@ public sealed class InspectCommandTests : IDisposable
         => CatalogueFixture.Write(_work, "Acme.Catalog", source ?? CatalogueFixture.TwoRulesAndOneRetired);
 
     /// <summary>Runs the tool with Console.Out and Console.Error captured.</summary>
+    /// <remarks>
+    /// <para>
+    /// Nothing installed here is ever CLOSED, and that is the whole of what keeps this suite green.
+    /// A redirected writer outlives the redirection: something downstream holds the one that was
+    /// installed first, so closing it makes the next command that writes fail inside the tool with
+    /// "Cannot write to a closed TextWriter" — measured, and reported by `dcat` as exit code 1 on
+    /// `--help`, which turned two tests that touch none of this red about one run in three
+    /// depending on the order the classes happened to run in. A StringWriter holds no unmanaged
+    /// resource, so leaving it open costs a few hundred bytes for the life of the run and removes
+    /// the failure mode outright.
+    /// </para>
+    /// <para>
+    /// Spectre's console is swapped as well as Console.Out, so that what the parser renders —
+    /// usage errors, help — lands in the capture rather than on the real console. Its previous
+    /// value is read BEFORE the redirection: <see cref="AnsiConsole.Console"/> is a process-wide
+    /// singleton whose getter initialises it on first read, so reading it here binds it to the
+    /// real console and makes the restore in the finally sound.
+    /// </para>
+    /// </remarks>
     private static async Task<(int ExitCode, string Out, string Error)> RunAsync(params string[] args)
     {
         TextWriter previousOut = Console.Out;
         TextWriter previousError = Console.Error;
-        using StringWriter captured = new();
-        using StringWriter capturedError = new();
+        IAnsiConsole previousAnsi = AnsiConsole.Console;
+
+        StringWriter captured = new();
+        StringWriter capturedError = new();
         try
         {
             Console.SetOut(captured);
             Console.SetError(capturedError);
+            AnsiConsole.Console = AnsiConsole.Create(new AnsiConsoleSettings { Out = new AnsiConsoleOutput(captured) });
 
             int exitCode = await CliApplication.RunAsync(args);
 
@@ -48,6 +71,7 @@ public sealed class InspectCommandTests : IDisposable
         }
         finally
         {
+            AnsiConsole.Console = previousAnsi;
             Console.SetOut(previousOut);
             Console.SetError(previousError);
         }
