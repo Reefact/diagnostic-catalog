@@ -84,13 +84,22 @@ jobs:
       #
       # Regenerating needs the analyzer built, which the step above has just done. Only the ubuntu leg
       # runs it — the check is about file content, and the same diff on two platforms is noise.
+      #
+      # This restates the self catalogue that eng/catalogs.json already declares, because the manifest
+      # holds four and the other three fetch from NuGet: running it whole here would download three
+      # packages and rewrite three files to check one. The restatement is the cost of that, and it has
+      # to spell the source the SAME WAY the manifest does — the two produce different bytes
+      # otherwise, and the guard would fail on a difference between its own two callers rather than on
+      # a stale catalogue. That is why --project appears twice below: the first belongs to `dotnet
+      # run` and names the tool, the second belongs to `dcat generate` and names what it reads.
       - name: The self catalogue is in step with the analyzers
         if: steps.solution.outputs.present == 'true' && matrix.os == 'ubuntu-latest'
         shell: bash
         run: |
           set -euo pipefail
           dotnet run --project src/DiagnosticCatalog.Cli -c Release --no-build -v minimal -- generate \
-            --assembly src/DiagnosticCatalog.Analyzers/bin/Release/netstandard2.0/DiagnosticCatalog.Analyzers.dll \
+            --project src/DiagnosticCatalog.Analyzers/DiagnosticCatalog.Analyzers.csproj \
+            --configuration Release \
             --namespace DiagnosticCatalog.Self \
             --container DcatRule \
             --output src/DiagnosticCatalog.Self/DcatRules.g.cs
