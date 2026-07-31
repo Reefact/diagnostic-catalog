@@ -196,4 +196,4 @@ Optional supporting material:
 | [ADR-0013](0013-write-the-shell-tooling-for-posix-sh-not-bash.md) | Write the shell tooling for POSIX sh, not bash | Accepted |
 | [ADR-0014](0014-ship-the-vendors-rule-title-as-a-catalogues-documentation.md) | Ship the vendor's rule title as a catalogue's documentation | Accepted |
 | [ADR-0015](0015-a-catalogues-version-runs-on-its-own-line.md) | A catalogue's package version runs on its own line, never the upstream's | Accepted |
-| [ADR-0016](0016-mirror-stylecops-prerelease-line.md) | Mirror StyleCop's prerelease line, not its stale stable release | Proposed |
+| [ADR-0016](0016-mirror-stylecops-prerelease-line.md) | Mirror StyleCop's prerelease line, not its stale stable release | Accepted |

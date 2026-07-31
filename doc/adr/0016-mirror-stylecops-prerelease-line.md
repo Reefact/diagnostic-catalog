@@ -1,7 +1,8 @@
 # ADR-0016 | Mirror StyleCop's prerelease line, not its stale stable release
 
-**Status:** Proposed
+**Status:** Accepted
 **Proposed:** 2026-07-31
+**Accepted:** 2026-07-31
 **Decision Makers:** Reefact
 
 ## Context
