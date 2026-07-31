@@ -210,7 +210,9 @@ constantes sont repliées avant cela, si bien qu'il ne reste rien de toute la su
 d'attribut, pas de chaînes, pas de référence au catalogue.
 
 Le paquet catalogue est une commodité de compilation. Ce n'est pas une dépendance d'exécution, et
-c'est asserté par un test plutôt que promis — voir `tests/DiagnosticCatalog.ZeroFootprint.UnitTests`.
+c'est asserté par un test plutôt que promis — voir `tests/DiagnosticCatalog.ZeroFootprint.UnitTests`,
+et [la garantie d'empreinte nulle](zero-footprint.fr.md) pour ce que ce test établit exactement, et
+ce qu'il n'établit pas.
 
 L'unique exception est délibérée : `UnconditionalSuppressMessage` ne porte pas de `[Conditional]`,
 précisément pour que le *trimmer* puisse le lire dans l'assemblage compilé bien après que le
@@ -242,5 +244,5 @@ que supprimer cette règle *à cet endroit* était une bonne idée. Ce jugement 
 ---
 
 <div align="center">
-<a href="./alternatives.fr.md">← Les alternatives</a> · <a href="./README.fr.md">↑ Table des matières</a> · <a href="./authoring-a-catalogue.fr.md">Publier un catalogue →</a>
+<a href="./alternatives.fr.md">← Les alternatives</a> · <a href="./README.fr.md">↑ Table des matières</a> · <a href="./adopting-a-catalogue.fr.md">Adopter un catalogue sur une base de code existante →</a>
 </div>

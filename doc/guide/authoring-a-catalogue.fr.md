@@ -276,5 +276,5 @@ la sortie ressemble avec 465, 318 et 193 règles ; la méthode est au §14 de
 ---
 
 <div align="center">
-<a href="./writing-suppressions.fr.md">← Écrire des suppressions que le compilateur vérifie</a> · <a href="./README.fr.md">↑ Table des matières</a> · <a href="./diagnostics.fr.md">Les diagnostics DCAT →</a>
+<a href="./zero-footprint.fr.md">← La garantie d'empreinte nulle</a> · <a href="./README.fr.md">↑ Table des matières</a> · <a href="./diagnostics.fr.md">Les diagnostics DCAT →</a>
 </div>

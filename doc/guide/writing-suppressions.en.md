@@ -197,7 +197,9 @@ what remains of the whole suppression is nothing: no attribute, no strings, no r
 catalogue.
 
 The catalogue package is a compile-time convenience. It is not a runtime dependency, and this is
-asserted by a test rather than promised — see `tests/DiagnosticCatalog.ZeroFootprint.UnitTests`.
+asserted by a test rather than promised — see `tests/DiagnosticCatalog.ZeroFootprint.UnitTests`, and
+[the zero-footprint guarantee](zero-footprint.en.md) for exactly what that test establishes and what
+it does not.
 
 The one exception is deliberate: `UnconditionalSuppressMessage` carries no `[Conditional]`, precisely
 so the trimmer can read it from the compiled assembly long after the compiler has finished. It is
@@ -227,5 +229,5 @@ rule *there* was a good idea. That judgement stays yours, which is what `Justifi
 ---
 
 <div align="center">
-<a href="./alternatives.en.md">← The alternatives</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./authoring-a-catalogue.en.md">Publishing a catalogue →</a>
+<a href="./alternatives.en.md">← The alternatives</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./adopting-a-catalogue.en.md">Adopting a catalogue on an existing codebase →</a>
 </div>
