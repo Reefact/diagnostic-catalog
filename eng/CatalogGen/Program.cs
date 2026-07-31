@@ -297,7 +297,12 @@ namespace CatalogGen
 
     internal sealed record RuleInfo(string Category, string HelpLinkUri, bool Retired);
 
-    internal sealed record Previous(string SourceVersion, SortedDictionary<string, RuleInfo> Rules);
+    // CategoryNames maps a category's LITERAL to the identifier it was published under — the
+    // direction the emitter needs to keep an already-published constant's name stable.
+    internal sealed record Previous(
+        string SourceVersion,
+        SortedDictionary<string, RuleInfo> Rules,
+        SortedDictionary<string, string> CategoryNames);
 
     internal sealed record GenerateResult(bool Changed, string Summary);
 }

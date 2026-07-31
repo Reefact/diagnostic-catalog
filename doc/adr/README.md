@@ -192,3 +192,4 @@ Optional supporting material:
 | [ADR-0009](0009-generate-catalog-content-from-analyzer-descriptors.md) | Generate catalog content from analyzer descriptors, never from documentation | Accepted |
 | [ADR-0010](0010-carry-a-retired-rule-forward-as-obsolete.md) | Carry a retired rule forward as obsolete, never delete its constant | Accepted |
 | [ADR-0011](0011-redistribute-rule-facts-only-never-the-vendors-prose.md) | Redistribute rule facts only, never the vendor's rule prose | Accepted |
+| [ADR-0012](0012-a-catalogue-never-renames-a-member-it-published.md) | A catalogue never renames a member it published | Accepted |
