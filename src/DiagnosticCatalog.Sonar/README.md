@@ -85,9 +85,10 @@ public static class S1144
 }
 ```
 
-**Ids and categories only.** Both are facts read from the analyzers themselves. Rule
-titles and descriptions are SonarSource's authored content and are deliberately not
-redistributed here — follow the rule id to
+**Ids, categories and titles.** All three are read from the analyzers themselves. The
+title is SonarSource's own sentence, carried as the rule's documentation comment so that
+hovering a constant says what the rule is about. Rule descriptions are their
+documentation and are deliberately not redistributed here — follow the rule id to
 [rules.sonarsource.com](https://rules.sonarsource.com/csharp/) for those.
 
 ## Categories declared once
