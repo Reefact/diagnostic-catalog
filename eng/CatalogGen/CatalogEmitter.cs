@@ -140,10 +140,20 @@ internal static class CatalogEmitter
                       .Select(r => (Id: r.Key, From: previous.Rules[r.Key].Category, To: r.Value.Category))
                       .ToList();
 
+        // A reworded title is upstream content that this catalogue now publishes, so it has to be
+        // able to move the file on its own. Without this, a release that only rewrote titles would
+        // be reported as "no rule changes" and the catalogue would keep serving the old sentences.
+        List<(string Id, string From, string To)> retitled = previous is null
+            ? []
+            : accepted.Where(r => previous.Rules.TryGetValue(r.Key, out RuleInfo? old)
+                                  && !string.Equals(old.Title, r.Value.Title, StringComparison.Ordinal))
+                      .Select(r => (Id: r.Key, From: previous.Rules[r.Key].Title, To: r.Value.Title))
+                      .ToList();
+
         bool versionChanged = previous is null
                               || !string.Equals(previous.SourceVersion, version, StringComparison.Ordinal);
 
-        return new Changes(added, recategorised, retired, versionChanged);
+        return new Changes(added, recategorised, retitled, retired, versionChanged);
     }
 
     // ---------------------------------------------------------------------------
@@ -159,10 +169,11 @@ internal static class CatalogEmitter
         sb.AppendLine($"//     {catalogue.PackageId} {catalogue.Version} (language: {job.Language}).");
         sb.AppendLine("//     Do not edit by hand: rerun the generator.");
         sb.AppendLine("//");
-        sb.AppendLine("//     Only Id, Category and HelpLinkUri are emitted, and only when the descriptor");
-        sb.AppendLine("//     actually supplies them. All are facts read from the descriptors. Rule titles");
-        sb.AppendLine("//     and descriptions are the upstream vendor's authored content and are");
-        sb.AppendLine("//     deliberately not redistributed here.");
+        sb.AppendLine("//     Only Id, Category, Title and HelpLinkUri are emitted, and only when the");
+        sb.AppendLine("//     descriptor actually supplies them. A rule's title is reproduced verbatim as its");
+        sb.AppendLine("//     documentation comment: it is the one sentence that says what the rule is about,");
+        sb.AppendLine($"//     and it is {catalogue.PackageId}'s own wording. Rule descriptions and message");
+        sb.AppendLine("//     formats are the vendor's documentation and are not redistributed here.");
         sb.AppendLine("// </auto-generated>");
         sb.AppendLine();
         // System is needed for one reason only: [Obsolete] on a rule the vendor retired. Emitting it
@@ -219,12 +230,18 @@ internal static class CatalogEmitter
         StringBuilder sb, Catalogue catalogue, string id, RuleInfo info, CategoryLayout categories)
     {
         bool hasHelp = !string.IsNullOrWhiteSpace(info.HelpLinkUri);
-        sb.AppendLine("    /// <summary>");
-        sb.AppendLine($"    /// Rule <c>{id}</c>, category <c>{Naming.Escape(info.Category)}</c>.");
+        sb.AppendLine($"    /// <summary>{SummaryOf(id, info)}</summary>");
+
+        // Everything that is not the rule's own sentence goes on one further line, so that hovering
+        // a rule yields the sentence first and the file stays diffable. A regeneration is reviewed
+        // as a diff (ADR-0009), and a line carrying a title AND a help link reaches 282 characters
+        // on the .NET analyzers, which is where a diff stops being read.
+        List<string> notes = [];
         if (info.Retired)
-            sb.AppendLine($"    /// No longer declared by {catalogue.PackageId} as of {catalogue.Version}.");
-        if (hasHelp) sb.AppendLine($"    /// See <see href=\"{Naming.Escape(info.HelpLinkUri)}\"/>.");
-        sb.AppendLine("    /// </summary>");
+            notes.Add($"No longer declared by {catalogue.PackageId} as of {catalogue.Version}.");
+        if (hasHelp) notes.Add($"See <see href=\"{Naming.EscapeXml(info.HelpLinkUri)}\"/>.");
+        if (notes.Count > 0) sb.AppendLine($"    /// <remarks>{string.Join(" ", notes)}</remarks>");
+
         if (info.Retired)
             sb.AppendLine($"    [Obsolete(\"{Naming.Escape(id)} is no longer declared by {catalogue.PackageId} " +
                           $"as of {catalogue.Version}. " +
@@ -247,6 +264,20 @@ internal static class CatalogEmitter
         sb.AppendLine("    }");
     }
 
+    // The sentence a rule's documentation comment carries. The vendor's own title when the
+    // descriptor declares one — it says what the rule is about, which an identifier cannot, and it
+    // is the value a consumer is hovering the constant to learn.
+    private static string SummaryOf(string id, RuleInfo info) =>
+        info.Title.Length > 0
+            ? Naming.EscapeXml(Naming.Sentence(info.Title))
+            : SummaryWithoutTitle(id, info.Category);
+
+    // What a rule says when no title is known: what every rule said before titles were emitted.
+    // The parser next door reproduces this to tell a rule that has no title from one whose title
+    // happens to be this sentence, so the two must agree exactly — hence one method, not two.
+    internal static string SummaryWithoutTitle(string id, string category) =>
+        $"Rule <c>{id}</c>, category <c>{Naming.EscapeXml(category)}</c>.";
+
     // --- human-readable summary for the pull request ---------------------------
     private static string RenderSummary(
         Catalogue catalogue, Previous? previous, Changes changes, int liveCount, int categoryCount)
@@ -265,6 +296,7 @@ internal static class CatalogEmitter
         {
             AppendAdded(md, changes.Added, catalogue.Rules);
             AppendRecategorised(md, changes.Recategorised);
+            AppendRetitled(md, changes.Retitled);
             AppendRetired(md, changes.Retired);
         }
 
@@ -294,6 +326,22 @@ internal static class CatalogEmitter
         foreach ((string Id, string From, string To) r in recategorised)
             md.AppendLine($"- `{r.Id}` — {r.From} → {r.To}");
         md.AppendLine();
+    }
+
+    private static void AppendRetitled(
+        StringBuilder md, List<(string Id, string From, string To)> retitled)
+    {
+        if (retitled.Count == 0) return;
+
+        md.AppendLine($"**Retitled upstream ({retitled.Count}):**");
+        // Capped for the same reason as the added list: the run that first emits titles reports
+        // every rule in the catalogue, and a pull request body is not the place to read 456 of them.
+        foreach ((string Id, string From, string To) r in retitled.Take(50))
+            md.AppendLine($"- `{r.Id}` — {Quoted(r.From)} → {Quoted(r.To)}");
+        if (retitled.Count > 50) md.AppendLine($"- …and {retitled.Count - 50} more");
+        md.AppendLine();
+
+        static string Quoted(string title) => title.Length == 0 ? "*(none)*" : $"\"{title}\"";
     }
 
     private static void AppendRetired(StringBuilder md, List<string> retired)
@@ -331,9 +379,11 @@ internal static class CatalogEmitter
     private sealed record Changes(
         List<string> Added,
         List<(string Id, string From, string To)> Recategorised,
+        List<(string Id, string From, string To)> Retitled,
         List<string> Retired,
         bool VersionChanged)
     {
-        internal bool Any => Added.Count > 0 || Retired.Count > 0 || Recategorised.Count > 0;
+        internal bool Any =>
+            Added.Count > 0 || Retired.Count > 0 || Recategorised.Count > 0 || Retitled.Count > 0;
     }
 }
