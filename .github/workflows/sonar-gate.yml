@@ -1,0 +1,77 @@
+name: sonar-gate
+
+# Reads the SonarQube Cloud quality gate verdict every night and fails when it is not green.
+#
+# The gap this closes. `dotnet-sonarscanner end` uploads the analysis and returns; it neither waits
+# for the gate nor reads it, and no job in this repository carries the verdict — sonar.yml goes
+# green as soon as the upload succeeds. The gate was therefore computed by SonarQube Cloud and
+# enforced by nothing.
+#
+# Why not simply make the scanner wait (`sonar.qualitygate.wait`). Because that would couple merge
+# availability to a third-party service: sonar.yml runs on every pull request, so a SonarQube Cloud
+# outage would stop every merge while a red gate still would not. Reading the verdict from a
+# SCHEDULED job separates the two questions — the verdict gets enforced, and an outage costs a red
+# nightly instead of a frozen repository.
+#
+# Why this is not redundant with the build. build/sonar-profile.globalconfig enforces the C# rules
+# the SonarAnalyzer NuGet package implements, which is a strict SUBSET of what the gate measures:
+#   - symbolic-execution rules that SonarQube Cloud's engine runs and the analyzer package does not;
+#   - every non-C# family — githubactions, shell, secrets, xml, json, yaml. This repository already
+#     declines three shell rules server-side in sonar.yml, which no build can see;
+#   - coverage, duplication and hotspot review, which no analyzer can answer.
+# That last class is why this exists: when it was written the gate was red on new_coverage alone,
+# with every issue condition green — a state no build-time rule set can report. The build hardening
+# and this check are complements, not alternatives.
+#
+# Nightly, unlike the weekly sonar-profile check: a quality profile moves on a vendor's release
+# cadence, but the gate moves with every merge.
+
+on:
+  schedule:
+    # 03:41 UTC daily — clear of the nightly catalogue sync at 23:17 and of the weekly jobs.
+    - cron: '41 3 * * *'
+  workflow_dispatch:
+
+# Cancel superseded runs (a dispatch on top of a scheduled one).
+concurrency:
+  group: sonar-gate-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gate:
+    name: Quality gate verdict
+    runs-on: ubuntu-latest
+    # One API call; the cap only guards a hung request.
+    timeout-minutes: 10
+    # Declared per job so a job added later inherits nothing it did not ask for. This job reads the
+    # checkout and calls a public API — nothing else.
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Read the quality gate
+        # The project is public, so this needs no secret. SONAR_TOKEN is passed from the same secret
+        # sonar.yml uses so the check keeps working the day the project stops being public; a missing
+        # secret is an empty string, which the script treats as unauthenticated.
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: tools/sonar-profile/check-gate.sh
+
+      - name: Say what to do about it
+        # The failing conditions are already in the log above; this is the pointer, not a repeat.
+        if: failure()
+        run: |
+          {
+            echo '### SonarQube Cloud quality gate is red'
+            echo
+            echo 'The failing conditions are in the previous step.'
+            echo
+            echo 'A rating worse than A means the new-code period carries at least one issue of that'
+            echo 'kind — reliability is a Bug, security is a Vulnerability, maintainability a Code Smell.'
+            echo 'Coverage and duplication conditions read directly.'
+            echo
+            echo 'This check does NOT block any merge, by design. It is the standing alarm that the'
+            echo 'gate is not green, and it will stay red until someone acts on it.'
+          } >> "$GITHUB_STEP_SUMMARY"
