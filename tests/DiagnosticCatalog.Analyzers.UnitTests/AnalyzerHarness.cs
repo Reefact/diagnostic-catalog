@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Emit;
 
 using Xunit;
 
@@ -39,16 +40,34 @@ internal static class AnalyzerHarness
         .Select(path => (MetadataReference)MetadataReference.CreateFromFile(path)));
 
     /// <summary>Runs <paramref name="analyzer"/> over <paramref name="source"/>.</summary>
-    internal static async Task<ImmutableArray<Diagnostic>> RunAsync(DiagnosticAnalyzer analyzer, string source)
+    /// <param name="referencedSource">
+    /// Optional source compiled into a separate assembly and referenced by the snippet. The analyzer
+    /// then meets its rules as METADATA symbols with no syntax at all — the §21.2 case, and the only way
+    /// to exercise the paths that exist for referenced catalogues.
+    /// </param>
+    /// <param name="referenceMayUseFoundation">
+    /// When false, the referenced assembly is compiled without DiagnosticCatalog.dll, so it can only
+    /// carry rules by declaring the marker itself (§7.2). That is what makes the second clause of the
+    /// §13.1 pre-filter observable: without it, such an assembly is skipped and its rules vanish.
+    /// </param>
+    internal static async Task<ImmutableArray<Diagnostic>> RunAsync(
+        DiagnosticAnalyzer analyzer,
+        string source,
+        string? referencedSource = null,
+        bool referenceMayUseFoundation = true)
     {
         // Self-check one: an analyzer declaring nothing can report nothing, and would make every
         // expectation below vacuous.
         Assert.NotEmpty(analyzer.SupportedDiagnostics);
 
+        ImmutableArray<MetadataReference> references = referencedSource is null
+            ? References
+            : References.Add(CompileToReference(referencedSource, referenceMayUseFoundation));
+
         CSharpCompilation compilation = CSharpCompilation.Create(
             assemblyName: "Snippet",
             syntaxTrees: new[] { CSharpSyntaxTree.ParseText(source) },
-            references: References,
+            references: references,
             options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
         // Self-check two: a snippet that does not compile makes any result meaningless — the symbols
@@ -77,9 +96,41 @@ internal static class AnalyzerHarness
     }
 
     /// <summary>Asserts that running <paramref name="analyzer"/> reports exactly <paramref name="expectedIds"/>.</summary>
-    internal static async Task ReportsAsync(DiagnosticAnalyzer analyzer, string source, params string[] expectedIds)
+    internal static Task ReportsAsync(DiagnosticAnalyzer analyzer, string source, params string[] expectedIds) =>
+        AssertReportsAsync(analyzer, source, null, true, expectedIds);
+
+    /// <summary>Asserts that <paramref name="analyzer"/> reports nothing at all.</summary>
+    internal static Task ReportsNothingAsync(DiagnosticAnalyzer analyzer, string source) =>
+        ReportsAsync(analyzer, source);
+
+    /// <summary>As <see cref="ReportsAsync"/>, with the rules living in a referenced assembly.</summary>
+    internal static Task ReportsAgainstReferenceAsync(
+        DiagnosticAnalyzer analyzer,
+        string referencedSource,
+        string source,
+        params string[] expectedIds) =>
+        AssertReportsAsync(analyzer, source, referencedSource, true, expectedIds);
+
+    /// <summary>As above, but the referenced assembly cannot use the foundation and must embed the marker.</summary>
+    internal static Task ReportsAgainstSelfContainedReferenceAsync(
+        DiagnosticAnalyzer analyzer,
+        string referencedSource,
+        string source,
+        params string[] expectedIds) =>
+        AssertReportsAsync(analyzer, source, referencedSource, false, expectedIds);
+
+    private static async Task AssertReportsAsync(
+        DiagnosticAnalyzer analyzer,
+        string source,
+        string? referencedSource,
+        bool referenceMayUseFoundation,
+        string[] expectedIds)
     {
-        ImmutableArray<Diagnostic> reported = await RunAsync(analyzer, source).ConfigureAwait(false);
+        ImmutableArray<Diagnostic> reported = await RunAsync(
+            analyzer,
+            source,
+            referencedSource,
+            referenceMayUseFoundation).ConfigureAwait(false);
 
         IEnumerable<string> actual = reported.Select(diagnostic => diagnostic.Id).OrderBy(id => id, StringComparer.Ordinal);
         IEnumerable<string> expected = expectedIds.OrderBy(id => id, StringComparer.Ordinal);
@@ -87,7 +138,35 @@ internal static class AnalyzerHarness
         Assert.Equal(expected, actual);
     }
 
-    /// <summary>Asserts that <paramref name="analyzer"/> reports nothing at all.</summary>
-    internal static Task ReportsNothingAsync(DiagnosticAnalyzer analyzer, string source) =>
-        ReportsAsync(analyzer, source);
+    private static MetadataReference CompileToReference(string source, bool mayUseFoundation)
+    {
+        IEnumerable<MetadataReference> references = mayUseFoundation
+            ? References
+            : References.Where(reference =>
+                !string.Equals(
+                    Path.GetFileName(reference.Display),
+                    FoundationAssemblyFileName,
+                    StringComparison.OrdinalIgnoreCase));
+
+        CSharpCompilation compilation = CSharpCompilation.Create(
+            assemblyName: "ReferencedCatalog",
+            syntaxTrees: new[] { CSharpSyntaxTree.ParseText(source) },
+            references: references,
+            options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+
+        using MemoryStream stream = new();
+
+        EmitResult result = compilation.Emit(stream);
+
+        // Same reasoning as self-check two: a fixture assembly that failed to build would hand the
+        // analyzer error types and turn every expectation below into a study of nothing.
+        Assert.True(
+            result.Success,
+            "the referenced fixture must compile; it reported: "
+            + string.Join("; ", result.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error)));
+
+        return MetadataReference.CreateFromImage(stream.ToArray());
+    }
+
+    private const string FoundationAssemblyFileName = "DiagnosticCatalog.dll";
 }

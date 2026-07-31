@@ -851,7 +851,7 @@ The provisional diagnostic prefix is `DCAT`.
 | `DCAT0003` | definition | A diagnostic rule must expose a public constant string named Id | Warning | yes |
 | `DCAT0004` | definition | A diagnostic rule must expose a public constant string named Category | Warning | yes |
 | `DCAT0005` | definition | The diagnostic rule type name should match its Id | Info | no |
-| `DCAT0006` | use site | Use a diagnostic catalog reference instead of string literals | Info | **yes — core** |
+| `DCAT0006` | use site | Use a diagnostic catalog reference instead of string literals | Warning | **yes — core** |
 | `DCAT0007` | use site | Suppression mixes a catalog reference with a string literal | Warning | yes |
 | `DCAT0008` | use site | Suppression identifier does not resolve to a known diagnostic rule | None (opt-in) | no |
 | `DCAT0009` | use site | UnconditionalSuppressMessage only accepts IL#### identifiers | Warning | yes |
@@ -928,6 +928,16 @@ Matching rules:
 
 The code fix drops the friendly-name suffix. This is an accepted, documented
 trade-off: the rule's `Title` constant or its XML documentation replaces it.
+
+**Default severity is `Warning`, not `Info`.** Referencing a catalogue package
+is itself the statement of intent: a project that has taken the dependency has
+decided its suppressions are catalogue references, and a suggestion no build
+output shows does not carry that decision. The cost is deliberate and belongs
+in the release notes — adopting a catalogue turns every existing literal
+suppression into a warning at once, and fails the build outright under
+`TreatWarningsAsErrors`. A project migrating gradually lowers it in
+`.editorconfig` (§17), which is also how the diagnostic was always meant to be
+tuned.
 
 ### 11.7 `DCAT0007` — mixed reference and literal
 
