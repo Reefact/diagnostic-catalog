@@ -22,6 +22,22 @@ number below.
 
 _No other change yet._
 
+## [0.2.1] - 2026-07-31
+
+**Mirrors `Microsoft.CodeAnalysis.NetAnalyzers 10.0.302`** — unchanged since 0.2.0: no
+rule was added, retired or recategorised, and every identifier, category and help link
+is the one 0.2.0 shipped. The assembly is unchanged; only the documents around it moved.
+
+### Changed
+
+* The README now states the mirrored upstream release under the title, where someone
+  arriving from nuget.org reads it first, instead of a passing mention halfway down a
+  code sample. It matters more here than elsewhere: the CA analyzers ship inside the
+  .NET SDK, so that release is what a consumer compares against their own SDK rather
+  than a package they chose. This version exists to carry that banner onto the package
+  page: nuget.org renders the README embedded in the package, so republishing is the
+  only way an updated one reaches a reader.
+
 ## [0.2.0] - 2026-07-31
 
 **Mirrors `Microsoft.CodeAnalysis.NetAnalyzers 10.0.302`** — unchanged since 0.1.0: no rule was
