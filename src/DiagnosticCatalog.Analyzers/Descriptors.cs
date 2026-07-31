@@ -31,6 +31,26 @@ internal static class Descriptors
             + "because the pairing is a copy-paste error: the day the vendor recategorises one of them, "
             + "the suppression carries the wrong category and nothing in the platform will say so.");
 
+    internal static readonly DiagnosticDescriptor ReplaceableStringLiterals = new(
+        id: "DCAT0006",
+        title: "Use a diagnostic catalog reference instead of string literals",
+        messageFormat: "Reference {2} instead of the string literals \"{0}\" and \"{1}\"",
+        category: Category,
+        // Warning, where the specification table says Info. The catalogue package being referenced at
+        // all is the statement of intent: a project that has taken the dependency has decided its
+        // suppressions are catalogue references, and a suggestion no build output shows does not carry
+        // that. The cost is real and belongs in the release notes — adopting a catalogue turns every
+        // existing literal suppression into a warning at once, and fails the build outright under
+        // TreatWarningsAsErrors. Severity remains configurable per project in .editorconfig.
+        defaultSeverity: DiagnosticSeverity.Warning,
+        isEnabledByDefault: true,
+        description:
+            "The literals match a known diagnostic rule, so they can be replaced by references the "
+            + "compiler checks. The identifier is truncated at the first colon before matching, exactly "
+            + "as Roslyn does, so the suffixed form Visual Studio generates is recognised — and the "
+            + "suffix is dropped by the replacement, its content belonging to the rule's own "
+            + "documentation.");
+
     internal static readonly DiagnosticDescriptor NonIlUnconditionalSuppression = new(
         id: "DCAT0009",
         title: "UnconditionalSuppressMessage only accepts IL#### identifiers",
