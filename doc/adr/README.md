@@ -199,3 +199,4 @@ Optional supporting material:
 | [ADR-0016](0016-mirror-stylecops-prerelease-line.md) | Mirror StyleCop's prerelease line, not its stale stable release | Accepted |
 | [ADR-0017](0017-publish-the-generator-as-a-cli-on-its-own-release-train.md) | Publish the generator as a CLI, on its own release train | Accepted |
 | [ADR-0018](0018-a-code-fix-never-decides-what-only-the-author-can.md) | A code fix never decides what only the author can decide | Accepted |
+| [ADR-0019](0019-resolve-packages-through-the-users-own-nuget-configuration.md) | Resolve packages through the user's own NuGet configuration | Accepted |
