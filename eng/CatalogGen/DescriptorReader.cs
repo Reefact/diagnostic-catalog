@@ -45,7 +45,12 @@ internal static class DescriptorReader
             File.WriteAllText(request,
                               JsonSerializer.Serialize(new DescriptorReadRequest { AssemblyPaths = [.. source.AssemblyPaths] }));
 
-            int exitCode = RunWorker(worker, source, request, response);
+            // Null when the worker was stopped for outrunning its budget, which RunWorker has
+            // already reported. Distinguished from an exit code so the refusal is not narrated
+            // twice, once with a number that means nothing.
+            int? exitCode = RunWorker(worker, source, request, response);
+            if (exitCode is null) return null;
+
             if (exitCode != WorkerExitCodes.Complete)
             {
                 // The worker has already said what it could not read and why it refuses. Adding a
@@ -88,7 +93,7 @@ internal static class DescriptorReader
     // The worker inherits this process's console rather than having its streams captured: its
     // output IS the run's diagnostics, and relaying it verbatim keeps the log reading exactly as it
     // did when this stage ran in-process.
-    private static int RunWorker(
+    private static int? RunWorker(
         string workerPath, AnalyzerAssemblySet source, string requestPath, string responsePath)
     {
         string workerDirectory = Path.GetDirectoryName(workerPath)!;
@@ -136,9 +141,14 @@ internal static class DescriptorReader
         start.ArgumentList.Add(responsePath);
 
         using Process process = Process.Start(start)!;
-        process.WaitForExit();
 
-        return process.ExitCode;
+        // An analyzer's constructor is third-party code, and constructing one is the single thing
+        // here that can hang rather than fail: a deadlock, a lock on something that never arrives, a
+        // wait on input nobody will type. The worker exists so that killing it is survivable.
+        return ChildProcess.WaitOrKill(process, ChildProcess.Budget(ChildProcess.DescriptorRead),
+                                       "the descriptor worker")
+                   ? process.ExitCode
+                   : null;
     }
 
     private static IEnumerable<string> ProbingPaths(string workerDirectory, AnalyzerAssemblySet source)

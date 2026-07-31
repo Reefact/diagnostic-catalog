@@ -178,9 +178,20 @@ internal static class ProjectSource
             return null;
         }
 
-        string stdout = process.StandardOutput.ReadToEnd();
-        string stderr = process.StandardError.ReadToEnd();
-        process.WaitForExit();
+        // Started before the wait, and asynchronously. ReadToEnd() blocks until the stream closes,
+        // which a wedged child never does — so reading first would mean the budget below was never
+        // reached, and a timeout that cannot be reached is not one.
+        Task<string> outText = process.StandardOutput.ReadToEndAsync();
+        Task<string> errText = process.StandardError.ReadToEndAsync();
+
+        if (!ChildProcess.WaitOrKill(process, ChildProcess.Budget(ChildProcess.ProjectEvaluation),
+                                     $"evaluating {Path.GetFileName(project)}"))
+        {
+            return null;
+        }
+
+        string stdout = outText.GetAwaiter().GetResult();
+        string stderr = errText.GetAwaiter().GetResult();
 
         // MSBuild reports an unloadable or unrestored project on stdout, as its own diagnostics with
         // codes and positions. Passing them through unedited is better than anything this tool could
