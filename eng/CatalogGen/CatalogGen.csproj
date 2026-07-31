@@ -42,13 +42,12 @@
   <!--
     The generator's parsing, naming and emitting logic is internal: it is an engine's implementation,
     not an API. Only Job, CatalogRun and RunOutcome are public, which is the whole surface the tool
-    needs. The worker sees the internals because it answers the wire contract declared here and
-    shares this assembly's title normalisation — the same code has to run on both sides of that
-    wire, or a title would be written one way and read back another.
+    needs. The worker needs neither: it compiles the wire contract and the title
+    normalisation in from source rather than referencing this assembly, because the runtime switch
+    that lets it read a target's own dependency graph would orphan any assembly it referenced.
   -->
   <ItemGroup>
     <InternalsVisibleTo Include="CatalogGen.UnitTests" />
-    <InternalsVisibleTo Include="CatalogGen.Worker" />
   </ItemGroup>
 
 </Project>

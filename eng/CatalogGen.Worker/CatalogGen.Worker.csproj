@@ -40,12 +40,27 @@
   </ItemGroup>
 
   <!--
-    For the wire contract it answers on, and for Naming.Sentence — the title normalisation has to be
-    the same code on both sides of that wire, or a title would be written one way and read back
-    another and every rule would be reported as retitled on every run.
+    LINKED SOURCE, not a project reference, and the distinction is load-bearing.
+
+    The worker is launched with `dotnet exec` against a target's own deps.json whenever the assemblies
+    it is given came with a dependency graph, so that an analyzer compiled against another Roslyn
+    resolves its own. That switch REPLACES the worker's dependency graph rather than adding to it —
+    so any managed dependency of the worker's own becomes unresolvable, because no analyzer's
+    deps.json will ever mention CatalogGen. Measured, not assumed: with a ProjectReference the
+    worker died with "File name: 'CatalogGen, Version=1.0.0.0'" on the first target that had a
+    graph.
+    (This is where the sibling repository's worker differs rather than disagrees: the library ITS
+    worker needs is one the target also references, so the target's graph carries it.)
+
+    Compiling the two files in means the worker's only managed dependency is Roslyn, which the
+    target's graph either supplies or the probing path does. Naming has to be the same code on both
+    sides of the wire — a title normalised one way and read back another would report every rule as
+    retitled on every run — and sharing the source is what guarantees that; the two copies cannot
+    drift because there is only one file.
   -->
   <ItemGroup>
-    <ProjectReference Include="..\CatalogGen\CatalogGen.csproj" />
+    <Compile Include="..\CatalogGen\Naming.cs" Link="Naming.cs" />
+    <Compile Include="..\CatalogGen\DescriptorReadContract.cs" Link="DescriptorReadContract.cs" />
   </ItemGroup>
 
 </Project>
