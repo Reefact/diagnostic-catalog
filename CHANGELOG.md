@@ -9,9 +9,12 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 Each release train keeps its own changelog and versions independently. The rule
 that routes a commit to a train — its scope — is in
-[CONTRIBUTING.md](CONTRIBUTING.md). The catalog trains (`sonar`,
-`netanalyzers`, `stylecop`) will each carry a `CHANGELOG.md` next to their
-project once that project exists.
+[CONTRIBUTING.md](CONTRIBUTING.md). The catalog trains carry theirs next to their
+project:
+
+* [`sonar`](src/DiagnosticCatalog.Sonar/CHANGELOG.md)
+* [`netanalyzers`](src/DiagnosticCatalog.NetAnalyzers/CHANGELOG.md)
+* [`stylecop`](src/DiagnosticCatalog.StyleCop/CHANGELOG.md)
 
 ## [Unreleased]
 
