@@ -10,8 +10,9 @@ namespace DiagnosticCatalog.Cli;
 /// <remarks>
 /// <para>
 /// A run names a <em>source</em> and a <em>destination</em>, or a manifest that carries both for
-/// several catalogues at once. The source is a package to fetch or assemblies already on disk, and
-/// naming both is refused rather than resolved by precedence — see <see cref="Validate"/>.
+/// several catalogues at once. The source is a package to fetch, a package on disk, a project you
+/// build, or assemblies already built, and naming more than one is refused rather than resolved by
+/// precedence — see <see cref="Validate"/>.
 /// </para>
 /// <para>
 /// The upstream release is <c>--package-version</c> rather than <c>--version</c>. On a .NET tool
@@ -43,6 +44,14 @@ internal abstract class CatalogueSettings : CommandSettings
     [Description("A .nupkg already on disk. Its .nuspec names the source unless you say otherwise.")]
     public string? Nupkg { get; init; }
 
+    [CommandOption("--project <PATH>")]
+    [Description("A project that produces analyzers, already built. Repeat to read several together.")]
+    public string[] Projects { get; init; } = [];
+
+    [CommandOption("--configuration <NAME>")]
+    [Description("Which configuration of --project to read. Defaults to Release.")]
+    public string? Configuration { get; init; }
+
     [CommandOption("--assembly <PATH>")]
     [Description("An analyzer assembly already on disk. Repeat to read several together.")]
     public string[] Assemblies { get; init; } = [];
@@ -65,11 +74,11 @@ internal abstract class CatalogueSettings : CommandSettings
     public string Language { get; init; } = "cs";
 
     [CommandOption("--source-name <NAME>")]
-    [Description("What to record as the source. Defaults to the first assembly's name, or the package's own id.")]
+    [Description("What to record as the source. Defaults to the package's id, the project's assembly name, or the first assembly's.")]
     public string? SourceName { get; init; }
 
     [CommandOption("--source-version <VERSION>")]
-    [Description("What to record as the source's release. Defaults to the assembly's version, or the package's own.")]
+    [Description("What to record as the source's release. Defaults to the package's version, the project's, or the assembly's.")]
     public string? SourceVersion { get; init; }
 
     [CommandOption("--summary <PATH>")]
@@ -84,6 +93,7 @@ internal abstract class CatalogueSettings : CommandSettings
         List<string> named = [];
         if (Package is not null) named.Add("--package");
         if (Nupkg is not null) named.Add("--nupkg");
+        if (Projects.Length > 0) named.Add("--project");
         if (Assemblies.Length > 0) named.Add("--assembly");
 
         if (Manifest is not null)
@@ -104,7 +114,8 @@ internal abstract class CatalogueSettings : CommandSettings
 
         if (named.Count == 0)
         {
-            return ValidationResult.Error("nothing to read: give --package, --nupkg, --assembly or --manifest.");
+            return ValidationResult.Error(
+                "nothing to read: give --package, --nupkg, --project, --assembly or --manifest.");
         }
 
         // Checked apart from the source so the message says which half is missing.
@@ -132,6 +143,14 @@ internal abstract class CatalogueSettings : CommandSettings
         if (Source is not null && Package is null)
         {
             return ValidationResult.Error("--source selects a feed for --package; it means nothing for the others.");
+        }
+
+        // And again: a configuration selects among a project's build outputs. Against an assembly
+        // path it would be silently discarded, having been passed precisely by someone who believed
+        // it selected which build was read.
+        if (Configuration is not null && Projects.Length == 0)
+        {
+            return ValidationResult.Error("--configuration selects a build of --project; it means nothing for the others.");
         }
 
         return ValidationResult.Success();

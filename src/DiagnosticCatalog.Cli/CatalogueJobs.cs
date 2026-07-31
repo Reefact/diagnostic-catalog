@@ -58,9 +58,9 @@ internal static class CatalogueJobs
             return jobs;
         }
 
-        // Validation has already established that exactly one source is named, so "not the other
-        // two" is enough to identify it here.
-        bool fromFeed = settings.Assemblies.Length == 0 && settings.Nupkg is null;
+        // Validation has already established that exactly one source is named, so "not any of the
+        // other three" is enough to identify it here.
+        bool fromFeed = settings.Assemblies.Length == 0 && settings.Nupkg is null && settings.Projects.Length == 0;
 
         return
         [
@@ -75,7 +75,9 @@ internal static class CatalogueJobs
                 SourceName: settings.SourceName,
                 SourceVersion: settings.SourceVersion,
                 Nupkg: settings.Nupkg is null ? null : Path.GetFullPath(settings.Nupkg),
-                Source: settings.Source),
+                Source: settings.Source,
+                Projects: settings.Projects.Length > 0 ? settings.Projects : null,
+                Configuration: settings.Configuration ?? "Release"),
         ];
     }
 }
