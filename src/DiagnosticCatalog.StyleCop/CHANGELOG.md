@@ -17,6 +17,14 @@ assembly rather than inferring it from the number below.
 
 ## [Unreleased]
 
+_Nothing yet._
+
+## [0.2.0] - 2026-07-31
+
+Still mirroring **StyleCop.Analyzers 1.1.118**, unchanged since 0.1.0: no rule was
+added, retired or recategorised, and all 193 of them keep the identifier and the
+category they shipped with. What moved is what each rule says about itself.
+
 ### Added
 
 * Every rule now carries the title its `DiagnosticDescriptor` declares as its
