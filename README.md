@@ -62,11 +62,12 @@ has exactly one published source of truth, read from the analyzer's own
 | **`DiagnosticCatalog.NetAnalyzers`** | The .NET code analysis (`CAxxxx`) rules, same treatment. |
 | **`DiagnosticCatalog.StyleCop`** | The [StyleCop.Analyzers](https://github.com/DotNetAnalyzers/StyleCopAnalyzers) (`SAxxxx`) rules, same treatment. |
 
-The three vendor catalogues are **generated**, never hand-written, and only facts are
-redistributed — ids, categories, help links. Rule titles and descriptions are the vendors'
-authored prose and are deliberately left out
-([ADR-0011](doc/adr/0011-redistribute-rule-facts-only-never-the-vendors-prose.md)). How
-that generation works, and what keeps it honest, is the next section.
+The three vendor catalogues are **generated**, never hand-written, and carry ids,
+categories, help links and the rule's own title — the last as a documentation comment, so
+that hovering a constant says what the rule is about. Rule descriptions and message
+formats are the vendors' documentation and are deliberately left out
+([ADR-0014](doc/adr/0014-ship-the-vendors-rule-title-as-a-catalogues-documentation.md)).
+How that generation works, and what keeps it honest, is the next section.
 
 These catalogues are unofficial. They are not affiliated with, endorsed by, or supported
 by SonarSource, Microsoft, or the StyleCop.Analyzers project. "Sonar" and "SonarQube" are
