@@ -94,19 +94,19 @@ assert_equals 'a train id resolves to its prefix' 'lib-v' "$(prefix_of lib)"
 
 assert_empty 'an unknown train resolves to nothing' "$(prefix_of nope)"
 
+# verdict <command...> — echo the word a status means, so an exit code can be asserted with
+# the same assert_equals as every other expectation. Spelling it out is what makes a failure
+# readable: "expected: [refused] actual: [accepted]" says what went wrong, where a bare
+# status would have to be decoded, and the assertion no longer has to be written once per
+# branch with the answer already baked into each.
+verdict() {
+  if "$@"; then printf 'accepted\n'; else printf 'refused\n'; fi
+}
+
 # require_train writes to stderr and returns 1; both halves matter, since callers
 # decide their own exit code from the status and the operator reads the message.
-if require_train nope 2>/dev/null; then
-  assert_equals 'an unknown train is refused' 'refused' 'accepted'
-else
-  assert_equals 'an unknown train is refused' 'refused' 'refused'
-fi
-
-if require_train lib 2>/dev/null; then
-  assert_equals 'a known train is accepted' 'accepted' 'accepted'
-else
-  assert_equals 'a known train is accepted' 'accepted' 'refused'
-fi
+assert_equals 'an unknown train is refused' 'refused' "$(verdict require_train nope 2>/dev/null)"
+assert_equals 'a known train is accepted' 'accepted' "$(verdict require_train lib 2>/dev/null)"
 
 # Every train in the table must be routable from its own prefix, so a row added with
 # a prefix that shadows another cannot pass unnoticed.

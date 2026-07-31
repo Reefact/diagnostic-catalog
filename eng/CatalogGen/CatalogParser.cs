@@ -31,10 +31,10 @@ internal static class CatalogParser
             RegexOptions.Multiline,
             RegexLimits.MatchTimeout);
 
-        foreach (Match b in blocks)
+        foreach (GroupCollection block in blocks.Select(b => b.Groups))
         {
-            string id = b.Groups["id"].Value;
-            string body = b.Groups["body"].Value;
+            string id = block["id"].Value;
+            string body = block["body"].Value;
             Match catRef = Regex.Match(body, @"public const string Category = \w+\.(\w+);",
                                        RegexOptions.None, RegexLimits.MatchTimeout);
             if (!catRef.Success || !categoryLiterals.TryGetValue(catRef.Groups[1].Value, out string? category))
@@ -42,7 +42,7 @@ internal static class CatalogParser
             Match help = Regex.Match(body, @"public const string HelpLinkUri = ""((?:[^""\\]|\\.)*)"";",
                                      RegexOptions.None, RegexLimits.MatchTimeout);
             rules[id] = new RuleInfo(category, help.Success ? Naming.Unescape(help.Groups[1].Value) : string.Empty,
-                                     Retired: b.Groups["obsolete"].Success);
+                                     Retired: block["obsolete"].Success);
         }
 
         // Inverted, because the emitter asks the question the other way round: given a category's
