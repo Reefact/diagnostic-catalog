@@ -78,10 +78,15 @@ public static class CatalogRun
             ? [.. pr.EnumerateArray().Select(x => Path.GetFullPath(Path.Combine(manifestDir, Text(x, where, "projects"))))]
             : null;
 
-        int named = (assemblies is not null ? 1 : 0) + (nupkg is not null ? 1 : 0) + (projects is not null ? 1 : 0);
+        string? solution = entry.TryGetProperty("solution", out JsonElement so)
+            ? Path.GetFullPath(Path.Combine(manifestDir, Text(so, where, "solution")))
+            : null;
+
+        int named = (assemblies is not null ? 1 : 0) + (nupkg is not null ? 1 : 0)
+                    + (projects is not null ? 1 : 0) + (solution is not null ? 1 : 0);
         if (named > 1)
             throw new ManifestException($"{where}: names more than one source; give one of " +
-                                        "\"package\", \"nupkg\", \"projects\" or \"assemblies\".");
+                                        "\"package\", \"nupkg\", \"projects\", \"solution\" or \"assemblies\".");
 
         bool fromFeed = named == 0;
 
@@ -98,7 +103,8 @@ public static class CatalogRun
             Nupkg: nupkg,
             Source: Optional(entry, "source", where),
             Projects: projects,
-            Configuration: Optional(entry, "configuration", where) ?? "Release");
+            Configuration: Optional(entry, "configuration", where) ?? "Release",
+            Solution: solution);
     }
 
     private static string Required(JsonElement entry, string name, string where)
@@ -209,6 +215,14 @@ public static class CatalogRun
             AnalyzerAssemblySet? local = LocalAssemblySource.Acquire(job.Assemblies, job.SourceName, job.SourceVersion);
 
             return local is null ? null : EmitFrom(local);
+        }
+
+        if (job.Solution is not null)
+        {
+            AnalyzerAssemblySet? discovered = SolutionSource.Acquire(job.Solution, job.Configuration,
+                                                                     job.SourceName, job.SourceVersion);
+
+            return discovered is null ? null : EmitFrom(discovered);
         }
 
         if (job.Projects is not null)

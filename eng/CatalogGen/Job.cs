@@ -10,16 +10,16 @@ namespace CatalogGen;
 /// which is what keeps argument parsing on one side of the boundary and generation on the other.
 /// </para>
 /// <para>
-/// <see cref="Package"/>/<see cref="Version"/>, <see cref="Nupkg"/>, <see cref="Projects"/> and
-/// <see cref="Assemblies"/> are the four ways to name a source, and exactly one is set; the others
-/// are null and never read.
+/// <see cref="Package"/>/<see cref="Version"/>, <see cref="Nupkg"/>, <see cref="Projects"/>,
+/// <see cref="Solution"/> and <see cref="Assemblies"/> are the five ways to name a source, and
+/// exactly one is set; the others are null and never read.
 /// </para>
 /// </remarks>
 public sealed record Job(
     string? Package, string? Version, string Namespace, string Container, string Output, string Language,
     IReadOnlyList<string>? Assemblies = null, string? SourceName = null, string? SourceVersion = null,
     string? Nupkg = null, string? Source = null, IReadOnlyList<string>? Projects = null,
-    string Configuration = "Release")
+    string Configuration = "Release", string? Solution = null)
 {
     /// <summary>
     /// What this job reads from, for the run's header line. The assemblies' file names when they
@@ -32,6 +32,7 @@ public sealed record Job(
             if (Assemblies is not null) return SourceName ?? string.Join(", ", Assemblies.Select(Path.GetFileName));
             if (Nupkg is not null) return SourceName ?? Path.GetFileName(Nupkg);
             if (Projects is not null) return SourceName ?? string.Join(", ", Projects.Select(Path.GetFileName));
+            if (Solution is not null) return SourceName ?? Path.GetFileName(Solution);
 
             return Package!;
         }

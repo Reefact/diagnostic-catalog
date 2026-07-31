@@ -149,6 +149,29 @@ public sealed class CliApplicationTests
     }
 
     [Fact]
+    public async Task A_solution_and_a_project_name_different_sources()
+    {
+        int exitCode = await CliApplication.RunAsync(
+            ["generate", "--solution", "a.slnx", "--project", "a.csproj",
+             "--namespace", "N", "--container", "C", "--output", "o.g.cs"]);
+
+        Assert.Equal(ExitCodes.UsageError, exitCode);
+    }
+
+    [Fact]
+    public async Task A_configuration_selects_a_build_of_a_solution_too()
+    {
+        // It applies to every project the solution turns out to name, so refusing it here would
+        // refuse the one place a multi-project read most needs to say which build it means.
+        int exitCode = await CliApplication.RunAsync(
+            ["generate", "--solution", "no-such-solution.slnx", "--configuration", "Debug",
+             "--namespace", "N", "--container", "C", "--output", "o.g.cs"]);
+
+        // Failure, not usage: the command line is well formed and it is the solution that is absent.
+        Assert.Equal(ExitCodes.Failure, exitCode);
+    }
+
+    [Fact]
     public async Task An_option_left_without_a_value_is_a_usage_error()
     {
         // The pair-reading parser this replaced stopped when fewer than two arguments remained, so

@@ -47,10 +47,10 @@ internal static class ProjectSource
                 // it. Guessing short is the failure this tool exists to prevent — the catalogue is
                 // emitted, nothing reports the omission, and the missing rules read as retired.
                 Console.Error.WriteLine(
-                    $"{Path.GetFileName(full)} is a solution: name the projects that produce " +
-                    "analyzers instead, repeating --project. Which projects in a solution declare " +
-                    "analyzers cannot be told from the outside, and a catalogue short of a rule " +
-                    "reads as one whose vendor retired it.");
+                    $"{Path.GetFileName(full)} is a solution: give it to --solution, which reads the " +
+                    $"projects declaring <{SolutionSource.Marker}>, or name them yourself by repeating " +
+                    "--project. Which projects in a solution declare analyzers cannot be told from the " +
+                    "outside, and a catalogue short of a rule reads as one whose vendor retired it.");
 
                 return null;
             }
@@ -152,6 +152,33 @@ internal static class ProjectSource
     // its output.
     private static Evaluation? Evaluate(string project, string configuration, string? targetFramework)
     {
+        IReadOnlyDictionary<string, string>? properties = Properties(project, configuration, targetFramework, Wanted);
+
+        return properties is null
+                   ? null
+                   : new Evaluation(properties["TargetPath"], properties["TargetFramework"],
+                                    properties["TargetFrameworks"], properties["AssemblyName"],
+                                    properties["Version"]);
+    }
+
+    /// <summary>
+    /// One evaluated property, or null when the project could not be evaluated.
+    /// </summary>
+    /// <remarks>
+    /// Distinguishing "could not ask" from "answered nothing" is the caller's business and the
+    /// reason this returns null rather than an empty string: a project this tool failed to evaluate
+    /// has not declined anything.
+    /// </remarks>
+    internal static string? EvaluateProperty(string project, string name)
+        => Properties(project, "Release", null, [name])?[name];
+
+    // Shared by both, because MSBuild is expensive to spawn and easy to spawn wrongly. Note the
+    // second property asked for below: -getProperty answers a BARE VALUE for one name and JSON for
+    // two or more, so asking for a companion keeps a single parsing path rather than two that would
+    // diverge the first time one was tested and the other was not.
+    private static IReadOnlyDictionary<string, string>? Properties(
+        string project, string configuration, string? targetFramework, IReadOnlyList<string> names)
+    {
         ProcessStartInfo start = new()
         {
             FileName = DotnetCli.Host(),
@@ -165,7 +192,8 @@ internal static class ProjectSource
         start.ArgumentList.Add("-nologo");
         start.ArgumentList.Add($"-p:Configuration={configuration}");
         if (targetFramework is not null) start.ArgumentList.Add($"-p:TargetFramework={targetFramework}");
-        foreach (string property in Wanted)
+        start.ArgumentList.Add("-getProperty:MSBuildProjectFullPath");
+        foreach (string property in names)
         {
             start.ArgumentList.Add($"-getProperty:{property}");
         }
@@ -212,12 +240,7 @@ internal static class ProjectSource
             using JsonDocument document = JsonDocument.Parse(stdout);
             JsonElement properties = document.RootElement.GetProperty("Properties");
 
-            return new Evaluation(
-                Read(properties, "TargetPath"),
-                Read(properties, "TargetFramework"),
-                Read(properties, "TargetFrameworks"),
-                Read(properties, "AssemblyName"),
-                Read(properties, "Version"));
+            return names.ToDictionary(n => n, n => Read(properties, n), StringComparer.Ordinal);
         }
         catch (Exception exception) when (exception is JsonException or KeyNotFoundException)
         {
