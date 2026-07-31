@@ -1,17 +1,18 @@
 # Changelog
 
 All notable, user-facing changes to the **`lib` release train** — the
-DiagnosticCatalog foundation, its analyzers, its CLI and its test-support
-package — are documented here.
+DiagnosticCatalog foundation, its analyzers, and the catalogue of their own
+rules — are documented here.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 Each release train keeps its own changelog and versions independently. The rule
 that routes a commit to a train — its scope — is in
-[CONTRIBUTING.md](CONTRIBUTING.md). The catalog trains carry theirs next to their
+[CONTRIBUTING.md](CONTRIBUTING.md). The other trains carry theirs next to their
 project:
 
+* [`cli`](src/DiagnosticCatalog.Cli/CHANGELOG.md)
 * [`sonar`](src/DiagnosticCatalog.Sonar/CHANGELOG.md)
 * [`netanalyzers`](src/DiagnosticCatalog.NetAnalyzers/CHANGELOG.md)
 * [`stylecop`](src/DiagnosticCatalog.StyleCop/CHANGELOG.md)
@@ -49,9 +50,12 @@ project:
   through an unattended nightly run
   ([ADR-0012](doc/adr/0012-a-catalogue-never-renames-a-member-it-published.md)).
 
-  **No shipped assembly changes.** `eng/CatalogGen` is build tooling and rides no
-  train; the entry appears here because the commit's `core` scope routes it to
-  `lib`. What it protects is the catalogues, not this package.
+  **No shipped assembly changes.** `eng/CatalogGen` declares no `<ReleaseTrain>` of
+  its own — it is bundled into the `dcat` tool, which rides the `cli` train
+  ([ADR-0017](doc/adr/0017-publish-the-generator-as-a-cli-on-its-own-release-train.md))
+  — so nothing this train publishes moved. The entry appears here because the
+  commit's `core` scope routes it to `lib`. What it protects is the catalogues, not
+  this package.
 
 ## [0.1.0] - 2026-07-30
 
