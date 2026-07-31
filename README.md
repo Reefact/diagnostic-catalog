@@ -241,9 +241,14 @@ Three, by what you are trying to do.
 
 | If you… | Read |
 | --- | --- |
-| write `[SuppressMessage(...)]` and want it checked | [Writing suppressions that the compiler checks](doc/guide/consumers.md) |
-| ship an analyzer, or own rules nobody else publishes | [Publishing a catalogue](doc/guide/catalogue-authors.md) |
-| saw a `DCATxxxx` and want to know what it means | [The `DCAT` diagnostics](doc/guide/diagnostics.md) |
+| write `[SuppressMessage(...)]` and want it checked | [Writing suppressions that the compiler checks](doc/guide/writing-suppressions.en.md) |
+| ship an analyzer, or own rules nobody else publishes | [Publishing a catalogue](doc/guide/authoring-a-catalogue.en.md) |
+| saw a `DCATxxxx` and want to know what it means | [The `DCAT` diagnostics](doc/guide/diagnostics.en.md) |
+
+Every guide exists in English and French — the language banner at the top of each page switches
+between them, and each page carries previous/next navigation. The
+[documentation map](doc/guide/README.en.md) ([français](doc/guide/README.fr.md)) picks a page by
+what you are trying to do.
 
 Per-package guides:
 [`DiagnosticCatalog`](src/DiagnosticCatalog/README.md) ·

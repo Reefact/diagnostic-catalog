@@ -1,7 +1,10 @@
 # The `DCAT` diagnostics
 
-Every diagnostic `DiagnosticCatalog.Analyzers` reports: what triggers it, why it exists, and how to
-configure it.
+🌍 **Languages:**  
+🇬🇧 English (this file) | 🇫🇷 [Français](./diagnostics.fr.md)
+
+For anyone who saw a `DCATxxxx` and wants to know what it means. Every diagnostic
+`DiagnosticCatalog.Analyzers` reports: what triggers it, why it exists, and how to configure it.
 
 They fall into two groups. **Definition** diagnostics look at a rule you declared; you only see them
 if you write a catalogue. **Use-site** diagnostics look at a suppression you wrote, which is most
@@ -28,8 +31,8 @@ people.
 **The category and the identifier come from two different rules.**
 
 ```csharp
-[SuppressMessage(SonarRules.S1144.Category, SonarRules.S2094.Id)]
-//               ^^^^^ from S1144          ^^^^^ from S2094
+[SuppressMessage(SonarRule.S1144.Category, SonarRule.S2094.Id)]
+//               ^^^^^ from S1144         ^^^^^ from S2094
 ```
 
 Copy-paste, nearly always: you duplicated a working suppression and changed one half.
@@ -43,8 +46,8 @@ miss precisely this.
 **Two fixes, neither recommended.** Only you know which half was the typo:
 
 ```text
-Use SonarRules.S1144.Id        — keep the category, correct the identifier
-Use SonarRules.S2094.Category  — keep the identifier, correct the category
+Use SonarRule.S1144.Id        — keep the category, correct the identifier
+Use SonarRule.S2094.Category  — keep the identifier, correct the category
 ```
 
 Worth knowing while you choose: Roslyn matches a suppression on the **identifier alone** and never
@@ -84,14 +87,14 @@ between them is yours.
 **One half migrated, one half still a literal.**
 
 ```csharp
-[SuppressMessage(SonarRules.S1144.Category, "S1144")]
+[SuppressMessage(SonarRule.S1144.Category, "S1144")]
 ```
 
 The most common half-done state, and the only one where the intended rule is known without
 ambiguity — the migrated argument names it. Completed from that rule, rewriting only the literal:
 whatever spelling you chose for the other side, an alias included, is left alone.
 
-**Unless the literal names something else.** `"S9999"` beside `SonarRules.S1144.Category` gets the
+**Unless the literal names something else.** `"S9999"` beside `SonarRule.S1144.Category` gets the
 diagnostic and **no** fix, because completing it would silence a different rule than the one
 silenced today — and let the original warning back in. That is a decision, not a migration.
 
@@ -100,7 +103,7 @@ silenced today — and let the original warning back in. That is a decision, not
 **A non-`IL` rule used in `UnconditionalSuppressMessage`.**
 
 ```csharp
-[UnconditionalSuppressMessage(SonarRules.S1144.Category, SonarRules.S1144.Id)]
+[UnconditionalSuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.Id)]
 ```
 
 That attribute is read by the trimmer, from your compiled assembly, long after the compiler has
@@ -116,7 +119,7 @@ telling you to change something that works.
 
 ## Definition diagnostics
 
-These fire on code that declares rules. See [the catalogue author's guide](catalogue-authors.md).
+These fire on code that declares rules. See [the catalogue author's guide](authoring-a-catalogue.en.md).
 
 ### `DCAT0002`
 
@@ -186,3 +189,9 @@ coherently. They do not, and will not:
   it stays a human question;
 * reach `#pragma warning disable` or `.editorconfig` severity keys, which take bare text outside the
   C# compilation model. No constant can ever be substituted into either.
+
+---
+
+<div align="center">
+<a href="./authoring-a-catalogue.en.md">← Publishing a catalogue</a> · <a href="./README.en.md">↑ Table of contents</a>
+</div>

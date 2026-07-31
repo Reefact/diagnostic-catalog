@@ -1,8 +1,11 @@
 # DiagnosticCatalog — Spécification de la bibliothèque fondation
 
-> **Versions linguistiques** — Ce document est une traduction. La version
-> canonique est [`specification.en.md`](specification.en.md). En cas de
-> divergence entre les deux, la version anglaise prévaut.
+🌍 **Langues :**  
+🇬🇧 [English](./specification.en.md) | 🇫🇷 Français (ce fichier)
+
+Pour quiconque a besoin de la réponse normative plutôt que de la plus courte. Ce document est une
+traduction : en cas de divergence avec la version anglaise, c'est elle qui prévaut. Les
+[guides](guide/README.fr.md) enseignent la même matière et sont un meilleur point de départ.
 
 ---
 

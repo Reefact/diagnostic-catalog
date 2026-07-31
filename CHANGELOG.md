@@ -35,9 +35,9 @@ project:
   precisely the silent mismatch the library exists to prevent; CI regenerates it on every pull
   request and fails if the committed file has gone stale.
 
-* **Guides** for [consumers](doc/guide/consumers.md), for
-  [catalogue authors](doc/guide/catalogue-authors.md), and a
-  [reference for every `DCAT` diagnostic](doc/guide/diagnostics.md) including its `.editorconfig`
+* **Guides** for [consumers](doc/guide/writing-suppressions.en.md), for
+  [catalogue authors](doc/guide/authoring-a-catalogue.en.md), and a
+  [reference for every `DCAT` diagnostic](doc/guide/diagnostics.en.md) including its `.editorconfig`
   configuration.
 
 ### Fixed
