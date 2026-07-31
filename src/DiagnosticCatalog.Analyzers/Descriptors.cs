@@ -18,6 +18,19 @@ internal static class Descriptors
     /// </summary>
     internal const string Category = "DiagnosticCatalog";
 
+    internal static readonly DiagnosticDescriptor MembersFromDifferentRules = new(
+        id: "DCAT0001",
+        title: "Category and Id must reference the same diagnostic rule",
+        messageFormat: "The category comes from '{0}' and the id from '{1}': a suppression must reference one rule",
+        category: Category,
+        defaultSeverity: DiagnosticSeverity.Warning,
+        isEnabledByDefault: true,
+        description:
+            "The two arguments are compared by the rule that DECLARES them, not by their values. Two "
+            + "rules sharing a category today produce a suppression that works and is still reported, "
+            + "because the pairing is a copy-paste error: the day the vendor recategorises one of them, "
+            + "the suppression carries the wrong category and nothing in the platform will say so.");
+
     internal static readonly DiagnosticDescriptor InvalidRuleType = new(
         id: "DCAT0002",
         title: "A diagnostic rule must be declared as a static non-generic class",
