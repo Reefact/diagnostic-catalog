@@ -1,13 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <!--
-    Build-time tool, never shipped. It reads the DiagnosticDescriptor instances of an
-    upstream analyzer package and emits a catalogue as C# source. It is not referenced
-    by anything that ships, and it is deliberately excluded from packing.
+    The generation engine. It reads the DiagnosticDescriptor instances of an analyzer assembly and
+    emits a catalogue as C# source.
+
+    It is not a package of its own: it declares no <ReleaseTrain>, so tools/packaging/pack.sh treats
+    it as bundled rather than depended upon, and it reaches users inside the `dcat` tool that
+    references it (ADR-0017). Its command line lives there too — this project parses nothing.
   -->
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net10.0</TargetFramework>
+    <!--
+      net8.0, not net10.0, because DiagnosticCatalog.Cli is floored there so one build of the tool
+      installs on .NET 8 and every newer major (ADR-0017). A net8.0 project cannot reference a
+      net10.0 one, so the engine sets the floor as much as the shell does. Nothing here needs a
+      newer BCL: the run uses CreateTempSubdirectory and ReplaceLineEndings, both present since
+      .NET 7 and .NET 6.
+    -->
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <IsPackable>false</IsPackable>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
@@ -30,9 +39,10 @@
   </ItemGroup>
 
   <!--
-    The generator's parsing, naming and emitting logic is internal: it is a tool's implementation,
-    not an API. Exposing it to its own test project is what lets those parts be exercised without
-    widening the surface anyone else could take a dependency on.
+    The generator's parsing, naming and emitting logic is internal: it is an engine's implementation,
+    not an API. Only Job, CatalogRun and RunOutcome are public, which is the whole surface the tool
+    needs. Exposing the rest to its own test project is what lets those parts be exercised without
+    widening what the shell — or anything else — could take a dependency on.
   -->
   <ItemGroup>
     <InternalsVisibleTo Include="CatalogGen.UnitTests" />

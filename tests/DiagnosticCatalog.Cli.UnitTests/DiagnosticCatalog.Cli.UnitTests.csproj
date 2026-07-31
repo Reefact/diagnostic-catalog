@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Deliberately does NOT import build/Net472TestFloor.props. That file enrols a project in the
+    .NET Framework 4.7.2 floor, which exists to prove that a SHIPPED netstandard2.0 assembly behaves
+    on the real .NET Framework CLR. `dcat` is a .NET tool floored at net8.0 (ADR-0017), not a
+    netstandard2.0 library, so there is no such assembly here and the floor would be running a
+    command-line tool on a runtime it never meets. See CONTRIBUTING.md, "The .NET Framework floor".
+  -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <RootNamespace>DiagnosticCatalog.Cli.UnitTests</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="coverlet.collector" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\DiagnosticCatalog.Cli\DiagnosticCatalog.Cli.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -52,6 +52,12 @@
          analyzers derive from types that reference it. -->
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.14.0" />
+    <!-- The command tree, argument parsing and help output of the `dcat` tool. Chosen over a
+         hand-rolled parser because the tool is published: the parser it replaced read arguments in
+         pairs, which made a switch left dangling at the end of a command line neither applied nor
+         reported, and it offered no help switch at all. Both are acceptable in build tooling nobody
+         else runs, and neither is acceptable in a tool somebody installs. -->
+    <PackageVersion Include="Spectre.Console.Cli" Version="0.55.0" />
   </ItemGroup>
 
 </Project>

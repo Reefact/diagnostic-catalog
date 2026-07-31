@@ -60,17 +60,19 @@ versions and publishes independently:
 
 | Train | Scopes | Pace |
 |---|---|---|
-| `lib` | `core`, `analyzers`, `cli`, `testing` | The foundation. Deliberately very stable. |
+| `lib` | `core`, `analyzers`, `testing` | The foundation. Deliberately very stable. |
+| `cli` | `cli`, `cataloggen` | The `dcat` tool. Follows Roslyn and upstream package layouts. |
 | `sonar` | `sonar` | Follows SonarSource's releases. |
 | `netanalyzers` | `netanalyzers` | Follows the .NET SDK's analyzer releases. |
 | `stylecop` | `stylecop` | Follows StyleCop's releases. |
-| — | `cataloggen` | **No train.** The generator ships nothing, so it moves no version. |
 
 This is why `commit-lint` **requires a scope on `feat` and `fix`**: an unscoped
 one matches no train and is silently dropped from the release notes and the
-changelog. `cataloggen` is the deliberate exception — it matches no train on
-purpose, because the generator ships nothing to version. The full table, with the `analyzers` / `netanalyzers` distinction, is
-in [`CONTRIBUTING.md`](CONTRIBUTING.md).
+changelog. Every scope now routes somewhere — `cataloggen` joined the `cli` train
+when the generator was published inside `dcat` (ADR-0017), so there is no longer
+a scope for which reaching no release note is correct. The full table, with the
+`analyzers` / `netanalyzers` distinction and why the shell and the engine keep
+separate scopes, is in [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 Two rules follow, and both are checked on every pull request by the release
 rehearsal:
