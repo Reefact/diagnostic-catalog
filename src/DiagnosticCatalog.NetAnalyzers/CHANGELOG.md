@@ -16,7 +16,21 @@ number below.
 
 ## [Unreleased]
 
-_Nothing yet._
+### Added
+
+* Every rule now carries the title its `DiagnosticDescriptor` declares as its
+  documentation comment, so hovering a constant says what the rule is about
+  instead of restating the identifier under the cursor. These titles are
+  resource-backed, so they are read in the invariant culture: the generated file
+  does not depend on the machine that produced it
+  ([ADR-0014](../../doc/adr/0014-ship-the-vendors-rule-title-as-a-catalogues-documentation.md)).
+
+### Changed
+
+* A rule's category is now documented on its `Category` constant rather than on
+  the rule itself, and the help link moved from the rule's summary to a `remarks`
+  line beside it. No constant moved: this is a documentation change only, and
+  every id, category and help link is unchanged.
 
 ## [0.1.0] - 2026-07-31
 
