@@ -165,6 +165,11 @@ jobs:
           # Tags are fetched explicitly — actions/checkout does not bring them, and without
           # them every train would report "never published" on a repository that has in fact
           # published all four.
+          # SC2016 fires on every backtick and $ inside these single-quoted formats, which is
+          # precisely what they are for: the backticks are Markdown and must reach the pull
+          # request as characters, not be read as command substitution. Disabling it here is
+          # the same call the quoted heredocs above make, for the same reason.
+          # shellcheck disable=SC2016
           if [ -n "$TRAINS" ]; then
             git fetch --tags --force --quiet origin
             {
