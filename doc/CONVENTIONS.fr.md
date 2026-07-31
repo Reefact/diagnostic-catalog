@@ -3,6 +3,9 @@
 🌍 **Langues :**  
 🇬🇧 [English](./CONVENTIONS.en.md) | 🇫🇷 Français (ce fichier)
 
+<!-- dcat-doc:missing SonarRule.S1144Id cité plus bas comme la forme de nommage écartée par la conception -->
+<!-- dcat-doc:missing SonarRule.S1145 cité plus bas comme exemple de contre-exemple volontaire -->
+
 Pour quiconque ajoute ou modifie une page — y compris un agent, ce qui explique pourquoi chaque
 règle ci-dessous dit comment elle est vérifiée plutôt que de demander qu'on s'en souvienne. Comment
 les documents sous [`doc/`](.) sont disposés, et ce qu'un test vérifie à leur sujet.
@@ -165,6 +168,9 @@ divergent.
 * **Les exemples C# suivent les règles de codage du dépôt.** Écrivez le type, jamais `var`
   ([`CLAUDE.md`](../CLAUDE.md)). Un lecteur copie ce qu'il voit, et une documentation qui enseigne un
   style que le build rejette est pire qu'une documentation qui n'enseigne rien.
+* **Les libellés d'un schéma sont de la prose.** La règle ci-dessus lie les exemples C#, XML et
+  `.editorconfig`, dont les identifiants sont ceux du code. Les libellés de nœuds d'un schéma mermaid
+  sont des phrases, et ils se traduisent comme n'importe quelle autre phrase de la page.
 * **Préférez une affirmation vérifiable.** « Mesuré contre une vraie restauration » vaut mieux que
   « devrait fonctionner ». Là où un comportement est asserté par un test, nommez le test.
 
@@ -221,11 +227,31 @@ projet de test :
   option exposée par l'outil est documentée — attend la page de référence `dcat` ; tant qu'elle
   n'existe pas, aucun document unique ne peut porter l'obligation, et l'étaler sur chaque fichier qui
   mentionne l'outil rendrait la vérification insatisfiable plutôt que stricte.
+* **Chaque règle qu'un exemple montre est une règle publiée par son catalogue.** `SonarRule.S1144`
+  résout contre le `DiagnosticCatalog.Sonar` compilé, et le conteneur n'est jamais mis au pluriel.
+  Celle-ci existe parce qu'elle avait déjà manqué : seize exemples répartis sur trois documents
+  écrivaient le conteneur `SonarRules`, et aucun d'eux ne compilait.
 
-Les deux comparent un document à la vérité compilée plutôt qu'à un autre document. C'est le même
+Les trois comparent un document à la vérité compilée plutôt qu'à un autre document. C'est le même
 raisonnement qu'[ADR-0009](adr/0009-generate-catalog-content-from-analyzer-descriptors.md) : les
 descripteurs sont ce avec quoi l'analyseur signale, donc ce contre quoi une affirmation à leur sujet
 se vérifie.
+
+### Montrer une référence qui n'existe pas
+
+Certaines pages y sont obligées. Le tutoriel demande au lecteur de casser une référence et de lire le
+`CS0117` qu'elle produit — une règle qui existerait gâcherait l'étape — et la page des concepts
+montre `SonarRule.S1144Id` comme la forme de nommage que la conception a écartée. Déclarez-la dans le
+document, avec la raison :
+
+```markdown
+<!-- dcat-doc:missing SonarRule.S1145 l'erreur volontaire de l'étape 3 -->
+```
+
+Déclarée dans le document et non dans le test, pour qu'un lecteur des sources rencontre la raison là
+où est l'exemption. Par document, pour que la même faute sur n'importe quelle autre page échoue
+encore. La raison est obligatoire. Et une déclaration qui nomme une référence que la page ne montre
+plus échoue aussi — une exemption que rien n'utilise couvre ce qui sera écrit là ensuite.
 
 ## Ajouter une page
 

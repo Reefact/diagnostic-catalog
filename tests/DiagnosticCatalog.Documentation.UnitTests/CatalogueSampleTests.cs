@@ -71,6 +71,8 @@ public sealed class CatalogueSampleTests
                 $"{catalogue.Namespace}.{catalogue.Container} is declared in eng/catalogs.json and " +
                 "is not in the assembly it generates into.");
 
+            IReadOnlyDictionary<string, string> deliberate = DeliberatelyMissing(document);
+
             foreach (Match reference in Regex.Matches(
                          document.Text,
                          Regex.Escape(catalogue.Container) + "\\.(?<rule>[A-Z][A-Za-z0-9]*)",
@@ -78,12 +80,16 @@ public sealed class CatalogueSampleTests
                          MatchTimeout))
             {
                 string rule = reference.Groups["rule"].Value;
+                if (deliberate.ContainsKey($"{catalogue.Container}.{rule}")) continue;
 
                 Assert.True(
                     container!.GetNestedType(rule, BindingFlags.Public) is not null,
                     $"{path} shows {catalogue.Container}.{rule}, which " +
                     $"{catalogue.Namespace} does not publish. A reader who copies that sample gets a " +
-                    "compile error on the page telling them a checked reference beats a string.");
+                    "compile error on the page telling them a checked reference beats a string.\n" +
+                    "If the page shows it BECAUSE it does not exist -- a deliberate mistake, a " +
+                    "rejected naming shape -- declare it at the top of the document:\n" +
+                    $"  <!-- dcat-doc:missing {catalogue.Container}.{rule} why the page shows it -->");
             }
         }
     }
@@ -124,6 +130,31 @@ public sealed class CatalogueSampleTests
     }
 
     /// <summary>
+    /// A declaration that nothing needs is a hole left open. The page that showed the counter-example
+    /// was rewritten, the reference went away, and the exemption stayed -- covering whatever is
+    /// written there next.
+    /// </summary>
+    [Theory]
+    [MemberData(nameof(DocumentsShowingRules))]
+    public void A_deliberately_missing_reference_is_actually_shown(string path)
+    {
+        MarkdownDocument document = Document(path);
+
+        foreach (KeyValuePair<string, string> declaration in DeliberatelyMissing(document))
+        {
+            Assert.True(
+                Regex.IsMatch(
+                    document.Text,
+                    "(?<!\\w)" + Regex.Escape(declaration.Key) + "(?!\\w)",
+                    RegexOptions.None,
+                    MatchTimeout),
+                $"{path} declares {declaration.Key} as deliberately missing and never shows it. " +
+                "Remove the declaration: an exemption nothing uses covers whatever is written there " +
+                "next.");
+        }
+    }
+
+    /// <summary>
     /// Guards both theories against passing on an empty world: a manifest that could not be read, or
     /// catalogues that did not land beside the tests, would let any sample through.
     /// </summary>
@@ -144,6 +175,47 @@ public sealed class CatalogueSampleTests
                 $"{catalogue.Namespace} could not be loaded beside the tests. Check that this test " +
                 "project still references it.");
         }
+    }
+
+    /// <summary>
+    /// The references a document shows ON PURPOSE although no catalogue publishes them, declared in
+    /// the document itself as <c>&lt;!-- dcat-doc:missing SonarRule.S1145 why --&gt;</c>.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Some pages have to show a name that does not resolve. The tutorial's third step asks the
+    /// reader to break a reference and read the <c>CS0117</c> it produces -- that is the moment the
+    /// whole library is demonstrated in, and a rule that existed would ruin it. The concepts page
+    /// shows <c>SonarRule.S1144Id</c> as the shape it declined to adopt.
+    /// </para>
+    /// <para>
+    /// Declared in the document rather than listed in this file, and per document rather than
+    /// globally: the intent belongs beside the prose that carries it, a reader of the source meets
+    /// the reason where the exemption is, and the same misspelling on any other page still fails.
+    /// The reason is required, so an exemption is always a sentence somebody wrote.
+    /// </para>
+    /// </remarks>
+    private static IReadOnlyDictionary<string, string> DeliberatelyMissing(MarkdownDocument document)
+    {
+        Dictionary<string, string> declared = new(StringComparer.Ordinal);
+
+        foreach (Match declaration in Regex.Matches(
+                     document.Text,
+                     "<!--\\s*dcat-doc:missing\\s+(?<reference>[A-Za-z0-9_.]+)\\s+(?<reason>[^>]*?)\\s*-->",
+                     RegexOptions.None,
+                     MatchTimeout))
+        {
+            string reason = declaration.Groups["reason"].Value;
+
+            Assert.True(
+                reason.Length > 0,
+                $"{document.Path} declares {declaration.Groups["reference"].Value} as deliberately " +
+                "missing and gives no reason. An exemption without one is a hole nobody can judge.");
+
+            declared[declaration.Groups["reference"].Value] = reason;
+        }
+
+        return declared;
     }
 
     private static Assembly? Load(string name)
