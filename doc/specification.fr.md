@@ -1995,7 +1995,7 @@ sources, non restituée de mémoire. À re-vérifier avant toute révision majeu
 | # | Question | Position actuelle |
 | --- | --- | --- |
 | B1 | ~~Nom définitif du produit. `Catalog` désigne une bibliothèque qui ne contient délibérément aucun catalogue (§2.5).~~ | **Tranché** — le nom reste. Il dit ce à quoi la bibliothèque sert, non ce qu'elle contient ; les alternatives perdent chacune quelque chose, et quatre packages sont publiés. |
-| B2 | Le préfixe `DCAT` est-il libre ? Les préfixes d'analyzers communautaires ne sont pas enregistrés centralement. | À vérifier contre les préfixes connus avant la 1.0. |
+| B2 | ~~Le préfixe `DCAT` est-il libre ? Les préfixes d'analyzers communautaires ne sont pas enregistrés centralement.~~ | **Tranché — il l'est.** Vérifié par @reefact contre les préfixes connus avant la 1.0. La question devait se fermer avant publication et non après : un identifiant publié est un contrat que personne ne renomme (§23), et aucun registre ne permet de le vérifier ensuite. |
 | B3 | Le repli purement structurel du §7.2 (sans attribut) doit-il être activé par défaut ? | Attribut seul pour la 1.0 ; repli structurel documenté mais désactivé. |
 | B4 | Les alias et `using static` valent-ils la complexité d'analyse, compte tenu du §10.5 ? | Résolus, documentés, non promus. |
 | B5 | ~~L'analyzer Roslyn d'ILLink (`IL2xxx` à la compilation) partage-t-il le décodeur vérifié en A4 ?~~ | **Tranché — non** (A13). Les deux s'accordent sur tout ce qu'un catalogue généré peut produire, et divergent sur une seule forme : `IL####` suivi d'autre chose qu'un deux-points. `DCAT0009` reflète le linker et reste donc muet là-dessus ; voir §11.9. |

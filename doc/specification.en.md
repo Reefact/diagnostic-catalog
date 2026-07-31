@@ -1932,7 +1932,7 @@ recalled. Re-verify before any major revision.
 | # | Question | Current position |
 | --- | --- | --- |
 | B1 | ~~Final product name. `Catalog` names a library that deliberately contains no catalogue (§2.5).~~ | **Settled** — the name stands. It says what the library is for, not what it holds; the alternatives each lose something, and four packages are published. |
-| B2 | Is the `DCAT` prefix free? Community analyzer prefixes are not centrally registered. | Check against known prefixes before 1.0. |
+| B2 | ~~Is the `DCAT` prefix free? Community analyzer prefixes are not centrally registered.~~ | **Settled — it is.** Checked by @reefact against the known prefixes before 1.0. It had to close before publication rather than after: a released id is a contract nobody renames (§23), and there is no registry to consult later. |
 | B3 | Should the purely structural fallback of §7.2 (no attribute) be enabled by default? | Attribute-only for 1.0; structural fallback documented but off. |
 | B4 | Are aliases and `using static` worth the analyzer complexity given §10.5? | Resolved, documented, not promoted. |
 | B5 | ~~Does the ILLink Roslyn analyzer (`IL2xxx` at compile time) share the decoder verified in A4?~~ | **Settled — it does not** (A13). The two agree on everything a generated catalogue can produce, and diverge on one shape: `IL####` followed by anything that is not a colon. `DCAT0009` mirrors the linker, so it stays quiet there; see §11.9. |
