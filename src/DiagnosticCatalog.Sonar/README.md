@@ -3,6 +3,12 @@
 The **SonarAnalyzer.CSharp** rules as strongly referenced constants, so that
 `SuppressMessageAttribute` takes compile-checked references instead of magic strings.
 
+> ## 🪞 Mirrors `SonarAnalyzer.CSharp 10.31.0.145097`
+>
+> **456 rules, 13 categories.** Every identifier and category here is read from that
+> release's own analyzers, and the assembly records which release that was — see
+> [A note on versions](#a-note-on-versions).
+
 > Unofficial. Not affiliated with, endorsed by, or supported by SonarSource. "Sonar" and
 > "SonarQube" are trademarks of SonarSource S.A.
 
