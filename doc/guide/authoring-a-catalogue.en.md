@@ -131,111 +131,22 @@ of `DiagnosticDescriptor` — which is the next section, and the best reason to 
 > `const` and therefore falls outside this model. The catalogue covers the id and category axis;
 > resource files remain the right tool for translated text.
 
-## Closing the loop: one source of truth
+## Three things that get their own page
 
-If you own the analyzer as well as the catalogue, feed the descriptor **from the catalogue**:
+The contract above is all a catalogue has to satisfy. What surrounds it — feeding your analyzer from
+it, publishing it, publishing it again — is where the decisions are, and each has enough of them to
+be read on its own:
 
-```csharp
-private static readonly DiagnosticDescriptor Rule = new(
-    id:                 ContosoRule.CTS0001.Id,
-    title:              ContosoRule.CTS0001.Title,
-    messageFormat:      ContosoRule.CTS0001.MessageFormat,
-    category:           ContosoRule.CTS0001.Category,
-    defaultSeverity:    DiagnosticSeverity.Warning,
-    isEnabledByDefault: true,
-    description:        ContosoRule.CTS0001.Description,
-    helpLinkUri:        ContosoRule.CTS0001.HelpLinkUri);
-```
-
-Now the analyzer that *reports* the rule and every suppression that *silences* it read the same
-constants. The category your users write is exact by construction rather than by diligence — and
-"by diligence" is precisely what fails, because a category is a string that nobody but you
-publishes and that nothing verifies.
-
-This is the strongest reason for a first-party project to adopt the convention, and it is something
-a third-party catalogue can never offer: a mirror of somebody else's analyzer can only copy what
-that analyzer declares today.
-
-## Packaging
-
-Reference the foundation the ordinary way — **not** `PrivateAssets="all"`:
-
-```xml
-<PackageReference Include="DiagnosticCatalog" Version="0.1.0" />
-```
-
-| Who you are | What you need | How to reference |
-| --- | --- | --- |
-| **Consumer** — writes suppressions | the analyzers | `DiagnosticCatalog.Analyzers`, `PrivateAssets="all"` |
-| **Catalogue author** — declares rules | `[DiagnosticRule]` resolvable *by your own consumers* | ordinary `DiagnosticCatalog` reference |
-
-Hiding the dependency with `PrivateAssets="all"` is the mistake that matters here: your consumers
-then cannot resolve `DiagnosticRuleAttribute`, `[DiagnosticRule]` degrades to an error type, and —
-this is the bad part — the analyzers find **no rules at all** and report **nothing**. Everything
-looks clean. That is the exact failure this library exists to eliminate, so do not reproduce it in
-your own package.
-
-### Not taking the dependency at all
-
-If you would rather ship a catalogue with no dependencies whatsoever, declare the attribute yourself:
-
-```csharp
-namespace DiagnosticCatalog
-{
-    [System.AttributeUsage(System.AttributeTargets.Class)]
-    internal sealed class DiagnosticRuleAttribute : System.Attribute { }
-}
-```
-
-This is supported and tested, not a trick. The analyzers match the marker by its **fully qualified
-name**, never by symbol identity, so your copy is recognised exactly like the real one. It is the
-same pattern PolySharp uses for `IsExternalInit`.
-
-### If you reference the analyzers too
-
-A catalogue that references `DiagnosticCatalog.Analyzers` **propagates them to its own consumers**,
-so referencing your catalogue is enough to get the checking. That was measured against a real
-restore rather than read from NuGet's documentation, which says the opposite:
-
-| Your reference to `DiagnosticCatalog.Analyzers` | The analyzers run for your consumers |
-| --- | --- |
-| no `PrivateAssets` | **yes** |
-| `PrivateAssets="none"` | yes |
-| `PrivateAssets="all"` | no |
-
-If you would rather not impose analysis on everyone downstream, say so explicitly with
-`PrivateAssets="all"`. **Silence propagates.**
-
-## Versioning: the one rule that will bite you
-
-Constants are **inlined into your consumers at their compile time**. A consumer that referenced
-`ContosoRule.CTS0001.Id` did not record a link to your assembly — it copied the string `"CTS0001"`
-into its own.
-
-The consequence: **deleting a `const` breaks recompilation** for everyone who used it, and it breaks
-it with a bare `CS0117` that names nothing useful. So when a rule is retired upstream, carry it
-forward:
-
-```csharp
-[DiagnosticRule]
-[Obsolete("Retired in Contoso.Analyzers 4.0. No replacement.")]
-public static class CTS0001
-{
-    public const string Id = nameof(CTS0001);
-    public const string Category = ContosoCategory.Usage;
-}
-```
-
-Now a consumer still referencing it gets `CS0618` — which *names the rule and says what happened* —
-instead of a compile error that sends them looking for a missing namespace.
-
-The same applies to renaming: a category constant whose name changes breaks every consumer that
-referenced it. Pick names you can live with, and see
-[ADR-0012](../adr/0012-a-catalogue-never-renames-a-member-it-published.md) for how this repository
-holds itself to that.
-
-Beyond that, ordinary SemVer: a new rule is a **minor**, a retired-but-kept rule is a **minor**, and
-removing or renaming anything published is a **major**.
+* [**Closing the loop with your own analyzer**](first-party-analyzers.en.md) — if you own both, the
+  `DiagnosticDescriptor` and the suppression can read the same constants, and the category your users
+  write becomes exact by construction. Also the one member that would force a Roslyn dependency on
+  every consumer of your catalogue.
+* [**Versioning a catalogue**](versioning-a-catalogue.en.md) — constants are inlined into your
+  consumers at *their* compile time, so deleting one breaks their build with a message that names
+  nothing. Never delete a rule; never rename a member; what each change does to your version number.
+* [**Packaging a catalogue**](packaging-a-catalogue.en.md) — how to reference the foundation, how to
+  ship with no dependency at all, what propagates to your consumers whether you meant it or not, and
+  what nuget.org does to your README.
 
 ## If you are mirroring somebody else's analyzer
 
@@ -271,5 +182,5 @@ output looks like with 465, 318 and 193 rules; the method is in §14 of
 ---
 
 <div align="center">
-<a href="./zero-footprint.en.md">← The zero-footprint guarantee</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./diagnostics.en.md">The DCAT diagnostics →</a>
+<a href="./zero-footprint.en.md">← The zero-footprint guarantee</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./first-party-analyzers.en.md">Closing the loop with your own analyzer →</a>
 </div>

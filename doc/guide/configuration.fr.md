@@ -119,11 +119,13 @@ Pas de l'`.editorconfig`, mais la configuration que l'on rate le plus souvent.
 `PrivateAssets="all"` sur les analyseurs est correct : des assemblages d'analyse ne doivent pas
 devenir des dépendances d'exécution de ce qui vous consomme.
 
-`PrivateAssets="all"` sur la **fondation**, depuis un catalogue que vous publiez, est l'erreur qui
-compte. Vos consommateurs ne peuvent alors plus résoudre `DiagnosticRuleAttribute`,
-`[DiagnosticRule]` se dégrade en type d'erreur, les analyseurs ne trouvent **aucune règle**, et tout
-a l'air propre. C'est exactement la défaillance silencieuse que cette bibliothèque existe pour
-éliminer.
+`PrivateAssets="all"` sur la **fondation**, depuis un catalogue que vous publiez, est celui à éviter.
+Vos consommateurs ne peuvent alors plus résoudre `DiagnosticRuleAttribute` dans leur propre source :
+quiconque déclare ses propres règles obtient `CS0246` jusqu'à ajouter une dépendance que votre paquet
+avait déjà. Les analyseurs trouvent quand même les règles de votre catalogue — c'est asserté, et
+[empaqueter un catalogue](packaging-a-catalogue.fr.md) dit sur quoi la garantie repose — la
+défaillance est donc bruyante et non silencieuse. Évitez-le tout de même : cela dit faux sur ce dont
+votre paquet a besoin.
 
 Si un catalogue référence les analyseurs, ceux-ci atteignent les consommateurs de ce catalogue —
 mesuré contre une vraie restauration plutôt que lu dans la documentation de NuGet, qui dit le
