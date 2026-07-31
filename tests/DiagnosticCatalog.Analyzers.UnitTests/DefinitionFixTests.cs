@@ -32,64 +32,77 @@ public sealed class DefinitionFixTests
 
     private const string UsingFoundation = "using DiagnosticCatalog;\n";
 
+    /// <summary>A fixture, with LF line endings whatever the checkout used.</summary>
+    /// <remarks>
+    /// A raw string literal carries the line endings of the FILE it is written in, so on a runner that
+    /// checks out CRLF these fixtures arrived with the prefix above ending in LF and everything after it
+    /// in CRLF. Harmless for a test that only counts diagnostics, and not harmless here: these fixes
+    /// WRITE line endings, so a mixed fixture makes the expected output depend on the checkout.
+    ///
+    /// Normalised here and deliberately not inside the harness — one test below asserts that CRLF is
+    /// preserved, and it has to reach the fix intact.
+    /// </remarks>
+    private static string Rule(string declaration) =>
+        (UsingFoundation + declaration).Replace("\r\n", "\n");
+
     // --- DCAT0002, making the type static -----------------------------------------------------
 
     [Fact]
     public async Task A_sealed_rule_type_becomes_static()
     {
-        string fixteds = await CodeFixHarness.ApplyAsync(Analyzer, MakeStatic, UsingFoundation + """
+        string fixteds = await CodeFixHarness.ApplyAsync(Analyzer, MakeStatic, Rule("""
             [DiagnosticRule]
             public sealed class JD0007
             {
                 public const string Id = nameof(JD0007);
                 public const string Category = "Usage";
             }
-            """);
+            """));
 
-        Assert.Equal(UsingFoundation + """
+        Assert.Equal(Rule("""
             [DiagnosticRule]
             public static class JD0007
             {
                 public const string Id = nameof(JD0007);
                 public const string Category = "Usage";
             }
-            """, fixteds);
+            """), fixteds);
     }
 
     [Fact]
     public async Task A_rule_type_with_no_modifiers_becomes_static()
     {
-        string fixteds = await CodeFixHarness.ApplyAsync(Analyzer, MakeStatic, UsingFoundation + """
+        string fixteds = await CodeFixHarness.ApplyAsync(Analyzer, MakeStatic, Rule("""
             [DiagnosticRule]
             class JD0007
             {
                 public const string Id = nameof(JD0007);
                 public const string Category = "Usage";
             }
-            """);
+            """));
 
-        Assert.Equal(UsingFoundation + """
+        Assert.Equal(Rule("""
             [DiagnosticRule]
             static class JD0007
             {
                 public const string Id = nameof(JD0007);
                 public const string Category = "Usage";
             }
-            """, fixteds);
+            """), fixteds);
     }
 
     [Fact]
     public Task A_generic_rule_type_is_left_alone() =>
         // Removing the type parameters would repair DCAT0002, and would also change what the author
         // declared. Only they know whether the generic was the mistake.
-        CodeFixHarness.OffersNothingAsync(Analyzer, MakeStatic, UsingFoundation + """
+        CodeFixHarness.OffersNothingAsync(Analyzer, MakeStatic, Rule("""
             [DiagnosticRule]
             public static class JD0007<T>
             {
                 public const string Id = "JD0007";
                 public const string Category = "Usage";
             }
-            """);
+            """));
 
     [Fact]
     public Task A_rule_declared_as_a_struct_is_left_alone() =>
@@ -120,21 +133,21 @@ public sealed class DefinitionFixTests
         // Unlike the struct above, this one is reachable through the foundation's own marker: a record
         // class is a class, so AttributeTargets.Class admits it. `static record` does not exist, so there
         // is no keyword to add — and rewriting the record into a class is not a repair of what was written.
-        CodeFixHarness.OffersNothingAsync(Analyzer, MakeStatic, UsingFoundation + """
+        CodeFixHarness.OffersNothingAsync(Analyzer, MakeStatic, Rule("""
             [DiagnosticRule]
             public record JD0007
             {
                 public const string Id = nameof(JD0007);
                 public const string Category = "Usage";
             }
-            """);
+            """));
 
     [Fact]
     public async Task A_nested_rule_type_becomes_static()
     {
         // A static class nested in a non-static one is legal, so the outer type is none of this fix's
         // business — and the reported location is the inner identifier either way.
-        string fixteds = await CodeFixHarness.ApplyAsync(Analyzer, MakeStatic, UsingFoundation + """
+        string fixteds = await CodeFixHarness.ApplyAsync(Analyzer, MakeStatic, Rule("""
             public sealed class JustDummiesRules
             {
                 [DiagnosticRule]
@@ -144,9 +157,9 @@ public sealed class DefinitionFixTests
                     public const string Category = "Usage";
                 }
             }
-            """);
+            """));
 
-        Assert.Equal(UsingFoundation + """
+        Assert.Equal(Rule("""
             public sealed class JustDummiesRules
             {
                 [DiagnosticRule]
@@ -156,14 +169,14 @@ public sealed class DefinitionFixTests
                     public const string Category = "Usage";
                 }
             }
-            """, fixteds);
+            """), fixteds);
     }
 
     [Fact]
     public async Task A_rule_type_with_a_static_constructor_becomes_static()
     {
         // Allowed where an instance constructor is not: a static class may have one.
-        string fixteds = await CodeFixHarness.ApplyAsync(Analyzer, MakeStatic, UsingFoundation + """
+        string fixteds = await CodeFixHarness.ApplyAsync(Analyzer, MakeStatic, Rule("""
             [DiagnosticRule]
             public sealed class JD0007
             {
@@ -174,9 +187,9 @@ public sealed class DefinitionFixTests
                 public const string Id = nameof(JD0007);
                 public const string Category = "Usage";
             }
-            """);
+            """));
 
-        Assert.Equal(UsingFoundation + """
+        Assert.Equal(Rule("""
             [DiagnosticRule]
             public static class JD0007
             {
@@ -187,14 +200,14 @@ public sealed class DefinitionFixTests
                 public const string Id = nameof(JD0007);
                 public const string Category = "Usage";
             }
-            """, fixteds);
+            """), fixteds);
     }
 
     [Fact]
     public Task A_rule_type_with_an_instance_constructor_is_left_alone() =>
         // CS0710: a static class may not declare one. Nothing here says whether the constructor or the
         // marker was the mistake.
-        CodeFixHarness.OffersNothingAsync(Analyzer, MakeStatic, UsingFoundation + """
+        CodeFixHarness.OffersNothingAsync(Analyzer, MakeStatic, Rule("""
             [DiagnosticRule]
             public sealed class JD0007
             {
@@ -205,12 +218,12 @@ public sealed class DefinitionFixTests
                 public const string Id = nameof(JD0007);
                 public const string Category = "Usage";
             }
-            """);
+            """));
 
     [Fact]
     public Task A_rule_type_holding_an_instance_member_is_left_alone() =>
         // `static` would not compile here. A fix that traded a warning for CS0708 would be worse than none.
-        CodeFixHarness.OffersNothingAsync(Analyzer, MakeStatic, UsingFoundation + """
+        CodeFixHarness.OffersNothingAsync(Analyzer, MakeStatic, Rule("""
             [DiagnosticRule]
             public sealed class JD0007
             {
@@ -219,12 +232,12 @@ public sealed class DefinitionFixTests
 
                 public int Count { get; set; }
             }
-            """);
+            """));
 
     [Fact]
     public Task A_rule_type_with_a_base_list_is_left_alone() =>
         // A static class implements nothing and derives from nothing but object (CS0714).
-        CodeFixHarness.OffersNothingAsync(Analyzer, MakeStatic, UsingFoundation + """
+        CodeFixHarness.OffersNothingAsync(Analyzer, MakeStatic, Rule("""
             public interface IMarker
             {
             }
@@ -235,65 +248,65 @@ public sealed class DefinitionFixTests
                 public const string Id = nameof(JD0007);
                 public const string Category = "Usage";
             }
-            """);
+            """));
 
     [Fact]
     public Task A_partial_rule_type_is_left_alone() =>
         // The other parts may hold the instance members that decide the question, and this fix cannot see
         // them. The diagnostic is also reported once per part, so a fix-all would visit each.
-        CodeFixHarness.OffersNothingAsync(Analyzer, MakeStatic, UsingFoundation + """
+        CodeFixHarness.OffersNothingAsync(Analyzer, MakeStatic, Rule("""
             [DiagnosticRule]
             public partial class JD0007
             {
                 public const string Id = nameof(JD0007);
                 public const string Category = "Usage";
             }
-            """);
+            """));
 
     // --- DCAT0003 and DCAT0004, repairing the member ------------------------------------------
 
     [Fact]
     public async Task A_static_readonly_id_becomes_a_public_constant()
     {
-        string fixteds = await CodeFixHarness.ApplyAsync(Analyzer, MakeConstant, UsingFoundation + """
+        string fixteds = await CodeFixHarness.ApplyAsync(Analyzer, MakeConstant, Rule("""
             [DiagnosticRule]
             public static class JD0007
             {
                 public static readonly string Id = "JD0007";
                 public const string Category = "Usage";
             }
-            """);
+            """));
 
-        Assert.Equal(UsingFoundation + """
+        Assert.Equal(Rule("""
             [DiagnosticRule]
             public static class JD0007
             {
                 public const string Id = "JD0007";
                 public const string Category = "Usage";
             }
-            """, fixteds);
+            """), fixteds);
     }
 
     [Fact]
     public async Task A_non_public_id_becomes_a_public_constant()
     {
-        string fixteds = await CodeFixHarness.ApplyAsync(Analyzer, MakeConstant, UsingFoundation + """
+        string fixteds = await CodeFixHarness.ApplyAsync(Analyzer, MakeConstant, Rule("""
             [DiagnosticRule]
             public static class JD0007
             {
                 internal const string Id = "JD0007";
                 public const string Category = "Usage";
             }
-            """);
+            """));
 
-        Assert.Equal(UsingFoundation + """
+        Assert.Equal(Rule("""
             [DiagnosticRule]
             public static class JD0007
             {
                 public const string Id = "JD0007";
                 public const string Category = "Usage";
             }
-            """, fixteds);
+            """), fixteds);
     }
 
     [Fact]
@@ -301,74 +314,74 @@ public sealed class DefinitionFixTests
     {
         // §12.4 names "make it public" and "replace static readonly with const" separately. Applied
         // separately they would leave the diagnostic reported on the member just edited.
-        string fixteds = await CodeFixHarness.ApplyAsync(Analyzer, MakeConstant, UsingFoundation + """
+        string fixteds = await CodeFixHarness.ApplyAsync(Analyzer, MakeConstant, Rule("""
             [DiagnosticRule]
             public static class JD0007
             {
                 public const string Id = nameof(JD0007);
                 private static readonly string Category = "Usage";
             }
-            """);
+            """));
 
-        Assert.Equal(UsingFoundation + """
+        Assert.Equal(Rule("""
             [DiagnosticRule]
             public static class JD0007
             {
                 public const string Id = nameof(JD0007);
                 public const string Category = "Usage";
             }
-            """, fixteds);
+            """), fixteds);
     }
 
     [Fact]
     public Task An_id_of_the_wrong_type_is_left_alone() =>
         // `const int Id = 7` says nothing about what string was meant.
-        CodeFixHarness.OffersNothingAsync(Analyzer, MakeConstant, UsingFoundation + """
+        CodeFixHarness.OffersNothingAsync(Analyzer, MakeConstant, Rule("""
             [DiagnosticRule]
             public static class JD0007
             {
                 public const int Id = 7;
                 public const string Category = "Usage";
             }
-            """);
+            """));
 
     [Fact]
     public Task An_empty_category_is_left_alone() =>
         // The member is already a public constant. What it lacks is a value, and only the analyzer this
         // rule mirrors has it.
-        CodeFixHarness.OffersNothingAsync(Analyzer, MakeConstant, UsingFoundation + """
+        CodeFixHarness.OffersNothingAsync(Analyzer, MakeConstant, Rule("""
             [DiagnosticRule]
             public static class JD0007
             {
                 public const string Id = nameof(JD0007);
                 public const string Category = "";
             }
-            """);
+            """));
 
     [Fact]
     public Task A_non_constant_initialiser_is_left_alone() =>
         // `const` cannot hold this expression at all, so there is no rewrite — only a different program.
-        CodeFixHarness.OffersNothingAsync(Analyzer, MakeConstant, UsingFoundation + """
+        CodeFixHarness.OffersNothingAsync(Analyzer, MakeConstant, Rule("""
             [DiagnosticRule]
             public static class JD0007
             {
                 public static readonly string Id = System.Guid.NewGuid().ToString();
                 public const string Category = "Usage";
             }
-            """);
+            """));
 
     [Fact]
     public Task An_id_declared_as_a_property_is_left_alone() =>
         // Not a field, so there are no modifiers to respell — turning a property into a constant is a
         // change to the type's surface, not a repair of its modifiers.
-        CodeFixHarness.OffersNothingAsync(Analyzer, MakeConstant, UsingFoundation + """
+        CodeFixHarness.OffersNothingAsync(Analyzer, MakeConstant, Rule("""
             [DiagnosticRule]
             public static class JD0007
             {
                 public static string Id => "JD0007";
                 public const string Category = "Usage";
             }
-            """);
+            """));
 
     // --- DCAT0003 and DCAT0004, declaring the member ------------------------------------------
 
@@ -377,22 +390,22 @@ public sealed class DefinitionFixTests
     {
         // `nameof` is §8.2's recommended form and is read off the declaration, so this one is not a
         // placeholder at all: for a catalogue named after its rules it is the value.
-        string fixteds = await CodeFixHarness.ApplyAsync(Analyzer, Declare, UsingFoundation + """
+        string fixteds = await CodeFixHarness.ApplyAsync(Analyzer, Declare, Rule("""
             [DiagnosticRule]
             public static class JD0007
             {
                 public const string Category = "Usage";
             }
-            """);
+            """));
 
-        Assert.Equal(UsingFoundation + """
+        Assert.Equal(Rule("""
             [DiagnosticRule]
             public static class JD0007
             {
                 public const string Id = nameof(JD0007);
                 public const string Category = "Usage";
             }
-            """, fixteds);
+            """), fixteds);
     }
 
     [Fact]
@@ -402,53 +415,53 @@ public sealed class DefinitionFixTests
         // is non-blank, so DCAT0004 stops being reported — the fix trades the warning for a marker. The
         // expected source below is where that word is written down; a comment naming it reads to S1135 as
         // an unfinished task.
-        string fixteds = await CodeFixHarness.ApplyAsync(Analyzer, Declare, UsingFoundation + """
+        string fixteds = await CodeFixHarness.ApplyAsync(Analyzer, Declare, Rule("""
             [DiagnosticRule]
             public static class JD0007
             {
                 public const string Id = nameof(JD0007);
             }
-            """);
+            """));
 
-        Assert.Equal(UsingFoundation + """
+        Assert.Equal(Rule("""
             [DiagnosticRule]
             public static class JD0007
             {
                 public const string Id = nameof(JD0007);
                 public const string Category = "TODO";
             }
-            """, fixteds);
+            """), fixteds);
     }
 
     [Fact]
     public Task A_missing_member_is_not_declared_beside_a_property_of_that_name() =>
         // The name is taken. A constant beside it would not compile.
-        CodeFixHarness.OffersNothingAsync(Analyzer, Declare, UsingFoundation + """
+        CodeFixHarness.OffersNothingAsync(Analyzer, Declare, Rule("""
             [DiagnosticRule]
             public static class JD0007
             {
                 public static string Id => "JD0007";
                 public const string Category = "Usage";
             }
-            """);
+            """));
 
     [Fact]
     public Task No_member_is_declared_in_a_partial_type() =>
         // Reported once per part, so a fix-all would declare the member in every one of them.
-        CodeFixHarness.OffersNothingAsync(Analyzer, Declare, UsingFoundation + """
+        CodeFixHarness.OffersNothingAsync(Analyzer, Declare, Rule("""
             [DiagnosticRule]
             public static partial class JD0007
             {
                 public const string Category = "Usage";
             }
-            """);
+            """));
 
     // --- trivia, which a fix loses silently -----------------------------------------------------
 
     [Fact]
     public async Task A_documented_rule_type_keeps_its_comment()
     {
-        string fixteds = await CodeFixHarness.ApplyAsync(Analyzer, MakeStatic, UsingFoundation + """
+        string fixteds = await CodeFixHarness.ApplyAsync(Analyzer, MakeStatic, Rule("""
             /// <summary>Unused private members should be removed.</summary>
             [DiagnosticRule]
             public sealed class JD0007
@@ -456,9 +469,9 @@ public sealed class DefinitionFixTests
                 public const string Id = nameof(JD0007);
                 public const string Category = "Usage";
             }
-            """);
+            """));
 
-        Assert.Equal(UsingFoundation + """
+        Assert.Equal(Rule("""
             /// <summary>Unused private members should be removed.</summary>
             [DiagnosticRule]
             public static class JD0007
@@ -466,7 +479,7 @@ public sealed class DefinitionFixTests
                 public const string Id = nameof(JD0007);
                 public const string Category = "Usage";
             }
-            """, fixteds);
+            """), fixteds);
     }
 
     [Fact]
@@ -474,7 +487,7 @@ public sealed class DefinitionFixTests
     {
         // Both hang off the member being respelled, and both are trivia to the modifier list this fix
         // rebuilds — the one place a rewrite of that kind drops them without any test noticing.
-        string fixteds = await CodeFixHarness.ApplyAsync(Analyzer, MakeConstant, UsingFoundation + """
+        string fixteds = await CodeFixHarness.ApplyAsync(Analyzer, MakeConstant, Rule("""
             [DiagnosticRule]
             public static class JD0007
             {
@@ -484,9 +497,9 @@ public sealed class DefinitionFixTests
 
                 public const string Category = "Usage";
             }
-            """);
+            """));
 
-        Assert.Equal(UsingFoundation + """
+        Assert.Equal(Rule("""
             [DiagnosticRule]
             public static class JD0007
             {
@@ -496,7 +509,7 @@ public sealed class DefinitionFixTests
 
                 public const string Category = "Usage";
             }
-            """, fixteds);
+            """), fixteds);
     }
 
     [Fact]
@@ -505,10 +518,10 @@ public sealed class DefinitionFixTests
         // The shape with nowhere obvious to insert: no member sits on its own line to copy an indent from.
         // The layout the author chose is kept rather than corrected — the fix declares a member, it does
         // not reformat the type around it.
-        string fixteds = await CodeFixHarness.ApplyAsync(Analyzer, Declare, UsingFoundation + """
+        string fixteds = await CodeFixHarness.ApplyAsync(Analyzer, Declare, Rule("""
             [DiagnosticRule]
             public static class JD0007 { public const string Category = "Usage"; }
-            """);
+            """));
 
         Assert.Equal(
             UsingFoundation
@@ -547,35 +560,63 @@ public sealed class DefinitionFixTests
     }
 
     [Fact]
+    public async Task A_declared_member_follows_the_line_it_is_inserted_on()
+    {
+        // A file with mixed endings is not a hypothetical: a generated header pasted onto hand-written
+        // source is enough, and this repository's own fixtures were one until the Windows job said so.
+        // The ending is read from the line the member lands on, so the LF header does not decide what the
+        // CRLF body gets.
+        string source =
+            "using DiagnosticCatalog;\n"
+            + "[DiagnosticRule]\r\n"
+            + "public static class JD0007\r\n"
+            + "{\r\n"
+            + "    public const string Category = \"Usage\";\r\n"
+            + "}\r\n";
+
+        string fixteds = await CodeFixHarness.ApplyAsync(Analyzer, Declare, source);
+
+        Assert.Equal(
+            "using DiagnosticCatalog;\n"
+            + "[DiagnosticRule]\r\n"
+            + "public static class JD0007\r\n"
+            + "{\r\n"
+            + "    public const string Id = nameof(JD0007);\r\n"
+            + "    public const string Category = \"Usage\";\r\n"
+            + "}\r\n",
+            fixteds);
+    }
+
+    [Fact]
     public async Task Both_members_are_declared_into_an_empty_body()
     {
         // The one shape with no layout to copy: the type declares nothing, so neither indentation nor line
         // placement can be read off a sibling. Four spaces is the assumption, and this is where it is
         // written down rather than left in a comment.
-        ImmutableArray<string> results = await CodeFixHarness.ApplyEachAsync(Analyzer, Declare, UsingFoundation + """
+        ImmutableArray<string> results = await CodeFixHarness.ApplyEachAsync(Analyzer, Declare, Rule("""
             [DiagnosticRule]
             public static class JD0007
             {
             }
-            """);
+            """));
 
         Assert.Equal(2, results.Length);
 
-        Assert.Contains(UsingFoundation + """
+        Assert.Contains(Rule("""
             [DiagnosticRule]
             public static class JD0007
             {
                 public const string Id = nameof(JD0007);
             }
-            """, results);
+            """), results);
 
-        Assert.Contains(UsingFoundation + """
+        Assert.Contains(Rule("""
             [DiagnosticRule]
             public static class JD0007
             {
                 public const string Category = "TODO";
             }
-            """, results);
+            """), results);
     }
 
     [Fact]
@@ -587,12 +628,12 @@ public sealed class DefinitionFixTests
         ImmutableArray<string?> keys = await CodeFixHarness.EquivalenceKeysAsync(
             Analyzer,
             Declare,
-            UsingFoundation + """
+            Rule("""
                 [DiagnosticRule]
                 public static class JD0007
                 {
                 }
-                """);
+                """));
 
         Assert.Equal(2, keys.Length);
         Assert.Single(keys.Distinct());
@@ -601,11 +642,11 @@ public sealed class DefinitionFixTests
     [Fact]
     public Task No_id_is_declared_in_a_generic_type() =>
         // `nameof(JD0007)` does not bind inside `JD0007<T>`, and the value has nowhere else to come from.
-        CodeFixHarness.OffersNothingAsync(Analyzer, Declare, UsingFoundation + """
+        CodeFixHarness.OffersNothingAsync(Analyzer, Declare, Rule("""
             [DiagnosticRule]
             public static class JD0007<T>
             {
                 public const string Category = "Usage";
             }
-            """);
+            """));
 }

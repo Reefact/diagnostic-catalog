@@ -193,12 +193,14 @@ public sealed class AddRuleMemberCodeFixProvider : CodeFixProvider
             // example in this repository and in the specification is written with.
             return addition
                 .WithLeadingTrivia(Indent(type.CloseBraceToken.LeadingTrivia).Add(SyntaxFactory.Whitespace(Level)))
-                .WithTrailingTrivia(NewLine(root));
+                .WithTrailingTrivia(NewLine(type.OpenBraceToken, root));
         }
 
         return addition
             .WithLeadingTrivia(Indent(anchor.GetLeadingTrivia()))
-            .WithTrailingTrivia(OnItsOwnLine(anchor) ? NewLine(root) : SyntaxFactory.Space);
+            .WithTrailingTrivia(OnItsOwnLine(anchor)
+                ? NewLine(anchor.GetFirstToken().GetPreviousToken(), root)
+                : SyntaxFactory.Space);
     }
 
     /// <summary>The member whose layout the new one copies, or null when the body is empty.</summary>
@@ -235,21 +237,33 @@ public sealed class AddRuleMemberCodeFixProvider : CodeFixProvider
             .Any(trivia => trivia.IsKind(SyntaxKind.EndOfLineTrivia))
         || member.GetLeadingTrivia().Any(trivia => trivia.IsKind(SyntaxKind.EndOfLineTrivia));
 
-    /// <summary>The line ending the file already uses.</summary>
+    /// <summary>The line ending in use where the member is going.</summary>
     /// <remarks>
     /// Read from the document rather than taken from <c>SyntaxFactory.CarriageReturnLineFeed</c> or from
     /// the environment: a fix that wrote CRLF into an LF file, or the reverse, would show up in somebody's
     /// diff as a change to a line it never touched.
+    /// <para>
+    /// From the line the insertion point sits on, and only then from anywhere in the file. A file with
+    /// mixed endings is not a hypothetical — a generated header pasted onto hand-written source is enough —
+    /// and there the first ending in the document is nobody's line ending in particular.
+    /// </para>
     /// </remarks>
-    private static SyntaxTrivia NewLine(SyntaxNode root)
+    private static SyntaxTrivia NewLine(SyntaxToken preceding, SyntaxNode root)
     {
-        SyntaxTrivia[] endings = root.DescendantTrivia()
+        SyntaxTrivia[] local = preceding.TrailingTrivia
+            .Where(trivia => trivia.IsKind(SyntaxKind.EndOfLineTrivia))
+            .Take(1)
+            .ToArray();
+
+        if (local.Length > 0) { return local[0]; }
+
+        SyntaxTrivia[] anywhere = root.DescendantTrivia()
             .Where(trivia => trivia.IsKind(SyntaxKind.EndOfLineTrivia))
             .Take(1)
             .ToArray();
 
         // No line ending anywhere means a single-line file, which has no layout to preserve.
-        return endings.Length > 0 ? endings[0] : SyntaxFactory.LineFeed;
+        return anywhere.Length > 0 ? anywhere[0] : SyntaxFactory.LineFeed;
     }
 
     /// <summary>The <c>nameof</c> token, as a contextual keyword rather than as a name.</summary>
