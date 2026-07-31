@@ -169,9 +169,14 @@ static async Task<GenerateResult?> GenerateAsync(Job job, string? dateOverride, 
         work.Delete(recursive: true);
     }
 
-    GenerateResult EmitFrom(AnalyzerAssemblySet source) =>
-        CatalogEmitter.Emit(job, source.SourceName, source.SourceVersion,
-                            DescriptorReader.Read(source), previous, dateOverride);
+    GenerateResult? EmitFrom(AnalyzerAssemblySet source)
+    {
+        SortedDictionary<string, RuleInfo>? rules = DescriptorReader.Read(source);
+
+        return rules is null
+            ? null
+            : CatalogEmitter.Emit(job, source.SourceName, source.SourceVersion, rules, previous, dateOverride);
+    }
 }
 
 
