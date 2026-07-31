@@ -183,7 +183,7 @@ categories declared once, and the upstream release the whole thing mirrors recor
 `[assembly: CatalogSource]`.
 
 For the contract explained from scratch rather than by example, see
-[the catalogue author's guide](../../doc/guide/catalogue-authors.md).
+[the catalogue author's guide](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/authoring-a-catalogue.en.md).
 
 ## Documentation
 
