@@ -64,7 +64,8 @@ internal static class CatalogueJobs
 
         // Validation has already established that exactly one source is named, so "not any of the
         // other three" is enough to identify it here.
-        bool fromFeed = settings.Assemblies.Length == 0 && settings.Nupkg is null && settings.Projects.Length == 0;
+        bool fromFeed = settings.Assemblies.Length == 0 && settings.Nupkg is null
+                        && settings.Projects.Length == 0 && settings.Solution is null;
 
         return
         [
@@ -81,6 +82,7 @@ internal static class CatalogueJobs
                 Nupkg: settings.Nupkg is null ? null : Path.GetFullPath(settings.Nupkg),
                 Source: settings.Source,
                 Projects: settings.Projects.Length > 0 ? settings.Projects : null,
+                Solution: settings.Solution is null ? null : Path.GetFullPath(settings.Solution),
                 Configuration: settings.Configuration ?? "Release"),
         ];
     }

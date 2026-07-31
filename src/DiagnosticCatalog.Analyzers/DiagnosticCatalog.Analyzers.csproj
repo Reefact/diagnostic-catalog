@@ -21,6 +21,20 @@
   </PropertyGroup>
 
   <!--
+    Declares this project to the catalogue generator's solution mode, which reads the projects that
+    say so and never infers which ones they are. The declaration is the whole membership, exactly as <ReleaseTrain>
+    above decides which train a project ships on and never a list kept somewhere else.
+
+    Not derived from EnforceExtendedAnalyzerRules next to it, close as the two look. That one says
+    "check this project by the analyzer-authoring rules"; DiagnosticCatalog.CodeFixes sets it too and
+    declares no DiagnosticDescriptor at all. What a project is checked by and what it produces are
+    different facts, and a catalogue built on the wrong one is short of rules with nothing to say so.
+  -->
+  <PropertyGroup>
+    <ProducesDiagnosticRules>true</ProducesDiagnosticRules>
+  </PropertyGroup>
+
+  <!--
     Ships on the lib train. Declaring it here is the whole membership (Directory.Build.targets), and it
     is also what makes the project packable, gives it an embedded SBOM and puts the icon on the package.
 

@@ -72,7 +72,7 @@ public sealed class ManifestTests
 
         Assert.Equal(
             "catalogs.json: catalogs[0]: names more than one source; give one of " +
-            "\"package\", \"nupkg\", \"projects\" or \"assemblies\".",
+            "\"package\", \"nupkg\", \"projects\", \"solution\" or \"assemblies\".",
             message);
     }
 

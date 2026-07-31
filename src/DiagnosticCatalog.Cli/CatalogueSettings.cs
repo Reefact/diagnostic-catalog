@@ -49,6 +49,10 @@ internal abstract class CatalogueSettings : CommandSettings
     [Description("A project that produces analyzers, already built. Repeat to read several together.")]
     public string[] Projects { get; init; } = [];
 
+    [CommandOption("--solution <PATH>")]
+    [Description("A solution; reads the projects in it that declare ProducesDiagnosticRules. Already built.")]
+    public string? Solution { get; init; }
+
     [CommandOption("--configuration <NAME>")]
     [Description("Which configuration of --project to read. Defaults to Release.")]
     public string? Configuration { get; init; }
@@ -114,6 +118,7 @@ internal abstract class CatalogueSettings : CommandSettings
         if (Package is not null) named.Add("--package");
         if (Nupkg is not null) named.Add("--nupkg");
         if (Projects.Length > 0) named.Add("--project");
+        if (Solution is not null) named.Add("--solution");
         if (Assemblies.Length > 0) named.Add("--assembly");
 
         return named;
@@ -132,7 +137,7 @@ internal abstract class CatalogueSettings : CommandSettings
         if (named.Count == 0)
         {
             return ValidationResult.Error(
-                "nothing to read: give --package, --nupkg, --project, --assembly or --manifest.");
+                "nothing to read: give --package, --nupkg, --project, --solution, --assembly or --manifest.");
         }
 
         // Checked apart from the source so the message says which half is missing.
@@ -180,9 +185,10 @@ internal abstract class CatalogueSettings : CommandSettings
         // And again: a configuration selects among a project's build outputs. Against an assembly
         // path it would be silently discarded, having been passed precisely by someone who believed
         // it selected which build was read.
-        if (Configuration is not null && Projects.Length == 0)
+        if (Configuration is not null && Projects.Length == 0 && Solution is null)
         {
-            return ValidationResult.Error("--configuration selects a build of --project; it means nothing for the others.");
+            return ValidationResult.Error(
+                "--configuration selects a build of --project or --solution; it means nothing for the others.");
         }
 
         return ValidationResult.Success();
