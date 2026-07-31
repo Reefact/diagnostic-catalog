@@ -31,6 +31,20 @@ internal static class Descriptors
             + "because the pairing is a copy-paste error: the day the vendor recategorises one of them, "
             + "the suppression carries the wrong category and nothing in the platform will say so.");
 
+    internal static readonly DiagnosticDescriptor NonIlUnconditionalSuppression = new(
+        id: "DCAT0009",
+        title: "UnconditionalSuppressMessage only accepts IL#### identifiers",
+        messageFormat: "'{0}' is not an IL warning identifier: this suppression is silently ignored",
+        category: Category,
+        defaultSeverity: DiagnosticSeverity.Warning,
+        isEnabledByDefault: true,
+        description:
+            "ILLink reads suppressions from the compiled assembly and discards any identifier its "
+            + "decoder rejects, while Roslyn never processes this attribute at all. The suppression is "
+            + "therefore a no-op that no other tool reports. The check mirrors that decoder rather than "
+            + "a stricter pattern, so identifiers ILLink does honour — including its IL####:FriendlyName "
+            + "form — are left alone.");
+
     internal static readonly DiagnosticDescriptor InvalidRuleType = new(
         id: "DCAT0002",
         title: "A diagnostic rule must be declared as a static non-generic class",
