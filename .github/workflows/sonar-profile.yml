@@ -59,6 +59,10 @@ jobs:
         # Only on failure, and only as a pointer — the diff itself is already in the log above.
         if: failure()
         run: |
+          # The backticks below are Markdown for the step summary, not command substitution, and
+          # the single quotes are what keeps them literal. Same waiver, same reason, as the pull
+          # request body built in nightly-catalogs.yml.
+          # shellcheck disable=SC2016
           {
             echo '### SonarQube Cloud quality profile drift'
             echo
