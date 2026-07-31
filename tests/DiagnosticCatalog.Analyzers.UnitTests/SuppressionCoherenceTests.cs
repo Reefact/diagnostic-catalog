@@ -144,12 +144,13 @@ public sealed class SuppressionCoherenceTests
 
     [Fact]
     public Task A_literal_suppression_is_not_this_diagnostic_s_business() =>
-        // Both arguments are literals: DCAT0006's territory, not DCAT0001's. Reporting here would
-        // fire on every unmigrated codebase from the first build.
-        AnalyzerHarness.ReportsNothingAsync(Analyzer, SameCategoryRules + """
+        // Both arguments are literals: DCAT0006's territory, not DCAT0001's. The expected set names
+        // DCAT0006 alone, which is precisely the assertion that DCAT0001 kept quiet — reporting it here
+        // would fire on every unmigrated codebase from the first build.
+        AnalyzerHarness.ReportsAsync(Analyzer, SameCategoryRules + """
             [SuppressMessage("Usage", "RULE001", Justification = "...")]
             public sealed class Target { }
-            """);
+            """, "DCAT0006");
 
     [Fact]
     public Task A_half_migrated_suppression_is_not_this_diagnostic_s_business() =>

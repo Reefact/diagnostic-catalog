@@ -878,7 +878,7 @@ Le préfixe provisoire des diagnostics est `DCAT`.
 | `DCAT0003` | définition | A diagnostic rule must expose a public constant string named Id | Warning | oui |
 | `DCAT0004` | définition | A diagnostic rule must expose a public constant string named Category | Warning | oui |
 | `DCAT0005` | définition | The diagnostic rule type name should match its Id | Info | non |
-| `DCAT0006` | utilisation | Use a diagnostic catalog reference instead of string literals | Info | **oui — cœur** |
+| `DCAT0006` | utilisation | Use a diagnostic catalog reference instead of string literals | Warning | **oui — cœur** |
 | `DCAT0007` | utilisation | Suppression mixes a catalog reference with a string literal | Warning | oui |
 | `DCAT0008` | utilisation | Suppression identifier does not resolve to a known diagnostic rule | Aucune (opt-in) | non |
 | `DCAT0009` | utilisation | UnconditionalSuppressMessage only accepts IL#### identifiers | Warning | oui |
@@ -961,6 +961,16 @@ Règles de correspondance :
 
 Le code fix abandonne le suffixe lisible. C'est un compromis assumé et
 documenté : la constante `Title` de la règle ou sa documentation XML le remplace.
+
+**La sévérité par défaut est `Warning`, et non `Info`.** Référencer un package
+de catalogue est en soi la déclaration d'intention : un projet qui a pris la
+dépendance a décidé que ses suppressions étaient des références de catalogue, et
+une suggestion qu'aucune sortie de build n'affiche ne porte pas cette décision.
+Le coût est assumé et doit figurer dans les notes de version — adopter un
+catalogue transforme d'un coup chaque suppression littérale existante en
+avertissement, et fait carrément échouer le build sous `TreatWarningsAsErrors`.
+Un projet qui migre progressivement l'abaisse dans `.editorconfig` (§17), ce qui
+est de toute façon la manière prévue pour régler ce diagnostic.
 
 ### 11.7 `DCAT0007` — référence et littéral mélangés
 
