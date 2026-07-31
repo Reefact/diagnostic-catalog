@@ -3,10 +3,11 @@
 //     Microsoft.CodeAnalysis.NetAnalyzers 10.0.302 (language: cs).
 //     Do not edit by hand: rerun the generator.
 //
-//     Only Id, Category and HelpLinkUri are emitted, and only when the descriptor
-//     actually supplies them. All are facts read from the descriptors. Rule titles
-//     and descriptions are the upstream vendor's authored content and are
-//     deliberately not redistributed here.
+//     Only Id, Category, Title and HelpLinkUri are emitted, and only when the
+//     descriptor actually supplies them. A rule's title is reproduced verbatim as its
+//     documentation comment: it is the one sentence that says what the rule is about,
+//     and it is Microsoft.CodeAnalysis.NetAnalyzers's own wording. Rule descriptions and message
+//     formats are the vendor's documentation and are not redistributed here.
 // </auto-generated>
 
 using DiagnosticCatalog;
@@ -14,7 +15,7 @@ using DiagnosticCatalog;
 [assembly: CatalogSource(
     source:        "Microsoft.CodeAnalysis.NetAnalyzers",
     sourceVersion: "10.0.302",
-    generatedOn:   "2026-07-30")]
+    generatedOn:   "2026-07-31")]
 
 namespace DiagnosticCatalog.NetAnalyzers;
 
@@ -60,10 +61,8 @@ public static class NetAnalyzersCategory
 /// </summary>
 public static class NetAnalyzersRule
 {
-    /// <summary>
-    /// Rule <c>CA1000</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1000"/>.
-    /// </summary>
+    /// <summary>Do not declare static members on generic types.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1000"/>.</remarks>
     [DiagnosticRule]
     public static class CA1000
     {
@@ -77,10 +76,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1000";
     }
 
-    /// <summary>
-    /// Rule <c>CA1001</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1001"/>.
-    /// </summary>
+    /// <summary>Types that own disposable fields should be disposable.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1001"/>.</remarks>
     [DiagnosticRule]
     public static class CA1001
     {
@@ -94,10 +91,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1001";
     }
 
-    /// <summary>
-    /// Rule <c>CA1002</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1002"/>.
-    /// </summary>
+    /// <summary>Do not expose generic lists.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1002"/>.</remarks>
     [DiagnosticRule]
     public static class CA1002
     {
@@ -111,10 +106,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1002";
     }
 
-    /// <summary>
-    /// Rule <c>CA1003</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1003"/>.
-    /// </summary>
+    /// <summary>Use generic event handler instances.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1003"/>.</remarks>
     [DiagnosticRule]
     public static class CA1003
     {
@@ -128,10 +121,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1003";
     }
 
-    /// <summary>
-    /// Rule <c>CA1005</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1005"/>.
-    /// </summary>
+    /// <summary>Avoid excessive parameters on generic types.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1005"/>.</remarks>
     [DiagnosticRule]
     public static class CA1005
     {
@@ -145,10 +136,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1005";
     }
 
-    /// <summary>
-    /// Rule <c>CA1008</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1008"/>.
-    /// </summary>
+    /// <summary>Enums should have zero value.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1008"/>.</remarks>
     [DiagnosticRule]
     public static class CA1008
     {
@@ -162,10 +151,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1008";
     }
 
-    /// <summary>
-    /// Rule <c>CA1010</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1010"/>.
-    /// </summary>
+    /// <summary>Generic interface should also be implemented.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1010"/>.</remarks>
     [DiagnosticRule]
     public static class CA1010
     {
@@ -179,10 +166,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1010";
     }
 
-    /// <summary>
-    /// Rule <c>CA1012</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1012"/>.
-    /// </summary>
+    /// <summary>Abstract types should not have public constructors.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1012"/>.</remarks>
     [DiagnosticRule]
     public static class CA1012
     {
@@ -196,10 +181,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1012";
     }
 
-    /// <summary>
-    /// Rule <c>CA1014</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1014"/>.
-    /// </summary>
+    /// <summary>Mark assemblies with CLSCompliant.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1014"/>.</remarks>
     [DiagnosticRule]
     public static class CA1014
     {
@@ -213,10 +196,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1014";
     }
 
-    /// <summary>
-    /// Rule <c>CA1016</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1016"/>.
-    /// </summary>
+    /// <summary>Mark assemblies with assembly version.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1016"/>.</remarks>
     [DiagnosticRule]
     public static class CA1016
     {
@@ -230,10 +211,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1016";
     }
 
-    /// <summary>
-    /// Rule <c>CA1017</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1017"/>.
-    /// </summary>
+    /// <summary>Mark assemblies with ComVisible.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1017"/>.</remarks>
     [DiagnosticRule]
     public static class CA1017
     {
@@ -247,10 +226,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1017";
     }
 
-    /// <summary>
-    /// Rule <c>CA1018</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1018"/>.
-    /// </summary>
+    /// <summary>Mark attributes with AttributeUsageAttribute.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1018"/>.</remarks>
     [DiagnosticRule]
     public static class CA1018
     {
@@ -264,10 +241,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1018";
     }
 
-    /// <summary>
-    /// Rule <c>CA1019</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1019"/>.
-    /// </summary>
+    /// <summary>Define accessors for attribute arguments.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1019"/>.</remarks>
     [DiagnosticRule]
     public static class CA1019
     {
@@ -281,10 +256,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1019";
     }
 
-    /// <summary>
-    /// Rule <c>CA1021</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1021"/>.
-    /// </summary>
+    /// <summary>Avoid out parameters.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1021"/>.</remarks>
     [DiagnosticRule]
     public static class CA1021
     {
@@ -298,10 +271,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1021";
     }
 
-    /// <summary>
-    /// Rule <c>CA1024</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1024"/>.
-    /// </summary>
+    /// <summary>Use properties where appropriate.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1024"/>.</remarks>
     [DiagnosticRule]
     public static class CA1024
     {
@@ -315,10 +286,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1024";
     }
 
-    /// <summary>
-    /// Rule <c>CA1027</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1027"/>.
-    /// </summary>
+    /// <summary>Mark enums with FlagsAttribute.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1027"/>.</remarks>
     [DiagnosticRule]
     public static class CA1027
     {
@@ -332,10 +301,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1027";
     }
 
-    /// <summary>
-    /// Rule <c>CA1028</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1028"/>.
-    /// </summary>
+    /// <summary>Enum Storage should be Int32.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1028"/>.</remarks>
     [DiagnosticRule]
     public static class CA1028
     {
@@ -349,10 +316,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1028";
     }
 
-    /// <summary>
-    /// Rule <c>CA1030</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1030"/>.
-    /// </summary>
+    /// <summary>Use events where appropriate.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1030"/>.</remarks>
     [DiagnosticRule]
     public static class CA1030
     {
@@ -366,10 +331,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1030";
     }
 
-    /// <summary>
-    /// Rule <c>CA1031</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1031"/>.
-    /// </summary>
+    /// <summary>Do not catch general exception types.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1031"/>.</remarks>
     [DiagnosticRule]
     public static class CA1031
     {
@@ -383,10 +346,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1031";
     }
 
-    /// <summary>
-    /// Rule <c>CA1032</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1032"/>.
-    /// </summary>
+    /// <summary>Implement standard exception constructors.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1032"/>.</remarks>
     [DiagnosticRule]
     public static class CA1032
     {
@@ -400,10 +361,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1032";
     }
 
-    /// <summary>
-    /// Rule <c>CA1033</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1033"/>.
-    /// </summary>
+    /// <summary>Interface methods should be callable by child types.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1033"/>.</remarks>
     [DiagnosticRule]
     public static class CA1033
     {
@@ -417,10 +376,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1033";
     }
 
-    /// <summary>
-    /// Rule <c>CA1034</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1034"/>.
-    /// </summary>
+    /// <summary>Nested types should not be visible.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1034"/>.</remarks>
     [DiagnosticRule]
     public static class CA1034
     {
@@ -434,10 +391,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1034";
     }
 
-    /// <summary>
-    /// Rule <c>CA1036</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1036"/>.
-    /// </summary>
+    /// <summary>Override methods on comparable types.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1036"/>.</remarks>
     [DiagnosticRule]
     public static class CA1036
     {
@@ -451,10 +406,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1036";
     }
 
-    /// <summary>
-    /// Rule <c>CA1040</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1040"/>.
-    /// </summary>
+    /// <summary>Avoid empty interfaces.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1040"/>.</remarks>
     [DiagnosticRule]
     public static class CA1040
     {
@@ -468,10 +421,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1040";
     }
 
-    /// <summary>
-    /// Rule <c>CA1041</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1041"/>.
-    /// </summary>
+    /// <summary>Provide ObsoleteAttribute message.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1041"/>.</remarks>
     [DiagnosticRule]
     public static class CA1041
     {
@@ -485,10 +436,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1041";
     }
 
-    /// <summary>
-    /// Rule <c>CA1043</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1043"/>.
-    /// </summary>
+    /// <summary>Use Integral Or String Argument For Indexers.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1043"/>.</remarks>
     [DiagnosticRule]
     public static class CA1043
     {
@@ -502,10 +451,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1043";
     }
 
-    /// <summary>
-    /// Rule <c>CA1044</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1044"/>.
-    /// </summary>
+    /// <summary>Properties should not be write only.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1044"/>.</remarks>
     [DiagnosticRule]
     public static class CA1044
     {
@@ -519,10 +466,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1044";
     }
 
-    /// <summary>
-    /// Rule <c>CA1045</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1045"/>.
-    /// </summary>
+    /// <summary>Do not pass types by reference.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1045"/>.</remarks>
     [DiagnosticRule]
     public static class CA1045
     {
@@ -536,10 +481,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1045";
     }
 
-    /// <summary>
-    /// Rule <c>CA1046</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1046"/>.
-    /// </summary>
+    /// <summary>Do not overload equality operator on reference types.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1046"/>.</remarks>
     [DiagnosticRule]
     public static class CA1046
     {
@@ -553,10 +496,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1046";
     }
 
-    /// <summary>
-    /// Rule <c>CA1047</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1047"/>.
-    /// </summary>
+    /// <summary>Do not declare protected member in sealed type.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1047"/>.</remarks>
     [DiagnosticRule]
     public static class CA1047
     {
@@ -570,10 +511,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1047";
     }
 
-    /// <summary>
-    /// Rule <c>CA1050</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1050"/>.
-    /// </summary>
+    /// <summary>Declare types in namespaces.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1050"/>.</remarks>
     [DiagnosticRule]
     public static class CA1050
     {
@@ -587,10 +526,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1050";
     }
 
-    /// <summary>
-    /// Rule <c>CA1051</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1051"/>.
-    /// </summary>
+    /// <summary>Do not declare visible instance fields.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1051"/>.</remarks>
     [DiagnosticRule]
     public static class CA1051
     {
@@ -604,10 +541,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1051";
     }
 
-    /// <summary>
-    /// Rule <c>CA1052</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1052"/>.
-    /// </summary>
+    /// <summary>Static holder types should be Static or NotInheritable.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1052"/>.</remarks>
     [DiagnosticRule]
     public static class CA1052
     {
@@ -621,10 +556,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1052";
     }
 
-    /// <summary>
-    /// Rule <c>CA1054</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1054"/>.
-    /// </summary>
+    /// <summary>URI-like parameters should not be strings.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1054"/>.</remarks>
     [DiagnosticRule]
     public static class CA1054
     {
@@ -638,10 +571,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1054";
     }
 
-    /// <summary>
-    /// Rule <c>CA1055</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1055"/>.
-    /// </summary>
+    /// <summary>URI-like return values should not be strings.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1055"/>.</remarks>
     [DiagnosticRule]
     public static class CA1055
     {
@@ -655,10 +586,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1055";
     }
 
-    /// <summary>
-    /// Rule <c>CA1056</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1056"/>.
-    /// </summary>
+    /// <summary>URI-like properties should not be strings.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1056"/>.</remarks>
     [DiagnosticRule]
     public static class CA1056
     {
@@ -672,10 +601,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1056";
     }
 
-    /// <summary>
-    /// Rule <c>CA1058</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1058"/>.
-    /// </summary>
+    /// <summary>Types should not extend certain base types.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1058"/>.</remarks>
     [DiagnosticRule]
     public static class CA1058
     {
@@ -689,10 +616,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1058";
     }
 
-    /// <summary>
-    /// Rule <c>CA1060</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1060"/>.
-    /// </summary>
+    /// <summary>Move pinvokes to native methods class.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1060"/>.</remarks>
     [DiagnosticRule]
     public static class CA1060
     {
@@ -706,10 +631,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1060";
     }
 
-    /// <summary>
-    /// Rule <c>CA1061</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1061"/>.
-    /// </summary>
+    /// <summary>Do not hide base class methods.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1061"/>.</remarks>
     [DiagnosticRule]
     public static class CA1061
     {
@@ -723,10 +646,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1061";
     }
 
-    /// <summary>
-    /// Rule <c>CA1062</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1062"/>.
-    /// </summary>
+    /// <summary>Validate arguments of public methods.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1062"/>.</remarks>
     [DiagnosticRule]
     public static class CA1062
     {
@@ -740,10 +661,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1062";
     }
 
-    /// <summary>
-    /// Rule <c>CA1063</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1063"/>.
-    /// </summary>
+    /// <summary>Implement IDisposable Correctly.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1063"/>.</remarks>
     [DiagnosticRule]
     public static class CA1063
     {
@@ -757,10 +676,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1063";
     }
 
-    /// <summary>
-    /// Rule <c>CA1064</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1064"/>.
-    /// </summary>
+    /// <summary>Exceptions should be public.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1064"/>.</remarks>
     [DiagnosticRule]
     public static class CA1064
     {
@@ -774,10 +691,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1064";
     }
 
-    /// <summary>
-    /// Rule <c>CA1065</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1065"/>.
-    /// </summary>
+    /// <summary>Do not raise exceptions in unexpected locations.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1065"/>.</remarks>
     [DiagnosticRule]
     public static class CA1065
     {
@@ -791,10 +706,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1065";
     }
 
-    /// <summary>
-    /// Rule <c>CA1066</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1066"/>.
-    /// </summary>
+    /// <summary>Implement IEquatable when overriding Object.Equals.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1066"/>.</remarks>
     [DiagnosticRule]
     public static class CA1066
     {
@@ -808,10 +721,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1066";
     }
 
-    /// <summary>
-    /// Rule <c>CA1067</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1067"/>.
-    /// </summary>
+    /// <summary>Override Object.Equals(object) when implementing IEquatable&lt;T&gt;.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1067"/>.</remarks>
     [DiagnosticRule]
     public static class CA1067
     {
@@ -825,10 +736,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1067";
     }
 
-    /// <summary>
-    /// Rule <c>CA1068</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1068"/>.
-    /// </summary>
+    /// <summary>CancellationToken parameters must come last.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1068"/>.</remarks>
     [DiagnosticRule]
     public static class CA1068
     {
@@ -842,10 +751,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1068";
     }
 
-    /// <summary>
-    /// Rule <c>CA1069</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1069"/>.
-    /// </summary>
+    /// <summary>Enums values should not be duplicated.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1069"/>.</remarks>
     [DiagnosticRule]
     public static class CA1069
     {
@@ -859,10 +766,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1069";
     }
 
-    /// <summary>
-    /// Rule <c>CA1070</c>, category <c>Design</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1070"/>.
-    /// </summary>
+    /// <summary>Do not declare event fields as virtual.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1070"/>.</remarks>
     [DiagnosticRule]
     public static class CA1070
     {
@@ -876,10 +781,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1070";
     }
 
-    /// <summary>
-    /// Rule <c>CA1200</c>, category <c>Documentation</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1200"/>.
-    /// </summary>
+    /// <summary>Avoid using cref tags with a prefix.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1200"/>.</remarks>
     [DiagnosticRule]
     public static class CA1200
     {
@@ -893,10 +796,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1200";
     }
 
-    /// <summary>
-    /// Rule <c>CA1303</c>, category <c>Globalization</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1303"/>.
-    /// </summary>
+    /// <summary>Do not pass literals as localized parameters.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1303"/>.</remarks>
     [DiagnosticRule]
     public static class CA1303
     {
@@ -910,10 +811,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1303";
     }
 
-    /// <summary>
-    /// Rule <c>CA1304</c>, category <c>Globalization</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1304"/>.
-    /// </summary>
+    /// <summary>Specify CultureInfo.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1304"/>.</remarks>
     [DiagnosticRule]
     public static class CA1304
     {
@@ -927,10 +826,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1304";
     }
 
-    /// <summary>
-    /// Rule <c>CA1305</c>, category <c>Globalization</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1305"/>.
-    /// </summary>
+    /// <summary>Specify IFormatProvider.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1305"/>.</remarks>
     [DiagnosticRule]
     public static class CA1305
     {
@@ -944,10 +841,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1305";
     }
 
-    /// <summary>
-    /// Rule <c>CA1307</c>, category <c>Globalization</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1307"/>.
-    /// </summary>
+    /// <summary>Specify StringComparison for clarity.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1307"/>.</remarks>
     [DiagnosticRule]
     public static class CA1307
     {
@@ -961,10 +856,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1307";
     }
 
-    /// <summary>
-    /// Rule <c>CA1308</c>, category <c>Globalization</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1308"/>.
-    /// </summary>
+    /// <summary>Normalize strings to uppercase.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1308"/>.</remarks>
     [DiagnosticRule]
     public static class CA1308
     {
@@ -978,10 +871,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1308";
     }
 
-    /// <summary>
-    /// Rule <c>CA1309</c>, category <c>Globalization</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1309"/>.
-    /// </summary>
+    /// <summary>Use ordinal string comparison.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1309"/>.</remarks>
     [DiagnosticRule]
     public static class CA1309
     {
@@ -995,10 +886,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1309";
     }
 
-    /// <summary>
-    /// Rule <c>CA1310</c>, category <c>Globalization</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1310"/>.
-    /// </summary>
+    /// <summary>Specify StringComparison for correctness.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1310"/>.</remarks>
     [DiagnosticRule]
     public static class CA1310
     {
@@ -1012,10 +901,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1310";
     }
 
-    /// <summary>
-    /// Rule <c>CA1311</c>, category <c>Globalization</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1311"/>.
-    /// </summary>
+    /// <summary>Specify a culture or use an invariant version.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1311"/>.</remarks>
     [DiagnosticRule]
     public static class CA1311
     {
@@ -1029,10 +916,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1311";
     }
 
-    /// <summary>
-    /// Rule <c>CA1401</c>, category <c>Interoperability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1401"/>.
-    /// </summary>
+    /// <summary>P/Invokes should not be visible.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1401"/>.</remarks>
     [DiagnosticRule]
     public static class CA1401
     {
@@ -1046,10 +931,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1401";
     }
 
-    /// <summary>
-    /// Rule <c>CA1416</c>, category <c>Interoperability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416"/>.
-    /// </summary>
+    /// <summary>Validate platform compatibility.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416"/>.</remarks>
     [DiagnosticRule]
     public static class CA1416
     {
@@ -1063,10 +946,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416";
     }
 
-    /// <summary>
-    /// Rule <c>CA1417</c>, category <c>Interoperability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1417"/>.
-    /// </summary>
+    /// <summary>Do not use 'OutAttribute' on string parameters for P/Invokes.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1417"/>.</remarks>
     [DiagnosticRule]
     public static class CA1417
     {
@@ -1080,10 +961,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1417";
     }
 
-    /// <summary>
-    /// Rule <c>CA1418</c>, category <c>Interoperability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1418"/>.
-    /// </summary>
+    /// <summary>Use valid platform string.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1418"/>.</remarks>
     [DiagnosticRule]
     public static class CA1418
     {
@@ -1097,10 +976,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1418";
     }
 
-    /// <summary>
-    /// Rule <c>CA1419</c>, category <c>Interoperability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1419"/>.
-    /// </summary>
+    /// <summary>Provide a parameterless constructor that is as visible as the containing type for concrete types derived from 'System.Runtime.InteropServices.SafeHandle'.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1419"/>.</remarks>
     [DiagnosticRule]
     public static class CA1419
     {
@@ -1114,10 +991,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1419";
     }
 
-    /// <summary>
-    /// Rule <c>CA1420</c>, category <c>Interoperability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1420"/>.
-    /// </summary>
+    /// <summary>Property, type, or attribute requires runtime marshalling.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1420"/>.</remarks>
     [DiagnosticRule]
     public static class CA1420
     {
@@ -1131,10 +1006,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1420";
     }
 
-    /// <summary>
-    /// Rule <c>CA1421</c>, category <c>Interoperability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1421"/>.
-    /// </summary>
+    /// <summary>This method uses runtime marshalling even when the 'DisableRuntimeMarshallingAttribute' is applied.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1421"/>.</remarks>
     [DiagnosticRule]
     public static class CA1421
     {
@@ -1148,10 +1021,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1421";
     }
 
-    /// <summary>
-    /// Rule <c>CA1422</c>, category <c>Interoperability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1422"/>.
-    /// </summary>
+    /// <summary>Validate platform compatibility.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1422"/>.</remarks>
     [DiagnosticRule]
     public static class CA1422
     {
@@ -1165,10 +1036,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1422";
     }
 
-    /// <summary>
-    /// Rule <c>CA1501</c>, category <c>Maintainability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1501"/>.
-    /// </summary>
+    /// <summary>Avoid excessive inheritance.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1501"/>.</remarks>
     [DiagnosticRule]
     public static class CA1501
     {
@@ -1182,10 +1051,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1501";
     }
 
-    /// <summary>
-    /// Rule <c>CA1502</c>, category <c>Maintainability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1502"/>.
-    /// </summary>
+    /// <summary>Avoid excessive complexity.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1502"/>.</remarks>
     [DiagnosticRule]
     public static class CA1502
     {
@@ -1199,10 +1066,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1502";
     }
 
-    /// <summary>
-    /// Rule <c>CA1505</c>, category <c>Maintainability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1505"/>.
-    /// </summary>
+    /// <summary>Avoid unmaintainable code.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1505"/>.</remarks>
     [DiagnosticRule]
     public static class CA1505
     {
@@ -1216,10 +1081,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1505";
     }
 
-    /// <summary>
-    /// Rule <c>CA1506</c>, category <c>Maintainability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1506"/>.
-    /// </summary>
+    /// <summary>Avoid excessive class coupling.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1506"/>.</remarks>
     [DiagnosticRule]
     public static class CA1506
     {
@@ -1233,10 +1096,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1506";
     }
 
-    /// <summary>
-    /// Rule <c>CA1507</c>, category <c>Maintainability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1507"/>.
-    /// </summary>
+    /// <summary>Use nameof to express symbol names.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1507"/>.</remarks>
     [DiagnosticRule]
     public static class CA1507
     {
@@ -1250,10 +1111,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1507";
     }
 
-    /// <summary>
-    /// Rule <c>CA1508</c>, category <c>Maintainability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1508"/>.
-    /// </summary>
+    /// <summary>Avoid dead conditional code.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1508"/>.</remarks>
     [DiagnosticRule]
     public static class CA1508
     {
@@ -1267,10 +1126,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1508";
     }
 
-    /// <summary>
-    /// Rule <c>CA1509</c>, category <c>Maintainability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1509"/>.
-    /// </summary>
+    /// <summary>Invalid entry in code metrics rule specification file.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1509"/>.</remarks>
     [DiagnosticRule]
     public static class CA1509
     {
@@ -1284,10 +1141,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1509";
     }
 
-    /// <summary>
-    /// Rule <c>CA1510</c>, category <c>Maintainability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1510"/>.
-    /// </summary>
+    /// <summary>Use ArgumentNullException throw helper.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1510"/>.</remarks>
     [DiagnosticRule]
     public static class CA1510
     {
@@ -1301,10 +1156,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1510";
     }
 
-    /// <summary>
-    /// Rule <c>CA1511</c>, category <c>Maintainability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1511"/>.
-    /// </summary>
+    /// <summary>Use ArgumentException throw helper.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1511"/>.</remarks>
     [DiagnosticRule]
     public static class CA1511
     {
@@ -1318,10 +1171,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1511";
     }
 
-    /// <summary>
-    /// Rule <c>CA1512</c>, category <c>Maintainability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1512"/>.
-    /// </summary>
+    /// <summary>Use ArgumentOutOfRangeException throw helper.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1512"/>.</remarks>
     [DiagnosticRule]
     public static class CA1512
     {
@@ -1335,10 +1186,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1512";
     }
 
-    /// <summary>
-    /// Rule <c>CA1513</c>, category <c>Maintainability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1513"/>.
-    /// </summary>
+    /// <summary>Use ObjectDisposedException throw helper.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1513"/>.</remarks>
     [DiagnosticRule]
     public static class CA1513
     {
@@ -1352,10 +1201,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1513";
     }
 
-    /// <summary>
-    /// Rule <c>CA1514</c>, category <c>Maintainability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1514"/>.
-    /// </summary>
+    /// <summary>Avoid redundant length argument.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1514"/>.</remarks>
     [DiagnosticRule]
     public static class CA1514
     {
@@ -1369,10 +1216,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1514";
     }
 
-    /// <summary>
-    /// Rule <c>CA1515</c>, category <c>Maintainability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1515"/>.
-    /// </summary>
+    /// <summary>Consider making public types internal.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1515"/>.</remarks>
     [DiagnosticRule]
     public static class CA1515
     {
@@ -1386,10 +1231,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1515";
     }
 
-    /// <summary>
-    /// Rule <c>CA1516</c>, category <c>Maintainability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1516"/>.
-    /// </summary>
+    /// <summary>Use cross-platform intrinsics.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1516"/>.</remarks>
     [DiagnosticRule]
     public static class CA1516
     {
@@ -1403,10 +1246,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1516";
     }
 
-    /// <summary>
-    /// Rule <c>CA1700</c>, category <c>Naming</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1700"/>.
-    /// </summary>
+    /// <summary>Do not name enum values 'Reserved'.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1700"/>.</remarks>
     [DiagnosticRule]
     public static class CA1700
     {
@@ -1420,10 +1261,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1700";
     }
 
-    /// <summary>
-    /// Rule <c>CA1707</c>, category <c>Naming</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1707"/>.
-    /// </summary>
+    /// <summary>Identifiers should not contain underscores.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1707"/>.</remarks>
     [DiagnosticRule]
     public static class CA1707
     {
@@ -1437,10 +1276,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1707";
     }
 
-    /// <summary>
-    /// Rule <c>CA1708</c>, category <c>Naming</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1708"/>.
-    /// </summary>
+    /// <summary>Identifiers should differ by more than case.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1708"/>.</remarks>
     [DiagnosticRule]
     public static class CA1708
     {
@@ -1454,10 +1291,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1708";
     }
 
-    /// <summary>
-    /// Rule <c>CA1710</c>, category <c>Naming</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1710"/>.
-    /// </summary>
+    /// <summary>Identifiers should have correct suffix.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1710"/>.</remarks>
     [DiagnosticRule]
     public static class CA1710
     {
@@ -1471,10 +1306,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1710";
     }
 
-    /// <summary>
-    /// Rule <c>CA1711</c>, category <c>Naming</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1711"/>.
-    /// </summary>
+    /// <summary>Identifiers should not have incorrect suffix.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1711"/>.</remarks>
     [DiagnosticRule]
     public static class CA1711
     {
@@ -1488,10 +1321,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1711";
     }
 
-    /// <summary>
-    /// Rule <c>CA1712</c>, category <c>Naming</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1712"/>.
-    /// </summary>
+    /// <summary>Do not prefix enum values with type name.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1712"/>.</remarks>
     [DiagnosticRule]
     public static class CA1712
     {
@@ -1505,10 +1336,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1712";
     }
 
-    /// <summary>
-    /// Rule <c>CA1713</c>, category <c>Naming</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1713"/>.
-    /// </summary>
+    /// <summary>Events should not have 'Before' or 'After' prefix.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1713"/>.</remarks>
     [DiagnosticRule]
     public static class CA1713
     {
@@ -1522,10 +1351,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1713";
     }
 
-    /// <summary>
-    /// Rule <c>CA1715</c>, category <c>Naming</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1715"/>.
-    /// </summary>
+    /// <summary>Identifiers should have correct prefix.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1715"/>.</remarks>
     [DiagnosticRule]
     public static class CA1715
     {
@@ -1539,10 +1366,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1715";
     }
 
-    /// <summary>
-    /// Rule <c>CA1716</c>, category <c>Naming</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1716"/>.
-    /// </summary>
+    /// <summary>Identifiers should not match keywords.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1716"/>.</remarks>
     [DiagnosticRule]
     public static class CA1716
     {
@@ -1556,10 +1381,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1716";
     }
 
-    /// <summary>
-    /// Rule <c>CA1720</c>, category <c>Naming</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1720"/>.
-    /// </summary>
+    /// <summary>Identifier contains type name.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1720"/>.</remarks>
     [DiagnosticRule]
     public static class CA1720
     {
@@ -1573,10 +1396,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1720";
     }
 
-    /// <summary>
-    /// Rule <c>CA1721</c>, category <c>Naming</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1721"/>.
-    /// </summary>
+    /// <summary>Property names should not match get methods.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1721"/>.</remarks>
     [DiagnosticRule]
     public static class CA1721
     {
@@ -1590,10 +1411,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1721";
     }
 
-    /// <summary>
-    /// Rule <c>CA1724</c>, category <c>Naming</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1724"/>.
-    /// </summary>
+    /// <summary>Type names should not match namespaces.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1724"/>.</remarks>
     [DiagnosticRule]
     public static class CA1724
     {
@@ -1607,10 +1426,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1724";
     }
 
-    /// <summary>
-    /// Rule <c>CA1725</c>, category <c>Naming</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1725"/>.
-    /// </summary>
+    /// <summary>Parameter names should match base declaration.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1725"/>.</remarks>
     [DiagnosticRule]
     public static class CA1725
     {
@@ -1624,10 +1441,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1725";
     }
 
-    /// <summary>
-    /// Rule <c>CA1727</c>, category <c>Naming</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1727"/>.
-    /// </summary>
+    /// <summary>Use PascalCase for named placeholders.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1727"/>.</remarks>
     [DiagnosticRule]
     public static class CA1727
     {
@@ -1641,10 +1456,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1727";
     }
 
-    /// <summary>
-    /// Rule <c>CA1802</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1802"/>.
-    /// </summary>
+    /// <summary>Use literals where appropriate.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1802"/>.</remarks>
     [DiagnosticRule]
     public static class CA1802
     {
@@ -1658,10 +1471,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1802";
     }
 
-    /// <summary>
-    /// Rule <c>CA1805</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1805"/>.
-    /// </summary>
+    /// <summary>Do not initialize unnecessarily.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1805"/>.</remarks>
     [DiagnosticRule]
     public static class CA1805
     {
@@ -1675,10 +1486,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1805";
     }
 
-    /// <summary>
-    /// Rule <c>CA1806</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1806"/>.
-    /// </summary>
+    /// <summary>Do not ignore method results.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1806"/>.</remarks>
     [DiagnosticRule]
     public static class CA1806
     {
@@ -1692,10 +1501,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1806";
     }
 
-    /// <summary>
-    /// Rule <c>CA1810</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1810"/>.
-    /// </summary>
+    /// <summary>Initialize reference type static fields inline.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1810"/>.</remarks>
     [DiagnosticRule]
     public static class CA1810
     {
@@ -1709,10 +1516,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1810";
     }
 
-    /// <summary>
-    /// Rule <c>CA1812</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1812"/>.
-    /// </summary>
+    /// <summary>Avoid uninstantiated internal classes.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1812"/>.</remarks>
     [DiagnosticRule]
     public static class CA1812
     {
@@ -1726,10 +1531,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1812";
     }
 
-    /// <summary>
-    /// Rule <c>CA1813</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1813"/>.
-    /// </summary>
+    /// <summary>Avoid unsealed attributes.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1813"/>.</remarks>
     [DiagnosticRule]
     public static class CA1813
     {
@@ -1743,10 +1546,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1813";
     }
 
-    /// <summary>
-    /// Rule <c>CA1814</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1814"/>.
-    /// </summary>
+    /// <summary>Prefer jagged arrays over multidimensional.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1814"/>.</remarks>
     [DiagnosticRule]
     public static class CA1814
     {
@@ -1760,10 +1561,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1814";
     }
 
-    /// <summary>
-    /// Rule <c>CA1815</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1815"/>.
-    /// </summary>
+    /// <summary>Override equals and operator equals on value types.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1815"/>.</remarks>
     [DiagnosticRule]
     public static class CA1815
     {
@@ -1777,10 +1576,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1815";
     }
 
-    /// <summary>
-    /// Rule <c>CA1816</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1816"/>.
-    /// </summary>
+    /// <summary>Dispose methods should call SuppressFinalize.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1816"/>.</remarks>
     [DiagnosticRule]
     public static class CA1816
     {
@@ -1794,10 +1591,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1816";
     }
 
-    /// <summary>
-    /// Rule <c>CA1819</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1819"/>.
-    /// </summary>
+    /// <summary>Properties should not return arrays.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1819"/>.</remarks>
     [DiagnosticRule]
     public static class CA1819
     {
@@ -1811,10 +1606,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1819";
     }
 
-    /// <summary>
-    /// Rule <c>CA1820</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1820"/>.
-    /// </summary>
+    /// <summary>Test for empty strings using string length.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1820"/>.</remarks>
     [DiagnosticRule]
     public static class CA1820
     {
@@ -1828,10 +1621,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1820";
     }
 
-    /// <summary>
-    /// Rule <c>CA1821</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1821"/>.
-    /// </summary>
+    /// <summary>Remove empty Finalizers.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1821"/>.</remarks>
     [DiagnosticRule]
     public static class CA1821
     {
@@ -1845,10 +1636,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1821";
     }
 
-    /// <summary>
-    /// Rule <c>CA1822</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1822"/>.
-    /// </summary>
+    /// <summary>Mark members as static.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1822"/>.</remarks>
     [DiagnosticRule]
     public static class CA1822
     {
@@ -1862,10 +1651,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1822";
     }
 
-    /// <summary>
-    /// Rule <c>CA1823</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1823"/>.
-    /// </summary>
+    /// <summary>Avoid unused private fields.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1823"/>.</remarks>
     [DiagnosticRule]
     public static class CA1823
     {
@@ -1879,10 +1666,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1823";
     }
 
-    /// <summary>
-    /// Rule <c>CA1824</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1824"/>.
-    /// </summary>
+    /// <summary>Mark assemblies with NeutralResourcesLanguageAttribute.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1824"/>.</remarks>
     [DiagnosticRule]
     public static class CA1824
     {
@@ -1896,10 +1681,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1824";
     }
 
-    /// <summary>
-    /// Rule <c>CA1825</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1825"/>.
-    /// </summary>
+    /// <summary>Avoid zero-length array allocations.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1825"/>.</remarks>
     [DiagnosticRule]
     public static class CA1825
     {
@@ -1913,10 +1696,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1825";
     }
 
-    /// <summary>
-    /// Rule <c>CA1826</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1826"/>.
-    /// </summary>
+    /// <summary>Do not use Enumerable methods on indexable collections.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1826"/>.</remarks>
     [DiagnosticRule]
     public static class CA1826
     {
@@ -1930,10 +1711,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1826";
     }
 
-    /// <summary>
-    /// Rule <c>CA1827</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1827"/>.
-    /// </summary>
+    /// <summary>Do not use Count() or LongCount() when Any() can be used.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1827"/>.</remarks>
     [DiagnosticRule]
     public static class CA1827
     {
@@ -1947,10 +1726,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1827";
     }
 
-    /// <summary>
-    /// Rule <c>CA1828</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1828"/>.
-    /// </summary>
+    /// <summary>Do not use CountAsync() or LongCountAsync() when AnyAsync() can be used.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1828"/>.</remarks>
     [DiagnosticRule]
     public static class CA1828
     {
@@ -1964,10 +1741,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1828";
     }
 
-    /// <summary>
-    /// Rule <c>CA1829</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1829"/>.
-    /// </summary>
+    /// <summary>Use Length/Count property instead of Count() when available.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1829"/>.</remarks>
     [DiagnosticRule]
     public static class CA1829
     {
@@ -1981,10 +1756,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1829";
     }
 
-    /// <summary>
-    /// Rule <c>CA1830</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1830"/>.
-    /// </summary>
+    /// <summary>Prefer strongly-typed Append and Insert method overloads on StringBuilder.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1830"/>.</remarks>
     [DiagnosticRule]
     public static class CA1830
     {
@@ -1998,10 +1771,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1830";
     }
 
-    /// <summary>
-    /// Rule <c>CA1831</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1831"/>.
-    /// </summary>
+    /// <summary>Use AsSpan or AsMemory instead of Range-based indexers when appropriate.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1831"/>.</remarks>
     [DiagnosticRule]
     public static class CA1831
     {
@@ -2015,10 +1786,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1831";
     }
 
-    /// <summary>
-    /// Rule <c>CA1832</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1832"/>.
-    /// </summary>
+    /// <summary>Use AsSpan or AsMemory instead of Range-based indexers when appropriate.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1832"/>.</remarks>
     [DiagnosticRule]
     public static class CA1832
     {
@@ -2032,10 +1801,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1832";
     }
 
-    /// <summary>
-    /// Rule <c>CA1833</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1833"/>.
-    /// </summary>
+    /// <summary>Use AsSpan or AsMemory instead of Range-based indexers when appropriate.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1833"/>.</remarks>
     [DiagnosticRule]
     public static class CA1833
     {
@@ -2049,10 +1816,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1833";
     }
 
-    /// <summary>
-    /// Rule <c>CA1834</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1834"/>.
-    /// </summary>
+    /// <summary>Consider using 'StringBuilder.Append(char)' when applicable.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1834"/>.</remarks>
     [DiagnosticRule]
     public static class CA1834
     {
@@ -2066,10 +1831,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1834";
     }
 
-    /// <summary>
-    /// Rule <c>CA1835</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1835"/>.
-    /// </summary>
+    /// <summary>Prefer the 'Memory'-based overloads for 'ReadAsync' and 'WriteAsync'.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1835"/>.</remarks>
     [DiagnosticRule]
     public static class CA1835
     {
@@ -2083,10 +1846,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1835";
     }
 
-    /// <summary>
-    /// Rule <c>CA1836</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1836"/>.
-    /// </summary>
+    /// <summary>Prefer IsEmpty over Count.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1836"/>.</remarks>
     [DiagnosticRule]
     public static class CA1836
     {
@@ -2100,10 +1861,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1836";
     }
 
-    /// <summary>
-    /// Rule <c>CA1837</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1837"/>.
-    /// </summary>
+    /// <summary>Use 'Environment.ProcessId'.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1837"/>.</remarks>
     [DiagnosticRule]
     public static class CA1837
     {
@@ -2117,10 +1876,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1837";
     }
 
-    /// <summary>
-    /// Rule <c>CA1838</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1838"/>.
-    /// </summary>
+    /// <summary>Avoid 'StringBuilder' parameters for P/Invokes.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1838"/>.</remarks>
     [DiagnosticRule]
     public static class CA1838
     {
@@ -2134,10 +1891,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1838";
     }
 
-    /// <summary>
-    /// Rule <c>CA1839</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1839"/>.
-    /// </summary>
+    /// <summary>Use 'Environment.ProcessPath'.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1839"/>.</remarks>
     [DiagnosticRule]
     public static class CA1839
     {
@@ -2151,10 +1906,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1839";
     }
 
-    /// <summary>
-    /// Rule <c>CA1840</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1840"/>.
-    /// </summary>
+    /// <summary>Use 'Environment.CurrentManagedThreadId'.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1840"/>.</remarks>
     [DiagnosticRule]
     public static class CA1840
     {
@@ -2168,10 +1921,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1840";
     }
 
-    /// <summary>
-    /// Rule <c>CA1841</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1841"/>.
-    /// </summary>
+    /// <summary>Prefer Dictionary.Contains methods.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1841"/>.</remarks>
     [DiagnosticRule]
     public static class CA1841
     {
@@ -2185,10 +1936,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1841";
     }
 
-    /// <summary>
-    /// Rule <c>CA1842</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1842"/>.
-    /// </summary>
+    /// <summary>Do not use 'WhenAll' with a single task.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1842"/>.</remarks>
     [DiagnosticRule]
     public static class CA1842
     {
@@ -2202,10 +1951,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1842";
     }
 
-    /// <summary>
-    /// Rule <c>CA1843</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1843"/>.
-    /// </summary>
+    /// <summary>Do not use 'WaitAll' with a single task.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1843"/>.</remarks>
     [DiagnosticRule]
     public static class CA1843
     {
@@ -2219,10 +1966,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1843";
     }
 
-    /// <summary>
-    /// Rule <c>CA1844</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1844"/>.
-    /// </summary>
+    /// <summary>Provide memory-based overrides of async methods when subclassing 'Stream'.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1844"/>.</remarks>
     [DiagnosticRule]
     public static class CA1844
     {
@@ -2236,10 +1981,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1844";
     }
 
-    /// <summary>
-    /// Rule <c>CA1845</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1845"/>.
-    /// </summary>
+    /// <summary>Use span-based 'string.Concat'.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1845"/>.</remarks>
     [DiagnosticRule]
     public static class CA1845
     {
@@ -2253,10 +1996,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1845";
     }
 
-    /// <summary>
-    /// Rule <c>CA1846</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1846"/>.
-    /// </summary>
+    /// <summary>Prefer 'AsSpan' over 'Substring'.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1846"/>.</remarks>
     [DiagnosticRule]
     public static class CA1846
     {
@@ -2270,10 +2011,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1846";
     }
 
-    /// <summary>
-    /// Rule <c>CA1847</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1847"/>.
-    /// </summary>
+    /// <summary>Use char literal for a single character lookup.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1847"/>.</remarks>
     [DiagnosticRule]
     public static class CA1847
     {
@@ -2287,10 +2026,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1847";
     }
 
-    /// <summary>
-    /// Rule <c>CA1848</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1848"/>.
-    /// </summary>
+    /// <summary>Use the LoggerMessage delegates.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1848"/>.</remarks>
     [DiagnosticRule]
     public static class CA1848
     {
@@ -2304,10 +2041,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1848";
     }
 
-    /// <summary>
-    /// Rule <c>CA1849</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1849"/>.
-    /// </summary>
+    /// <summary>Call async methods when in an async method.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1849"/>.</remarks>
     [DiagnosticRule]
     public static class CA1849
     {
@@ -2321,10 +2056,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1849";
     }
 
-    /// <summary>
-    /// Rule <c>CA1850</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1850"/>.
-    /// </summary>
+    /// <summary>Prefer static 'HashData' method over 'ComputeHash'.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1850"/>.</remarks>
     [DiagnosticRule]
     public static class CA1850
     {
@@ -2338,10 +2071,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1850";
     }
 
-    /// <summary>
-    /// Rule <c>CA1851</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1851"/>.
-    /// </summary>
+    /// <summary>Possible multiple enumerations of 'IEnumerable' collection.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1851"/>.</remarks>
     [DiagnosticRule]
     public static class CA1851
     {
@@ -2355,10 +2086,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1851";
     }
 
-    /// <summary>
-    /// Rule <c>CA1852</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1852"/>.
-    /// </summary>
+    /// <summary>Seal internal types.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1852"/>.</remarks>
     [DiagnosticRule]
     public static class CA1852
     {
@@ -2372,10 +2101,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1852";
     }
 
-    /// <summary>
-    /// Rule <c>CA1853</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1853"/>.
-    /// </summary>
+    /// <summary>Unnecessary call to 'Dictionary.ContainsKey(key)'.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1853"/>.</remarks>
     [DiagnosticRule]
     public static class CA1853
     {
@@ -2389,10 +2116,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1853";
     }
 
-    /// <summary>
-    /// Rule <c>CA1854</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1854"/>.
-    /// </summary>
+    /// <summary>Prefer the 'IDictionary.TryGetValue(TKey, out TValue)' method.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1854"/>.</remarks>
     [DiagnosticRule]
     public static class CA1854
     {
@@ -2406,10 +2131,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1854";
     }
 
-    /// <summary>
-    /// Rule <c>CA1855</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1855"/>.
-    /// </summary>
+    /// <summary>Prefer 'Clear' over 'Fill'.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1855"/>.</remarks>
     [DiagnosticRule]
     public static class CA1855
     {
@@ -2423,10 +2146,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1855";
     }
 
-    /// <summary>
-    /// Rule <c>CA1856</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1856"/>.
-    /// </summary>
+    /// <summary>Incorrect usage of ConstantExpected attribute.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1856"/>.</remarks>
     [DiagnosticRule]
     public static class CA1856
     {
@@ -2440,10 +2161,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1856";
     }
 
-    /// <summary>
-    /// Rule <c>CA1857</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1857"/>.
-    /// </summary>
+    /// <summary>A constant is expected for the parameter.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1857"/>.</remarks>
     [DiagnosticRule]
     public static class CA1857
     {
@@ -2457,10 +2176,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1857";
     }
 
-    /// <summary>
-    /// Rule <c>CA1858</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1858"/>.
-    /// </summary>
+    /// <summary>Use 'StartsWith' instead of 'IndexOf'.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1858"/>.</remarks>
     [DiagnosticRule]
     public static class CA1858
     {
@@ -2474,10 +2191,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1858";
     }
 
-    /// <summary>
-    /// Rule <c>CA1859</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1859"/>.
-    /// </summary>
+    /// <summary>Use concrete types when possible for improved performance.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1859"/>.</remarks>
     [DiagnosticRule]
     public static class CA1859
     {
@@ -2491,10 +2206,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1859";
     }
 
-    /// <summary>
-    /// Rule <c>CA1860</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1860"/>.
-    /// </summary>
+    /// <summary>Avoid using 'Enumerable.Any()' extension method.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1860"/>.</remarks>
     [DiagnosticRule]
     public static class CA1860
     {
@@ -2508,10 +2221,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1860";
     }
 
-    /// <summary>
-    /// Rule <c>CA1861</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1861"/>.
-    /// </summary>
+    /// <summary>Avoid constant arrays as arguments.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1861"/>.</remarks>
     [DiagnosticRule]
     public static class CA1861
     {
@@ -2525,10 +2236,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1861";
     }
 
-    /// <summary>
-    /// Rule <c>CA1862</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1862"/>.
-    /// </summary>
+    /// <summary>Use the 'StringComparison' method overloads to perform case-insensitive string comparisons.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1862"/>.</remarks>
     [DiagnosticRule]
     public static class CA1862
     {
@@ -2542,10 +2251,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1862";
     }
 
-    /// <summary>
-    /// Rule <c>CA1863</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1863"/>.
-    /// </summary>
+    /// <summary>Use 'CompositeFormat'.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1863"/>.</remarks>
     [DiagnosticRule]
     public static class CA1863
     {
@@ -2559,10 +2266,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1863";
     }
 
-    /// <summary>
-    /// Rule <c>CA1864</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1864"/>.
-    /// </summary>
+    /// <summary>Prefer the 'IDictionary.TryAdd(TKey, TValue)' method.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1864"/>.</remarks>
     [DiagnosticRule]
     public static class CA1864
     {
@@ -2576,10 +2281,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1864";
     }
 
-    /// <summary>
-    /// Rule <c>CA1865</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1865"/>.
-    /// </summary>
+    /// <summary>Use char overload.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1865"/>.</remarks>
     [DiagnosticRule]
     public static class CA1865
     {
@@ -2593,10 +2296,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1865";
     }
 
-    /// <summary>
-    /// Rule <c>CA1866</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1866"/>.
-    /// </summary>
+    /// <summary>Use char overload.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1866"/>.</remarks>
     [DiagnosticRule]
     public static class CA1866
     {
@@ -2610,10 +2311,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1866";
     }
 
-    /// <summary>
-    /// Rule <c>CA1867</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1867"/>.
-    /// </summary>
+    /// <summary>Use char overload.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1867"/>.</remarks>
     [DiagnosticRule]
     public static class CA1867
     {
@@ -2627,10 +2326,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1867";
     }
 
-    /// <summary>
-    /// Rule <c>CA1868</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1868"/>.
-    /// </summary>
+    /// <summary>Unnecessary call to 'Contains(item)'.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1868"/>.</remarks>
     [DiagnosticRule]
     public static class CA1868
     {
@@ -2644,10 +2341,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1868";
     }
 
-    /// <summary>
-    /// Rule <c>CA1869</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1869"/>.
-    /// </summary>
+    /// <summary>Cache and reuse 'JsonSerializerOptions' instances.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1869"/>.</remarks>
     [DiagnosticRule]
     public static class CA1869
     {
@@ -2661,10 +2356,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1869";
     }
 
-    /// <summary>
-    /// Rule <c>CA1870</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1870"/>.
-    /// </summary>
+    /// <summary>Use a cached 'SearchValues' instance.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1870"/>.</remarks>
     [DiagnosticRule]
     public static class CA1870
     {
@@ -2678,10 +2371,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1870";
     }
 
-    /// <summary>
-    /// Rule <c>CA1871</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1871"/>.
-    /// </summary>
+    /// <summary>Do not pass a nullable struct to 'ArgumentNullException.ThrowIfNull'.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1871"/>.</remarks>
     [DiagnosticRule]
     public static class CA1871
     {
@@ -2695,10 +2386,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1871";
     }
 
-    /// <summary>
-    /// Rule <c>CA1872</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1872"/>.
-    /// </summary>
+    /// <summary>Prefer 'Convert.ToHexString' and 'Convert.ToHexStringLower' over call chains based on 'BitConverter.ToString'.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1872"/>.</remarks>
     [DiagnosticRule]
     public static class CA1872
     {
@@ -2712,10 +2401,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1872";
     }
 
-    /// <summary>
-    /// Rule <c>CA1873</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1873"/>.
-    /// </summary>
+    /// <summary>Avoid potentially expensive logging.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1873"/>.</remarks>
     [DiagnosticRule]
     public static class CA1873
     {
@@ -2729,10 +2416,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1873";
     }
 
-    /// <summary>
-    /// Rule <c>CA1874</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1874"/>.
-    /// </summary>
+    /// <summary>Use 'Regex.IsMatch'.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1874"/>.</remarks>
     [DiagnosticRule]
     public static class CA1874
     {
@@ -2746,10 +2431,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1874";
     }
 
-    /// <summary>
-    /// Rule <c>CA1875</c>, category <c>Performance</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1875"/>.
-    /// </summary>
+    /// <summary>Use 'Regex.Count'.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1875"/>.</remarks>
     [DiagnosticRule]
     public static class CA1875
     {
@@ -2763,10 +2446,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1875";
     }
 
-    /// <summary>
-    /// Rule <c>CA2000</c>, category <c>Reliability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2000"/>.
-    /// </summary>
+    /// <summary>Dispose objects before losing scope.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2000"/>.</remarks>
     [DiagnosticRule]
     public static class CA2000
     {
@@ -2780,10 +2461,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2000";
     }
 
-    /// <summary>
-    /// Rule <c>CA2002</c>, category <c>Reliability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2002"/>.
-    /// </summary>
+    /// <summary>Do not lock on objects with weak identity.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2002"/>.</remarks>
     [DiagnosticRule]
     public static class CA2002
     {
@@ -2797,10 +2476,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2002";
     }
 
-    /// <summary>
-    /// Rule <c>CA2007</c>, category <c>Reliability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2007"/>.
-    /// </summary>
+    /// <summary>Consider calling ConfigureAwait on the awaited task.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2007"/>.</remarks>
     [DiagnosticRule]
     public static class CA2007
     {
@@ -2814,10 +2491,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2007";
     }
 
-    /// <summary>
-    /// Rule <c>CA2008</c>, category <c>Reliability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2008"/>.
-    /// </summary>
+    /// <summary>Do not create tasks without passing a TaskScheduler.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2008"/>.</remarks>
     [DiagnosticRule]
     public static class CA2008
     {
@@ -2831,10 +2506,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2008";
     }
 
-    /// <summary>
-    /// Rule <c>CA2009</c>, category <c>Reliability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2009"/>.
-    /// </summary>
+    /// <summary>Do not call ToImmutableCollection on an ImmutableCollection value.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2009"/>.</remarks>
     [DiagnosticRule]
     public static class CA2009
     {
@@ -2848,10 +2521,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2009";
     }
 
-    /// <summary>
-    /// Rule <c>CA2011</c>, category <c>Reliability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2011"/>.
-    /// </summary>
+    /// <summary>Avoid infinite recursion.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2011"/>.</remarks>
     [DiagnosticRule]
     public static class CA2011
     {
@@ -2865,10 +2536,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2011";
     }
 
-    /// <summary>
-    /// Rule <c>CA2012</c>, category <c>Reliability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2012"/>.
-    /// </summary>
+    /// <summary>Use ValueTasks correctly.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2012"/>.</remarks>
     [DiagnosticRule]
     public static class CA2012
     {
@@ -2882,10 +2551,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2012";
     }
 
-    /// <summary>
-    /// Rule <c>CA2013</c>, category <c>Reliability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2013"/>.
-    /// </summary>
+    /// <summary>Do not use ReferenceEquals with value types.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2013"/>.</remarks>
     [DiagnosticRule]
     public static class CA2013
     {
@@ -2899,10 +2566,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2013";
     }
 
-    /// <summary>
-    /// Rule <c>CA2014</c>, category <c>Reliability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2014"/>.
-    /// </summary>
+    /// <summary>Do not use stackalloc in loops.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2014"/>.</remarks>
     [DiagnosticRule]
     public static class CA2014
     {
@@ -2916,10 +2581,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2014";
     }
 
-    /// <summary>
-    /// Rule <c>CA2015</c>, category <c>Reliability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2015"/>.
-    /// </summary>
+    /// <summary>Do not define finalizers for types derived from MemoryManager&lt;T&gt;.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2015"/>.</remarks>
     [DiagnosticRule]
     public static class CA2015
     {
@@ -2933,10 +2596,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2015";
     }
 
-    /// <summary>
-    /// Rule <c>CA2016</c>, category <c>Reliability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2016"/>.
-    /// </summary>
+    /// <summary>Forward the 'CancellationToken' parameter to methods.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2016"/>.</remarks>
     [DiagnosticRule]
     public static class CA2016
     {
@@ -2950,10 +2611,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2016";
     }
 
-    /// <summary>
-    /// Rule <c>CA2017</c>, category <c>Reliability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2017"/>.
-    /// </summary>
+    /// <summary>Parameter count mismatch.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2017"/>.</remarks>
     [DiagnosticRule]
     public static class CA2017
     {
@@ -2967,10 +2626,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2017";
     }
 
-    /// <summary>
-    /// Rule <c>CA2018</c>, category <c>Reliability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2018"/>.
-    /// </summary>
+    /// <summary>'Buffer.BlockCopy' expects the number of bytes to be copied for the 'count' argument.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2018"/>.</remarks>
     [DiagnosticRule]
     public static class CA2018
     {
@@ -2984,10 +2641,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2018";
     }
 
-    /// <summary>
-    /// Rule <c>CA2019</c>, category <c>Reliability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2019"/>.
-    /// </summary>
+    /// <summary>Improper 'ThreadStatic' field initialization.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2019"/>.</remarks>
     [DiagnosticRule]
     public static class CA2019
     {
@@ -3001,10 +2656,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2019";
     }
 
-    /// <summary>
-    /// Rule <c>CA2020</c>, category <c>Reliability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2020"/>.
-    /// </summary>
+    /// <summary>Prevent behavioral change.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2020"/>.</remarks>
     [DiagnosticRule]
     public static class CA2020
     {
@@ -3018,10 +2671,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2020";
     }
 
-    /// <summary>
-    /// Rule <c>CA2021</c>, category <c>Reliability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2021"/>.
-    /// </summary>
+    /// <summary>Do not call Enumerable.Cast&lt;T&gt; or Enumerable.OfType&lt;T&gt; with incompatible types.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2021"/>.</remarks>
     [DiagnosticRule]
     public static class CA2021
     {
@@ -3035,10 +2686,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2021";
     }
 
-    /// <summary>
-    /// Rule <c>CA2022</c>, category <c>Reliability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2022"/>.
-    /// </summary>
+    /// <summary>Avoid inexact read with 'Stream.Read'.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2022"/>.</remarks>
     [DiagnosticRule]
     public static class CA2022
     {
@@ -3052,10 +2701,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2022";
     }
 
-    /// <summary>
-    /// Rule <c>CA2023</c>, category <c>Reliability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2023"/>.
-    /// </summary>
+    /// <summary>Invalid braces in message template.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2023"/>.</remarks>
     [DiagnosticRule]
     public static class CA2023
     {
@@ -3069,10 +2716,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2023";
     }
 
-    /// <summary>
-    /// Rule <c>CA2024</c>, category <c>Reliability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2024"/>.
-    /// </summary>
+    /// <summary>Do not use 'StreamReader.EndOfStream' in async methods.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2024"/>.</remarks>
     [DiagnosticRule]
     public static class CA2024
     {
@@ -3086,10 +2731,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2024";
     }
 
-    /// <summary>
-    /// Rule <c>CA2025</c>, category <c>Reliability</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2025"/>.
-    /// </summary>
+    /// <summary>Do not pass 'IDisposable' instances into unawaited tasks.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2025"/>.</remarks>
     [DiagnosticRule]
     public static class CA2025
     {
@@ -3103,10 +2746,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2025";
     }
 
-    /// <summary>
-    /// Rule <c>CA2100</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2100"/>.
-    /// </summary>
+    /// <summary>Review SQL queries for security vulnerabilities.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2100"/>.</remarks>
     [DiagnosticRule]
     public static class CA2100
     {
@@ -3120,10 +2761,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2100";
     }
 
-    /// <summary>
-    /// Rule <c>CA2101</c>, category <c>Globalization</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2101"/>.
-    /// </summary>
+    /// <summary>Specify marshaling for P/Invoke string arguments.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2101"/>.</remarks>
     [DiagnosticRule]
     public static class CA2101
     {
@@ -3137,10 +2776,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2101";
     }
 
-    /// <summary>
-    /// Rule <c>CA2119</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2119"/>.
-    /// </summary>
+    /// <summary>Seal methods that satisfy private interfaces.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2119"/>.</remarks>
     [DiagnosticRule]
     public static class CA2119
     {
@@ -3154,10 +2791,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2119";
     }
 
-    /// <summary>
-    /// Rule <c>CA2153</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2153"/>.
-    /// </summary>
+    /// <summary>Do Not Catch Corrupted State Exceptions.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2153"/>.</remarks>
     [DiagnosticRule]
     public static class CA2153
     {
@@ -3171,10 +2806,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2153";
     }
 
-    /// <summary>
-    /// Rule <c>CA2200</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2200"/>.
-    /// </summary>
+    /// <summary>Rethrow to preserve stack details.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2200"/>.</remarks>
     [DiagnosticRule]
     public static class CA2200
     {
@@ -3188,10 +2821,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2200";
     }
 
-    /// <summary>
-    /// Rule <c>CA2201</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2201"/>.
-    /// </summary>
+    /// <summary>Do not raise reserved exception types.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2201"/>.</remarks>
     [DiagnosticRule]
     public static class CA2201
     {
@@ -3205,10 +2836,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2201";
     }
 
-    /// <summary>
-    /// Rule <c>CA2207</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2207"/>.
-    /// </summary>
+    /// <summary>Initialize value type static fields inline.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2207"/>.</remarks>
     [DiagnosticRule]
     public static class CA2207
     {
@@ -3222,10 +2851,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2207";
     }
 
-    /// <summary>
-    /// Rule <c>CA2208</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2208"/>.
-    /// </summary>
+    /// <summary>Instantiate argument exceptions correctly.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2208"/>.</remarks>
     [DiagnosticRule]
     public static class CA2208
     {
@@ -3239,10 +2866,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2208";
     }
 
-    /// <summary>
-    /// Rule <c>CA2211</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2211"/>.
-    /// </summary>
+    /// <summary>Non-constant fields should not be visible.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2211"/>.</remarks>
     [DiagnosticRule]
     public static class CA2211
     {
@@ -3256,10 +2881,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2211";
     }
 
-    /// <summary>
-    /// Rule <c>CA2213</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2213"/>.
-    /// </summary>
+    /// <summary>Disposable fields should be disposed.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2213"/>.</remarks>
     [DiagnosticRule]
     public static class CA2213
     {
@@ -3273,10 +2896,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2213";
     }
 
-    /// <summary>
-    /// Rule <c>CA2214</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2214"/>.
-    /// </summary>
+    /// <summary>Do not call overridable methods in constructors.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2214"/>.</remarks>
     [DiagnosticRule]
     public static class CA2214
     {
@@ -3290,10 +2911,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2214";
     }
 
-    /// <summary>
-    /// Rule <c>CA2215</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2215"/>.
-    /// </summary>
+    /// <summary>Dispose methods should call base class dispose.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2215"/>.</remarks>
     [DiagnosticRule]
     public static class CA2215
     {
@@ -3307,10 +2926,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2215";
     }
 
-    /// <summary>
-    /// Rule <c>CA2216</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2216"/>.
-    /// </summary>
+    /// <summary>Disposable types should declare finalizer.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2216"/>.</remarks>
     [DiagnosticRule]
     public static class CA2216
     {
@@ -3324,10 +2941,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2216";
     }
 
-    /// <summary>
-    /// Rule <c>CA2217</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2217"/>.
-    /// </summary>
+    /// <summary>Do not mark enums with FlagsAttribute.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2217"/>.</remarks>
     [DiagnosticRule]
     public static class CA2217
     {
@@ -3341,10 +2956,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2217";
     }
 
-    /// <summary>
-    /// Rule <c>CA2219</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2219"/>.
-    /// </summary>
+    /// <summary>Do not raise exceptions in finally clauses.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2219"/>.</remarks>
     [DiagnosticRule]
     public static class CA2219
     {
@@ -3358,10 +2971,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2219";
     }
 
-    /// <summary>
-    /// Rule <c>CA2225</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2225"/>.
-    /// </summary>
+    /// <summary>Operator overloads have named alternates.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2225"/>.</remarks>
     [DiagnosticRule]
     public static class CA2225
     {
@@ -3375,10 +2986,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2225";
     }
 
-    /// <summary>
-    /// Rule <c>CA2226</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2226"/>.
-    /// </summary>
+    /// <summary>Operators should have symmetrical overloads.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2226"/>.</remarks>
     [DiagnosticRule]
     public static class CA2226
     {
@@ -3392,10 +3001,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2226";
     }
 
-    /// <summary>
-    /// Rule <c>CA2227</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2227"/>.
-    /// </summary>
+    /// <summary>Collection properties should be read only.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2227"/>.</remarks>
     [DiagnosticRule]
     public static class CA2227
     {
@@ -3409,10 +3016,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2227";
     }
 
-    /// <summary>
-    /// Rule <c>CA2231</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2231"/>.
-    /// </summary>
+    /// <summary>Overload operator equals on overriding value type Equals.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2231"/>.</remarks>
     [DiagnosticRule]
     public static class CA2231
     {
@@ -3426,10 +3031,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2231";
     }
 
-    /// <summary>
-    /// Rule <c>CA2234</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2234"/>.
-    /// </summary>
+    /// <summary>Pass system uri objects instead of strings.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2234"/>.</remarks>
     [DiagnosticRule]
     public static class CA2234
     {
@@ -3443,10 +3046,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2234";
     }
 
-    /// <summary>
-    /// Rule <c>CA2235</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2235"/>.
-    /// </summary>
+    /// <summary>Mark all non-serializable fields.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2235"/>.</remarks>
     [DiagnosticRule]
     public static class CA2235
     {
@@ -3460,10 +3061,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2235";
     }
 
-    /// <summary>
-    /// Rule <c>CA2237</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2237"/>.
-    /// </summary>
+    /// <summary>Mark ISerializable types with serializable.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2237"/>.</remarks>
     [DiagnosticRule]
     public static class CA2237
     {
@@ -3477,10 +3076,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2237";
     }
 
-    /// <summary>
-    /// Rule <c>CA2241</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2241"/>.
-    /// </summary>
+    /// <summary>Provide correct arguments to formatting methods.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2241"/>.</remarks>
     [DiagnosticRule]
     public static class CA2241
     {
@@ -3494,10 +3091,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2241";
     }
 
-    /// <summary>
-    /// Rule <c>CA2242</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2242"/>.
-    /// </summary>
+    /// <summary>Test for NaN correctly.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2242"/>.</remarks>
     [DiagnosticRule]
     public static class CA2242
     {
@@ -3511,10 +3106,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2242";
     }
 
-    /// <summary>
-    /// Rule <c>CA2243</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2243"/>.
-    /// </summary>
+    /// <summary>Attribute string literals should parse correctly.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2243"/>.</remarks>
     [DiagnosticRule]
     public static class CA2243
     {
@@ -3528,10 +3121,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2243";
     }
 
-    /// <summary>
-    /// Rule <c>CA2244</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2244"/>.
-    /// </summary>
+    /// <summary>Do not duplicate indexed element initializations.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2244"/>.</remarks>
     [DiagnosticRule]
     public static class CA2244
     {
@@ -3545,10 +3136,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2244";
     }
 
-    /// <summary>
-    /// Rule <c>CA2245</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2245"/>.
-    /// </summary>
+    /// <summary>Do not assign a property to itself.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2245"/>.</remarks>
     [DiagnosticRule]
     public static class CA2245
     {
@@ -3562,10 +3151,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2245";
     }
 
-    /// <summary>
-    /// Rule <c>CA2246</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2246"/>.
-    /// </summary>
+    /// <summary>Assigning symbol and its member in the same statement.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2246"/>.</remarks>
     [DiagnosticRule]
     public static class CA2246
     {
@@ -3579,10 +3166,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2246";
     }
 
-    /// <summary>
-    /// Rule <c>CA2247</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2247"/>.
-    /// </summary>
+    /// <summary>Argument passed to TaskCompletionSource constructor should be TaskCreationOptions enum instead of TaskContinuationOptions enum.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2247"/>.</remarks>
     [DiagnosticRule]
     public static class CA2247
     {
@@ -3596,10 +3181,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2247";
     }
 
-    /// <summary>
-    /// Rule <c>CA2248</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2248"/>.
-    /// </summary>
+    /// <summary>Provide correct 'enum' argument to 'Enum.HasFlag'.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2248"/>.</remarks>
     [DiagnosticRule]
     public static class CA2248
     {
@@ -3613,10 +3196,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2248";
     }
 
-    /// <summary>
-    /// Rule <c>CA2249</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2249"/>.
-    /// </summary>
+    /// <summary>Consider using 'string.Contains' instead of 'string.IndexOf'.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2249"/>.</remarks>
     [DiagnosticRule]
     public static class CA2249
     {
@@ -3630,10 +3211,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2249";
     }
 
-    /// <summary>
-    /// Rule <c>CA2250</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2250"/>.
-    /// </summary>
+    /// <summary>Use 'ThrowIfCancellationRequested'.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2250"/>.</remarks>
     [DiagnosticRule]
     public static class CA2250
     {
@@ -3647,10 +3226,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2250";
     }
 
-    /// <summary>
-    /// Rule <c>CA2251</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2251"/>.
-    /// </summary>
+    /// <summary>Use 'string.Equals'.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2251"/>.</remarks>
     [DiagnosticRule]
     public static class CA2251
     {
@@ -3664,10 +3241,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2251";
     }
 
-    /// <summary>
-    /// Rule <c>CA2252</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2252"/>.
-    /// </summary>
+    /// <summary>This API requires opting into preview features.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2252"/>.</remarks>
     [DiagnosticRule]
     public static class CA2252
     {
@@ -3681,10 +3256,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2252";
     }
 
-    /// <summary>
-    /// Rule <c>CA2253</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2253"/>.
-    /// </summary>
+    /// <summary>Named placeholders should not be numeric values.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2253"/>.</remarks>
     [DiagnosticRule]
     public static class CA2253
     {
@@ -3698,10 +3271,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2253";
     }
 
-    /// <summary>
-    /// Rule <c>CA2254</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2254"/>.
-    /// </summary>
+    /// <summary>Template should be a static expression.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2254"/>.</remarks>
     [DiagnosticRule]
     public static class CA2254
     {
@@ -3715,10 +3286,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2254";
     }
 
-    /// <summary>
-    /// Rule <c>CA2255</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2255"/>.
-    /// </summary>
+    /// <summary>The 'ModuleInitializer' attribute should not be used in libraries.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2255"/>.</remarks>
     [DiagnosticRule]
     public static class CA2255
     {
@@ -3732,10 +3301,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2255";
     }
 
-    /// <summary>
-    /// Rule <c>CA2256</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2256"/>.
-    /// </summary>
+    /// <summary>All members declared in parent interfaces must have an implementation in a DynamicInterfaceCastableImplementation-attributed interface.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2256"/>.</remarks>
     [DiagnosticRule]
     public static class CA2256
     {
@@ -3749,10 +3316,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2256";
     }
 
-    /// <summary>
-    /// Rule <c>CA2257</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2257"/>.
-    /// </summary>
+    /// <summary>Members defined on an interface with the 'DynamicInterfaceCastableImplementationAttribute' should be 'static'.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2257"/>.</remarks>
     [DiagnosticRule]
     public static class CA2257
     {
@@ -3766,10 +3331,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2257";
     }
 
-    /// <summary>
-    /// Rule <c>CA2258</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2258"/>.
-    /// </summary>
+    /// <summary>Providing a 'DynamicInterfaceCastableImplementation' interface in Visual Basic is unsupported.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2258"/>.</remarks>
     [DiagnosticRule]
     public static class CA2258
     {
@@ -3783,10 +3346,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2258";
     }
 
-    /// <summary>
-    /// Rule <c>CA2259</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2259"/>.
-    /// </summary>
+    /// <summary>'ThreadStatic' only affects static fields.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2259"/>.</remarks>
     [DiagnosticRule]
     public static class CA2259
     {
@@ -3800,10 +3361,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2259";
     }
 
-    /// <summary>
-    /// Rule <c>CA2260</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2260"/>.
-    /// </summary>
+    /// <summary>Use correct type parameter.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2260"/>.</remarks>
     [DiagnosticRule]
     public static class CA2260
     {
@@ -3817,10 +3376,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2260";
     }
 
-    /// <summary>
-    /// Rule <c>CA2261</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2261"/>.
-    /// </summary>
+    /// <summary>Do not use ConfigureAwaitOptions.SuppressThrowing with Task&lt;TResult&gt;.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2261"/>.</remarks>
     [DiagnosticRule]
     public static class CA2261
     {
@@ -3834,10 +3391,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2261";
     }
 
-    /// <summary>
-    /// Rule <c>CA2262</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2262"/>.
-    /// </summary>
+    /// <summary>Set 'MaxResponseHeadersLength' properly.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2262"/>.</remarks>
     [DiagnosticRule]
     public static class CA2262
     {
@@ -3851,10 +3406,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2262";
     }
 
-    /// <summary>
-    /// Rule <c>CA2263</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2263"/>.
-    /// </summary>
+    /// <summary>Prefer generic overload when type is known.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2263"/>.</remarks>
     [DiagnosticRule]
     public static class CA2263
     {
@@ -3868,10 +3421,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2263";
     }
 
-    /// <summary>
-    /// Rule <c>CA2264</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2264"/>.
-    /// </summary>
+    /// <summary>Do not pass a non-nullable value to 'ArgumentNullException.ThrowIfNull'.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2264"/>.</remarks>
     [DiagnosticRule]
     public static class CA2264
     {
@@ -3885,10 +3436,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2264";
     }
 
-    /// <summary>
-    /// Rule <c>CA2265</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2265"/>.
-    /// </summary>
+    /// <summary>Do not compare Span&lt;T&gt; to 'null' or 'default'.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2265"/>.</remarks>
     [DiagnosticRule]
     public static class CA2265
     {
@@ -3902,10 +3451,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2265";
     }
 
-    /// <summary>
-    /// Rule <c>CA2266</c>, category <c>Usage</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2266"/>.
-    /// </summary>
+    /// <summary>File-based program entry point should start with '#!'.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2266"/>.</remarks>
     [DiagnosticRule]
     public static class CA2266
     {
@@ -3919,10 +3466,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2266";
     }
 
-    /// <summary>
-    /// Rule <c>CA2300</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2300"/>.
-    /// </summary>
+    /// <summary>Do not use insecure deserializer BinaryFormatter.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2300"/>.</remarks>
     [DiagnosticRule]
     public static class CA2300
     {
@@ -3936,10 +3481,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2300";
     }
 
-    /// <summary>
-    /// Rule <c>CA2301</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2301"/>.
-    /// </summary>
+    /// <summary>Do not call BinaryFormatter.Deserialize without first setting BinaryFormatter.Binder.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2301"/>.</remarks>
     [DiagnosticRule]
     public static class CA2301
     {
@@ -3953,10 +3496,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2301";
     }
 
-    /// <summary>
-    /// Rule <c>CA2302</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2302"/>.
-    /// </summary>
+    /// <summary>Ensure BinaryFormatter.Binder is set before calling BinaryFormatter.Deserialize.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2302"/>.</remarks>
     [DiagnosticRule]
     public static class CA2302
     {
@@ -3970,10 +3511,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2302";
     }
 
-    /// <summary>
-    /// Rule <c>CA2305</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2305"/>.
-    /// </summary>
+    /// <summary>Do not use insecure deserializer LosFormatter.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2305"/>.</remarks>
     [DiagnosticRule]
     public static class CA2305
     {
@@ -3987,10 +3526,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2305";
     }
 
-    /// <summary>
-    /// Rule <c>CA2310</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2310"/>.
-    /// </summary>
+    /// <summary>Do not use insecure deserializer NetDataContractSerializer.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2310"/>.</remarks>
     [DiagnosticRule]
     public static class CA2310
     {
@@ -4004,10 +3541,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2310";
     }
 
-    /// <summary>
-    /// Rule <c>CA2311</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2311"/>.
-    /// </summary>
+    /// <summary>Do not deserialize without first setting NetDataContractSerializer.Binder.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2311"/>.</remarks>
     [DiagnosticRule]
     public static class CA2311
     {
@@ -4021,10 +3556,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2311";
     }
 
-    /// <summary>
-    /// Rule <c>CA2312</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2312"/>.
-    /// </summary>
+    /// <summary>Ensure NetDataContractSerializer.Binder is set before deserializing.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2312"/>.</remarks>
     [DiagnosticRule]
     public static class CA2312
     {
@@ -4038,10 +3571,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2312";
     }
 
-    /// <summary>
-    /// Rule <c>CA2315</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2315"/>.
-    /// </summary>
+    /// <summary>Do not use insecure deserializer ObjectStateFormatter.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2315"/>.</remarks>
     [DiagnosticRule]
     public static class CA2315
     {
@@ -4055,10 +3586,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2315";
     }
 
-    /// <summary>
-    /// Rule <c>CA2321</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2321"/>.
-    /// </summary>
+    /// <summary>Do not deserialize with JavaScriptSerializer using a SimpleTypeResolver.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2321"/>.</remarks>
     [DiagnosticRule]
     public static class CA2321
     {
@@ -4072,10 +3601,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2321";
     }
 
-    /// <summary>
-    /// Rule <c>CA2322</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2322"/>.
-    /// </summary>
+    /// <summary>Ensure JavaScriptSerializer is not initialized with SimpleTypeResolver before deserializing.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2322"/>.</remarks>
     [DiagnosticRule]
     public static class CA2322
     {
@@ -4089,10 +3616,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2322";
     }
 
-    /// <summary>
-    /// Rule <c>CA2326</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2326"/>.
-    /// </summary>
+    /// <summary>Do not use TypeNameHandling values other than None.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2326"/>.</remarks>
     [DiagnosticRule]
     public static class CA2326
     {
@@ -4106,10 +3631,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2326";
     }
 
-    /// <summary>
-    /// Rule <c>CA2327</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2327"/>.
-    /// </summary>
+    /// <summary>Do not use insecure JsonSerializerSettings.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2327"/>.</remarks>
     [DiagnosticRule]
     public static class CA2327
     {
@@ -4123,10 +3646,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2327";
     }
 
-    /// <summary>
-    /// Rule <c>CA2328</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2328"/>.
-    /// </summary>
+    /// <summary>Ensure that JsonSerializerSettings are secure.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2328"/>.</remarks>
     [DiagnosticRule]
     public static class CA2328
     {
@@ -4140,10 +3661,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2328";
     }
 
-    /// <summary>
-    /// Rule <c>CA2329</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2329"/>.
-    /// </summary>
+    /// <summary>Do not deserialize with JsonSerializer using an insecure configuration.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2329"/>.</remarks>
     [DiagnosticRule]
     public static class CA2329
     {
@@ -4157,10 +3676,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2329";
     }
 
-    /// <summary>
-    /// Rule <c>CA2330</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2330"/>.
-    /// </summary>
+    /// <summary>Ensure that JsonSerializer has a secure configuration when deserializing.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2330"/>.</remarks>
     [DiagnosticRule]
     public static class CA2330
     {
@@ -4174,10 +3691,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2330";
     }
 
-    /// <summary>
-    /// Rule <c>CA2350</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2350"/>.
-    /// </summary>
+    /// <summary>Do not use DataTable.ReadXml() with untrusted data.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2350"/>.</remarks>
     [DiagnosticRule]
     public static class CA2350
     {
@@ -4191,10 +3706,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2350";
     }
 
-    /// <summary>
-    /// Rule <c>CA2351</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2351"/>.
-    /// </summary>
+    /// <summary>Do not use DataSet.ReadXml() with untrusted data.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2351"/>.</remarks>
     [DiagnosticRule]
     public static class CA2351
     {
@@ -4208,10 +3721,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2351";
     }
 
-    /// <summary>
-    /// Rule <c>CA2352</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2352"/>.
-    /// </summary>
+    /// <summary>Unsafe DataSet or DataTable in serializable type can be vulnerable to remote code execution attacks.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2352"/>.</remarks>
     [DiagnosticRule]
     public static class CA2352
     {
@@ -4225,10 +3736,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2352";
     }
 
-    /// <summary>
-    /// Rule <c>CA2353</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2353"/>.
-    /// </summary>
+    /// <summary>Unsafe DataSet or DataTable in serializable type.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2353"/>.</remarks>
     [DiagnosticRule]
     public static class CA2353
     {
@@ -4242,10 +3751,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2353";
     }
 
-    /// <summary>
-    /// Rule <c>CA2354</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2354"/>.
-    /// </summary>
+    /// <summary>Unsafe DataSet or DataTable in deserialized object graph can be vulnerable to remote code execution attacks.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2354"/>.</remarks>
     [DiagnosticRule]
     public static class CA2354
     {
@@ -4259,10 +3766,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2354";
     }
 
-    /// <summary>
-    /// Rule <c>CA2355</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2355"/>.
-    /// </summary>
+    /// <summary>Unsafe DataSet or DataTable type found in deserializable object graph.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2355"/>.</remarks>
     [DiagnosticRule]
     public static class CA2355
     {
@@ -4276,10 +3781,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2355";
     }
 
-    /// <summary>
-    /// Rule <c>CA2356</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2356"/>.
-    /// </summary>
+    /// <summary>Unsafe DataSet or DataTable type in web deserializable object graph.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2356"/>.</remarks>
     [DiagnosticRule]
     public static class CA2356
     {
@@ -4293,10 +3796,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2356";
     }
 
-    /// <summary>
-    /// Rule <c>CA2361</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2361"/>.
-    /// </summary>
+    /// <summary>Ensure auto-generated class containing DataSet.ReadXml() is not used with untrusted data.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2361"/>.</remarks>
     [DiagnosticRule]
     public static class CA2361
     {
@@ -4310,10 +3811,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2361";
     }
 
-    /// <summary>
-    /// Rule <c>CA2362</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2362"/>.
-    /// </summary>
+    /// <summary>Unsafe DataSet or DataTable in auto-generated serializable type can be vulnerable to remote code execution attacks.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2362"/>.</remarks>
     [DiagnosticRule]
     public static class CA2362
     {
@@ -4327,10 +3826,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2362";
     }
 
-    /// <summary>
-    /// Rule <c>CA3001</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3001"/>.
-    /// </summary>
+    /// <summary>Review code for SQL injection vulnerabilities.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3001"/>.</remarks>
     [DiagnosticRule]
     public static class CA3001
     {
@@ -4344,10 +3841,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3001";
     }
 
-    /// <summary>
-    /// Rule <c>CA3002</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3002"/>.
-    /// </summary>
+    /// <summary>Review code for XSS vulnerabilities.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3002"/>.</remarks>
     [DiagnosticRule]
     public static class CA3002
     {
@@ -4361,10 +3856,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3002";
     }
 
-    /// <summary>
-    /// Rule <c>CA3003</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3003"/>.
-    /// </summary>
+    /// <summary>Review code for file path injection vulnerabilities.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3003"/>.</remarks>
     [DiagnosticRule]
     public static class CA3003
     {
@@ -4378,10 +3871,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3003";
     }
 
-    /// <summary>
-    /// Rule <c>CA3004</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3004"/>.
-    /// </summary>
+    /// <summary>Review code for information disclosure vulnerabilities.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3004"/>.</remarks>
     [DiagnosticRule]
     public static class CA3004
     {
@@ -4395,10 +3886,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3004";
     }
 
-    /// <summary>
-    /// Rule <c>CA3005</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3005"/>.
-    /// </summary>
+    /// <summary>Review code for LDAP injection vulnerabilities.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3005"/>.</remarks>
     [DiagnosticRule]
     public static class CA3005
     {
@@ -4412,10 +3901,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3005";
     }
 
-    /// <summary>
-    /// Rule <c>CA3006</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3006"/>.
-    /// </summary>
+    /// <summary>Review code for process command injection vulnerabilities.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3006"/>.</remarks>
     [DiagnosticRule]
     public static class CA3006
     {
@@ -4429,10 +3916,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3006";
     }
 
-    /// <summary>
-    /// Rule <c>CA3007</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3007"/>.
-    /// </summary>
+    /// <summary>Review code for open redirect vulnerabilities.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3007"/>.</remarks>
     [DiagnosticRule]
     public static class CA3007
     {
@@ -4446,10 +3931,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3007";
     }
 
-    /// <summary>
-    /// Rule <c>CA3008</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3008"/>.
-    /// </summary>
+    /// <summary>Review code for XPath injection vulnerabilities.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3008"/>.</remarks>
     [DiagnosticRule]
     public static class CA3008
     {
@@ -4463,10 +3946,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3008";
     }
 
-    /// <summary>
-    /// Rule <c>CA3009</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3009"/>.
-    /// </summary>
+    /// <summary>Review code for XML injection vulnerabilities.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3009"/>.</remarks>
     [DiagnosticRule]
     public static class CA3009
     {
@@ -4480,10 +3961,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3009";
     }
 
-    /// <summary>
-    /// Rule <c>CA3010</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3010"/>.
-    /// </summary>
+    /// <summary>Review code for XAML injection vulnerabilities.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3010"/>.</remarks>
     [DiagnosticRule]
     public static class CA3010
     {
@@ -4497,10 +3976,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3010";
     }
 
-    /// <summary>
-    /// Rule <c>CA3011</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3011"/>.
-    /// </summary>
+    /// <summary>Review code for DLL injection vulnerabilities.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3011"/>.</remarks>
     [DiagnosticRule]
     public static class CA3011
     {
@@ -4514,10 +3991,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3011";
     }
 
-    /// <summary>
-    /// Rule <c>CA3012</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3012"/>.
-    /// </summary>
+    /// <summary>Review code for regex injection vulnerabilities.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3012"/>.</remarks>
     [DiagnosticRule]
     public static class CA3012
     {
@@ -4531,10 +4006,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3012";
     }
 
-    /// <summary>
-    /// Rule <c>CA3061</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3061"/>.
-    /// </summary>
+    /// <summary>Do Not Add Schema By URL.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3061"/>.</remarks>
     [DiagnosticRule]
     public static class CA3061
     {
@@ -4548,10 +4021,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3061";
     }
 
-    /// <summary>
-    /// Rule <c>CA3075</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3075"/>.
-    /// </summary>
+    /// <summary>Insecure DTD processing in XML.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3075"/>.</remarks>
     [DiagnosticRule]
     public static class CA3075
     {
@@ -4565,10 +4036,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3075";
     }
 
-    /// <summary>
-    /// Rule <c>CA3076</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3076"/>.
-    /// </summary>
+    /// <summary>Insecure XSLT script processing.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3076"/>.</remarks>
     [DiagnosticRule]
     public static class CA3076
     {
@@ -4582,10 +4051,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3076";
     }
 
-    /// <summary>
-    /// Rule <c>CA3077</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3077"/>.
-    /// </summary>
+    /// <summary>Insecure Processing in API Design, XmlDocument and XmlTextReader.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3077"/>.</remarks>
     [DiagnosticRule]
     public static class CA3077
     {
@@ -4599,10 +4066,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3077";
     }
 
-    /// <summary>
-    /// Rule <c>CA3147</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3147"/>.
-    /// </summary>
+    /// <summary>Mark Verb Handlers With Validate Antiforgery Token.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3147"/>.</remarks>
     [DiagnosticRule]
     public static class CA3147
     {
@@ -4616,10 +4081,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3147";
     }
 
-    /// <summary>
-    /// Rule <c>CA5350</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5350"/>.
-    /// </summary>
+    /// <summary>Do Not Use Weak Cryptographic Algorithms.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5350"/>.</remarks>
     [DiagnosticRule]
     public static class CA5350
     {
@@ -4633,10 +4096,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5350";
     }
 
-    /// <summary>
-    /// Rule <c>CA5351</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5351"/>.
-    /// </summary>
+    /// <summary>Do Not Use Broken Cryptographic Algorithms.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5351"/>.</remarks>
     [DiagnosticRule]
     public static class CA5351
     {
@@ -4650,10 +4111,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5351";
     }
 
-    /// <summary>
-    /// Rule <c>CA5358</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5358"/>.
-    /// </summary>
+    /// <summary>Review cipher mode usage with cryptography experts.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5358"/>.</remarks>
     [DiagnosticRule]
     public static class CA5358
     {
@@ -4667,10 +4126,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5358";
     }
 
-    /// <summary>
-    /// Rule <c>CA5359</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5359"/>.
-    /// </summary>
+    /// <summary>Do Not Disable Certificate Validation.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5359"/>.</remarks>
     [DiagnosticRule]
     public static class CA5359
     {
@@ -4684,10 +4141,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5359";
     }
 
-    /// <summary>
-    /// Rule <c>CA5360</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5360"/>.
-    /// </summary>
+    /// <summary>Do Not Call Dangerous Methods In Deserialization.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5360"/>.</remarks>
     [DiagnosticRule]
     public static class CA5360
     {
@@ -4701,10 +4156,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5360";
     }
 
-    /// <summary>
-    /// Rule <c>CA5361</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5361"/>.
-    /// </summary>
+    /// <summary>Do Not Disable SChannel Use of Strong Crypto.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5361"/>.</remarks>
     [DiagnosticRule]
     public static class CA5361
     {
@@ -4718,10 +4171,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5361";
     }
 
-    /// <summary>
-    /// Rule <c>CA5362</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5362"/>.
-    /// </summary>
+    /// <summary>Potential reference cycle in deserialized object graph.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5362"/>.</remarks>
     [DiagnosticRule]
     public static class CA5362
     {
@@ -4735,10 +4186,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5362";
     }
 
-    /// <summary>
-    /// Rule <c>CA5363</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5363"/>.
-    /// </summary>
+    /// <summary>Do Not Disable Request Validation.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5363"/>.</remarks>
     [DiagnosticRule]
     public static class CA5363
     {
@@ -4752,10 +4201,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5363";
     }
 
-    /// <summary>
-    /// Rule <c>CA5364</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5364"/>.
-    /// </summary>
+    /// <summary>Do Not Use Deprecated Security Protocols.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5364"/>.</remarks>
     [DiagnosticRule]
     public static class CA5364
     {
@@ -4769,10 +4216,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5364";
     }
 
-    /// <summary>
-    /// Rule <c>CA5365</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5365"/>.
-    /// </summary>
+    /// <summary>Do Not Disable HTTP Header Checking.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5365"/>.</remarks>
     [DiagnosticRule]
     public static class CA5365
     {
@@ -4786,10 +4231,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5365";
     }
 
-    /// <summary>
-    /// Rule <c>CA5366</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5366"/>.
-    /// </summary>
+    /// <summary>Use XmlReader for 'DataSet.ReadXml()'.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5366"/>.</remarks>
     [DiagnosticRule]
     public static class CA5366
     {
@@ -4803,10 +4246,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5366";
     }
 
-    /// <summary>
-    /// Rule <c>CA5367</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5367"/>.
-    /// </summary>
+    /// <summary>Do Not Serialize Types With Pointer Fields.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5367"/>.</remarks>
     [DiagnosticRule]
     public static class CA5367
     {
@@ -4820,10 +4261,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5367";
     }
 
-    /// <summary>
-    /// Rule <c>CA5368</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5368"/>.
-    /// </summary>
+    /// <summary>Set ViewStateUserKey For Classes Derived From Page.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5368"/>.</remarks>
     [DiagnosticRule]
     public static class CA5368
     {
@@ -4837,10 +4276,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5368";
     }
 
-    /// <summary>
-    /// Rule <c>CA5369</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5369"/>.
-    /// </summary>
+    /// <summary>Use XmlReader for 'XmlSerializer.Deserialize()'.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5369"/>.</remarks>
     [DiagnosticRule]
     public static class CA5369
     {
@@ -4854,10 +4291,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5369";
     }
 
-    /// <summary>
-    /// Rule <c>CA5370</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5370"/>.
-    /// </summary>
+    /// <summary>Use XmlReader for XmlValidatingReader constructor.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5370"/>.</remarks>
     [DiagnosticRule]
     public static class CA5370
     {
@@ -4871,10 +4306,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5370";
     }
 
-    /// <summary>
-    /// Rule <c>CA5371</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5371"/>.
-    /// </summary>
+    /// <summary>Use XmlReader for 'XmlSchema.Read()'.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5371"/>.</remarks>
     [DiagnosticRule]
     public static class CA5371
     {
@@ -4888,10 +4321,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5371";
     }
 
-    /// <summary>
-    /// Rule <c>CA5372</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5372"/>.
-    /// </summary>
+    /// <summary>Use XmlReader for XPathDocument constructor.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5372"/>.</remarks>
     [DiagnosticRule]
     public static class CA5372
     {
@@ -4905,10 +4336,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5372";
     }
 
-    /// <summary>
-    /// Rule <c>CA5373</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5373"/>.
-    /// </summary>
+    /// <summary>Do not use obsolete key derivation function.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5373"/>.</remarks>
     [DiagnosticRule]
     public static class CA5373
     {
@@ -4922,10 +4351,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5373";
     }
 
-    /// <summary>
-    /// Rule <c>CA5374</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5374"/>.
-    /// </summary>
+    /// <summary>Do Not Use XslTransform.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5374"/>.</remarks>
     [DiagnosticRule]
     public static class CA5374
     {
@@ -4939,10 +4366,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5374";
     }
 
-    /// <summary>
-    /// Rule <c>CA5375</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5375"/>.
-    /// </summary>
+    /// <summary>Do Not Use Account Shared Access Signature.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5375"/>.</remarks>
     [DiagnosticRule]
     public static class CA5375
     {
@@ -4956,10 +4381,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5375";
     }
 
-    /// <summary>
-    /// Rule <c>CA5376</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5376"/>.
-    /// </summary>
+    /// <summary>Use SharedAccessProtocol HttpsOnly.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5376"/>.</remarks>
     [DiagnosticRule]
     public static class CA5376
     {
@@ -4973,10 +4396,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5376";
     }
 
-    /// <summary>
-    /// Rule <c>CA5377</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5377"/>.
-    /// </summary>
+    /// <summary>Use Container Level Access Policy.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5377"/>.</remarks>
     [DiagnosticRule]
     public static class CA5377
     {
@@ -4990,10 +4411,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5377";
     }
 
-    /// <summary>
-    /// Rule <c>CA5378</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5378"/>.
-    /// </summary>
+    /// <summary>Do not disable ServicePointManagerSecurityProtocols.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5378"/>.</remarks>
     [DiagnosticRule]
     public static class CA5378
     {
@@ -5007,10 +4426,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5378";
     }
 
-    /// <summary>
-    /// Rule <c>CA5379</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5379"/>.
-    /// </summary>
+    /// <summary>Ensure Key Derivation Function algorithm is sufficiently strong.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5379"/>.</remarks>
     [DiagnosticRule]
     public static class CA5379
     {
@@ -5024,10 +4441,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5379";
     }
 
-    /// <summary>
-    /// Rule <c>CA5380</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5380"/>.
-    /// </summary>
+    /// <summary>Do Not Add Certificates To Root Store.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5380"/>.</remarks>
     [DiagnosticRule]
     public static class CA5380
     {
@@ -5041,10 +4456,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5380";
     }
 
-    /// <summary>
-    /// Rule <c>CA5381</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5381"/>.
-    /// </summary>
+    /// <summary>Ensure Certificates Are Not Added To Root Store.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5381"/>.</remarks>
     [DiagnosticRule]
     public static class CA5381
     {
@@ -5058,10 +4471,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5381";
     }
 
-    /// <summary>
-    /// Rule <c>CA5382</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5382"/>.
-    /// </summary>
+    /// <summary>Use Secure Cookies In ASP.NET Core.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5382"/>.</remarks>
     [DiagnosticRule]
     public static class CA5382
     {
@@ -5075,10 +4486,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5382";
     }
 
-    /// <summary>
-    /// Rule <c>CA5383</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5383"/>.
-    /// </summary>
+    /// <summary>Ensure Use Secure Cookies In ASP.NET Core.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5383"/>.</remarks>
     [DiagnosticRule]
     public static class CA5383
     {
@@ -5092,10 +4501,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5383";
     }
 
-    /// <summary>
-    /// Rule <c>CA5384</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5384"/>.
-    /// </summary>
+    /// <summary>Do Not Use Digital Signature Algorithm (DSA).</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5384"/>.</remarks>
     [DiagnosticRule]
     public static class CA5384
     {
@@ -5109,10 +4516,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5384";
     }
 
-    /// <summary>
-    /// Rule <c>CA5385</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5385"/>.
-    /// </summary>
+    /// <summary>Use Rivest-Shamir-Adleman (RSA) Algorithm With Sufficient Key Size.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5385"/>.</remarks>
     [DiagnosticRule]
     public static class CA5385
     {
@@ -5126,10 +4531,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5385";
     }
 
-    /// <summary>
-    /// Rule <c>CA5386</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5386"/>.
-    /// </summary>
+    /// <summary>Avoid hardcoding SecurityProtocolType value.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5386"/>.</remarks>
     [DiagnosticRule]
     public static class CA5386
     {
@@ -5143,10 +4546,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5386";
     }
 
-    /// <summary>
-    /// Rule <c>CA5387</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5387"/>.
-    /// </summary>
+    /// <summary>Do Not Use Weak Key Derivation Function With Insufficient Iteration Count.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5387"/>.</remarks>
     [DiagnosticRule]
     public static class CA5387
     {
@@ -5160,10 +4561,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5387";
     }
 
-    /// <summary>
-    /// Rule <c>CA5388</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5388"/>.
-    /// </summary>
+    /// <summary>Ensure Sufficient Iteration Count When Using Weak Key Derivation Function.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5388"/>.</remarks>
     [DiagnosticRule]
     public static class CA5388
     {
@@ -5177,10 +4576,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5388";
     }
 
-    /// <summary>
-    /// Rule <c>CA5389</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5389"/>.
-    /// </summary>
+    /// <summary>Do Not Add Archive Item's Path To The Target File System Path.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5389"/>.</remarks>
     [DiagnosticRule]
     public static class CA5389
     {
@@ -5194,10 +4591,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5389";
     }
 
-    /// <summary>
-    /// Rule <c>CA5390</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5390"/>.
-    /// </summary>
+    /// <summary>Do not hard-code encryption key.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5390"/>.</remarks>
     [DiagnosticRule]
     public static class CA5390
     {
@@ -5211,10 +4606,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5390";
     }
 
-    /// <summary>
-    /// Rule <c>CA5391</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5391"/>.
-    /// </summary>
+    /// <summary>Use antiforgery tokens in ASP.NET Core MVC controllers.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5391"/>.</remarks>
     [DiagnosticRule]
     public static class CA5391
     {
@@ -5228,10 +4621,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5391";
     }
 
-    /// <summary>
-    /// Rule <c>CA5392</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5392"/>.
-    /// </summary>
+    /// <summary>Use DefaultDllImportSearchPaths attribute for P/Invokes.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5392"/>.</remarks>
     [DiagnosticRule]
     public static class CA5392
     {
@@ -5245,10 +4636,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5392";
     }
 
-    /// <summary>
-    /// Rule <c>CA5393</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5393"/>.
-    /// </summary>
+    /// <summary>Do not use unsafe DllImportSearchPath value.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5393"/>.</remarks>
     [DiagnosticRule]
     public static class CA5393
     {
@@ -5262,10 +4651,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5393";
     }
 
-    /// <summary>
-    /// Rule <c>CA5394</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5394"/>.
-    /// </summary>
+    /// <summary>Do not use insecure randomness.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5394"/>.</remarks>
     [DiagnosticRule]
     public static class CA5394
     {
@@ -5279,10 +4666,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5394";
     }
 
-    /// <summary>
-    /// Rule <c>CA5395</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5395"/>.
-    /// </summary>
+    /// <summary>Miss HttpVerb attribute for action methods.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5395"/>.</remarks>
     [DiagnosticRule]
     public static class CA5395
     {
@@ -5296,10 +4681,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5395";
     }
 
-    /// <summary>
-    /// Rule <c>CA5396</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5396"/>.
-    /// </summary>
+    /// <summary>Set HttpOnly to true for HttpCookie.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5396"/>.</remarks>
     [DiagnosticRule]
     public static class CA5396
     {
@@ -5313,10 +4696,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5396";
     }
 
-    /// <summary>
-    /// Rule <c>CA5397</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5397"/>.
-    /// </summary>
+    /// <summary>Do not use deprecated SslProtocols values.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5397"/>.</remarks>
     [DiagnosticRule]
     public static class CA5397
     {
@@ -5330,10 +4711,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5397";
     }
 
-    /// <summary>
-    /// Rule <c>CA5398</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5398"/>.
-    /// </summary>
+    /// <summary>Avoid hardcoded SslProtocols values.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5398"/>.</remarks>
     [DiagnosticRule]
     public static class CA5398
     {
@@ -5347,10 +4726,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5398";
     }
 
-    /// <summary>
-    /// Rule <c>CA5399</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5399"/>.
-    /// </summary>
+    /// <summary>HttpClients should enable certificate revocation list checks.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5399"/>.</remarks>
     [DiagnosticRule]
     public static class CA5399
     {
@@ -5364,10 +4741,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5399";
     }
 
-    /// <summary>
-    /// Rule <c>CA5400</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5400"/>.
-    /// </summary>
+    /// <summary>Ensure HttpClient certificate revocation list check is not disabled.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5400"/>.</remarks>
     [DiagnosticRule]
     public static class CA5400
     {
@@ -5381,10 +4756,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5400";
     }
 
-    /// <summary>
-    /// Rule <c>CA5401</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5401"/>.
-    /// </summary>
+    /// <summary>Do not use CreateEncryptor with non-default IV.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5401"/>.</remarks>
     [DiagnosticRule]
     public static class CA5401
     {
@@ -5398,10 +4771,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5401";
     }
 
-    /// <summary>
-    /// Rule <c>CA5402</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5402"/>.
-    /// </summary>
+    /// <summary>Use CreateEncryptor with the default IV.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5402"/>.</remarks>
     [DiagnosticRule]
     public static class CA5402
     {
@@ -5415,10 +4786,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5402";
     }
 
-    /// <summary>
-    /// Rule <c>CA5403</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5403"/>.
-    /// </summary>
+    /// <summary>Do not hard-code certificate.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5403"/>.</remarks>
     [DiagnosticRule]
     public static class CA5403
     {
@@ -5432,10 +4801,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5403";
     }
 
-    /// <summary>
-    /// Rule <c>CA5404</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5404"/>.
-    /// </summary>
+    /// <summary>Do not disable token validation checks.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5404"/>.</remarks>
     [DiagnosticRule]
     public static class CA5404
     {
@@ -5449,10 +4816,8 @@ public static class NetAnalyzersRule
         public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5404";
     }
 
-    /// <summary>
-    /// Rule <c>CA5405</c>, category <c>Security</c>.
-    /// See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5405"/>.
-    /// </summary>
+    /// <summary>Do not always skip token validation in delegates.</summary>
+    /// <remarks>See <see href="https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5405"/>.</remarks>
     [DiagnosticRule]
     public static class CA5405
     {
