@@ -31,7 +31,22 @@ internal static class CodeFixHarness
         DiagnosticAnalyzer analyzer,
         CodeFixProvider provider,
         string source) =>
-        ApplyAsync(analyzer, provider, source, expectedActions: 1);
+        ApplyCoreAsync(analyzer, provider, source, equivalenceKey: null);
+
+    /// <summary>
+    /// Applies the fix carrying <paramref name="equivalenceKey"/>, when several are offered.
+    /// </summary>
+    /// <remarks>
+    /// Selecting by key rather than by position is the point: a diagnostic offering a choice must not
+    /// have that choice pinned to the order the provider happened to register them in, which is exactly
+    /// the ranking §12.1 forbids.
+    /// </remarks>
+    internal static Task<string> ApplyAsync(
+        DiagnosticAnalyzer analyzer,
+        CodeFixProvider provider,
+        string source,
+        string equivalenceKey) =>
+        ApplyCoreAsync(analyzer, provider, source, equivalenceKey);
 
     /// <summary>Asserts that the fix offers nothing for the diagnostic it reported.</summary>
     internal static async Task OffersNothingAsync(
@@ -49,11 +64,11 @@ internal static class CodeFixHarness
         Assert.Empty(await OfferedAsync(provider, document, reported).ConfigureAwait(false));
     }
 
-    private static async Task<string> ApplyAsync(
+    private static async Task<string> ApplyCoreAsync(
         DiagnosticAnalyzer analyzer,
         CodeFixProvider provider,
         string source,
-        int expectedActions)
+        string? equivalenceKey)
     {
         (Document document, ImmutableArray<Diagnostic> reported) = await AnalyseAsync(analyzer, source)
             .ConfigureAwait(false);
@@ -62,9 +77,20 @@ internal static class CodeFixHarness
 
         List<CodeAction> actions = await OfferedAsync(provider, document, reported).ConfigureAwait(false);
 
-        Assert.Equal(expectedActions, actions.Count);
+        CodeAction chosen;
 
-        ImmutableArray<CodeActionOperation> operations = await actions[0]
+        if (equivalenceKey is null)
+        {
+            Assert.Single(actions);
+
+            chosen = actions[0];
+        }
+        else
+        {
+            chosen = Assert.Single(actions, action => action.EquivalenceKey == equivalenceKey);
+        }
+
+        ImmutableArray<CodeActionOperation> operations = await chosen
             .GetOperationsAsync(CancellationToken.None)
             .ConfigureAwait(false);
 

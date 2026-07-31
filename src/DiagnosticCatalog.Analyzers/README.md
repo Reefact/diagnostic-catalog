@@ -45,6 +45,20 @@ left alone. And if the literal names something the referenced rule does not — 
 `SonarRules.S1144.Category` — you get the diagnostic and no fix. Completing that one would silence a
 different rule than the one silenced today, which is a decision for you and not for a lightbulb.
 
+## When the two arguments name different rules
+
+That one gets **two** fixes and no recommendation:
+
+```text
+Use SonarRules.S1144.Id        — keep the category, correct the identifier
+Use SonarRules.S2094.Category  — keep the identifier, correct the category
+```
+
+Only you know which half was the typo, so neither is offered as the default. Worth knowing while you
+choose: Roslyn matches a suppression on the **identifier alone** and never looks at the category, so
+correcting the category leaves what is suppressed exactly as it is, while correcting the identifier
+changes it.
+
 ## Referencing it
 
 Analysis assemblies must never become runtime dependencies, so reference it privately:
