@@ -40,6 +40,15 @@
   -->
 
   <!--
+    NuGet's own client, so `dcat` resolves and downloads from the sources the machine is configured
+    with rather than from one hardcoded feed. See Directory.Packages.props for why the dependency is
+    taken rather than the protocol hand-rolled.
+  -->
+  <ItemGroup>
+    <PackageReference Include="NuGet.Protocol" />
+  </ItemGroup>
+
+  <!--
     The generator's parsing, naming and emitting logic is internal: it is an engine's implementation,
     not an API. Only Job, CatalogRun and RunOutcome are public, which is the whole surface the tool
     needs. The worker needs neither: it compiles the wire contract and the title

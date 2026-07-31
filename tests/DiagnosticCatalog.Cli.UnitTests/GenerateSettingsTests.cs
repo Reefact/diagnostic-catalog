@@ -152,6 +152,38 @@ public sealed class GenerateSettingsTests
     }
 
     [Fact]
+    public void A_feed_may_be_named_for_a_package()
+    {
+        GenerateSettings settings = new()
+        {
+            Package = "Vendor.Analyzers",
+            Source = "maison",
+            Namespace = "N",
+            Container = "C",
+            Output = "o.g.cs",
+        };
+
+        Assert.True(settings.Validate().Successful);
+    }
+
+    [Fact]
+    public void Naming_a_feed_for_a_source_that_is_not_a_feed_is_refused()
+    {
+        // Nothing would be read from it, and nothing would say so — the same reason --source-name
+        // is refused with --package, in the other direction.
+        GenerateSettings settings = new()
+        {
+            Nupkg = "v.nupkg",
+            Source = "maison",
+            Namespace = "N",
+            Container = "C",
+            Output = "o.g.cs",
+        };
+
+        Assert.False(settings.Validate().Successful);
+    }
+
+    [Fact]
     public void Naming_no_source_at_all_is_refused()
         => Assert.False(new GenerateSettings().Validate().Successful);
 
