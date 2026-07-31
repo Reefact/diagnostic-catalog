@@ -3,6 +3,13 @@
 The **.NET code analysis (CA) rules** as strongly referenced constants, so that
 `SuppressMessageAttribute` takes compile-checked references instead of magic strings.
 
+> ## 🪞 Mirrors `Microsoft.CodeAnalysis.NetAnalyzers 10.0.302`
+>
+> **318 rules, 10 categories.** Every identifier and category here is read from that
+> release's own analyzers, and the assembly records which release that was. These
+> analyzers ship inside the .NET SDK, so read
+> [A note on versions](#a-note-on-versions) before assuming it matches yours.
+
 ## Why
 
 Both arguments of a suppression are magic strings, and nothing validates either:
