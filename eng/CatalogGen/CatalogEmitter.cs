@@ -9,9 +9,15 @@ namespace CatalogGen;
 
 internal static class CatalogEmitter
 {
+    /// <param name="writeChanges">
+    /// False to compute everything and touch nothing. It is what separates asking "is this
+    /// catalogue still true?" from making it true: the comparison is the same work either way, and
+    /// a check that had to write in order to answer could not be run against a clean tree.
+    /// </param>
     internal static GenerateResult Emit(
         Job job, string packageId, string version,
-        SortedDictionary<string, RuleInfo>? upstream, Previous? previous, string? dateOverride)
+        SortedDictionary<string, RuleInfo>? upstream, Previous? previous, string? dateOverride,
+        bool writeChanges = true)
     {
         SortedDictionary<string, RuleInfo> accepted = new(upstream!, StringComparer.Ordinal);
         List<string> retired = CarryForwardRetired(accepted, previous);
@@ -25,18 +31,27 @@ internal static class CatalogEmitter
         // scheduled job open a pull request every night whose only content was a new date.
         if (previous is not null && !changes.VersionChanged && !changes.Any)
         {
-            Console.WriteLine($"unchanged: {packageId} {version}, {liveCount} rules — file left untouched");
+            Console.WriteLine($"unchanged: {packageId} {version}, {liveCount} rules — " +
+                              (writeChanges ? "file left untouched" : "the catalogue is current"));
             return new GenerateResult(Changed: false, Summary: string.Empty);
         }
 
         string date = dateOverride ?? DateTime.UtcNow.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
 
-        Directory.CreateDirectory(Path.GetDirectoryName(job.Output)!);
-        File.WriteAllText(job.Output, RenderSource(catalogue, date, categories), new UTF8Encoding(false));
-        Console.WriteLine($"wrote {liveCount} live rules " +
-                          $"({accepted.Count - liveCount} retired) to {job.Output}");
+        if (writeChanges)
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(job.Output)!);
+            File.WriteAllText(job.Output, RenderSource(catalogue, date, categories), new UTF8Encoding(false));
+            Console.WriteLine($"wrote {liveCount} live rules " +
+                              $"({accepted.Count - liveCount} retired) to {job.Output}");
 
-        UpdateMirrorBanners(job, catalogue, previous, date, liveCount, categories.Ordered.Count);
+            UpdateMirrorBanners(job, catalogue, previous, date, liveCount, categories.Ordered.Count);
+        }
+        else
+        {
+            Console.WriteLine($"OUT OF DATE: {job.Output} — {liveCount} live rules upstream " +
+                              $"({accepted.Count - liveCount} retired)");
+        }
 
         string summary = RenderSummary(catalogue, previous, changes, liveCount, categories.Ordered.Count);
 

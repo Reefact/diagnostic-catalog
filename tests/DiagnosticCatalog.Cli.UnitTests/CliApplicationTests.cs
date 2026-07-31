@@ -48,6 +48,37 @@ public sealed class CliApplicationTests
         => Assert.Equal(ExitCodes.UsageError, await CliApplication.RunAsync(["generate"]));
 
     [Fact]
+    public async Task Validate_is_offered_alongside_generate()
+    {
+        // The tree is what --help lists, so a verb that is registered but unreachable would look
+        // present and never run.
+        Assert.Equal(ExitCodes.Success, await CliApplication.RunAsync(["validate", "--help"]));
+        Assert.Equal(ExitCodes.Success, await CliApplication.RunAsync(["list", "--help"]));
+        Assert.Equal(ExitCodes.Success, await CliApplication.RunAsync(["explain", "--help"]));
+    }
+
+    [Fact]
+    public async Task Validate_refuses_a_command_line_naming_no_source()
+        => Assert.Equal(ExitCodes.UsageError, await CliApplication.RunAsync(["validate"]));
+
+    [Fact]
+    public async Task Validate_takes_no_date_because_none_could_change_its_answer()
+    {
+        // A catalogue's generation date is precisely the field that moves without any rule moving,
+        // so a switch that set it could not affect whether the catalogue is current. Accepting it
+        // would suggest otherwise.
+        int exitCode = await CliApplication.RunAsync(
+            ["validate", "--date", "2026-01-01", "--package", "X",
+             "--namespace", "N", "--container", "C", "--output", "o.g.cs"]);
+
+        Assert.Equal(ExitCodes.UsageError, exitCode);
+    }
+
+    [Fact]
+    public async Task Reading_a_catalogue_that_is_not_there_fails_rather_than_reporting_nothing()
+        => Assert.Equal(ExitCodes.Failure, await CliApplication.RunAsync(["list", "no-such-catalogue.dll"]));
+
+    [Fact]
     public async Task An_option_left_without_a_value_is_a_usage_error()
     {
         // The pair-reading parser this replaced stopped when fewer than two arguments remained, so
