@@ -39,14 +39,17 @@
 #
 # Row format (pipe-separated, no spaces around the pipes except inside the label):
 #   <id>|<tag-prefix>|<scopes csv>|<package label>
-# Keep the scopes a subset of the closed SCOPES list in
-# tools/commit-lint/lint-commit-message.sh. The reverse does NOT hold: a scope may
-# belong to no train at all. `cataloggen` is one, deliberately — the generator ships
-# nothing, so a commit scoped to it must move no published version. A scope missing
-# from every row here is therefore not evidence of a mistake.
+# The scopes here and the closed SCOPES list in
+# tools/commit-lint/lint-commit-message.sh must name the SAME set: every scope the
+# linter accepts routes to exactly one train, and every scope named here is one the
+# linter accepts. That equality has not always held — `cataloggen` reached no train
+# until the generator shipped inside `dcat` (ADR-0017), and `testing` outlived the
+# test-support package it named — and neither gap was visible from either file
+# alone. A scope on no row is silently dropped from the release notes and the
+# changelog, which is a defect and not a design.
 trains_rows() {
   cat <<'ROWS'
-lib|lib-v|analyzers,core,testing|the DiagnosticCatalog foundation, its analyzers and its test-support package
+lib|lib-v|analyzers,core|the DiagnosticCatalog foundation, its analyzers and the catalogue of their own rules
 cli|cli-v|cataloggen,cli|the DiagnosticCatalog CLI (the dcat .NET tool)
 sonar|sonar-v|sonar|the SonarQube rule catalog
 netanalyzers|netanalyzers-v|netanalyzers|the Microsoft .NET analyzer rule catalog

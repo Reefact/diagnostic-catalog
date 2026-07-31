@@ -146,4 +146,21 @@ for id in $(train_ids); do
     "$id" "$(train_of_tag "$(prefix_of "$id")1.0.0")"
 done
 
+# --- the scope set -----------------------------------------------------------------
+# The scopes the commit linter accepts and the scopes the rows route must be the SAME
+# set. Neither file can see the other, and both halves have already drifted: a scope
+# the linter accepted but no row routed was silently dropped from the release notes
+# (`cataloggen`, until the generator shipped inside dcat), and a scope a row routed
+# but nothing could produce named a package that was never built (`testing`). Both
+# were found by reading, which is the failure mode this assertion removes.
+#
+# SCOPES is read out of the linter rather than sourced: that file is a program, and
+# sourcing it would run it.
+lint_scopes="$(sed -n "s/^SCOPES='\(.*\)'\$/\1/p" \
+  "$root/tools/commit-lint/lint-commit-message.sh" | tr '|' '\n' | sort)"
+routed_scopes="$(trains_rows | cut -d'|' -f3 | tr ',' '\n' | sort)"
+
+assert_equals 'every scope the linter accepts routes to a train, and no other' \
+  "$lint_scopes" "$routed_scopes"
+
 finish
