@@ -15,7 +15,7 @@ catalogue in practice:
 ```csharp
 [SuppressMessage("Major Code Smell", "S1144", Justification = "kept for reflection")]
 // becomes
-[SuppressMessage(SonarRules.S1144.Category, SonarRules.S1144.Id, Justification = "kept for reflection")]
+[SuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.Id, Justification = "kept for reflection")]
 ```
 
 *Fix all occurrences* applies it across a document, project or solution in one step, and the `using`
@@ -35,14 +35,14 @@ A suppression left half migrated — one reference, one literal — is reported 
 the rule the migrated argument already names:
 
 ```csharp
-[SuppressMessage(SonarRules.S1144.Category, "S1144", Justification = "kept for reflection")]
+[SuppressMessage(SonarRule.S1144.Category, "S1144", Justification = "kept for reflection")]
 // becomes
-[SuppressMessage(SonarRules.S1144.Category, SonarRules.S1144.Id, Justification = "kept for reflection")]
+[SuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.Id, Justification = "kept for reflection")]
 ```
 
 Only the literal is rewritten; whatever spelling you chose for the other side, an alias included, is
 left alone. And if the literal names something the referenced rule does not — `"S9999"` beside
-`SonarRules.S1144.Category` — you get the diagnostic and no fix. Completing that one would silence a
+`SonarRule.S1144.Category` — you get the diagnostic and no fix. Completing that one would silence a
 different rule than the one silenced today, which is a decision for you and not for a lightbulb.
 
 ## When the two arguments name different rules
@@ -50,8 +50,8 @@ different rule than the one silenced today, which is a decision for you and not 
 That one gets **two** fixes and no recommendation:
 
 ```text
-Use SonarRules.S1144.Id        — keep the category, correct the identifier
-Use SonarRules.S2094.Category  — keep the identifier, correct the category
+Use SonarRule.S1144.Id        — keep the category, correct the identifier
+Use SonarRule.S2094.Category  — keep the identifier, correct the category
 ```
 
 Only you know which half was the typo, so neither is offered as the default. Worth knowing while you
