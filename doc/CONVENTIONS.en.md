@@ -3,6 +3,9 @@
 🌍 **Languages:**  
 🇬🇧 English (this file) | 🇫🇷 [Français](./CONVENTIONS.fr.md)
 
+<!-- dcat-doc:missing SonarRule.S1144Id quoted below as the naming shape the design declined -->
+<!-- dcat-doc:missing SonarRule.S1145 quoted below as the example of a deliberate counter-example -->
+
 For whoever adds or edits a page — including an agent, which is why every rule below states how it
 is verified rather than asking to be remembered. How the documents under [`doc/`](.) are laid out,
 and what a test checks about them.
@@ -158,6 +161,9 @@ to the map **and** to the chain; the test compares the two and fails if they dis
 * **C# samples follow the repository's own coding rules.** Write the type, never `var`
   ([`CLAUDE.md`](../CLAUDE.md)). A reader copies what they see, and a documentation set that teaches
   a style the build rejects is worse than one that teaches nothing.
+* **A diagram's labels are prose.** The rule above binds C#, XML and `.editorconfig` samples, whose
+  identifiers are the code's. The node labels of a mermaid diagram are sentences, and they are
+  translated like any other sentence on the page.
 * **Prefer a claim you can check.** "Measured against a real restore" beats "should work". Where a
   behaviour is asserted by a test, name the test.
 
@@ -213,11 +219,31 @@ whole test project:
   documented — waits for the `dcat` reference page; until that page exists there is no single
   document the obligation could fall on, and spreading it over every file that happens to mention
   the tool would make the check unsatisfiable rather than strict.
+* **Every rule a sample shows is one its catalogue publishes.** `SonarRule.S1144` resolves against
+  the compiled `DiagnosticCatalog.Sonar`, and the container is never pluralised. This one exists
+  because it had already been needed: sixteen samples across three documents spelled the container
+  `SonarRules`, and every one of them was uncompilable.
 
-Both compare a document against the compiled truth rather than against another document. That is the
-same reasoning as [ADR-0009](adr/0009-generate-catalog-content-from-analyzer-descriptors.md): the
-descriptors are what the analyzer reports with, so they are what a claim about them is checked
-against.
+All three compare a document against the compiled truth rather than against another document. That
+is the same reasoning as
+[ADR-0009](adr/0009-generate-catalog-content-from-analyzer-descriptors.md): the descriptors are what
+the analyzer reports with, so they are what a claim about them is checked against.
+
+### Showing a reference that does not exist
+
+Some pages have to. The tutorial asks the reader to break a reference and read the `CS0117` it
+produces — a rule that existed would ruin the step — and the concepts page shows
+`SonarRule.S1144Id` as the naming shape the design declined. Declare it in the document, with the
+reason:
+
+```markdown
+<!-- dcat-doc:missing SonarRule.S1145 the deliberate mistake of step 3 -->
+```
+
+Declared in the document and not in the test, so a reader of the source meets the reason where the
+exemption is. Per document, so the same misspelling on any other page still fails. The reason is
+required. And a declaration that names a reference the page no longer shows fails too — an exemption
+nothing uses covers whatever gets written there next.
 
 ## Adding a page
 
