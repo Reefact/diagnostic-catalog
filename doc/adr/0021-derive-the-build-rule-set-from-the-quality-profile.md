@@ -1,8 +1,9 @@
 # ADR-0021 | Derive the build's Sonar rule set from the server's quality profile
 
-**Status:** Proposed
+**Status:** Accepted
 **Proposed:** 2026-07-31
-**Decision Makers:** @reefact
+**Accepted:** 2026-07-31
+**Decision Makers:** Reefact
 
 ## Context
 
