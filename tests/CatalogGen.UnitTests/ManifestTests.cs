@@ -124,6 +124,24 @@ public sealed class ManifestTests
         Assert.EndsWith(Path.Combine("src", "My.Analyzers", "My.Analyzers.csproj"), job.Projects[0]);
     }
 
+    [Theory]
+    [InlineData("vb")]
+    [InlineData("fs")]
+    public void A_language_the_tool_cannot_read_is_refused_by_the_manifest_too(string language)
+    {
+        // An entry reaches the run without passing through any option parsing, so refusing the flag
+        // and not the file would leave the same request true of one and false of the other.
+        string message = Refused($$"""
+            { "catalogs": [
+                { "package": "P", "language": "{{language}}",
+                  "namespace": "N", "container": "C", "output": "o.g.cs" }
+            ] }
+            """);
+
+        Assert.StartsWith($"catalogs.json: catalogs[0]: '{language}' is not a language this tool can read",
+                          message);
+    }
+
     [Fact]
     public void The_defaults_are_the_ones_the_schema_documents()
     {

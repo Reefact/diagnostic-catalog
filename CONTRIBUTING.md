@@ -7,6 +7,9 @@ it. The history of the repository should be as legible as the catalogs the
 library produces. This guide defines how branches, commits and pull request
 titles are written here.
 
+Participating here also means accepting the
+[Code of Conduct](CODE_OF_CONDUCT.md).
+
 ## Building and testing
 
 * The libraries target **`netstandard2.0` and `net10.0`**. `netstandard2.0` is

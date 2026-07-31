@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using CatalogGen;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -69,7 +70,7 @@ internal abstract class CatalogueSettings : CommandSettings
     public string? Output { get; init; }
 
     [CommandOption("--language <LANG>")]
-    [Description("Which language's analyzers to read out of a package: cs, vb or fs.")]
+    [Description("Which language's analyzers to read out of a package. Only cs can be read today.")]
     [DefaultValue("cs")]
     public string Language { get; init; } = "cs";
 
@@ -146,8 +147,8 @@ internal abstract class CatalogueSettings : CommandSettings
     }
 
     /// <summary>
-    /// The switches that only mean something against one kind of source, refused rather than
-    /// ignored when they are passed against another.
+    /// The switches refused rather than ignored: those that only mean something against one kind
+    /// of source, and the one whose value this tool cannot act on whatever the source.
     /// </summary>
     private ValidationResult SwitchesMatchTheSource()
     {
@@ -166,6 +167,14 @@ internal abstract class CatalogueSettings : CommandSettings
         if (Source is not null && Package is null)
         {
             return ValidationResult.Error("--source selects a feed for --package; it means nothing for the others.");
+        }
+
+        // Refused here rather than discovered at the end. A language this tool cannot read used to be
+        // accepted, resolve a package, download it, read hundreds of descriptors and only then refuse
+        // on the analyzers that would not load — a promise kept right up to the point of breaking it.
+        if (!CatalogLanguages.CanRead(Language))
+        {
+            return ValidationResult.Error(CatalogLanguages.Refusal(Language));
         }
 
         // And again: a configuration selects among a project's build outputs. Against an assembly

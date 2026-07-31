@@ -91,7 +91,7 @@ public static class CatalogRun
             Namespace: Required(entry, "namespace", where),
             Container: Required(entry, "container", where),
             Output: Path.GetFullPath(Path.Combine(manifestDir, Required(entry, "output", where))),
-            Language: Optional(entry, "language", where) ?? "cs",
+            Language: Language(entry, where),
             Assemblies: assemblies,
             SourceName: Optional(entry, "sourceName", where),
             SourceVersion: Optional(entry, "sourceVersion", where),
@@ -108,6 +108,18 @@ public static class CatalogRun
 
     private static string? Optional(JsonElement entry, string name, string where)
         => entry.TryGetProperty(name, out JsonElement value) ? Text(value, where, name) : null;
+
+    // Checked at the manifest too, and not only at the command line: an entry reaches the run
+    // without passing through any option parsing, so validating one and not the other would leave
+    // the refusal true of the flag and false of the file that does the same thing.
+    private static string Language(JsonElement entry, string where)
+    {
+        string language = Optional(entry, "language", where) ?? CatalogLanguages.Readable[0];
+
+        return CatalogLanguages.CanRead(language)
+                   ? language
+                   : throw new ManifestException($"{where}: {CatalogLanguages.Refusal(language)}");
+    }
 
     private static string Text(JsonElement value, string where, string name)
         => value.ValueKind == JsonValueKind.String
