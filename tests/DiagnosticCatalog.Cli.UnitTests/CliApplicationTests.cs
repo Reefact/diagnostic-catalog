@@ -114,6 +114,40 @@ public sealed class CliApplicationTests
         Assert.Equal(ExitCodes.Failure, exitCode);
     }
 
+    [Theory]
+    [InlineData("vb")]
+    [InlineData("fs")]
+    [InlineData("csharp")]
+    public async Task A_language_this_tool_cannot_read_is_refused_before_anything_is_downloaded(string language)
+    {
+        // It used to be accepted: --language vb resolved the package, downloaded it, read 311
+        // descriptors out of Microsoft.CodeAnalysis.NetAnalyzers and only THEN refused, because the
+        // Visual Basic analyzers derive from a Roslyn the descriptor worker does not carry. A promise
+        // kept right up to the point of breaking it, at the cost of a download.
+        //
+        // Usage, not failure: no retry fixes it, and a pipeline branches on the difference.
+        int exitCode = await CliApplication.RunAsync(
+            ["generate", "--package", "P", "--language", language,
+             "--namespace", "N", "--container", "C", "--output", "o.g.cs"]);
+
+        Assert.Equal(ExitCodes.UsageError, exitCode);
+    }
+
+    [Fact]
+    public async Task The_language_it_can_read_is_still_accepted()
+    {
+        // The control. Without it the theory above would pass against a tool that refused every
+        // language, which would be worse than one that promised too many.
+        Assert.True(CatalogGen.CatalogLanguages.CanRead("cs"));
+
+        int exitCode = await CliApplication.RunAsync(
+            ["validate", "--assembly", "no-such-assembly.dll", "--language", "cs",
+             "--namespace", "N", "--container", "C", "--output", "o.g.cs"]);
+
+        // Failure rather than usage: the command line was accepted and the assembly is what is absent.
+        Assert.Equal(ExitCodes.Failure, exitCode);
+    }
+
     [Fact]
     public async Task An_option_left_without_a_value_is_a_usage_error()
     {

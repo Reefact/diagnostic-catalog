@@ -1796,10 +1796,22 @@ Un générateur pourrait transformer un manifeste en classes de constantes :
 
 Les catalogues générés ne sont plus une évolution future : la méthode, le
 générateur, trois catalogues et leur synchronisation planifiée sont spécifiés aux
-§14.1–§14.3 et implémentés. Restent d'autres éditeurs, et une variante Visual
-Basic — le générateur prend déjà `--language`, donc
-`DiagnosticCatalog.NetAnalyzers.VisualBasic` est une entrée de manifeste, pas du
-code.
+§14.1–§14.3 et implémentés. Restent d'autres éditeurs.
+
+**Une variante Visual Basic n'est pas une entrée de manifeste.** Une lecture
+antérieure de cette section l'affirmait, au motif que le générateur prend déjà
+`--language`. Mesuré sur `Microsoft.CodeAnalysis.NetAnalyzers`, `--language vb`
+lit 311 descripteurs puis refuse : trois types ne se chargent pas, un analyzer
+Visual Basic dérivant de `Microsoft.CodeAnalysis.VisualBasic`, que le worker de
+descripteurs n'embarque pas. Le refus est correct — c'est le §14.3 qui décline
+d'émettre un catalogue amputé des règles que ces types déclarent — mais l'option
+promettait ce que l'outil ne savait pas faire, donc `cs` est désormais la seule
+valeur acceptée. Supporter Visual Basic supposerait de donner ce Roslyn au worker
+et de maintenir un second chemin de construction aussi longtemps que l'outil
+existe. L'`ADR-0020` tranche contre : Visual Basic est fermé aux nouvelles
+fonctionnalités de langage, sa population d'analyzers est donc restreinte et ne
+grandira pas, et chaque installation la paierait. Une position arrêtée, pas une
+tâche différée.
 
 ### 25.5 Validation des justifications
 

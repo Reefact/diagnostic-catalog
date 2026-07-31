@@ -1737,10 +1737,21 @@ A generator could turn a manifest into constant classes:
 
 Generated catalogues are no longer a future evolution: the method, the generator,
 three catalogues and their scheduled synchronisation are specified in §14.1–§14.3
-and implemented. What remains is further vendors, and a Visual Basic variant —
-the generator already takes `--language`, so
-`DiagnosticCatalog.NetAnalyzers.VisualBasic` is a manifest entry rather than new
-code.
+and implemented. What remains is further vendors.
+
+**A Visual Basic variant is not a manifest entry.** An earlier reading of this
+section held that it was, on the grounds that the generator already takes
+`--language`. Measured against `Microsoft.CodeAnalysis.NetAnalyzers`,
+`--language vb` reads 311 descriptors and then refuses: three types will not
+load, because a Visual Basic analyzer derives from
+`Microsoft.CodeAnalysis.VisualBasic`, which the descriptor worker does not carry.
+The refusal is correct — it is §14.3 declining to emit a catalogue short of the
+rules those types declare — but it means the option promised what the tool could
+not do, so `cs` is now the only value it accepts. Supporting Visual Basic means
+giving the worker that Roslyn, and carrying a second construction path for as
+long as the tool exists. `ADR-0020` decides against it: Visual Basic is closed to
+new language features, so its analyzer population is small and will not grow, and
+every install would pay for it. A settled position, not a deferred task.
 
 ### 25.5 Justification validation
 
