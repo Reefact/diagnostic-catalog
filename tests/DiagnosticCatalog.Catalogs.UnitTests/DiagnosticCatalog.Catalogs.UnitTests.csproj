@@ -52,6 +52,29 @@
   </ItemGroup>
 
   <!--
+    Two registries come along, because DocumentedSiblingsTests asks two different questions of them.
+    Which catalogues exist is eng/catalogs.json, the manifest the generator and the nightly workflow
+    already read — a catalogue enters it before it exists. What this repository PUBLISHES is the
+    <ReleaseTrain> declaration a project carries in its own .csproj, which is what makes it packable
+    and "the one file that cannot be forgotten" (tools/trains.sh); the analyzers and the foundation
+    are published without being catalogues. The repository README joins them as the one document
+    that has to name the catalogues from outside them.
+  -->
+  <ItemGroup>
+    <Content Include="..\..\eng\catalogs.json" Link="catalogmanifest\catalogs.json" CopyToOutputDirectory="PreserveNewest" />
+    <!--
+      Copied as project.xml, NOT as a .csproj: tools/trains.sh discovers what a train publishes by
+      grepping the whole tree for <ReleaseTrain> in *.csproj, and a project file sitting in a build
+      output is indistinguishable from a real one. Copied under its own name, each of these was
+      found and handed to dotnet pack, which failed on it for want of a restore. The folder still
+      names the project, which is all the tests read it for.
+    -->
+    <Content Include="..\..\src\**\*.csproj"
+             Link="catalogprojects\%(RecursiveDir)project.xml" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\README.md" Link="repodocs\README.md" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <!--
     The foundation is NOT referenced here. Each catalogue now depends on the published package, so
     referencing the project as well puts two DiagnosticCatalog assemblies in front of the compiler —
     0.0.0.0 from the project, 0.1.0.0 from the package — and MSB3243 resolves the conflict

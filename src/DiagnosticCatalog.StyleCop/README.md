@@ -178,6 +178,22 @@ a release never exercises it for the first time on a tag.
 `#pragma warning disable`, which takes bare identifiers and so can never reference a
 constant. This package covers the `SAxxxx` analyzer rules only.
 
+## See also
+
+Two sibling catalogues are generated from this repository the same way, each read from one
+analyzer's own descriptors:
+
+- [`DiagnosticCatalog.Sonar`](https://www.nuget.org/packages/DiagnosticCatalog.Sonar)
+  — the SonarAnalyzer.CSharp (`Sxxxx`) rules.
+- [`DiagnosticCatalog.NetAnalyzers`](https://www.nuget.org/packages/DiagnosticCatalog.NetAnalyzers)
+  — the .NET code analysis (`CAxxxx`) rules.
+
+**Want a catalogue of your own?** Your analyzer's rules, or an internal ruleset, are declared
+exactly the way these are: a static class of constants marked `[DiagnosticRule]`, referenced by
+consumers instead of retyped. That marker ships in
+[`DiagnosticCatalog`](https://www.nuget.org/packages/DiagnosticCatalog), the foundation this
+catalogue is built on, and its README is the guide.
+
 ## Documentation
 
 [Specification](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/specification.en.md)
