@@ -1,0 +1,140 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Reefact/diagnostic-catalog/main/eng/catalogs.schema.json",
+  "title": "dcat catalogue manifest",
+  "description": "The catalogues `dcat generate` produces and `dcat validate` checks. Read by the tool, and by an editor before the tool ever runs.",
+  "type": "object",
+  "required": ["catalogs"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "$comment": {
+      "description": "Prose about the manifest as a whole. A string or an array of lines.",
+      "oneOf": [{ "type": "string" }, { "type": "array", "items": { "type": "string" } }]
+    },
+    "catalogs": {
+      "type": "array",
+      "minItems": 1,
+      "description": "One entry per catalogue. An empty array generates nothing, which a scheduled job would read as success.",
+      "items": { "$ref": "#/$defs/catalogue" }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "catalogue": {
+      "type": "object",
+      "required": ["namespace", "container", "output"],
+      "properties": {
+        "$comment": {
+          "description": "Prose about this entry — why this package, why this version line.",
+          "oneOf": [{ "type": "string" }, { "type": "array", "items": { "type": "string" } }]
+        },
+
+        "package": {
+          "type": "string",
+          "description": "A package id to resolve from the configured NuGet sources.",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "description": "Which release of `package`: an exact version, \"latest\" (latest stable) or \"latest-any\" (including prereleases). Defaults to \"latest\".",
+          "default": "latest",
+          "minLength": 1
+        },
+        "source": {
+          "type": "string",
+          "description": "Which configured feed to resolve `package` from, by name or URL. Defaults to every enabled source.",
+          "minLength": 1
+        },
+
+        "nupkg": {
+          "type": "string",
+          "description": "A .nupkg already on disk, relative to this manifest. Its .nuspec names the source unless sourceName/sourceVersion say otherwise.",
+          "minLength": 1
+        },
+        "projects": {
+          "type": "array",
+          "description": "Projects that produce analyzers, relative to this manifest. They must already be built; nothing here builds them. Several when rules are split across projects, as an analyzer and its code fixes often are.",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "configuration": {
+          "type": "string",
+          "description": "Which configuration of `projects` to read. Defaults to \"Release\".",
+          "default": "Release",
+          "minLength": 1
+        },
+        "assemblies": {
+          "type": "array",
+          "description": "Analyzer assemblies already on disk, relative to this manifest. Several when a vendor splits its rules across them.",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+
+        "namespace": {
+          "type": "string",
+          "description": "The namespace the generated catalogue declares.",
+          "minLength": 1
+        },
+        "container": {
+          "type": "string",
+          "description": "The static class holding the rules. A name ending in \"Rule\" also names the category class: SonarRule gives SonarCategory.",
+          "minLength": 1
+        },
+        "output": {
+          "type": "string",
+          "description": "Where the generated C# is written, relative to this manifest.",
+          "minLength": 1
+        },
+        "language": {
+          "type": "string",
+          "description": "Which language's analyzers to read out of a package. Selecting one EXCLUDES the others rather than keeping only its folder, because most rules often sit in a language-neutral assembly.",
+          "enum": ["cs", "vb", "fs"],
+          "default": "cs"
+        },
+
+        "sourceName": {
+          "type": "string",
+          "description": "What to record as the source. Defaults to the package's own id, the project's assembly name, or the first assembly's name.",
+          "minLength": 1
+        },
+        "sourceVersion": {
+          "type": "string",
+          "description": "What to record as the source's release. Defaults to the package's version, the project's declared Version, or the first assembly's. Worth setting when a source on disk keeps a version that stands still while its rules move.",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false,
+
+      "oneOf": [
+        { "required": ["package"], "not": { "anyOf": [
+          { "required": ["nupkg"] }, { "required": ["projects"] }, { "required": ["assemblies"] }] } },
+        { "required": ["nupkg"], "not": { "anyOf": [
+          { "required": ["package"] }, { "required": ["projects"] }, { "required": ["assemblies"] }] } },
+        { "required": ["projects"], "not": { "anyOf": [
+          { "required": ["package"] }, { "required": ["nupkg"] }, { "required": ["assemblies"] }] } },
+        { "required": ["assemblies"], "not": { "anyOf": [
+          { "required": ["package"] }, { "required": ["nupkg"] }, { "required": ["projects"] }] } }
+      ],
+
+      "allOf": [
+        {
+          "$comment": "version and source describe a feed, and mean nothing for a source on disk.",
+          "if": { "anyOf": [
+            { "required": ["nupkg"] }, { "required": ["projects"] }, { "required": ["assemblies"] }] },
+          "then": { "not": { "anyOf": [{ "required": ["version"] }, { "required": ["source"] }] } }
+        },
+        {
+          "$comment": "A feed states its own name and release; overriding them would record a provenance the package never claimed.",
+          "if": { "required": ["package"] },
+          "then": { "not": { "anyOf": [
+            { "required": ["sourceName"] }, { "required": ["sourceVersion"] }] } }
+        },
+        {
+          "$comment": "configuration selects among a project's build outputs, and nothing else has any.",
+          "if": { "not": { "required": ["projects"] } },
+          "then": { "not": { "required": ["configuration"] } }
+        }
+      ]
+    }
+  }
+}
