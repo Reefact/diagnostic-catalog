@@ -40,8 +40,9 @@ Two roles are covered: **writing code** and **reviewing pull requests**.
 ## Release trains (code changes)
 
 Commits are partitioned into release trains **by scope**, and each train
-publishes independently: `lib` (`core`, `analyzers`, `cli`, `testing`), `sonar`
-(`sonar`), `netanalyzers` (`netanalyzers`), `stylecop` (`stylecop`). A `feat` or
+publishes independently: `lib` (`core`, `analyzers`), `cli` (`cli`,
+`cataloggen`), `sonar` (`sonar`), `netanalyzers` (`netanalyzers`), `stylecop`
+(`stylecop`). A `feat` or
 `fix` without a scope matches no train and is silently dropped from the release
 record, which is why `commit-lint` rejects it. See `CONTRIBUTING.md`, "Scope" —
 note in particular that `analyzers` means *analyzers this repository publishes*,

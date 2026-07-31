@@ -32,7 +32,7 @@
 <!-- Trains version independently and are selected by each commit's scope.
      See CONTRIBUTING.md -> "Scope". Tick every train this PR moves. -->
 
-* [ ] `lib` — scopes `core`, `analyzers`, `testing`
+* [ ] `lib` — scopes `core`, `analyzers`
 * [ ] `cli` — scopes `cli`, `cataloggen` (the `dcat` tool)
 * [ ] `sonar`
 * [ ] `netanalyzers`

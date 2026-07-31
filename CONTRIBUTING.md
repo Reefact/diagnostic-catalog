@@ -375,7 +375,6 @@ When present it MUST be lowercase and MUST be one of:
 | `core` | The foundation library — defining, generating and validating catalogs |
 | `analyzers` | The Roslyn analyzers **this repository publishes**, and their diagnostics |
 | `cli` | The **`dcat` command-line tool** — its command tree, arguments and exit codes |
-| `testing` | The test-support package |
 | `sonar` | The **catalog of SonarQube/SonarAnalyzer rules** |
 | `netanalyzers` | The **catalog of Microsoft .NET analyzer (CAxxxx) rules** |
 | `stylecop` | The **catalog of StyleCop analyzer rules** |
@@ -389,7 +388,10 @@ When present it MUST be lowercase and MUST be one of:
 
 This list lives here, in the repository, where a tool can check it — it is the
 `SCOPES` list in `tools/commit-lint/lint-commit-message.sh`, and the two MUST be
-changed together. A scope MUST NOT be a file name or a class name: those move;
+changed together. So must the train table below and the rows in `tools/trains.sh`:
+the two sets are the same set. Every scope the linter accepts routes to exactly
+one train, because a scope on no train is silently dropped from the release notes
+and the changelog. A scope MUST NOT be a file name or a class name: those move;
 the zone they inhabit does not. `fix(core):`, never `fix(RuleCatalog.cs):`.
 
 The scope is load-bearing for the release record. Commits are partitioned into
@@ -398,7 +400,7 @@ independently:
 
 | Train | Scopes | Why it moves at its own pace |
 |---|---|---|
-| `lib` | `core`, `analyzers`, `testing` | The foundation. Deliberately very stable — a catalog contract rests on it. |
+| `lib` | `core`, `analyzers` | The foundation. Deliberately very stable — a catalog contract rests on it. |
 | `cli` | `cli`, `cataloggen` | The `dcat` tool. Follows Roslyn and upstream package layouts, which move for their own reasons. |
 | `sonar` | `sonar` | Follows SonarSource's release cadence. |
 | `netanalyzers` | `netanalyzers` | Follows the .NET SDK's analyzer releases. |
