@@ -162,7 +162,7 @@ jobs:
       # to errors, so nothing that warns can merge — but a Roslyn diagnostic reported below warning
       # prints nothing in a build at any verbosity, never reaches the ratchet, and is imported by
       # SonarQube Cloud all the same. Measured: 23 such diagnostics produced a green build and 23
-      # issues on the dashboard, rule for rule (ADR-0022).
+      # issues on the dashboard, rule for rule (ADR-0024).
       #
       # It runs as its own job rather than inside build-test because it needs its own build: the
       # compiler only writes the diagnostic log this reads when asked, and asking changes what every

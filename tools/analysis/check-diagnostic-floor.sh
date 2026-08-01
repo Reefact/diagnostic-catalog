@@ -21,7 +21,7 @@
 # repository's test convention contradicts on purpose. So this asserts the INVARIANT instead: what
 # the build reports, the build must be able to fail on. A rule the next SDK adds at `info` is caught
 # here the first time it fires, named, and has to be dealt with — cleared, or raised to `warning`
-# so the ratchet owns it, or suppressed at the site with a reason. Decision: ADR-0022.
+# so the ratchet owns it, or suppressed at the site with a reason. Decision: ADR-0024.
 #
 # Suppressed diagnostics are ignored, and that is not a loophole: a `#pragma warning disable` or a
 # [SuppressMessage] is a decision written down at the site, which is exactly what this asks for.

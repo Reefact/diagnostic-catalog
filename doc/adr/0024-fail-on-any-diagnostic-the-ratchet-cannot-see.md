@@ -1,4 +1,4 @@
-# ADR-0022 | Fail on any diagnostic the warning ratchet cannot see
+# ADR-0024 | Fail on any diagnostic the warning ratchet cannot see
 
 **Status:** Proposed
 **Proposed:** 2026-08-01

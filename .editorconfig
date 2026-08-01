@@ -40,7 +40,7 @@ dotnet_diagnostic.IDE0008.severity = warning
 #
 # The .NET SDK enables these by default at `info`, which prints nothing in a build at any verbosity
 # and never reaches the warning ratchet — while SonarQube Cloud imports them all the same. That is
-# how 23 issues reached the dashboard behind a green build (ADR-0022). Raised here, they fail the
+# how 23 issues reached the dashboard behind a green build (ADR-0024). Raised here, they fail the
 # build that introduces them, where the person writing the code is the one who sees them.
 #
 # This list is the rules known to leak, not a guard against the next one:
