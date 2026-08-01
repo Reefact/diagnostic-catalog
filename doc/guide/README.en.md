@@ -61,10 +61,20 @@ The common case, and the one that needs no knowledge of anything else here.
 * [**The `DCAT` diagnostics**](diagnostics.en.md) — every id, what triggers it, why it exists, and
   the `.editorconfig` keys that configure it.
 
+## I need a reference, not a tutorial
+
+* [**The rule contract**](rule-contract.en.md) — the four requirements, how the marker is matched, and
+  every syntactic form a use site may take.
+* [**Troubleshooting**](troubleshooting.en.md) — symptoms first: nothing is reported, `CS0117`,
+  `CS0618`, `DCAT0006` on every file at once. One diagram.
+* [**FAQ**](faq.en.md) — the questions that are not symptoms.
+* [**Glossary**](glossary.en.md) — every word this documentation uses in a precise sense.
+
 ## I want the vocabulary
 
 * [**Core concepts**](concepts.en.md) — rule, catalogue, container, category class, provenance; how
   they nest, which package carries which, and exactly what a reference gives you today.
+* [**Glossary**](glossary.en.md) — the same words, defined one by one, including what each is *not*.
 
 ## I want the reasoning, not the instructions
 
@@ -121,6 +131,10 @@ own:
 16. [The catalogue manifest](catalogs-manifest.en.md)
 17. [Keeping a catalogue current](ci-integration.en.md)
 18. [The `DCAT` diagnostics](diagnostics.en.md)
+19. [The rule contract](rule-contract.en.md)
+20. [Troubleshooting](troubleshooting.en.md)
+21. [FAQ](faq.en.md)
+22. [Glossary](glossary.en.md)
 
 ---
 
