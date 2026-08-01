@@ -146,4 +146,24 @@
     <GlobalAnalyzerConfigFiles Include="$(MSBuildThisFileDirectory)build/sonar-profile.globalconfig" />
   </ItemGroup>
 
+  <!--
+    The compiler's own diagnostic log, on request, for tools/analysis/check-diagnostic-floor.sh.
+
+    That check reads what the compiler REPORTED rather than what the console showed, because the two
+    differ: a diagnostic below warning severity prints nothing at any verbosity, never reaches the
+    ratchet above, and is imported by SonarQube Cloud regardless (ADR-0022).
+
+    Declared here rather than passed as -p:ErrorLog on the command line, and that is not a
+    preference. MSBuild does not expand $(...) inside a property value given on the command line —
+    measured, every project then writes to one literal path and each overwrites the last, leaving a
+    single log that reports almost nothing. Expansion happens in a props file, so naming the project
+    AND its target framework here is what gives one log per compilation; a multi-targeted project
+    compiles once per framework, and without the second half only the last inner build would survive.
+
+    Inert unless DiagnosticLogDirectory is set, so an ordinary build writes no logs.
+  -->
+  <PropertyGroup Condition="'$(DiagnosticLogDirectory)' != ''">
+    <ErrorLog>$(DiagnosticLogDirectory)/$(MSBuildProjectName).$(TargetFramework).sarif</ErrorLog>
+  </PropertyGroup>
+
 </Project>
