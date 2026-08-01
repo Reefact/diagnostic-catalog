@@ -19,6 +19,22 @@
     <PackageReference Include="xunit.v3" />
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="coverlet.collector" />
+    <!--
+      For the catalogue fixtures the inspect verbs are pointed at. `dcat list` and `dcat explain`
+      read a compiled catalogue, so exercising them needs one on disk, and the shapes that matter —
+      a retired rule, a rule with a help link and one without, an assembly carrying no rules at all
+      — are not all present in any catalogue this repository happens to ship.
+    -->
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
+  </ItemGroup>
+
+  <!--
+    LINKED SOURCE, the same call BundleDescriptorWorker's sibling makes in CatalogGen.Worker: the
+    fixture builder is one file, compiled into both suites, so the catalogue the engine's tests read
+    and the catalogue the tool's tests read cannot drift into being two different things.
+  -->
+  <ItemGroup>
+    <Compile Include="..\CatalogGen.UnitTests\CatalogueFixture.cs" Link="CatalogueFixture.cs" />
   </ItemGroup>
 
   <ItemGroup>
