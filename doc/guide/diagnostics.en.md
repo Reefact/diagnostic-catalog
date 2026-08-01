@@ -233,5 +233,5 @@ coherently. They do not, and will not:
 ---
 
 <div align="center">
-<a href="./authoring-a-catalogue.en.md">← Publishing a catalogue</a> · <a href="./README.en.md">↑ Table of contents</a>
+<a href="./ci-integration.en.md">← Keeping a catalogue current</a> · <a href="./README.en.md">↑ Table of contents</a>
 </div>

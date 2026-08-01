@@ -53,19 +53,30 @@ internal static class AnalyzerHarness
     /// carry rules by declaring the marker itself (§7.2). That is what makes the second clause of the
     /// §13.1 pre-filter observable: without it, such an assembly is skipped and its rules vanish.
     /// </param>
+    /// <param name="consumerMayUseFoundation">
+    /// When false, the SNIPPET is compiled without DiagnosticCatalog.dll while the referenced assembly
+    /// keeps it. That is what a consumer sees when a catalogue hides the foundation behind
+    /// PrivateAssets="all": the marker is unresolvable in their compilation, although the catalogue's
+    /// metadata still carries it.
+    /// </param>
     internal static async Task<ImmutableArray<Diagnostic>> RunAsync(
         DiagnosticAnalyzer analyzer,
         string source,
         string? referencedSource = null,
-        bool referenceMayUseFoundation = true)
+        bool referenceMayUseFoundation = true,
+        bool consumerMayUseFoundation = true)
     {
         // Self-check one: an analyzer declaring nothing can report nothing, and would make every
         // expectation below vacuous.
         Assert.NotEmpty(analyzer.SupportedDiagnostics);
 
-        ImmutableArray<MetadataReference> references = referencedSource is null
+        ImmutableArray<MetadataReference> available = consumerMayUseFoundation
             ? References
-            : References.Add(CompileToReference(referencedSource, referenceMayUseFoundation));
+            : WithoutFoundation(References);
+
+        ImmutableArray<MetadataReference> references = referencedSource is null
+            ? available
+            : available.Add(CompileToReference(referencedSource, referenceMayUseFoundation));
 
         CSharpCompilation compilation = CSharpCompilation.Create(
             assemblyName: "Snippet",
@@ -114,6 +125,17 @@ internal static class AnalyzerHarness
         params string[] expectedIds) =>
         AssertReportsAsync(analyzer, source, referencedSource, true, expectedIds);
 
+    /// <summary>
+    /// As <see cref="ReportsAgainstReferenceAsync"/>, with the foundation missing from the CONSUMER's
+    /// compilation rather than from the catalogue's — the PrivateAssets="all" case.
+    /// </summary>
+    internal static Task ReportsAgainstReferenceWithoutFoundationAsync(
+        DiagnosticAnalyzer analyzer,
+        string referencedSource,
+        string source,
+        params string[] expectedIds) =>
+        AssertReportsAsync(analyzer, source, referencedSource, true, false, expectedIds);
+
     /// <summary>As above, but the referenced assembly cannot use the foundation and must embed the marker.</summary>
     internal static Task ReportsAgainstSelfContainedReferenceAsync(
         DiagnosticAnalyzer analyzer,
@@ -127,13 +149,24 @@ internal static class AnalyzerHarness
         string source,
         string? referencedSource,
         bool referenceMayUseFoundation,
+        string[] expectedIds) =>
+        await AssertReportsAsync(analyzer, source, referencedSource, referenceMayUseFoundation, true, expectedIds)
+            .ConfigureAwait(false);
+
+    private static async Task AssertReportsAsync(
+        DiagnosticAnalyzer analyzer,
+        string source,
+        string? referencedSource,
+        bool referenceMayUseFoundation,
+        bool consumerMayUseFoundation,
         string[] expectedIds)
     {
         ImmutableArray<Diagnostic> reported = await RunAsync(
             analyzer,
             source,
             referencedSource,
-            referenceMayUseFoundation).ConfigureAwait(false);
+            referenceMayUseFoundation,
+            consumerMayUseFoundation).ConfigureAwait(false);
 
         IEnumerable<string> actual = reported.Select(diagnostic => diagnostic.Id).OrderBy(id => id, StringComparer.Ordinal);
         IEnumerable<string> expected = expectedIds.OrderBy(id => id, StringComparer.Ordinal);
@@ -141,15 +174,21 @@ internal static class AnalyzerHarness
         Assert.Equal(expected, actual);
     }
 
+    private static ImmutableArray<MetadataReference> WithoutFoundation(
+        ImmutableArray<MetadataReference> references) =>
+        references
+            .Where(reference =>
+                !string.Equals(
+                    Path.GetFileName(reference.Display),
+                    FoundationAssemblyFileName,
+                    StringComparison.OrdinalIgnoreCase))
+            .ToImmutableArray();
+
     private static PortableExecutableReference CompileToReference(string source, bool mayUseFoundation)
     {
         IEnumerable<MetadataReference> references = mayUseFoundation
             ? References
-            : References.Where(reference =>
-                !string.Equals(
-                    Path.GetFileName(reference.Display),
-                    FoundationAssemblyFileName,
-                    StringComparison.OrdinalIgnoreCase));
+            : WithoutFoundation(References);
 
         CSharpCompilation compilation = CSharpCompilation.Create(
             assemblyName: "ReferencedCatalog",

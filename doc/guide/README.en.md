@@ -37,7 +37,24 @@ The common case, and the one that needs no knowledge of anything else here.
 * [**Publishing a catalogue**](authoring-a-catalogue.en.md) — the structural contract, the shape to
   actually ship, declaring categories once, packaging, and the versioning rule that will bite you if
   you skip it.
+* [**Closing the loop with your own analyzer**](first-party-analyzers.en.md) — feeding your
+  `DiagnosticDescriptor` from your own catalogue, and the member that would force Roslyn on every
+  consumer.
+* [**Versioning a catalogue**](versioning-a-catalogue.en.md) — never delete a rule, never rename a
+  member, and what each change does to the version number.
+* [**Packaging a catalogue**](packaging-a-catalogue.en.md) — what to reference, what propagates, and
+  what nuget.org does to your README.
 * [The `DCAT` diagnostics](diagnostics.en.md) — what your users will be told, and when.
+
+## I generate a catalogue rather than hand-writing one
+
+* [**The `dcat` tool**](dcat.en.md) — the four verbs, which source to point it at, and why it reads
+  descriptors rather than documentation. Two diagrams.
+* [**The `dcat` reference**](dcat-reference.en.md) — every command, option and exit code, checked
+  against the tool's own settings types.
+* [**The catalogue manifest**](catalogs-manifest.en.md) — every key of `catalogs.json`.
+* [**Keeping a catalogue current**](ci-integration.en.md) — `validate` in a pipeline, the nightly
+  drift pull request, and why `1` and `2` must be handled differently. One diagram.
 
 ## I saw a `DCATxxxx` and want to know what it means
 
@@ -96,7 +113,14 @@ own:
 8. [Configuration](configuration.en.md)
 9. [The zero-footprint guarantee](zero-footprint.en.md)
 10. [Publishing a catalogue](authoring-a-catalogue.en.md)
-11. [The `DCAT` diagnostics](diagnostics.en.md)
+11. [Closing the loop with your own analyzer](first-party-analyzers.en.md)
+12. [Versioning a catalogue](versioning-a-catalogue.en.md)
+13. [Packaging a catalogue](packaging-a-catalogue.en.md)
+14. [The `dcat` tool](dcat.en.md)
+15. [The `dcat` reference](dcat-reference.en.md)
+16. [The catalogue manifest](catalogs-manifest.en.md)
+17. [Keeping a catalogue current](ci-integration.en.md)
+18. [The `DCAT` diagnostics](diagnostics.en.md)
 
 ---
 

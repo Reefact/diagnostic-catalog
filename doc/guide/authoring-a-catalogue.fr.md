@@ -39,6 +39,29 @@ Trois détails de cet extrait méritent leur place :
 * **`nameof(CTS0001)`** plutôt que `"CTS0001"` — cela résout vers le nom du type conteneur, si bien
   que l'identifiant et la classe ne peuvent pas diverger. Renommez l'un dans l'IDE et l'autre suit.
 
+## Quand vous vous trompez, l'analyseur propose de corriger
+
+`DCAT0002`, `DCAT0003` et `DCAT0004` signalent une déclaration qui rate le contrat, et chacun porte un
+correctif — **proposé uniquement là où la réparation est déjà écrite dans le code**, et muet sinon :
+
+| Ce que vous avez écrit | Ce qui est proposé |
+| --- | --- |
+| `public sealed class CTS0001` | *Make 'CTS0001' static* — pour une classe ordinaire qui pourrait porter le mot-clé : pas de paramètres de type, pas de type de base, aucun membre d'instance, pas `partial` |
+| `private static readonly string Id = ...` | *Make 'Id' a public constant* — les modificateurs seulement ; la valeur est laissée telle quelle |
+| aucun membre `Id` | *Declare 'public const string Id'*, écrit `nameof(CTS0001)` — lu sur votre déclaration plutôt qu'inventé |
+
+Rien n'est proposé quand c'est la **valeur** qui est fausse — un `const int`, une chaîne vide, un
+initialiseur non constant. Le code ne dit rien de ce que vous vouliez, et un correctif qui devinerait
+produirait une règle que le compilateur accepte et que personne ne vérifie.
+
+> **Celui auquel réfléchir avant d'appuyer.** *Declare 'public const string Category'* écrit `"TODO"`.
+> C'est une vraie chaîne : `DCAT0004` cesse donc d'être signalé dès que vous l'appliquez — vous avez
+> échangé un avertissement qui nommait le problème contre un marqueur que seul un lecteur remarquera,
+> et une mauvaise catégorie est invisible dans tous les builds, pour toujours. Appliquez-le quand vous
+> êtes sur le point de le remplir.
+
+Détail complet dans [la référence des diagnostics](diagnostics.fr.md#diagnostics-de-déclaration).
+
 ## La forme à livrer réellement
 
 Imbriquez les règles dans un conteneur, pour que le site d'utilisation se lise bien :
@@ -133,113 +156,23 @@ Rien ne les exige et rien ne les valide. Elles existent parce que ce sont exacte
 > ne peut pas être une `const` et tombe donc hors de ce modèle. Le catalogue couvre l'axe identifiant
 > et catégorie ; les fichiers de ressources restent le bon outil pour le texte traduit.
 
-## Boucler la boucle : une seule source de vérité
+## Trois sujets qui ont leur propre page
 
-Si vous possédez l'analyseur en plus du catalogue, alimentez le descripteur **depuis le catalogue** :
+Le contrat ci-dessus est tout ce qu'un catalogue doit satisfaire. Ce qui l'entoure — alimenter votre
+analyseur depuis lui, le publier, le republier — est là où sont les décisions, et chacun en porte
+assez pour se lire seul :
 
-```csharp
-private static readonly DiagnosticDescriptor Rule = new(
-    id:                 ContosoRule.CTS0001.Id,
-    title:              ContosoRule.CTS0001.Title,
-    messageFormat:      ContosoRule.CTS0001.MessageFormat,
-    category:           ContosoRule.CTS0001.Category,
-    defaultSeverity:    DiagnosticSeverity.Warning,
-    isEnabledByDefault: true,
-    description:        ContosoRule.CTS0001.Description,
-    helpLinkUri:        ContosoRule.CTS0001.HelpLinkUri);
-```
-
-Désormais l'analyseur qui *signale* la règle et chaque suppression qui la *fait taire* lisent les
-mêmes constantes. La catégorie que vos utilisateurs écrivent est exacte par construction plutôt que
-par diligence — et « par diligence » est précisément ce qui échoue, parce qu'une catégorie est une
-chaîne que personne d'autre que vous ne publie et que rien ne vérifie.
-
-C'est la raison la plus forte pour un projet de première partie d'adopter la convention, et c'est
-quelque chose qu'un catalogue tiers ne pourra jamais offrir : le miroir de l'analyseur de quelqu'un
-d'autre ne peut que copier ce que cet analyseur déclare aujourd'hui.
-
-## Empaquetage
-
-Référencez la fondation de la façon ordinaire — **pas** `PrivateAssets="all"` :
-
-```xml
-<PackageReference Include="DiagnosticCatalog" Version="0.1.0" />
-```
-
-| Qui vous êtes | Ce dont vous avez besoin | Comment référencer |
-| --- | --- | --- |
-| **Consommateur** — écrit des suppressions | les analyseurs | `DiagnosticCatalog.Analyzers`, `PrivateAssets="all"` |
-| **Auteur de catalogue** — déclare des règles | `[DiagnosticRule]` résoluble *par vos propres consommateurs* | référence `DiagnosticCatalog` ordinaire |
-
-Cacher la dépendance avec `PrivateAssets="all"` est l'erreur qui compte ici : vos consommateurs ne
-peuvent alors plus résoudre `DiagnosticRuleAttribute`, `[DiagnosticRule]` se dégrade en type
-d'erreur, et — c'est la mauvaise partie — les analyseurs ne trouvent **aucune règle** et ne
-signalent **rien**. Tout a l'air propre. C'est exactement la défaillance que cette bibliothèque
-existe pour éliminer, alors ne la reproduisez pas dans votre propre paquet.
-
-### Ne pas prendre la dépendance du tout
-
-Si vous préférez livrer un catalogue sans la moindre dépendance, déclarez l'attribut vous-même :
-
-```csharp
-namespace DiagnosticCatalog
-{
-    [System.AttributeUsage(System.AttributeTargets.Class)]
-    internal sealed class DiagnosticRuleAttribute : System.Attribute { }
-}
-```
-
-C'est supporté et testé, pas une astuce. Les analyseurs apparient le marqueur par son **nom
-pleinement qualifié**, jamais par identité de symbole, si bien que votre copie est reconnue
-exactement comme la vraie. C'est le même motif que PolySharp emploie pour `IsExternalInit`.
-
-### Si vous référencez aussi les analyseurs
-
-Un catalogue qui référence `DiagnosticCatalog.Analyzers` **les propage à ses propres
-consommateurs** : référencer votre catalogue suffit alors à obtenir la vérification. Cela a été
-mesuré contre une vraie restauration plutôt que lu dans la documentation de NuGet, qui dit le
-contraire :
-
-| Votre référence à `DiagnosticCatalog.Analyzers` | Les analyseurs tournent pour vos consommateurs |
-| --- | --- |
-| pas de `PrivateAssets` | **oui** |
-| `PrivateAssets="none"` | oui |
-| `PrivateAssets="all"` | non |
-
-Si vous préférez ne pas imposer l'analyse à tout le monde en aval, dites-le explicitement avec
-`PrivateAssets="all"`. **Le silence se propage.**
-
-## Versionnement : la règle qui va vous mordre
-
-Les constantes sont **incorporées dans vos consommateurs à *leur* compilation**. Un consommateur qui
-a référencé `ContosoRule.CTS0001.Id` n'a pas enregistré un lien vers votre assemblage — il a copié
-la chaîne `"CTS0001"` dans le sien.
-
-La conséquence : **supprimer une `const` casse la recompilation** de tous ceux qui l'utilisaient, et
-elle la casse avec un `CS0117` nu qui ne nomme rien d'utile. Alors quand une règle est retirée en
-amont, reportez-la :
-
-```csharp
-[DiagnosticRule]
-[Obsolete("Retired in Contoso.Analyzers 4.0. No replacement.")]
-public static class CTS0001
-{
-    public const string Id = nameof(CTS0001);
-    public const string Category = ContosoCategory.Usage;
-}
-```
-
-Maintenant un consommateur qui la référence encore obtient `CS0618` — qui *nomme la règle et dit ce
-qui s'est passé* — au lieu d'une erreur de compilation qui l'envoie chercher un espace de noms
-manquant.
-
-Il en va de même pour le renommage : une constante de catégorie dont le nom change casse tous les
-consommateurs qui la référençaient. Choisissez des noms avec lesquels vous pouvez vivre, et voyez
-[ADR-0012](../adr/0012-a-catalogue-never-renames-a-member-it-published.md) pour la façon dont ce
-dépôt s'y tient lui-même.
-
-Au-delà, du SemVer ordinaire : une nouvelle règle est un **mineur**, une règle retirée mais
-conservée est un **mineur**, et retirer ou renommer quoi que ce soit de publié est un **majeur**.
+* [**Boucler la boucle avec votre propre analyseur**](first-party-analyzers.fr.md) — si vous possédez
+  les deux, le `DiagnosticDescriptor` et la suppression peuvent lire les mêmes constantes, et la
+  catégorie que vos utilisateurs écrivent devient exacte par construction. Également le seul membre
+  qui imposerait une dépendance Roslyn à tous les consommateurs de votre catalogue.
+* [**Versionner un catalogue**](versioning-a-catalogue.fr.md) — les constantes sont incorporées chez
+  vos consommateurs à *leur* compilation : en supprimer une casse leur build avec un message qui ne
+  nomme rien. Ne jamais supprimer une règle ; ne jamais renommer un membre ; ce que chaque changement
+  fait à votre numéro de version.
+* [**Empaqueter un catalogue**](packaging-a-catalogue.fr.md) — comment référencer la fondation,
+  comment livrer sans aucune dépendance, ce qui se propage à vos consommateurs que vous l'ayez voulu
+  ou non, et ce que nuget.org fait de votre README.
 
 ## Si vous reflétez l'analyseur de quelqu'un d'autre
 
@@ -276,5 +209,5 @@ la sortie ressemble avec 465, 318 et 193 règles ; la méthode est au §14 de
 ---
 
 <div align="center">
-<a href="./zero-footprint.fr.md">← La garantie d'empreinte nulle</a> · <a href="./README.fr.md">↑ Table des matières</a> · <a href="./diagnostics.fr.md">Les diagnostics DCAT →</a>
+<a href="./zero-footprint.fr.md">← La garantie d'empreinte nulle</a> · <a href="./README.fr.md">↑ Table des matières</a> · <a href="./first-party-analyzers.fr.md">Boucler la boucle avec votre propre analyseur →</a>
 </div>

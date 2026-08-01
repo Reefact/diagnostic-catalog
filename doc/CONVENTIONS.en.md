@@ -214,11 +214,12 @@ whole test project:
 * **Every `DCAT` diagnostic the analyzers ship is documented, and every `DCAT` the guide documents
   is shipped.** A new diagnostic cannot reach a release with no page describing it, and a page
   cannot describe one that was never implemented.
-* **Every `dcat` option the documentation mentions exists on the tool's settings types.** A flag
-  documented after being renamed or removed fails. The converse — every option the tool exposes is
-  documented — waits for the `dcat` reference page; until that page exists there is no single
-  document the obligation could fall on, and spreading it over every file that happens to mention
-  the tool would make the check unsatisfiable rather than strict.
+* **Every `dcat` option the documentation mentions exists on the tool's settings types, and every
+  option the tool exposes appears in [`doc/guide/dcat-reference`](guide/dcat-reference.en.md).** A
+  flag documented after being renamed fails; so does one shipped and never written down, which is the
+  commoner mistake and the one whose only signal is nobody using it. The obligation names a single
+  page on purpose — spread across every document that mentions the tool it is one no document could
+  discharge.
 * **Every rule a sample shows is one its catalogue publishes.** `SonarRule.S1144` resolves against
   the compiled `DiagnosticCatalog.Sonar`, and the container is never pluralised. This one exists
   because it had already been needed: sixteen samples across three documents spelled the container

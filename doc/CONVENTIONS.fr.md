@@ -223,10 +223,11 @@ projet de test :
   documente est livré.** Un nouveau diagnostic ne peut pas atteindre une release sans page qui le
   décrive, et une page ne peut pas décrire un diagnostic qui n'a jamais été implémenté.
 * **Chaque option `dcat` que la documentation mentionne existe sur les types de configuration de
-  l'outil.** Un drapeau documenté après avoir été renommé ou retiré échoue. La réciproque — chaque
-  option exposée par l'outil est documentée — attend la page de référence `dcat` ; tant qu'elle
-  n'existe pas, aucun document unique ne peut porter l'obligation, et l'étaler sur chaque fichier qui
-  mentionne l'outil rendrait la vérification insatisfiable plutôt que stricte.
+  l'outil, et chaque option exposée par l'outil figure dans
+  [`doc/guide/dcat-reference`](guide/dcat-reference.fr.md).** Un drapeau documenté après avoir été
+  renommé échoue ; un drapeau livré et jamais écrit aussi, ce qui est l'erreur la plus courante et
+  celle dont le seul signal est que personne ne l'utilise. L'obligation nomme une page unique exprès —
+  étalée sur chaque document qui mentionne l'outil, aucun document ne pourrait s'en acquitter.
 * **Chaque règle qu'un exemple montre est une règle publiée par son catalogue.** `SonarRule.S1144`
   résout contre le `DiagnosticCatalog.Sonar` compilé, et le conteneur n'est jamais mis au pluriel.
   Celle-ci existe parce qu'elle avait déjà manqué : seize exemples répartis sur trois documents
