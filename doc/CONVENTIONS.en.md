@@ -33,6 +33,15 @@ check with an exception list drifts into a check with only exceptions. A documen
 paired is kept out by not carrying a suffix at all, which is why `doc/adr/template.md` — a skeleton
 to copy, not a page to read — has none.
 
+**What parity asserts** is that the two halves have the same *shape*: the same headings, the same
+code samples, and the same number of list items, table rows and set-apart notes. Nothing here reads
+French, and a translation is not a transcription — sentences merge, split and change length. What a
+faithful translation cannot do is offer the reader a different number of things. A note is counted
+as a block rather than as a line, because French runs longer and the same blockquote routinely wraps
+onto one more line. This is what catches the page edited on one side only: a bullet added to the
+English, a row appended to a table, and the French still passes every other check while quietly
+saying less.
+
 **The guide folder is flat on purpose.** Every cross-language link is then a plain sibling
 (`./concepts.fr.md`) and every navigation link is a plain sibling too. A nested tree buys grouping
 that the [documentation map](guide/README.en.md) already provides through prose, and costs a
