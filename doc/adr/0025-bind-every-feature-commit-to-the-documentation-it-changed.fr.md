@@ -228,12 +228,28 @@ minorité où il compte.
 ## Follow-up Actions
 
 * Étendre la couverture énumérable partout où existe une source que la build
-  maintient déjà vraie : les fichiers d'API publique et l'arbre des commandes
-  `dcat` sont couverts par le changement qui porte cet enregistrement ; les
-  propriétés MSBuild sous `build/` et les clés d'`eng/catalogs.json` sont les
-  candidates suivantes et ne sont pas couvertes.
-* Relire la section documentation du gabarit de pull request contre cette règle,
-  pour qu'elle demande ce que le footer enregistre plutôt qu'une coche.
+  maintient déjà vraie. Fait. Les fichiers d'API publique et l'arbre des
+  commandes `dcat` sont couverts par le changement qui porte cet enregistrement ;
+  les clés d'`eng/catalogs.schema.json` sont couvertes par
+  `CatalogManifestKeyTests`, qui les lie à
+  [`doc/guide/catalogs-manifest`](../guide/catalogs-manifest.fr.md) dans les deux
+  sens. Cela épuise les surfaces que ce dépôt sait énumérer.
+
+Aucun autre candidat n'est nommé, et c'est en en cherchant un qu'on a vu où tombe
+réellement la frontière. Les fichiers sous `build/` déclarent des propriétés
+MSBuild ordinaires ; les leviers propres à ce dépôt — `ReleaseTrain`,
+`EnableNet472Floor` — sont déclarés projet par projet, dans dix fichiers
+`.csproj`. C'est un ensemble qu'aucun fichier ne déclare, donc aucun qu'une
+vérification puisse lire. En ajouter un est exactement le genre de changement que
+le footer `Docs:` existe pour attraper, et il ne sera pas attrapé autrement.
+
+> **Corrigé après acceptation**, sur décision du mainteneur. Cette section
+> nommait « les propriétés MSBuild sous `build/` » comme candidate suivante, et
+> un tel ensemble n'existe pas ; elle demandait aussi une réécriture du gabarit
+> de pull request que le même changement avait déjà livrée. Les Follow-up Actions
+> sont une liste de tâches, pas la décision — la phrase de décision et
+> l'argumentaire sont intacts, et c'est pourquoi la correction se fait en place
+> plutôt que par supersession.
 
 ## References
 
