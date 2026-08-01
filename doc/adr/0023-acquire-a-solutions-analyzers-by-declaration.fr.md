@@ -3,8 +3,9 @@
 🌍 **Langues :**  
 🇬🇧 [English](./0023-acquire-a-solutions-analyzers-by-declaration.en.md) | 🇫🇷 Français (ce fichier)
 
-**Status:** Proposed
+**Status:** Accepted
 **Proposed:** 2026-08-01
+**Accepted:** 2026-08-01
 **Decision Makers:** Reefact
 
 ## Context

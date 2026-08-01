@@ -218,6 +218,6 @@ Matériel de support, optionnel :
 | [ADR-0020](0020-a-catalogue-is-generated-for-c-sharp-only.fr.md) | Un catalogue est généré pour C# uniquement | Accepted |
 | [ADR-0021](0021-derive-the-build-rule-set-from-the-quality-profile.fr.md) | Dériver le jeu de règles Sonar du build depuis le profil qualité du serveur | Accepted |
 | [ADR-0022](0022-maintain-every-document-under-doc-in-english-and-french.fr.md) | Maintenir chaque document sous `doc/` en anglais et en français | Accepted |
-| [ADR-0023](0023-acquire-a-solutions-analyzers-by-declaration.fr.md) | Acquérir les analyseurs d'une solution par déclaration, jamais par découverte | Proposed |
+| [ADR-0023](0023-acquire-a-solutions-analyzers-by-declaration.fr.md) | Acquérir les analyseurs d'une solution par déclaration, jamais par découverte | Accepted |
 | [ADR-0024](0024-fail-on-any-diagnostic-the-ratchet-cannot-see.fr.md) | Échouer sur tout diagnostic que le cliquet d'avertissements ne voit pas | Accepted |
-| [ADR-0025](0025-bind-every-feature-commit-to-the-documentation-it-changed.fr.md) | Lier chaque commit de fonctionnalité à la documentation qu'il a changée | Proposed |
+| [ADR-0025](0025-bind-every-feature-commit-to-the-documentation-it-changed.fr.md) | Lier chaque commit de fonctionnalité à la documentation qu'il a changée | Accepted |
