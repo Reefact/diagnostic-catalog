@@ -202,6 +202,6 @@ Optional supporting material:
 | [ADR-0019](0019-resolve-packages-through-the-users-own-nuget-configuration.md) | Resolve packages through the user's own NuGet configuration | Accepted |
 | [ADR-0020](0020-a-catalogue-is-generated-for-c-sharp-only.md) | A catalogue is generated for C# only | Accepted |
 | [ADR-0021](0021-derive-the-build-rule-set-from-the-quality-profile.md) | Derive the build's Sonar rule set from the server's quality profile | Accepted |
-| [ADR-0022](0022-fail-on-any-diagnostic-the-ratchet-cannot-see.md) | Fail on any diagnostic the warning ratchet cannot see | Proposed |
 | [ADR-0022](0022-maintain-every-document-under-doc-in-english-and-french.md) | Maintain every document under `doc/` in English and French | Accepted |
 | [ADR-0023](0023-acquire-a-solutions-analyzers-by-declaration.md) | Acquire a solution's analyzers by declaration, never by discovery | Proposed |
+| [ADR-0024](0024-fail-on-any-diagnostic-the-ratchet-cannot-see.md) | Fail on any diagnostic the warning ratchet cannot see | Proposed |
