@@ -116,6 +116,25 @@ category matches no known rule, and nothing is reported — the mechanism that m
 impossible is the constant itself, which the compiler checks. These analyzers get you to the
 constants and keep you there.
 
+## Documentation
+
+- [**The `DCAT` diagnostics**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/diagnostics.en.md)
+  — every id these analyzers report, what triggers it, why it exists, whether a code fix is
+  offered, and the `.editorconfig` key that configures it.
+- [**Configuration**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/configuration.en.md)
+  — severities, the category-wide switch, generated code, and the `PrivateAssets` mistake
+  that silences everything.
+- [**Adopting a catalogue on an existing codebase**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/adopting-a-catalogue.en.md)
+  — the severity ramp and what order to convert in, when the migration above is large.
+- [**The rule contract**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/rule-contract.en.md)
+  — the four requirements these analyzers check a declaration against, and every syntactic
+  form a use site may take.
+- [**Troubleshooting**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/troubleshooting.en.md)
+  — by symptom, starting with "nothing is reported at all".
+
+The [**documentation map**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/README.en.md)
+picks a page by what you are trying to do; every guide exists in English and French.
+
 ## Licence
 
 Apache-2.0. Unofficial; not affiliated with any analyzer vendor.

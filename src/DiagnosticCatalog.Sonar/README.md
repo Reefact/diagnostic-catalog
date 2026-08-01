@@ -229,8 +229,25 @@ catalogue is built on, and its README is the guide.
 
 ## Documentation
 
-[Specification](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/specification.en.md)
-([français](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/specification.fr.md)).
+For using a catalogue, in the order the work happens:
+
+- [**Getting started**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/getting-started.en.md)
+  — ten minutes: reference this package, rewrite one suppression, break it on purpose and
+  watch the compiler catch it.
+- [**Writing suppressions that the compiler checks**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/writing-suppressions.en.md)
+  — the full version, including migrating the literals you already have.
+- [**Adopting a catalogue on an existing codebase**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/adopting-a-catalogue.en.md)
+  — the severity ramp, *Fix all occurrences*, scoping by folder, and what order to convert in.
+- [**Configuration**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/configuration.en.md)
+  — every severity key, the category-wide switch, and the `PrivateAssets` mistake that
+  silences everything.
+- [**Troubleshooting**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/troubleshooting.en.md)
+  — by symptom: nothing is reported, `CS0117`, `CS0618` after an upgrade.
+
+The [**documentation map**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/README.en.md)
+picks a page by what you are trying to do; every guide exists in English and French. The
+[**specification**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/specification.en.md)
+is the normative version of all of it.
 
 ## License
 

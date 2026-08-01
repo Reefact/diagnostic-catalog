@@ -187,10 +187,25 @@ For the contract explained from scratch rather than by example, see
 
 ## Documentation
 
-The full design, the diagnostic list and the verified platform behaviour it relies on
-are documented in the repository:
-[specification](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/specification.en.md)
-([français](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/specification.fr.md)).
+For declaring a catalogue, in the order the work happens:
+
+- [**Publishing a catalogue**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/authoring-a-catalogue.en.md)
+  — the structural contract, the shape to actually ship, declaring categories once, and the
+  versioning rule that will bite you if you skip it.
+- [**Closing the loop with your own analyzer**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/first-party-analyzers.en.md)
+  — feeding your `DiagnosticDescriptor` from your own catalogue, and the member that would
+  force Roslyn on every consumer.
+- [**Versioning a catalogue**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/versioning-a-catalogue.en.md)
+  — never delete a rule, never rename a member, and what each change does to the number.
+- [**Packaging a catalogue**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/packaging-a-catalogue.en.md)
+  — what to reference, what propagates to your consumers, and what nuget.org does to your
+  README.
+
+The [**documentation map**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/README.en.md)
+picks a page by what you are trying to do; every guide exists in English and French. The
+[**specification**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/specification.en.md)
+is the normative version of all of it, including the verified platform behaviour the design
+relies on.
 
 ## License
 
