@@ -64,11 +64,22 @@ Le cas courant, et celui qui ne demande de connaître rien d'autre ici.
 * [**Les diagnostics `DCAT`**](diagnostics.fr.md) — chaque identifiant, ce qui le déclenche,
   pourquoi il existe, et les clés `.editorconfig` qui le configurent.
 
+## Il me faut une référence, pas un tutoriel
+
+* [**Le contrat de règle**](rule-contract.fr.md) — les quatre exigences, comment le marqueur est
+  apparié, et toutes les formes syntaxiques qu'un site d'utilisation peut prendre.
+* [**Dépannage**](troubleshooting.fr.md) — les symptômes d'abord : rien n'est signalé, `CS0117`,
+  `CS0618`, `DCAT0006` sur tous les fichiers d'un coup. Un schéma.
+* [**FAQ**](faq.fr.md) — les questions qui ne sont pas des symptômes.
+* [**Glossaire**](glossary.fr.md) — chaque mot que cette documentation emploie dans un sens précis.
+
 ## Je veux le vocabulaire
 
 * [**Concepts**](concepts.fr.md) — règle, catalogue, conteneur, classe de catégories, provenance ;
   comment ils s'imbriquent, quel paquet porte quoi, et ce qu'une référence vous donne exactement
   aujourd'hui.
+* [**Glossaire**](glossary.fr.md) — les mêmes mots, définis un par un, y compris ce que chacun n'est
+  *pas*.
 
 ## Je veux le raisonnement, pas les instructions
 
@@ -127,6 +138,10 @@ votre propre catalogue :
 16. [Le manifeste de catalogues](catalogs-manifest.fr.md)
 17. [Tenir un catalogue à jour](ci-integration.fr.md)
 18. [Les diagnostics `DCAT`](diagnostics.fr.md)
+19. [Le contrat de règle](rule-contract.fr.md)
+20. [Dépannage](troubleshooting.fr.md)
+21. [FAQ](faq.fr.md)
+22. [Glossaire](glossary.fr.md)
 
 ---
 
