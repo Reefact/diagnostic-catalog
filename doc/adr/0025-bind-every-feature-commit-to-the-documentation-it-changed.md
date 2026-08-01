@@ -1,7 +1,8 @@
 # ADR-0025 | Bind every feature commit to the documentation it changed
 
-**Status:** Proposed
+**Status:** Accepted
 **Proposed:** 2026-08-01
+**Accepted:** 2026-08-01
 **Decision Makers:** Reefact
 
 ## Context
