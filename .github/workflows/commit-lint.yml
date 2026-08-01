@@ -53,7 +53,22 @@ jobs:
                 continue
                 ;;
             esac
+            ok=1
             if git log -1 --format=%B "${sha}" | tools/commit-lint/lint-commit-message.sh --ci -; then
+              :
+            else
+              ok=0
+            fi
+            # The message linter reads a string; it cannot know whether the files a
+            # `Docs:` footer names were really touched. That question needs the commit,
+            # so it is asked here — see tools/commit-lint/check-docs-footer.sh for why
+            # the commit-msg hook cannot ask it.
+            if tools/commit-lint/check-docs-footer.sh --commit "${sha}"; then
+              :
+            else
+              ok=0
+            fi
+            if [ "${ok}" -eq 1 ]; then
               echo "   ok"
             else
               status=1
