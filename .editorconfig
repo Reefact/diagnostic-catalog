@@ -36,6 +36,21 @@ csharp_style_var_when_type_is_apparent = false
 csharp_style_var_elsewhere = false
 dotnet_diagnostic.IDE0008.severity = warning
 
+# The Roslyn rules the SDK reports below warning, raised so the ratchet owns them.
+#
+# The .NET SDK enables these by default at `info`, which prints nothing in a build at any verbosity
+# and never reaches the warning ratchet — while SonarQube Cloud imports them all the same. That is
+# how 23 issues reached the dashboard behind a green build (ADR-0022). Raised here, they fail the
+# build that introduces them, where the person writing the code is the one who sees them.
+#
+# This list is the rules known to leak, not a guard against the next one:
+# tools/analysis/check-diagnostic-floor.sh is what catches a rule a future SDK starts reporting at
+# `info`, by asserting that nothing the build reports sits below warning. Adding a line here is one
+# of the three answers that check accepts.
+dotnet_diagnostic.CA1859.severity = warning
+dotnet_diagnostic.IDE0028.severity = warning
+dotnet_diagnostic.CA1865.severity = warning
+
 # The Sonar exceptions go here, and there are none.
 #
 # build/sonar-profile.globalconfig is generated from the server's quality profile and puts all 377

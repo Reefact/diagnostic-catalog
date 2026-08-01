@@ -31,7 +31,7 @@ public sealed class NavigationTests
 
     public static TheoryData<string> GuidePages()
     {
-        TheoryData<string> paths = new();
+        TheoryData<string> paths = [];
         foreach (MarkdownDocument document in Repository.Guide)
         {
             paths.Add(document.Path);
@@ -80,7 +80,7 @@ public sealed class NavigationTests
     [MemberData(nameof(Languages))]
     public void The_footers_describe_one_total_order(string language)
     {
-        IReadOnlyList<MarkdownDocument> pages = PagesIn(language);
+        List<MarkdownDocument> pages = PagesIn(language);
         Dictionary<string, Navigation> navigation = pages.ToDictionary(
             page => page.FileName,
             Navigation.Of,
@@ -228,7 +228,7 @@ public sealed class NavigationTests
     /// and force the first content page to carry a redundant way back to a table of contents it
     /// already links.
     /// </summary>
-    private static IReadOnlyList<MarkdownDocument> PagesIn(string language) =>
+    private static List<MarkdownDocument> PagesIn(string language) =>
         Repository.Guide
             .Where(page => page.Language == language && !IsMap(page))
             .OrderBy(page => page.Path, StringComparer.Ordinal)
@@ -255,7 +255,7 @@ public sealed class NavigationTests
     /// otherwise walk forever, and reporting "visited fewer pages than exist" is the same failure a
     /// reader meets: pages the order never reaches.
     /// </summary>
-    private static List<string> Walk(string start, IReadOnlyDictionary<string, Navigation> navigation, string language)
+    private static List<string> Walk(string start, Dictionary<string, Navigation> navigation, string language)
     {
         List<string> walked = [];
         HashSet<string> seen = new(StringComparer.Ordinal);

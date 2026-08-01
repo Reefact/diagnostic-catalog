@@ -33,7 +33,7 @@ public sealed class LinkTests
 
     public static TheoryData<string> LinkedDocuments()
     {
-        TheoryData<string> paths = new();
+        TheoryData<string> paths = [];
         foreach (MarkdownDocument document in Repository.Documents)
         {
             paths.Add(document.Path);
@@ -44,7 +44,7 @@ public sealed class LinkTests
 
     public static TheoryData<string> PackageReadmes()
     {
-        TheoryData<string> paths = new();
+        TheoryData<string> paths = [];
         foreach (MarkdownDocument document in Repository.Documents)
         {
             if (document.Path.StartsWith("src/", StringComparison.Ordinal) &&
@@ -114,7 +114,7 @@ public sealed class LinkTests
     {
         MarkdownDocument document = Repository.Require(path);
 
-        IReadOnlyList<MarkdownLink> relative = document.Links
+        List<MarkdownLink> relative = document.Links
             .Where(link => !link.IsExternal && !link.IsLocalAnchor && link.PathPart.Length > 0)
             .ToList();
 
@@ -138,7 +138,7 @@ public sealed class LinkTests
         string images = Path.Combine(Repository.Root, "doc", "images");
         if (!Directory.Exists(images)) return;
 
-        IReadOnlySet<string> referenced = EverythingReferenced();
+        HashSet<string> referenced = EverythingReferenced();
 
         foreach (string file in Directory.EnumerateFiles(images, "*", SearchOption.AllDirectories))
         {
@@ -156,7 +156,7 @@ public sealed class LinkTests
     /// HTML a figure needs — <c>&lt;img src&gt;</c>, and the <c>&lt;source srcset&gt;</c> of a
     /// <c>&lt;picture&gt;</c> offering a light and a dark rendering.
     /// </summary>
-    private static IReadOnlySet<string> EverythingReferenced()
+    private static HashSet<string> EverythingReferenced()
     {
         HashSet<string> referenced = new(StringComparer.Ordinal);
 

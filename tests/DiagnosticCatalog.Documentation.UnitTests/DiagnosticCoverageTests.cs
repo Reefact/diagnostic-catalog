@@ -42,7 +42,7 @@ public sealed class DiagnosticCoverageTests
 
     public static TheoryData<string, string> ShippedByLanguage()
     {
-        TheoryData<string, string> data = new();
+        TheoryData<string, string> data = [];
         foreach (string id in Shipped())
         {
             data.Add(id, "en");
@@ -116,7 +116,7 @@ public sealed class DiagnosticCoverageTests
     [Fact]
     public void The_shipped_diagnostics_are_discovered()
     {
-        IReadOnlyCollection<string> shipped = Shipped();
+        SortedSet<string> shipped = Shipped();
 
         Assert.True(
             shipped.Count >= 5,
@@ -130,7 +130,7 @@ public sealed class DiagnosticCoverageTests
     /// not shipped yet is still one a contributor is about to release, and documenting it after the
     /// release is documenting it late.
     /// </summary>
-    private static IReadOnlyCollection<string> Shipped()
+    private static SortedSet<string> Shipped()
     {
         SortedSet<string> ids = new(StringComparer.Ordinal);
 

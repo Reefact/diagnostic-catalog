@@ -159,11 +159,11 @@ public sealed class MakeRuleMemberConstantCodeFixProvider : CodeFixProvider
     {
         // `const` implies static and forbids readonly, so both go; the accessibility is replaced rather
         // than added to. Anything else the author wrote is kept — this fix has no opinion on it.
-        List<SyntaxToken> respelled = new()
-        {
+        List<SyntaxToken> respelled =
+        [
             SyntaxFactory.Token(SyntaxKind.PublicKeyword),
             SyntaxFactory.Token(SyntaxKind.ConstKeyword),
-        };
+        ];
 
         respelled.AddRange(field.Modifiers.Where(token =>
             !RuleDeclaration.IsAccessibility(token)

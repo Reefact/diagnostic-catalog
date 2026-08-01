@@ -40,7 +40,7 @@ public sealed class CatalogueSampleTests
 
     public static TheoryData<string> DocumentsShowingRules()
     {
-        TheoryData<string> paths = new();
+        TheoryData<string> paths = [];
         foreach (MarkdownDocument document in Repository.Documents)
         {
             if (Declared.Value.Any(catalogue =>
@@ -73,7 +73,7 @@ public sealed class CatalogueSampleTests
                     "is not in the assembly it generates into.");
             }
 
-            IReadOnlyDictionary<string, string> deliberate = DeliberatelyMissing(document);
+            Dictionary<string, string> deliberate = DeliberatelyMissing(document);
 
             foreach (Match reference in Regex.Matches(
                          document.Text,
@@ -197,7 +197,7 @@ public sealed class CatalogueSampleTests
     /// The reason is required, so an exemption is always a sentence somebody wrote.
     /// </para>
     /// </remarks>
-    private static IReadOnlyDictionary<string, string> DeliberatelyMissing(MarkdownDocument document)
+    private static Dictionary<string, string> DeliberatelyMissing(MarkdownDocument document)
     {
         Dictionary<string, string> declared = new(StringComparer.Ordinal);
 
@@ -238,7 +238,7 @@ public sealed class CatalogueSampleTests
     /// needs are stable, and a model of the whole schema would be a third place the schema is
     /// written down.
     /// </summary>
-    private static IReadOnlyList<Catalogue> ReadManifest()
+    private static List<Catalogue> ReadManifest()
     {
         string path = Path.Combine(Repository.Root, "eng", "catalogs.json");
         if (!File.Exists(path)) return [];

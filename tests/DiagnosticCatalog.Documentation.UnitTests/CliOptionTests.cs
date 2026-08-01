@@ -76,7 +76,7 @@ public sealed class CliOptionTests
 
     public static TheoryData<string> DocumentsMentioningTheTool()
     {
-        TheoryData<string> paths = new();
+        TheoryData<string> paths = [];
         foreach (MarkdownDocument document in Repository.Documents)
         {
             if (document.Text.Contains("dcat ", StringComparison.Ordinal))
@@ -143,7 +143,7 @@ public sealed class CliOptionTests
     [Fact]
     public void The_tool_options_are_discovered()
     {
-        IReadOnlyCollection<string> declared = DeclaredOptions();
+        SortedSet<string> declared = DeclaredOptions();
 
         Assert.True(
             declared.Count >= 10,
@@ -159,7 +159,7 @@ public sealed class CliOptionTests
     /// constructor argument is Spectre's own template — <c>"-s|--source &lt;NAME&gt;"</c> — so the
     /// long names are the tokens in it that begin with two hyphens.
     /// </summary>
-    private static IReadOnlyCollection<string> DeclaredOptions()
+    private static SortedSet<string> DeclaredOptions()
     {
         SortedSet<string> options = new(StringComparer.Ordinal);
         foreach (string option in DeclaredByTheApplication)
