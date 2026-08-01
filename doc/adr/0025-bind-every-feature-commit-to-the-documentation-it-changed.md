@@ -209,12 +209,21 @@ and would be skimmed past on the minority where it matters.
 
 ## Follow-up Actions
 
-* Extend the enumerable coverage wherever a source the build already keeps true
-  exists: the public API files and the `dcat` command tree are covered by the
-  change that carries this record; the MSBuild properties under `build/` and the
-  keys of `eng/catalogs.json` are the next candidates and are not covered.
-* Reread the pull-request template's documentation section against this rule, so
-  it asks for what the footer records rather than for a tick.
+* Bind the keys of `eng/catalogs.json` to
+  [`doc/guide/catalogs-manifest`](../guide/catalogs-manifest.en.md). The manifest
+  is a declared set that the generator and the nightly workflow both read, which
+  makes it enumerable in the sense the checks above require, and every key it
+  carries today is already on that page. What is missing is the check: nothing
+  holds the page in step, so the next key added reaches a release with the page
+  unchanged — and a page that is merely out of date reads exactly like a complete
+  one.
+
+No second candidate is named, and looking for one is what showed where the
+boundary actually falls. The files under `build/` declare ordinary MSBuild
+properties; this repository's own knobs — `ReleaseTrain`, `EnableNet472Floor` —
+are declared per project, across ten `.csproj` files. That is a set no single
+file states, so it is not a set any check can read. Adding one is exactly the
+kind of change the footer exists to catch, and it will not be caught another way.
 
 ## References
 
