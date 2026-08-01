@@ -167,9 +167,18 @@ A page and its translation land in the **same commit**. This is not a style
 preference: `tests/DiagnosticCatalog.Documentation.UnitTests` fails a pair
 missing a half, a relative link that does not resolve, a page nothing navigates
 to, a `DCAT` id documented but never shipped — or shipped and never documented —
-and a `dcat` option that exists in one of the two places only. Documentation is
-the artifact where an omission is least visible, because the reader who cannot
-find the page is not in a position to report that it is missing.
+a `dcat` option or command that exists in one of the two places only, and a
+public type the specification never mentions. Documentation is the artifact where
+an omission is least visible, because the reader who cannot find the page is not
+in a position to report that it is missing.
+
+Those checks cover the surfaces that can be **enumerated** from something the
+build already keeps true — the `AnalyzerReleases` files, the settings types, the
+public API files. That is what makes them trustworthy, and it is also their
+limit: a build property, a manifest key, a workflow, a hook, a page of the guide
+itself can all be added without any of them noticing. Which is why a `feat`
+carries a [`Docs:` footer](#the-docs-footer) naming what it documented, or saying
+why it documented nothing.
 
 The layout, the language banner, the navigation footer, the diagram rules and
 what each check actually asserts are in
@@ -517,6 +526,56 @@ A commit is **not** the place to close an issue. Closing is a
 repository-workflow concern: put `Closes #142` in the pull request description,
 and GitHub closes the issue on merge. The commit itself stays neutral, carrying
 at most a `Refs:`.
+
+#### The `Docs:` footer
+
+A `feat` MUST carry a `Docs:` footer. It names the documentation the commit
+changed:
+
+```
+feat(cli): report which catalogues a manifest run rewrote
+
+Docs: doc/guide/dcat-reference.en.md, doc/guide/dcat-reference.fr.md
+```
+
+or it says, in words, why the commit changed none:
+
+```
+feat(core): widen the descriptor cache
+
+Docs: none — the cache is internal; nothing a consumer can name has moved
+```
+
+The rule follows from what `feat` means here — *a new capability, visible to the
+consumer of the package*. A capability the consumer can see and cannot read
+about is either undocumented or mistyped, and the footer makes the author say
+which. `Docs: none` without a reason is refused: an exemption nobody can judge is
+a hole. The reason is a sentence in the permanent record, which is what makes it
+reviewable.
+
+Every entry MUST be a Markdown path relative to the repository root, and under
+[`doc/`](doc/) a page and its translation are named **together** — the parity
+test sees two files that both exist and cannot tell that only one was updated
+([ADR-0022](doc/adr/0022-maintain-every-document-under-doc-in-english-and-french.md)).
+
+The footer is checked twice, and the split is deliberate. Its *shape* is checked
+by the commit linter, so the `commit-msg` hook reports a missing or malformed
+footer before the commit is recorded. Whether the files it names were really
+touched is a question about a commit, not about a message — the hook runs before
+the commit exists, and on `git commit --amend` the index holds only the reword —
+so `tools/commit-lint/check-docs-footer.sh` answers it in CI, and can be run by
+hand on any commit:
+
+```
+tools/commit-lint/check-docs-footer.sh --commit HEAD
+```
+
+Only `feat` is bound. A `fix` restores behaviour the documentation already
+promises, so the honest answer would nearly always be "none", and a field whose
+usual value is "nothing" stops being read. A `fix` that *does* change what is
+documented may carry the footer; nothing forbids it. The decision, its
+alternatives and what it deliberately does not guarantee are in
+[ADR-0025](doc/adr/0025-bind-every-feature-commit-to-the-documentation-it-changed.md).
 
 #### Breaking changes
 
