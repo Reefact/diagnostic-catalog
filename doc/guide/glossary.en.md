@@ -166,5 +166,5 @@ code, which is why they ship as two analyzer classes.
 ---
 
 <div align="center">
-<a href="./faq.en.md">← FAQ</a> · <a href="./README.en.md">↑ Table of contents</a>
+<a href="./faq.en.md">← FAQ</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./architecture.en.md">Repository architecture →</a>
 </div>
