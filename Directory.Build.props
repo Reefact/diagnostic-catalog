@@ -151,7 +151,7 @@
 
     That check reads what the compiler REPORTED rather than what the console showed, because the two
     differ: a diagnostic below warning severity prints nothing at any verbosity, never reaches the
-    ratchet above, and is imported by SonarQube Cloud regardless (ADR-0022).
+    ratchet above, and is imported by SonarQube Cloud regardless (ADR-0024).
 
     Declared here rather than passed as -p:ErrorLog on the command line, and that is not a
     preference. MSBuild does not expand $(...) inside a property value given on the command line —
