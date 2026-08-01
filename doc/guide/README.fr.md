@@ -109,6 +109,21 @@ règles — reflétant les analyseurs d'autres gens.
 
 ## Je contribue à ce dépôt
 
+Les quatre pages ci-dessous sont la piste « internes » : elles expliquent comment le dépôt est
+assemblé, et aucune n'est nécessaire pour *se servir* de tout ceci.
+
+* [**Architecture du dépôt**](architecture.fr.md) — les huit projets, les quatre découpages que
+  quelque chose impose, la boucle d'auto-application, et où vit chaque type de vérification. Un
+  diagramme.
+* [**Dans le générateur**](generator-internals.fr.md) — le chemin qu'une exécution `dcat` emprunte, et
+  ce que chaque étape refuse de faire. Un diagramme.
+* [**Les trains de release**](release-trains.fr.md) — les cinq lignes, comment un projet en rejoint
+  une, et la règle inter-trains qui s'ensuit. Un diagramme.
+* [**La stratégie de test**](testing-strategy.fr.md) — ce que chacun des sept projets de test asserte,
+  lesquels tournent sur le CLR .NET Framework, et la suite que `dotnet test` ne peut pas atteindre.
+
+Plus les deux documents qui ne sont pas des guides :
+
 * [**CONTRIBUTING.md**](../../CONTRIBUTING.md) — compiler et tester, le plancher .NET Framework, les
   trains de release, la convention de commit, et comment ajouter un catalogue.
 * [**doc/CONVENTIONS.en.md**](../CONVENTIONS.en.md) — comment ces documents sont disposés et ce que
@@ -118,7 +133,7 @@ règles — reflétant les analyseurs d'autres gens.
 
 Chaque page de ce dossier est enfilée dans un ordre unique, et le pied de chacune porte la précédente
 et la suivante. Le suivre de bout en bout vous mène d'une simple suppression à la publication de
-votre propre catalogue :
+votre propre catalogue, puis dans le dépôt lui-même :
 
 1. [Démarrer](getting-started.fr.md)
 2. [Pourquoi les chaînes magiques échouent](the-problem.fr.md)
@@ -142,6 +157,13 @@ votre propre catalogue :
 20. [Dépannage](troubleshooting.fr.md)
 21. [FAQ](faq.fr.md)
 22. [Glossaire](glossary.fr.md)
+
+Puis, pour les contributeurs seulement :
+
+23. [Architecture du dépôt](architecture.fr.md)
+24. [Dans le générateur](generator-internals.fr.md)
+25. [Les trains de release](release-trains.fr.md)
+26. [La stratégie de test](testing-strategy.fr.md)
 
 ---
 
