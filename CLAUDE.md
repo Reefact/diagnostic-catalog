@@ -60,6 +60,30 @@ documented, and close to the code that uses it.
   moment it creates: if you cannot decide what to assert, that is the point to
   ask — not to settle the question silently inside the implementation.
 
+### Documenting a feature
+
+* **A `feat` carries a `Docs:` footer.** It names the documentation the commit
+  changed — `Docs: doc/guide/dcat-reference.en.md, doc/guide/dcat-reference.fr.md`
+  — or it says why it changed none: `Docs: none — <reason>`. A reason is
+  required; `Docs: none` alone is refused. Under [`doc/`](doc/) a page and its
+  translation are named **together**, because the parity test sees two files that
+  both exist and cannot tell that only one was updated.
+* This binds `feat` only. A `fix` restores behaviour the documentation already
+  promises; it may carry the footer, and nothing requires it. Full rule in
+  [`CONTRIBUTING.md`](CONTRIBUTING.md) ("The `Docs:` footer"); the decision, and
+  what it deliberately does not guarantee, is
+  [ADR-0025](doc/adr/0025-bind-every-feature-commit-to-the-documentation-it-changed.md).
+* The footer's **shape** is checked by the commit linter, at the hook and in CI.
+  Whether the files it names were really touched is checked in CI by
+  `tools/commit-lint/check-docs-footer.sh`, which you can run yourself on any
+  commit: `tools/commit-lint/check-docs-footer.sh --commit HEAD`.
+* Do not reach for the exemption to avoid writing a page. The documentation tests
+  cover only what they can enumerate — the `DCAT` ids, the `dcat` options and
+  commands, the public API. Everything else a feature adds (a build property, a
+  manifest key, a workflow, a hook) has no check but this footer, so "none" on
+  one of those is a claim nothing will contradict and everything rests on it
+  being true.
+
 ## Release trains
 
 Commits are partitioned into **release trains by scope**, and each train
@@ -162,8 +186,9 @@ essentials, inlined so they hold even if `AGENTS.md` is not read:
 * Write every commit message per [`CONTRIBUTING.md`](CONTRIBUTING.md):
   Conventional Commits, a closed type list, the scopes
   `analyzers, cataloggen, cli, core, netanalyzers, sonar, stylecop`, an imperative
-  header within 72 characters, and `Refs: #NN` in a footer when a GitHub issue
-  exists (issue-closing keywords belong in the PR description, not the commit).
+  header within 72 characters, a `Docs:` footer on every `feat` (see *Documenting
+  a feature*), and `Refs: #NN` in a footer when a GitHub issue exists
+  (issue-closing keywords belong in the PR description, not the commit).
 * Write every pull request title per [`CONTRIBUTING.md`](CONTRIBUTING.md): name
   the whole change in English; a single-intention PR mirrors its commit header
   (`type(scope): description`), a multi-intention PR uses a short descriptive

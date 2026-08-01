@@ -17,9 +17,13 @@
 # Exit status: 0 = conforming (or intentionally exempt), 1 = violations found.
 #
 # Scope note: the header is validated in full (this is where the whole value
-# lives). Bodies are prose and are left alone, except for two safe, high-value
-# footer checks: the breaking-change double signal, and the shape of a `Refs:`
-# footer when one is present.
+# lives). Bodies are prose and are left alone, except for three safe, high-value
+# footer checks: the breaking-change double signal, the shape of a `Refs:` footer
+# when one is present, and the `Docs:` footer a `feat` must carry.
+#
+# The `Docs:` footer is checked here for SHAPE only. Whether the files it names
+# were really touched is a question about a commit, not about a message, and
+# tools/commit-lint/check-docs-footer.sh answers it.
 
 set -u
 
@@ -189,6 +193,94 @@ fi
 bad_refs="$(printf '%s\n' "$msg" | grep -Ei '^ref(s)?:' | grep -Ev '^Refs: #[0-9]+$' || true)"
 if [ -n "$bad_refs" ]; then
   err "the issue footer must read 'Refs: #<number>' (e.g. 'Refs: #142')"
+fi
+
+# --- Docs: footer ---------------------------------------------------------------
+# A `feat` is, by this repository's own definition, "a new capability, visible to
+# the consumer of the package" (CONTRIBUTING.md -> "Types"). A capability the
+# consumer can see and cannot read about is either undocumented or mistyped, and
+# nothing else in the toolchain is in a position to say so: no compiler reads
+# prose, and the documentation tests bind only the surfaces they can enumerate —
+# the DCAT ids, the dcat options and command tree, the public API. Everything
+# else a feature can add — a build property, a manifest key, a workflow, a page
+# of the guide itself — reaches a release with no check at all.
+#
+# So a feat records what it documented, or records that it documented nothing and
+# why. The exemption is deliberately a sentence somebody wrote, the same shape the
+# documentation tests use for a reference a page shows on purpose
+# (doc/CONVENTIONS.en.md -> "Showing a reference that does not exist"): an
+# exemption without a reason is a hole nobody can judge.
+#
+# Bound to `feat` and not to `fix`: a fix restores behaviour the documentation
+# already promises, so the commonest honest answer would be "none" and the footer
+# would decay into a reflex. See ADR-0025.
+
+# The BODY, never the header. `docs` is also a type, so a perfectly good
+# `docs: add the reference track` opens with the very shape a footer scan is
+# looking for — and the header has already been validated in full above.
+docs_body="$(printf '%s\n' "$msg" | sed -n '2,$p')"
+
+# Anything in the body that looks like the footer must read exactly `Docs: <value>`,
+# so a `docs:` or a `Doc :` is reported rather than silently ignored — the same
+# reason `Refs:` is spelled one way.
+malformed_docs="$(printf '%s\n' "$docs_body" | grep -Ei '^doc(s)?[[:space:]]*:' | grep -Ev '^Docs: [^[:space:]]' || true)"
+if [ -n "$malformed_docs" ]; then
+  err "the documentation footer must read 'Docs: <path>[, <path>…]' or 'Docs: none — <reason>'"
+fi
+
+docs_footer="$(printf '%s\n' "$docs_body" | grep -E '^Docs: ' || true)"
+
+is_feat=0
+case "$subject" in
+  feat:*|'feat!:'*|'feat('*) is_feat=1 ;;
+  *) ;; # not a feature: the footer is welcome but not required
+esac
+
+if [ "$is_feat" = 1 ] && [ -z "$docs_footer" ]; then
+  err "a 'feat' must carry a 'Docs:' footer naming the documentation it changes — 'Docs: doc/guide/dcat-reference.en.md, doc/guide/dcat-reference.fr.md' — or 'Docs: none — <reason>'. A capability the consumer can see and cannot read about is either undocumented or mistyped"
+fi
+
+if [ -n "$docs_footer" ]; then
+  docs_count="$(printf '%s\n' "$docs_footer" | awk 'END { print NR }')"
+  if [ "$docs_count" -gt 1 ]; then
+    err "keep the documentation footer to a single 'Docs:' line; separate several paths with commas"
+  fi
+
+  docs_value="$(printf '%s\n' "$docs_footer" | sed -n '1s/^Docs: //p' | sed 's/[[:space:]]*$//')"
+
+  case "$docs_value" in
+    none|none[!A-Za-z0-9]*)
+      # Everything up to the first alphanumeric byte is the separator, whatever the
+      # author reached for — an em dash, a hyphen, a colon. Matching the bytes that
+      # are NOT a reason keeps the pattern ASCII, so it reads the same under any
+      # locale the hook happens to run in.
+      docs_reason="$(printf '%s' "${docs_value#none}" | sed -E 's/^[^A-Za-z0-9]*//')"
+      if [ -z "$docs_reason" ]; then
+        err "'Docs: none' must give a reason — 'Docs: none — <why this feature needs no documentation>'. An exemption without one is a hole nobody can judge"
+      fi
+      ;;
+    *)
+      OLDIFS=$IFS
+      IFS=','
+      for d in $docs_value; do
+        dt="$(printf '%s' "$d" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
+        if [ -z "$dt" ]; then
+          err "the documentation footer has an empty entry — separate paths with a single comma"
+          continue
+        fi
+        case "$dt" in
+          /*) err "'${dt}' must be written relative to the repository root" ; continue ;;
+          *..*) err "'${dt}' must not climb out of the repository" ; continue ;;
+          *) ;;
+        esac
+        case "$dt" in
+          *.md) ;;
+          *) err "'${dt}' is not a Markdown document — this repository documents in Markdown, and a footer naming anything else records nothing a reader can read" ;;
+        esac
+      done
+      IFS=$OLDIFS
+      ;;
+  esac
 fi
 
 # --- verdict ------------------------------------------------------------------
