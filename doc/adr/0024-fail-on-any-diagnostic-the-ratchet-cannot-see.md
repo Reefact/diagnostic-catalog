@@ -1,8 +1,9 @@
 # ADR-0024 | Fail on any diagnostic the warning ratchet cannot see
 
-**Status:** Proposed
+**Status:** Accepted
 **Proposed:** 2026-08-01
-**Decision Makers:** @reefact
+**Accepted:** 2026-08-01
+**Decision Makers:** Reefact
 
 ## Context
 
