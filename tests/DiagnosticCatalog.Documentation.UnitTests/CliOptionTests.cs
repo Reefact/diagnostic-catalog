@@ -63,6 +63,9 @@ public sealed class CliOptionTests
         // shell tooling quoted in the contributor documents
         "proto", "proto-redir", "check", "strict", "no-run-if-empty", "color", "version-sort",
         "quiet", "silent", "recursive",
+        // this repository's own scripts, quoted where a contributor is told to run one:
+        // tools/commit-lint/check-docs-footer.sh takes --commit <sha>
+        "commit",
     };
 
     /// <summary>
