@@ -237,6 +237,9 @@ règles serait lue comme un catalogue vide.
 
 ## Follow-up Actions
 
+* Documenter la propriété avant la fonctionnalité, puisque `--solution` ne lit rien tant qu'elle
+  n'est pas déclarée — fait pour le guide dans `doc/guide/dcat.*.md`,
+  `doc/guide/dcat-reference.*.md` et `doc/guide/catalogs-manifest.*.md`.
 * Aucune contraignante. Le README du paquet de l'outil porte déjà le raisonnement sous forme
   brève ; si cet enregistrement est accepté, c'est l'endroit où mettre un lien une fois que
   ce lien pointerait vers une décision acceptée plutôt que proposée.
