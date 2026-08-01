@@ -10,8 +10,8 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 This train versions independently of the foundation. The tool follows Roslyn and
 the package layouts its vendors publish, both of which move for reasons that have
 nothing to do with the contract a catalogue rests on
-([ADR-0002](../../doc/adr/0002-partition-releases-into-trains-by-commit-scope.md),
-[ADR-0017](../../doc/adr/0017-publish-the-generator-as-a-cli-on-its-own-release-train.md)). Two
+([ADR-0002](../../doc/adr/0002-partition-releases-into-trains-by-commit-scope.en.md),
+[ADR-0017](../../doc/adr/0017-publish-the-generator-as-a-cli-on-its-own-release-train.en.md)). Two
 commit scopes ride it: `cli` for the shell — the command tree, the arguments, the
 exit codes — and `cataloggen` for the engine that acquires analyzer assemblies and
 reads their descriptors.
@@ -25,7 +25,7 @@ its first version will carry rather than a change against a previous one.
 
 * **`dcat generate`** — writes a catalogue from the `DiagnosticDescriptor`
   instances an analyzer actually declares, never from its documentation
-  ([ADR-0009](../../doc/adr/0009-generate-catalog-content-from-analyzer-descriptors.md)).
+  ([ADR-0009](../../doc/adr/0009-generate-catalog-content-from-analyzer-descriptors.en.md)).
   Five kinds of source: a package on nuget.org or any feed your `NuGet.config`
   already configures, a `.nupkg` on disk, one or more of your own projects, a
   solution, and one or more assemblies you have already built. `--manifest`
@@ -72,7 +72,7 @@ its first version will carry rather than a change against a previous one.
   `--language` accepts `cs` and refuses anything else at the command line rather
   than after a package has been downloaded. A settled position rather than a gap
   awaiting work
-  ([ADR-0020](../../doc/adr/0020-a-catalogue-is-generated-for-c-sharp-only.md)).
+  ([ADR-0020](../../doc/adr/0020-a-catalogue-is-generated-for-c-sharp-only.en.md)).
 * **It reads; it does not build.** A project, a solution or an assembly must
   already be built, and what the tool cannot find it names — along with the build
   command that would produce it. That is what keeps `validate` safe to run against

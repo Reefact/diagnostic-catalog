@@ -101,7 +101,7 @@ supprimer une casse leur recompilation avec un `CS0117` nu qui nomme un type, un
 n'explique rien.
 
 Reportée en `[Obsolete]`, la même montée de version leur donne `CS0618` — qui nomme la règle et dit ce
-qui s'est passé ([ADR-0010](../adr/0010-carry-a-retired-rule-forward-as-obsolete.md)).
+qui s'est passé ([ADR-0010](../adr/0010-carry-a-retired-rule-forward-as-obsolete.fr.md)).
 
 ## Pourquoi la tâche nocturne ouvre-t-elle une pull request au lieu de fusionner ?
 
@@ -129,14 +129,14 @@ eux-mêmes. Ils ne sont ni affiliés, ni approuvés, ni supportés par aucun de 
 
 Les *faits* des règles sont redistribués — identifiant, catégorie, lien d'aide, titre. La prose des
 éditeurs ne l'est délibérément pas
-([ADR-0011](../adr/0011-redistribute-rule-facts-only-never-the-vendors-prose.md),
-[ADR-0014](../adr/0014-ship-the-vendors-rule-title-as-a-catalogues-documentation.md)).
+([ADR-0011](../adr/0011-redistribute-rule-facts-only-never-the-vendors-prose.fr.md),
+[ADR-0014](../adr/0014-ship-the-vendors-rule-title-as-a-catalogues-documentation.fr.md)).
 
 ## Puis-je l'utiliser sur .NET Framework ?
 
 Oui. Les bibliothèques ciblent `netstandard2.0` et `net10.0`, et le plancher est plus qu'une
 affirmation de compilation — la CI exécute la suite de tests sur le vrai CLR .NET Framework 4.7.2
-([ADR-0001](../adr/0001-floor-the-libraries-on-net-framework-4-7-2.md)).
+([ADR-0001](../adr/0001-floor-the-libraries-on-net-framework-4-7-2.fr.md)).
 
 ## Où poser une question qui n'est pas ici ?
 

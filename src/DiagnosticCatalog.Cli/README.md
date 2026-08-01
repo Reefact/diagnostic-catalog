@@ -142,6 +142,10 @@ Reading none of them and emitting nothing would report success for a catalogue t
 never generated.
 ```
 
+The full reasoning — including the six alternatives that were rejected, and why a
+heuristic's accuracy cannot be assessed on your solution — is recorded in
+[ADR-0023](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/adr/0023-acquire-a-solutions-analyzers-by-declaration.en.md).
+
 ## Generating from your own analyzers
 
 Point it at assemblies you have already built. Repeat `--assembly` when a
@@ -324,7 +328,7 @@ and a Visual Basic analyzer derives from types in
 `cs` and refuses anything else at the command line, rather than after a package has
 been downloaded. That is a settled position rather than a gap awaiting work, and
 the reasoning is recorded in
-[ADR-0020](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/adr/0020-a-catalogue-is-generated-for-c-sharp-only.md).
+[ADR-0020](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/adr/0020-a-catalogue-is-generated-for-c-sharp-only.en.md).
 
 Both processes `dcat` spawns — that worker, and MSBuild for `--project` and
 `--solution` — are

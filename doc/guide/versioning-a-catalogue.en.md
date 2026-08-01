@@ -51,7 +51,7 @@ A consumer still referencing it now gets `CS0618` — which **names the rule and
 instead of a compile error that sends them looking for a missing namespace or a bad `using`.
 
 That difference is the whole point of the convention
-([ADR-0010](../adr/0010-carry-a-retired-rule-forward-as-obsolete.md)). The alternative is not "a
+([ADR-0010](../adr/0010-carry-a-retired-rule-forward-as-obsolete.en.md)). The alternative is not "a
 cleaner catalogue"; it is an upgrade that fails for a reason nobody can read.
 
 Name the release that dropped it. The consumer's next question is always "when, and is there a
@@ -67,7 +67,7 @@ useless `CS0117`. That includes tidying `ContosoCategory.CodeSmells` into
 contract.
 
 This repository holds itself to it
-([ADR-0012](../adr/0012-a-catalogue-never-renames-a-member-it-published.md)), and the case that
+([ADR-0012](../adr/0012-a-catalogue-never-renames-a-member-it-published.en.md)), and the case that
 forced the decision is worth knowing because it was not a human's mistake: a new category arriving
 upstream, whose flattened identifier collided with an existing one and sorted before it, would have
 taken that name and pushed the incumbent onto a numbered suffix — renaming a published member,
@@ -100,7 +100,7 @@ produces no diff and no release.
 
 A catalogue mirroring `SonarAnalyzer.CSharp 10.31.0` is **not** version `10.31.0`.
 
-It runs on its own line ([ADR-0015](../adr/0015-a-catalogues-version-runs-on-its-own-line.md)), for a
+It runs on its own line ([ADR-0015](../adr/0015-a-catalogues-version-runs-on-its-own-line.en.md)), for a
 reason that becomes obvious the first time you need it: you will publish a fix to the catalogue —
 a metadata correction, a packaging change, a title that was dropped — with the upstream release
 unchanged. If the numbers are tied, that release has no number available.
@@ -125,7 +125,7 @@ release never drags the foundation's version along, and vice versa.
 
 If the analyzer you mirror publishes its real work on a prerelease line, mirror that line rather than
 a stale stable tag. StyleCop is the case that settled it here
-([ADR-0016](../adr/0016-mirror-stylecops-prerelease-line.md)): its stable release is years behind what
+([ADR-0016](../adr/0016-mirror-stylecops-prerelease-line.en.md)): its stable release is years behind what
 everybody actually runs, and a catalogue reflecting it would describe rules its users do not have and
 omit the ones they do.
 

@@ -94,7 +94,7 @@ dependency on a version of the other train that was never published, and the
 package would be unresolvable for every consumer. Depend on another train through
 a `PackageReference` to a version that is actually on nuget.org. The rule is
 checked on every pack; decision:
-[ADR-0007](doc/adr/0007-depend-across-trains-through-published-packages.md).
+[ADR-0007](doc/adr/0007-depend-across-trains-through-published-packages.en.md).
 
 ### Cutting a release
 
@@ -131,7 +131,7 @@ you of — because nothing compiles a README.
    *How a project joins a train*), a `<PackageId>`, and a `PackageReadmeFile`. A
    catalogue rides its own train because it follows its vendor's pace, not the
    foundation's:
-   [ADR-0015](doc/adr/0015-a-catalogues-version-runs-on-its-own-line.md).
+   [ADR-0015](doc/adr/0015-a-catalogues-version-runs-on-its-own-line.en.md).
 3. **Generate it**:
    `dotnet run --project src/DiagnosticCatalog.Cli -- generate --manifest eng/catalogs.json`,
    or `dcat generate --manifest eng/catalogs.json` with the tool installed.
@@ -149,7 +149,7 @@ you of — because nothing compiles a README.
    README that has not heard of the newcomer, in both directions. Name the
    package id; link it only once it is published, since an address cannot be
    pointed at a version that does not exist
-   ([ADR-0007](doc/adr/0007-depend-across-trains-through-published-packages.md)).
+   ([ADR-0007](doc/adr/0007-depend-across-trains-through-published-packages.en.md)).
 
 ## Documentation
 
@@ -157,7 +157,7 @@ The repository is written in **English** — source, comments, commit messages,
 branch names, pull request titles, issues. [`doc/`](doc/) is the one exception,
 and it is bilingual: every document there exists as an `.en.md` / `.fr.md` pair,
 with the **English version canonical** wherever the two disagree
-([ADR-0022](doc/adr/0022-maintain-every-document-under-doc-in-english-and-french.md)).
+([ADR-0022](doc/adr/0022-maintain-every-document-under-doc-in-english-and-french.en.md)).
 
 The package READMEs under `src/` stay English-only. nuget.org renders one file
 per package, offers no language switch, and resolves no relative link — which is
@@ -556,7 +556,7 @@ reviewable.
 Every entry MUST be a Markdown path relative to the repository root, and under
 [`doc/`](doc/) a page and its translation are named **together** — the parity
 test sees two files that both exist and cannot tell that only one was updated
-([ADR-0022](doc/adr/0022-maintain-every-document-under-doc-in-english-and-french.md)).
+([ADR-0022](doc/adr/0022-maintain-every-document-under-doc-in-english-and-french.en.md)).
 
 The footer is checked twice, and the split is deliberate. Its *shape* is checked
 by the commit linter, so the `commit-msg` hook reports a missing or malformed
@@ -575,7 +575,7 @@ promises, so the honest answer would nearly always be "none", and a field whose
 usual value is "nothing" stops being read. A `fix` that *does* change what is
 documented may carry the footer; nothing forbids it. The decision, its
 alternatives and what it deliberately does not guarantee are in
-[ADR-0025](doc/adr/0025-bind-every-feature-commit-to-the-documentation-it-changed.md).
+[ADR-0025](doc/adr/0025-bind-every-feature-commit-to-the-documentation-it-changed.en.md).
 
 #### Breaking changes
 
@@ -722,9 +722,9 @@ Ordered as the rules are: type, scope, description, body, breaking, issue.
 This guide is the rule for commits in this repository. Deviating from it
 requires a justification — an ADR under [`doc/adr/`](doc/adr/), or an update to
 this guide. The convention itself is recorded as
-[ADR-0003](doc/adr/0003-adopt-and-enforce-a-conventional-commits-convention.md),
+[ADR-0003](doc/adr/0003-adopt-and-enforce-a-conventional-commits-convention.en.md),
 and the release trains that make the scope load-bearing as
-[ADR-0002](doc/adr/0002-partition-releases-into-trains-by-commit-scope.md).
+[ADR-0002](doc/adr/0002-partition-releases-into-trains-by-commit-scope.en.md).
 
 It applies from its adoption on, to every commit created after. Prior history is
 not rewritten.

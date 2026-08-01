@@ -112,7 +112,7 @@ Deux frontières honnêtes sur ce que cela prouve :
   d'assemblage absente est une propriété documentée du compilateur C# — il n'émet pas de références
   que la sortie n'utilise pas — plutôt que quelque chose que cette suite asserte.
 * Il tourne sur `net10.0` et, via le plancher .NET Framework, sur le vrai CLR .NET Framework 4.7.2
-  ([ADR-0001](../adr/0001-floor-the-libraries-on-net-framework-4-7-2.md)). La moitié
+  ([ADR-0001](../adr/0001-floor-the-libraries-on-net-framework-4-7-2.fr.md)). La moitié
   `UnconditionalSuppressMessage` est réservée à `net`, parce que cet attribut n'existe pas sur .NET
   Framework.
 

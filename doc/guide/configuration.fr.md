@@ -156,7 +156,7 @@ quelque chose à trouver, et disparaît quand il n'y en a plus.
 
 * **Les règles qu'un catalogue décrit.** C'est généré depuis les descripteurs de l'analyseur, et
   l'éditer à la main est la dérive que la génération existe pour empêcher
-  ([ADR-0009](../adr/0009-generate-catalog-content-from-analyzer-descriptors.md)).
+  ([ADR-0009](../adr/0009-generate-catalog-content-from-analyzer-descriptors.fr.md)).
 * **Le caractère *raisonnable* d'une suppression.** Aucun réglage de gravité ne transforme ceci en un
   jugement sur le fait que faire taire une règle à cet endroit était une bonne idée. `Justification`
   est là pour cela.

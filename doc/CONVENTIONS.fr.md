@@ -22,17 +22,17 @@ quoi que ce soit.
 | --- | --- | --- |
 | [`doc/guide/`](guide/) | Le jeu de documentation destiné au lecteur. Un dossier plat. | Anglais **et** français |
 | [`doc/specification.en.md`](specification.en.md) | Le document de conception normatif. Canonique. | Anglais et français |
-| [`doc/adr/`](adr/) | Les décisions d'architecture. | Anglais aujourd'hui ; français à venir |
-| `README.md` à la racine du dépôt | La vitrine. | Anglais aujourd'hui ; une version française est à venir |
+| [`doc/adr/`](adr/) | Les décisions d'architecture. | Anglais **et** français |
+| `README.md` à la racine du dépôt | La vitrine. | Anglais uniquement — hors de `doc/`, voir plus bas |
 | `src/*/README.md` | Les pages de paquet sur nuget.org. | Anglais uniquement — voir plus bas |
 
 **Ce que la vérification de parité voit réellement**, c'est tout document dont le nom porte un
-suffixe de langue — `<nom>.en.md` ou `<nom>.fr.md`. Les décisions d'architecture sous `doc/adr/`
-n'en portent pas encore : elles sont toujours en `NNNN-titre-court.md`, et leur conversion est une
-action de suivi consignée dans
-[ADR-0022](adr/0022-maintain-every-document-under-doc-in-english-and-french.md). Rien n'est exempté
-par une liste, et c'est délibéré — une vérification à liste d'exceptions dérive vers une
-vérification qui n'est plus que des exceptions.
+suffixe de langue — `<nom>.en.md` ou `<nom>.fr.md`. Tout ce qui est sous `doc/` en porte un,
+décisions d'architecture comprises : `NNNN-titre-court.en.md` et sa moitié française. Rien n'est
+exempté par une liste, et c'est délibéré — une vérification à liste d'exceptions dérive vers une
+vérification qui n'est plus que des exceptions. Un document qui ne doit pas être apparié en est tenu
+à l'écart en ne portant aucun suffixe, et c'est pourquoi `doc/adr/template.md` — un squelette à
+copier, pas une page à lire — n'en a pas.
 
 **Le dossier du guide est plat exprès.** Chaque lien inter-langues est alors un simple voisin
 (`./concepts.fr.md`), et chaque lien de navigation aussi. Une arborescence achèterait un regroupement
@@ -57,7 +57,7 @@ doc/guide/getting-started.fr.md
 ```
 
 Kebab-case, parce que c'est ce que le reste du dépôt utilise déjà — `specification.en.md`,
-`0001-floor-the-libraries-on-net-framework-4-7-2.md` — et qu'un ensemble de fichiers qui se nomme de
+`0001-floor-the-libraries-on-net-framework-4-7-2.fr.md` — et qu'un ensemble de fichiers qui se nomme de
 deux façons n'apprend rien au lecteur, sinon que personne n'a tranché.
 
 **Le nom est en anglais dans les deux langues.** `getting-started.fr.md`, jamais `demarrage.fr.md`.
@@ -245,7 +245,7 @@ projet de test :
   écrivaient le conteneur `SonarRules`, et aucun d'eux ne compilait.
 
 Toutes comparent un document à la vérité compilée plutôt qu'à un autre document. C'est le même
-raisonnement qu'[ADR-0009](adr/0009-generate-catalog-content-from-analyzer-descriptors.md) : les
+raisonnement qu'[ADR-0009](adr/0009-generate-catalog-content-from-analyzer-descriptors.fr.md) : les
 descripteurs sont ce avec quoi l'analyseur signale, donc ce contre quoi une affirmation à leur sujet
 se vérifie.
 
@@ -269,7 +269,7 @@ La forme du pied est vérifiée avec le reste du message ; que les fichiers qu'i
 réellement été touchés est résolu contre le commit dans la CI, et une page nommée dans une seule
 langue est refusée — les deux fichiers existent, donc la vérification de parité ci-dessus ne peut pas
 la voir. La règle, et ce qu'elle ne garantit délibérément pas, est
-[ADR-0025](adr/0025-bind-every-feature-commit-to-the-documentation-it-changed.md) ; la formulation est
+[ADR-0025](adr/0025-bind-every-feature-commit-to-the-documentation-it-changed.fr.md) ; la formulation est
 dans [`CONTRIBUTING.md`](../CONTRIBUTING.md).
 
 ### Montrer une référence qui n'existe pas

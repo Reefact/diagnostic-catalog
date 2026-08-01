@@ -8,7 +8,7 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 This train versions independently of the foundation and of the other catalogues,
 so following SonarSource's pace never drags anything else along
-([ADR-0002](../../doc/adr/0002-partition-releases-into-trains-by-commit-scope.md)).
+([ADR-0002](../../doc/adr/0002-partition-releases-into-trains-by-commit-scope.en.md)).
 The upstream release a given version mirrors is recorded in the package's own
 metadata by `[assembly: CatalogSource]`, so the package version does not encode it
 (specification §14.2) — read it from the assembly rather than inferring it from the
@@ -49,7 +49,7 @@ category they shipped with. What moved is what each rule says about itself.
   instead of restating the identifier under the cursor. This catalogue gains the
   most from it: SonarAnalyzer.CSharp populates no help link, so until now a rule
   had nothing at all to say for itself
-  ([ADR-0014](../../doc/adr/0014-ship-the-vendors-rule-title-as-a-catalogues-documentation.md)).
+  ([ADR-0014](../../doc/adr/0014-ship-the-vendors-rule-title-as-a-catalogues-documentation.en.md)).
 
 ### Changed
 
@@ -78,7 +78,7 @@ category they shipped with. What moved is what each rule says about itself.
   invent them.
 * **Ids and categories only.** Rule titles and descriptions are SonarSource's
   authored prose and are deliberately not redistributed
-  ([ADR-0011](../../doc/adr/0011-redistribute-rule-facts-only-never-the-vendors-prose.md)).
+  ([ADR-0011](../../doc/adr/0011-redistribute-rule-facts-only-never-the-vendors-prose.en.md)).
 * **Nothing is checked at compile time by this package alone.** It declares; the
   analyzers that validate declarations and use sites ship separately as
   `DiagnosticCatalog.Analyzers`, which does not exist yet.
@@ -90,4 +90,4 @@ category they shipped with. What moved is what each rule says about itself.
 This package is not affiliated with, endorsed by, or supported by SonarSource.
 "Sonar" and "SonarQube" are trademarks of SonarSource S.A. Every value in it is
 read from the analyzers' own `DiagnosticDescriptor` instances
-([ADR-0009](../../doc/adr/0009-generate-catalog-content-from-analyzer-descriptors.md)).
+([ADR-0009](../../doc/adr/0009-generate-catalog-content-from-analyzer-descriptors.en.md)).

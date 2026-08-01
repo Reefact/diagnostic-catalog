@@ -39,7 +39,7 @@ classe statique ne peut pas participer à l'héritage classique du tout.
 
 Le contrat est donc **vérifié par un analyseur** plutôt qu'imposé par un système de types qui n'a
 aucun moyen de l'imposer
-([ADR-0008](../adr/0008-express-a-rule-as-a-marked-static-class-of-constants.md)).
+([ADR-0008](../adr/0008-express-a-rule-as-a-marked-static-class-of-constants.fr.md)).
 
 ## Le marqueur est apparié par nom, jamais par symbole
 
@@ -95,7 +95,7 @@ et rien dans la plateforme ne compare les deux.
 Ce n'est pas un manque de cette bibliothèque — c'est la propriété à cause de laquelle elle existe.
 L'exactitude ici relève de la crédibilité du catalogue, ce qui explique que les catalogues de ce dépôt
 soient générés depuis les descripteurs plutôt que transcrits
-([ADR-0009](../adr/0009-generate-catalog-content-from-analyzer-descriptors.md)).
+([ADR-0009](../adr/0009-generate-catalog-content-from-analyzer-descriptors.fr.md)).
 
 ## Les catégories déclarées une seule fois
 

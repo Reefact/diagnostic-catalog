@@ -49,7 +49,7 @@ constants everywhere else:
 A mistyped reference stops the build, where a mistyped string compiles happily into a
 suppression that does nothing. A rule the vendor retires is kept and marked `[Obsolete]`,
 so an upgrade warns you to drop the suppression rather than breaking recompilation
-([ADR-0010](doc/adr/0010-carry-a-retired-rule-forward-as-obsolete.md)). And the category
+([ADR-0010](doc/adr/0010-carry-a-retired-rule-forward-as-obsolete.en.md)). And the category
 has exactly one published source of truth, read from the analyzer's own
 `DiagnosticDescriptor` rather than retyped from memory.
 
@@ -71,7 +71,7 @@ The three vendor catalogues are **generated**, never hand-written, and carry ids
 categories, help links and the rule's own title — the last as a documentation comment, so
 that hovering a constant says what the rule is about. Rule descriptions and message
 formats are the vendors' documentation and are deliberately left out
-([ADR-0014](doc/adr/0014-ship-the-vendors-rule-title-as-a-catalogues-documentation.md)).
+([ADR-0014](doc/adr/0014-ship-the-vendors-rule-title-as-a-catalogues-documentation.en.md)).
 How that generation works, and what keeps it honest, is the next section.
 
 `DiagnosticCatalog.Self` comes off the same generator, pointed at this repository's own
@@ -121,7 +121,7 @@ analyzer package, constructs every `DiagnosticAnalyzer` it contains, and reads t
 as prose drifts from what the analyzer really does, and since nothing in the platform
 validates a category, a value copied from documentation that had gone stale would produce
 no symptom anywhere
-([ADR-0009](doc/adr/0009-generate-catalog-content-from-analyzer-descriptors.md)).
+([ADR-0009](doc/adr/0009-generate-catalog-content-from-analyzer-descriptors.en.md)).
 
 **Detect drift every night.** A [scheduled workflow](.github/workflows/nightly-catalogs.yml)
 regenerates every catalogue at 03:17 UTC and opens a pull request when something actually
@@ -139,7 +139,7 @@ human accepts it.
 naming the release that dropped it. A consumer gets a warning telling them to remove the
 suppression, instead of a build broken by a member that vanished — consumers inline constant
 values at their own compile time
-([ADR-0010](doc/adr/0010-carry-a-retired-rule-forward-as-obsolete.md)).
+([ADR-0010](doc/adr/0010-carry-a-retired-rule-forward-as-obsolete.en.md)).
 
 **Publish on a tag, with receipts.** Each catalogue rides its own
 [release train](CONTRIBUTING.md) and versions independently, so following SonarSource's pace
@@ -147,7 +147,7 @@ never drags the foundation's version along. Pushing a train tag runs the release
 which packs, embeds an SPDX SBOM, and publishes through
 [Trusted Publishing](https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing)
 with signed build provenance
-([ADR-0006](doc/adr/0006-publish-through-trusted-publishing-with-provenance-and-an-sbom.md)) —
+([ADR-0006](doc/adr/0006-publish-through-trusted-publishing-with-provenance-and-an-sbom.en.md)) —
 there is no long-lived API key anywhere to leak.
 
 The packaging half of that pipeline — build, pack, SBOM, and the packaging guards — is
@@ -160,7 +160,7 @@ nuget.org, no release is created. A dry run that faked those would prove nothing
 
 The foundation shipped first, on its own, because it had to: a catalogue cannot depend on
 it through a package reference until a version of it exists
-([ADR-0007](doc/adr/0007-depend-across-trains-through-published-packages.md)). That release
+([ADR-0007](doc/adr/0007-depend-across-trains-through-published-packages.en.md)). That release
 is what unblocked the three vendor catalogues, which now ride their own trains.
 
 | | Status |
@@ -169,7 +169,7 @@ is what unblocked the three vendor catalogues, which now ride their own trains.
 | `DiagnosticCatalog.Sonar` / `.NetAnalyzers` / `.StyleCop` | **Published**, on their own trains, each versioning at its vendor's pace. |
 | `DiagnosticCatalog.Analyzers` | **Built, not published yet** — the diagnostics that validate declarations and use sites. It rides the `lib` train, so the next tag there ships it. |
 | `DiagnosticCatalog.Self` | **Built, not published yet** — the `DCAT` rules as a catalogue, generated from the analyzers above. It rides the `lib` train with them, on purpose: the two must never describe different rule sets. |
-| `DiagnosticCatalog.Cli`, the `dcat` tool | **Built, not published yet** — the generator, packaged as a .NET tool on its own `cli` train ([ADR-0017](doc/adr/0017-publish-the-generator-as-a-cli-on-its-own-release-train.md)). |
+| `DiagnosticCatalog.Cli`, the `dcat` tool | **Built, not published yet** — the generator, packaged as a .NET tool on its own `cli` train ([ADR-0017](doc/adr/0017-publish-the-generator-as-a-cli-on-its-own-release-train.en.md)). |
 
 Referencing the foundation alone declares rules; it performs **no checking**. That part is
 the analyzer package, which exists in the repository but has no version on nuget.org yet —
@@ -233,7 +233,7 @@ public static class Rules
 Both members must be `const`: a property, a `static readonly` field or a `record` cannot
 be an attribute argument. That is also why the contract is structural rather than an
 interface or a base class — see
-[ADR-0008](doc/adr/0008-express-a-rule-as-a-marked-static-class-of-constants.md).
+[ADR-0008](doc/adr/0008-express-a-rule-as-a-marked-static-class-of-constants.en.md).
 
 ## 📖 Guides
 
@@ -283,7 +283,7 @@ A handful of suppressions in one project does not need any of this.
 
 The libraries target **`netstandard2.0`** and **`net10.0`**. That floor is more than a
 compile-time claim: CI runs the test suite on the real .NET Framework 4.7.2 CLR
-([ADR-0001](doc/adr/0001-floor-the-libraries-on-net-framework-4-7-2.md)).
+([ADR-0001](doc/adr/0001-floor-the-libraries-on-net-framework-4-7-2.en.md)).
 
 Applying `[DiagnosticRule]` introduces no runtime behaviour. The runtime materialises
 custom attributes lazily, so `DiagnosticCatalog.dll` is never actually loaded unless
@@ -293,7 +293,7 @@ something reflects over the rule types.
 
 Releases publish through [Trusted Publishing](https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing)
 with signed build provenance and an embedded SBOM
-([ADR-0006](doc/adr/0006-publish-through-trusted-publishing-with-provenance-and-an-sbom.md)).
+([ADR-0006](doc/adr/0006-publish-through-trusted-publishing-with-provenance-and-an-sbom.en.md)).
 Packages are versioned in independent [release trains](CONTRIBUTING.md), so a Sonar
 release does not move the foundation's version. Verification details are in
 [SECURITY.md](SECURITY.md).
@@ -315,7 +315,7 @@ signpost to four kinds of document:
 
 Every page under `doc/` exists in English and French, and **English is canonical**: where the
 two disagree, the English version wins
-([ADR-0022](doc/adr/0022-maintain-every-document-under-doc-in-english-and-french.md)).
+([ADR-0022](doc/adr/0022-maintain-every-document-under-doc-in-english-and-french.en.md)).
 
 Outside `doc/`:
 

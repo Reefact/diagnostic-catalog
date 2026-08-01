@@ -35,7 +35,7 @@ that property, so an ordinary `dotnet build` — and the whole local inner loop 
 **Which projects join is a decision, not a default.** A test project joins when it exercises a shipped
 `netstandard2.0` library, because that is what the floor exists to prove: not that the code *compiles*
 against `netstandard2.0`, but that it *runs* on the real 4.7.2 CLR
-([ADR-0001](../adr/0001-floor-the-libraries-on-net-framework-4-7-2.md)).
+([ADR-0001](../adr/0001-floor-the-libraries-on-net-framework-4-7-2.en.md)).
 
 The four projects that stay off it cover tooling that never meets that runtime: `dcat` is floored at
 net8.0, the analyzers run inside a host compiler, the generator is build-time, and the documentation
@@ -131,7 +131,7 @@ Tests live in `tools/tests/`, one `test-<script>.sh` per script. Each runs as it
 command's status and reports success however many assertions failed.
 
 The suite is invoked with `sh` rather than `bash`: every script carries a `#!/bin/sh` shebang and is
-written to POSIX ([ADR-0013](../adr/0013-write-the-shell-tooling-for-posix-sh-not-bash.md)), so
+written to POSIX ([ADR-0013](../adr/0013-write-the-shell-tooling-for-posix-sh-not-bash.en.md)), so
 running it under bash would let a bashism pass CI and fail on a contributor's machine.
 
 ## Adding a test for a new diagnostic

@@ -50,7 +50,7 @@ a new `DCAT` id cannot ship without the catalogue that publishes it.
 This catalogue rides the `lib` train, with the analyzers it mirrors, and that is deliberate: the two
 are generated from one source in one repository and must never describe different rule sets. The
 other three catalogues version independently because an outside vendor sets their pace
-([ADR-0015](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/adr/0015-a-catalogues-version-runs-on-its-own-line.md)); nobody outside sets
+([ADR-0015](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/adr/0015-a-catalogues-version-runs-on-its-own-line.en.md)); nobody outside sets
 this one's.
 
 A retired rule is carried forward as `[Obsolete]` rather than deleted, like everywhere else here:

@@ -85,9 +85,9 @@ recorded once and linked rather than repeated:
   contract, the platform behaviour it relies on, the generator, the analyzer diagnostics, packaging.
   Normative, and longer than any guide.
 * [**The architecture decision records**](../adr/) — the lasting decisions and why they were taken.
-  Start with [ADR-0008](../adr/0008-express-a-rule-as-a-marked-static-class-of-constants.md) (why a
+  Start with [ADR-0008](../adr/0008-express-a-rule-as-a-marked-static-class-of-constants.en.md) (why a
   rule is a marked static class of constants) and
-  [ADR-0009](../adr/0009-generate-catalog-content-from-analyzer-descriptors.md) (why catalogue
+  [ADR-0009](../adr/0009-generate-catalog-content-from-analyzer-descriptors.en.md) (why catalogue
   content is read from descriptors and never from documentation).
 
 ## I want to see it working rather than read about it

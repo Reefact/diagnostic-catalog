@@ -126,9 +126,9 @@ Once the value is a reference rather than text:
 * **Retirement warns instead of breaking.** A rule the vendor drops is kept in the catalogue and
   marked `[Obsolete]`, naming the release that dropped it. You get `CS0618`, which says what
   happened, rather than a build that still passes with a suppression that no longer means anything
-  ([ADR-0010](../adr/0010-carry-a-retired-rule-forward-as-obsolete.md)).
+  ([ADR-0010](../adr/0010-carry-a-retired-rule-forward-as-obsolete.en.md)).
 * **The category has one source.** It is read from the analyzer's own `DiagnosticDescriptor`, never
-  from documentation about it ([ADR-0009](../adr/0009-generate-catalog-content-from-analyzer-descriptors.md)).
+  from documentation about it ([ADR-0009](../adr/0009-generate-catalog-content-from-analyzer-descriptors.en.md)).
 
 ## The honest limits
 

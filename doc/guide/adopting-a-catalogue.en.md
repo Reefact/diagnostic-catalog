@@ -104,7 +104,7 @@ catalogue carries the rule's own title as XML documentation, so hovering the con
 | Situation | Why no fix |
 | --- | --- |
 | Two catalogues describe the same rule | Choosing between them is a decision about which package your file depends on. |
-| `DCAT0007` where the literal names a *different* rule from the reference beside it | Completing it would silence a different rule than the one silenced today, and let the original warning back in. That is a change of behaviour, not a migration ([ADR-0018](../adr/0018-a-code-fix-never-decides-what-only-the-author-can.md)). |
+| `DCAT0007` where the literal names a *different* rule from the reference beside it | Completing it would silence a different rule than the one silenced today, and let the original warning back in. That is a change of behaviour, not a migration ([ADR-0018](../adr/0018-a-code-fix-never-decides-what-only-the-author-can.en.md)). |
 
 Both are places where a lightbulb would have to guess, and the fix declines rather than guessing
 quietly.

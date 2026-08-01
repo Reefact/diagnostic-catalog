@@ -118,7 +118,7 @@ toute la raison de leur présence dans le modèle.
 
 `Title` mérite doublement sa place : les catalogues générés le portent en commentaire de documentation
 XML, si bien que survoler `SonarRule.S1144` dans un éditeur dit de quoi parle la règle
-([ADR-0014](../adr/0014-ship-the-vendors-rule-title-as-a-catalogues-documentation.md)). Donnez un
+([ADR-0014](../adr/0014-ship-the-vendors-rule-title-as-a-catalogues-documentation.fr.md)). Donnez un
 `Title` aux vôtres et vos utilisateurs obtiennent la même chose.
 
 ## Où le catalogue doit vivre

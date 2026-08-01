@@ -58,7 +58,7 @@ plutôt que publié seul. Déclarer un train le rendrait empaquetable et lui don
 personne ne référencerait jamais.
 
 C'est la seule forme de projet pour laquelle
-[ADR-0007](../adr/0007-depend-across-trains-through-published-packages.md) bénit une
+[ADR-0007](../adr/0007-depend-across-trains-through-published-packages.fr.md) bénit une
 `ProjectReference` — le projet analyseur ordonne la compilation et empaquette la sortie.
 
 ### Les deux classes d'analyseur
@@ -90,7 +90,7 @@ d'arguments écrit à la main a cédé la place à Spectre.Console.Cli.
 
 Le moteur cible `net8.0`, pas `net10.0`, parce que l'outil y est planché pour qu'une seule build
 s'installe sur .NET 8 et tous les majeurs suivants
-([ADR-0017](../adr/0017-publish-the-generator-as-a-cli-on-its-own-release-train.md)). Un projet
+([ADR-0017](../adr/0017-publish-the-generator-as-a-cli-on-its-own-release-train.fr.md)). Un projet
 `net8.0` ne peut pas référencer un projet `net10.0` : le moteur fixe donc le plancher autant que la
 coquille.
 

@@ -94,7 +94,7 @@ Constants are inlined into your consumers' assemblies at **their** compile time.
 their recompilation with a bare `CS0117` that names a type and a missing member and explains nothing.
 
 Carried forward as `[Obsolete]`, the same upgrade gives them `CS0618` — which names the rule and says
-what happened ([ADR-0010](../adr/0010-carry-a-retired-rule-forward-as-obsolete.md)).
+what happened ([ADR-0010](../adr/0010-carry-a-retired-rule-forward-as-obsolete.en.md)).
 
 ## Why does the nightly job open a pull request instead of merging?
 
@@ -120,14 +120,14 @@ affiliated with, endorsed by, or supported by any of those projects. "Sonar" and
 trademarks of SonarSource S.A.
 
 The rule *facts* are redistributed — id, category, help link, title. The vendors' rule prose is
-deliberately not ([ADR-0011](../adr/0011-redistribute-rule-facts-only-never-the-vendors-prose.md),
-[ADR-0014](../adr/0014-ship-the-vendors-rule-title-as-a-catalogues-documentation.md)).
+deliberately not ([ADR-0011](../adr/0011-redistribute-rule-facts-only-never-the-vendors-prose.en.md),
+[ADR-0014](../adr/0014-ship-the-vendors-rule-title-as-a-catalogues-documentation.en.md)).
 
 ## Can I use this on .NET Framework?
 
 Yes. The libraries target `netstandard2.0` and `net10.0`, and the floor is more than a compile-time
 claim — CI runs the test suite on the real .NET Framework 4.7.2 CLR
-([ADR-0001](../adr/0001-floor-the-libraries-on-net-framework-4-7-2.md)).
+([ADR-0001](../adr/0001-floor-the-libraries-on-net-framework-4-7-2.en.md)).
 
 ## Where do I ask something that is not here?
 

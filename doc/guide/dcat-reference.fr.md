@@ -111,7 +111,7 @@ réessayer.
 `dotnet restore` — machine, utilisateur, et chaque dossier en remontant depuis là où vous l'exécutez —
 et honore les identifiants qui y sont configurés, **y compris les chiffrés et ceux fournis par un
 provider**, qui ne peuvent pas être lus à la main
-([ADR-0019](../adr/0019-resolve-packages-through-the-users-own-nuget-configuration.md)).
+([ADR-0019](../adr/0019-resolve-packages-through-the-users-own-nuget-configuration.fr.md)).
 
 Un paquet sur un flux privé fonctionne donc sans drapeau supplémentaire. `--source` fixe un flux quand
 plusieurs sont configurés.
@@ -168,7 +168,7 @@ La même release amont produit les mêmes octets :
 * les titres sont lus en **culture invariante** ;
 * une règle retirée par l'éditeur est reportée en `[Obsolete]` plutôt que supprimée, parce que les
   consommateurs incorporent les valeurs `const` et qu'en retirer une casse leur recompilation
-  ([ADR-0010](../adr/0010-carry-a-retired-rule-forward-as-obsolete.md)).
+  ([ADR-0010](../adr/0010-carry-a-retired-rule-forward-as-obsolete.fr.md)).
 
 Fixez `--date` quand deux exécutions des mêmes entrées doivent être identiques octet pour octet. Non
 renseignée, elle estampille aujourd'hui, ce qui n'atteint le fichier que si autre chose a changé aussi
