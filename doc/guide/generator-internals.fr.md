@@ -100,7 +100,7 @@ Deux propriétés comptent :
 * **Le nom d'un membre de catégorie est dérivé de sa valeur**, aplatie. Deux catégories amont peuvent
   donc entrer en collision sur un identifiant.
 * **Un nom une fois publié n'est jamais réattribué.** Le cas de collision qui a forcé
-  [ADR-0012](../adr/0012-a-catalogue-never-renames-a-member-it-published.md) n'était pas une erreur
+  [ADR-0012](../adr/0012-a-catalogue-never-renames-a-member-it-published.fr.md) n'était pas une erreur
   humaine : une nouvelle catégorie arrivant en amont, dont l'identifiant aplati entrait en collision
   avec un existant et se triait avant lui, aurait pris ce nom et poussé le titulaire sur un suffixe
   numéroté — renommant un membre publié, au cours d'une exécution nocturne sans surveillance.
@@ -117,11 +117,11 @@ catégories, si bien que `SonarRule` donne `SonarCategory`.
 * titres lus en **culture invariante** ;
 * une règle retirée par l'éditeur **reportée en `[Obsolete]`** plutôt que supprimée, parce que les
   consommateurs incorporent les valeurs `const`
-  ([ADR-0010](../adr/0010-carry-a-retired-rule-forward-as-obsolete.md)) ;
+  ([ADR-0010](../adr/0010-carry-a-retired-rule-forward-as-obsolete.fr.md)) ;
 * la *prose* des règles de l'éditeur délibérément laissée de côté — le titre part en documentation
   XML, la description et le format de message non
-  ([ADR-0011](../adr/0011-redistribute-rule-facts-only-never-the-vendors-prose.md),
-  [ADR-0014](../adr/0014-ship-the-vendors-rule-title-as-a-catalogues-documentation.md)).
+  ([ADR-0011](../adr/0011-redistribute-rule-facts-only-never-the-vendors-prose.fr.md),
+  [ADR-0014](../adr/0014-ship-the-vendors-rule-title-as-a-catalogues-documentation.fr.md)).
 
 Puis l'étape qui rend une exécution planifiée silencieuse : l'émetteur **compare sa sortie au fichier
 sur disque**, estampille `generatedOn` comprise, et le laisse intact quand rien n'a bougé. Une nuit où

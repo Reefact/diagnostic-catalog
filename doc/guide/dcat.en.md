@@ -7,7 +7,7 @@ For anyone generating a catalogue rather than hand-writing one. What the tool do
 point it at, and the one design decision that explains most of its behaviour.
 
 > **Not on nuget.org yet.** `dcat` is built in this repository and rides the `cli` train
-> ([ADR-0017](../adr/0017-publish-the-generator-as-a-cli-on-its-own-release-train.md)); the next tag
+> ([ADR-0017](../adr/0017-publish-the-generator-as-a-cli-on-its-own-release-train.en.md)); the next tag
 > there ships it. Until then, `dotnet run --project src/DiagnosticCatalog.Cli -- <args>` runs the same
 > tool from a clone.
 
@@ -36,7 +36,7 @@ process to answer a question about its contents would be taking a licence it doe
 ## It reads descriptors, never documentation
 
 This is the decision the rest follows from
-([ADR-0009](../adr/0009-generate-catalog-content-from-analyzer-descriptors.md)).
+([ADR-0009](../adr/0009-generate-catalog-content-from-analyzer-descriptors.en.md)).
 
 `dcat` loads the analyzer assemblies, **constructs every `DiagnosticAnalyzer` it finds**, and reads
 the `DiagnosticDescriptor` instances they actually declare. Not the vendor's documentation site, not
@@ -86,7 +86,7 @@ flowchart TB
 **A package** is the common case for mirroring somebody else's rules. `dcat` resolves through NuGet's
 own client, so it reads your `NuGet.config` hierarchy exactly as `dotnet restore` does and honours the
 credentials configured there — a package on a private feed works with no extra flag
-([ADR-0019](../adr/0019-resolve-packages-through-the-users-own-nuget-configuration.md)).
+([ADR-0019](../adr/0019-resolve-packages-through-the-users-own-nuget-configuration.en.md)).
 
 **A project** removes the `bin/Release/net8.0/` path from your manifest — the one part of a
 declaration that says nothing about the catalogue and breaks when the project retargets or is renamed.

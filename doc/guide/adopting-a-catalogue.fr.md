@@ -112,7 +112,7 @@ rend.
 | Situation | Pourquoi aucun correctif |
 | --- | --- |
 | Deux catalogues décrivent la même règle | Choisir entre eux est une décision sur le paquet dont votre fichier dépend. |
-| `DCAT0007` où le littéral nomme une règle *différente* de la référence à côté | Le compléter ferait taire une règle différente de celle qui est tue aujourd'hui, et laisserait revenir l'avertissement d'origine. C'est un changement de comportement, pas une migration ([ADR-0018](../adr/0018-a-code-fix-never-decides-what-only-the-author-can.md)). |
+| `DCAT0007` où le littéral nomme une règle *différente* de la référence à côté | Le compléter ferait taire une règle différente de celle qui est tue aujourd'hui, et laisserait revenir l'avertissement d'origine. C'est un changement de comportement, pas une migration ([ADR-0018](../adr/0018-a-code-fix-never-decides-what-only-the-author-can.fr.md)). |
 
 Ce sont deux endroits où une ampoule devrait deviner, et le correctif décline plutôt que de deviner
 en silence.

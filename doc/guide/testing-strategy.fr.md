@@ -38,7 +38,7 @@ voit jamais.
 **Quels projets y adhèrent est une décision, pas un défaut.** Un projet de test y adhère quand il
 exerce une bibliothèque `netstandard2.0` livrée, parce que c'est ce que le plancher existe pour
 prouver : non pas que le code *compile* contre `netstandard2.0`, mais qu'il *tourne* sur le vrai CLR
-4.7.2 ([ADR-0001](../adr/0001-floor-the-libraries-on-net-framework-4-7-2.md)).
+4.7.2 ([ADR-0001](../adr/0001-floor-the-libraries-on-net-framework-4-7-2.fr.md)).
 
 Les quatre projets qui restent en dehors couvrent de l'outillage qui ne rencontre jamais ce runtime :
 `dcat` est planché à net8.0, les analyseurs tournent dans un compilateur hôte, le générateur est de la
@@ -142,7 +142,7 @@ sort sur le statut de sa dernière commande et rapporte un succès quel que soit
 échouées.
 
 La suite est invoquée avec `sh` plutôt que `bash` : chaque script porte un shebang `#!/bin/sh` et est
-écrit en POSIX ([ADR-0013](../adr/0013-write-the-shell-tooling-for-posix-sh-not-bash.md)), si bien que
+écrit en POSIX ([ADR-0013](../adr/0013-write-the-shell-tooling-for-posix-sh-not-bash.fr.md)), si bien que
 l'exécuter sous bash laisserait passer un bashisme en CI pour le faire échouer sur la machine d'un
 contributeur.
 

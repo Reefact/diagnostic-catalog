@@ -55,10 +55,10 @@ décision se révise en écrivant un successeur qui la remplace.
 
 Deux sont un bon point de départ, parce que la plupart des autres en découlent :
 
-* [ADR-0008](adr/0008-express-a-rule-as-a-marked-static-class-of-constants.md) — pourquoi
+* [ADR-0008](adr/0008-express-a-rule-as-a-marked-static-class-of-constants.fr.md) — pourquoi
   une règle est une classe statique de constantes marquée, plutôt qu'une interface ou une
   classe de base.
-* [ADR-0009](adr/0009-generate-catalog-content-from-analyzer-descriptors.md) — pourquoi le
+* [ADR-0009](adr/0009-generate-catalog-content-from-analyzer-descriptors.fr.md) — pourquoi le
   contenu d'un catalogue est lu dans les descripteurs des analyseurs eux-mêmes et jamais
   dans leur documentation.
 
@@ -74,17 +74,25 @@ d'ajouter une page.
 Chaque document de ce dossier existe en page anglaise et en page française, et le bandeau en
 haut de chacune passe de l'une à l'autre. **L'anglais fait foi** : là où les deux divergent,
 c'est la version anglaise qui a raison
-([ADR-0022](adr/0022-maintain-every-document-under-doc-in-english-and-french.md)).
+([ADR-0022](adr/0022-maintain-every-document-under-doc-in-english-and-french.fr.md)).
 
 Une page et sa traduction arrivent dans le même commit, et
 `tests/DiagnosticCatalog.Documentation.UnitTests` fait échouer une paire à laquelle il
 manque une moitié, un lien qui ne résout pas, ou une page vers laquelle rien ne navigue.
 
-Deux choses restent délibérément hors de cette règle. Les [décisions
-d'architecture](adr/) sont en anglais seulement, comme tout ce que ce dépôt enregistre comme
-histoire. Les README de paquets sous [`src/`](../src) le sont aussi, parce que nuget.org
-affiche un seul fichier par paquet, n'offre aucun sélecteur de langue et ne résout aucun
-lien relatif.
+Les [décisions d'architecture](adr/) sont incluses plutôt qu'exemptées, ce qu'ADR-0022
+appelle la moitié inconfortable : ce sont les documents les plus longs d'ici et ceux qu'un
+consommateur ne lit jamais. Elles y sont parce que les guides y renvoient pour le
+« pourquoi », et qu'un guide dont le raisonnement est illisible est une impasse. Un
+enregistrement accepté n'est jamais modifié sur place ; sa traduction est donc écrite une
+fois puis ne coûte plus rien.
+
+Ce qui reste hors de la règle, ce sont les README de paquets sous [`src/`](../src) et le
+`README.md` du projet à la racine. nuget.org affiche un seul fichier par paquet, n'offre
+aucun sélecteur de langue et ne résout aucun lien relatif ; et la règle qu'ADR-0022 énonce
+est délibérément bornée à `doc/`, parce qu'une frontière est ce qui empêche le précédent de
+s'élargir aux messages d'erreur puis, à terme, aux titres de diagnostics, qui ne peuvent pas
+être traduits du tout — une `const` ne peut pas être localisée.
 
 ---
 

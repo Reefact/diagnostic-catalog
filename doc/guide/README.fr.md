@@ -92,9 +92,9 @@ argument, il est consigné une fois et lié plutôt que répété :
   anglaise fait foi.
 * [**Les décisions d'architecture**](../adr/) — les décisions durables et pourquoi elles ont été
   prises. Commencez par
-  [ADR-0008](../adr/0008-express-a-rule-as-a-marked-static-class-of-constants.md) (pourquoi une
+  [ADR-0008](../adr/0008-express-a-rule-as-a-marked-static-class-of-constants.fr.md) (pourquoi une
   règle est une classe statique marquée, faite de constantes) et
-  [ADR-0009](../adr/0009-generate-catalog-content-from-analyzer-descriptors.md) (pourquoi le
+  [ADR-0009](../adr/0009-generate-catalog-content-from-analyzer-descriptors.fr.md) (pourquoi le
   contenu d'un catalogue est lu dans les descripteurs et jamais dans la documentation).
 
 ## Je préfère le voir tourner que le lire

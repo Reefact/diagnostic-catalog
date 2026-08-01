@@ -49,7 +49,7 @@ Two roles are covered: **writing code** and **reviewing pull requests**.
   public API — and everything else a feature adds has no other check. Full
   wording in [`CONTRIBUTING.md`](CONTRIBUTING.md), "The `Docs:` footer";
   the decision is
-  [ADR-0025](doc/adr/0025-bind-every-feature-commit-to-the-documentation-it-changed.md).
+  [ADR-0025](doc/adr/0025-bind-every-feature-commit-to-the-documentation-it-changed.en.md).
 
 ## Release trains (code changes)
 
@@ -66,7 +66,7 @@ while `netanalyzers` means *the catalog of Microsoft's CA rules*.
 
 Before finalizing a pull request, check it against the ADR base under
 [`doc/adr/`](doc/adr/) (format and conventions:
-[`doc/adr/README.md`](doc/adr/README.md)). An ADR records a **significant,
+[`doc/adr/README.en.md`](doc/adr/README.en.md)). An ADR records a **significant,
 lasting decision** — one a future maintainer would ask "why did they do it this
 way?" about — not every change. Apply the README's test: *if the implementation
 changed but the decision stood, the ADR should not need editing.* Most pull

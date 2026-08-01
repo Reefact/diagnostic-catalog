@@ -34,7 +34,7 @@ project:
   written in the code — a class that could carry `static`, a member whose modifiers are wrong but
   whose value is not, an absent `Id` whose type name supplies it. Where the value itself is what is
   missing or wrong, the diagnostic is reported with no fix, and that refusal is asserted case by case
-  ([ADR-0018](doc/adr/0018-a-code-fix-never-decides-what-only-the-author-can.md)). The one exception
+  ([ADR-0018](doc/adr/0018-a-code-fix-never-decides-what-only-the-author-can.en.md)). The one exception
   is the `Category` placeholder §12.4 specifies: `"TODO"` is not blank, so applying it stops
   `DCAT0004` being reported. The diagnostics guide says so where somebody about to press it will
   read it.
@@ -57,11 +57,11 @@ project:
   identifier and sorted before it would have taken that name, pushing the
   incumbent onto a numbered suffix — breaking every consumer that referenced it,
   through an unattended nightly run
-  ([ADR-0012](doc/adr/0012-a-catalogue-never-renames-a-member-it-published.md)).
+  ([ADR-0012](doc/adr/0012-a-catalogue-never-renames-a-member-it-published.en.md)).
 
   **No shipped assembly changes.** `eng/CatalogGen` declares no `<ReleaseTrain>` of
   its own — it is bundled into the `dcat` tool, which rides the `cli` train
-  ([ADR-0017](doc/adr/0017-publish-the-generator-as-a-cli-on-its-own-release-train.md))
+  ([ADR-0017](doc/adr/0017-publish-the-generator-as-a-cli-on-its-own-release-train.en.md))
   — so nothing this train publishes moved. The entry appears here because the
   commit's `core` scope routes it to `lib`. What it protects is the catalogues, not
   this package.

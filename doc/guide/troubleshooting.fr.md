@@ -77,7 +77,7 @@ Si la règle **existait auparavant**, voyez l'entrée suivante.
 ## `CS0618: 'SonarRule.S1144' is obsolete`
 
 L'éditeur a retiré la règle, et le catalogue l'a reportée plutôt que supprimée
-([ADR-0010](../adr/0010-carry-a-retired-rule-forward-as-obsolete.md)).
+([ADR-0010](../adr/0010-carry-a-retired-rule-forward-as-obsolete.fr.md)).
 
 Le message nomme la version qui l'a abandonnée. Que faire :
 
@@ -129,7 +129,7 @@ Le littéral nomme une règle **différente** de la référence à côté :
 
 Le compléter depuis `S1144` ferait taire une règle différente de celle qui est tue aujourd'hui, et
 laisserait revenir l'avertissement d'origine. C'est un changement de comportement, pas une migration
-([ADR-0018](../adr/0018-a-code-fix-never-decides-what-only-the-author-can.md)).
+([ADR-0018](../adr/0018-a-code-fix-never-decides-what-only-the-author-can.fr.md)).
 
 Décidez de la règle que vous vouliez, et écrivez-la.
 

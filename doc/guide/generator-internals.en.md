@@ -100,7 +100,7 @@ Two properties matter:
 * **A category member's name is derived from its value**, flattened. Two upstream categories can
   therefore collide on one identifier.
 * **A name once published is never reassigned.** The collision case that forced
-  [ADR-0012](../adr/0012-a-catalogue-never-renames-a-member-it-published.md) was not a human mistake:
+  [ADR-0012](../adr/0012-a-catalogue-never-renames-a-member-it-published.en.md) was not a human mistake:
   a new category arriving upstream, whose flattened identifier collided with an existing one and
   sorted before it, would have taken that name and pushed the incumbent onto a numbered suffix —
   renaming a published member, through an unattended nightly run.
@@ -116,11 +116,11 @@ so `SonarRule` gives `SonarCategory`.
   the order an assembly happened to enumerate;
 * titles read **culture-invariantly**;
 * a rule the vendor retired **carried forward as `[Obsolete]`** rather than deleted, because consumers
-  inline `const` values ([ADR-0010](../adr/0010-carry-a-retired-rule-forward-as-obsolete.md));
+  inline `const` values ([ADR-0010](../adr/0010-carry-a-retired-rule-forward-as-obsolete.en.md));
 * the vendor's rule *prose* deliberately left out — the title ships as XML documentation, the
   description and message format do not
-  ([ADR-0011](../adr/0011-redistribute-rule-facts-only-never-the-vendors-prose.md),
-  [ADR-0014](../adr/0014-ship-the-vendors-rule-title-as-a-catalogues-documentation.md)).
+  ([ADR-0011](../adr/0011-redistribute-rule-facts-only-never-the-vendors-prose.en.md),
+  [ADR-0014](../adr/0014-ship-the-vendors-rule-title-as-a-catalogues-documentation.en.md)).
 
 Then the step that makes a scheduled run quiet: the emitter **compares its output with the file on
 disk**, `generatedOn` stamp included, and leaves it untouched when nothing moved. A night where

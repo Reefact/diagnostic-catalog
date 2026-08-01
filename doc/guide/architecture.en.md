@@ -56,7 +56,7 @@ release train**: the assembly is bundled into `DiagnosticCatalog.Analyzers`' pac
 published on its own. Declaring a train would make it packable and give it a version nobody would ever
 reference.
 
-This is the one project shape [ADR-0007](../adr/0007-depend-across-trains-through-published-packages.md)
+This is the one project shape [ADR-0007](../adr/0007-depend-across-trains-through-published-packages.en.md)
 blesses for a `ProjectReference` — the analyzer project both orders the build and packs the output.
 
 ### The two analyzer classes
@@ -85,7 +85,7 @@ narrow is what let the command line be replaced without the engine noticing, **w
 happened** when the hand-rolled parser gave way to Spectre.Console.Cli.
 
 The engine targets `net8.0`, not `net10.0`, because the tool is floored there so one build installs on
-.NET 8 and every newer major ([ADR-0017](../adr/0017-publish-the-generator-as-a-cli-on-its-own-release-train.md)).
+.NET 8 and every newer major ([ADR-0017](../adr/0017-publish-the-generator-as-a-cli-on-its-own-release-train.en.md)).
 A `net8.0` project cannot reference a `net10.0` one, so the engine sets the floor as much as the shell
 does.
 

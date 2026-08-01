@@ -82,7 +82,7 @@ Les diagnostics `DCAT` ci-dessous sont un paquet séparé, `DiagnosticCatalog.An
 eux qui trouvent les suppressions que vous n'avez *pas* encore converties. **Il n'a aujourd'hui
 aucune version sur nuget.org**, si bien qu'un catalogue ne l'amène pas avec lui — rien ne peut
 référencer un paquet qui n'a jamais été publié
-([ADR-0007](../adr/0007-depend-across-trains-through-published-packages.md)). Il roule sur le train
+([ADR-0007](../adr/0007-depend-across-trains-through-published-packages.fr.md)). Il roule sur le train
 `lib` : le prochain tag l'expédiera ;
 [l'état du projet](https://github.com/Reefact/diagnostic-catalog#-project-status) est la réponse à
 jour.

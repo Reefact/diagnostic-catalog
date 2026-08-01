@@ -14,8 +14,8 @@ fondation — ce qui annonce à tous ses consommateurs que quelque chose a chang
 bougé.
 
 Le dépôt publie donc sur **cinq lignes indépendantes**
-([ADR-0002](../adr/0002-partition-releases-into-trains-by-commit-scope.md),
-[ADR-0015](../adr/0015-a-catalogues-version-runs-on-its-own-line.md)) :
+([ADR-0002](../adr/0002-partition-releases-into-trains-by-commit-scope.fr.md),
+[ADR-0015](../adr/0015-a-catalogues-version-runs-on-its-own-line.fr.md)) :
 
 | Train | Préfixe de tag | Scopes | Ce qu'il publie |
 | --- | --- | --- | --- |
@@ -96,7 +96,7 @@ l'autre, cette version n'a jamais été publiée — le paquet déclarerait donc
 pas, et serait irrésoluble pour tous ses consommateurs.
 
 Dépendez d'un autre train par une `PackageReference` vers une version réellement sur nuget.org
-([ADR-0007](../adr/0007-depend-across-trains-through-published-packages.md)). C'est pourquoi les
+([ADR-0007](../adr/0007-depend-across-trains-through-published-packages.fr.md)). C'est pourquoi les
 catalogues d'ici prennent la fondation en paquet alors même que sa source est dans le même dépôt — et
 pourquoi la fondation a dû sortir en premier, avant qu'aucun catalogue puisse en dépendre.
 
@@ -123,7 +123,7 @@ scope : ils ne pilotent aucune version.
 
 La liste des scopes et le tableau des trains nomment le même ensemble, dans les deux sens.
 `cataloggen` a rejoint le train `cli` quand le générateur a été publié dans `dcat`
-([ADR-0017](../adr/0017-publish-the-generator-as-a-cli-on-its-own-release-train.md)), et `testing` a
+([ADR-0017](../adr/0017-publish-the-generator-as-a-cli-on-its-own-release-train.fr.md)), et `testing` a
 été retiré une fois clair qu'il nommait un paquet de support de test que personne n'allait construire.
 Il n'y a donc ni scope n'atteignant aucune note de version, ni train promettant un paquet qui n'existe
 pas.
@@ -134,7 +134,7 @@ Poussez un tag SemVer préfixé du train — `lib-v1.2.3`, `sonar-v4.0.0`. Le wo
 le train depuis le préfixe, compile et teste, empaquette **ce train seulement**, atteste les
 artefacts, publie via OIDC trusted publishing, et crée une release dont les notes ne contiennent que
 les commits de ce train
-([ADR-0006](../adr/0006-publish-through-trusted-publishing-with-provenance-and-an-sbom.md)).
+([ADR-0006](../adr/0006-publish-through-trusted-publishing-with-provenance-and-an-sbom.fr.md)).
 
 Deux choses à savoir avant la première :
 

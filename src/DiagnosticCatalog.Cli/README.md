@@ -324,7 +324,7 @@ and a Visual Basic analyzer derives from types in
 `cs` and refuses anything else at the command line, rather than after a package has
 been downloaded. That is a settled position rather than a gap awaiting work, and
 the reasoning is recorded in
-[ADR-0020](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/adr/0020-a-catalogue-is-generated-for-c-sharp-only.md).
+[ADR-0020](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/adr/0020-a-catalogue-is-generated-for-c-sharp-only.en.md).
 
 Both processes `dcat` spawns — that worker, and MSBuild for `--project` and
 `--solution` — are

@@ -107,7 +107,7 @@ Two honest boundaries on what that proves:
   reference is a documented property of the C# compiler — it does not emit references the output does
   not use — rather than something this suite asserts.
 * It runs on `net10.0` and, through the .NET Framework floor, on the real .NET Framework 4.7.2 CLR
-  ([ADR-0001](../adr/0001-floor-the-libraries-on-net-framework-4-7-2.md)). The
+  ([ADR-0001](../adr/0001-floor-the-libraries-on-net-framework-4-7-2.en.md)). The
   `UnconditionalSuppressMessage` half is `net`-only, because that attribute does not exist on .NET
   Framework.
 

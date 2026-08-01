@@ -54,7 +54,7 @@ reste, votre suppression continue de compiler et cesse de signifier quoi que ce 
 **Où passe la ligne.** À peu près : quand vous ne pouvez plus dire, de mémoire, d'où vient chaque
 valeur de catégorie. Un catalogue généré est ce fichier avec les valeurs lues dans le
 `DiagnosticDescriptor` de l'analyseur lui-même et régénérées quand l'éditeur bouge — c'est
-[ADR-0009](../adr/0009-generate-catalog-content-from-analyzer-descriptors.md), et la raison d'être de
+[ADR-0009](../adr/0009-generate-catalog-content-from-analyzer-descriptors.fr.md), et la raison d'être de
 `dcat`.
 
 ## `GlobalSuppressions.cs`

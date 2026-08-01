@@ -104,7 +104,7 @@ if [ -n "$violations" ]; then
   echo "error: cross-train ProjectReference(s) found while packing the '${train}' train:" >&2
   printf '%s' "$violations" >&2
   echo "       A package may only depend on another train through a published PackageReference." >&2
-  echo "       See doc/adr/0007-depend-across-trains-through-published-packages.md." >&2
+  echo "       See doc/adr/0007-depend-across-trains-through-published-packages.en.md." >&2
   exit 1
 fi
 echo "ok: no cross-train ProjectReference on the '${train}' train"

@@ -116,7 +116,7 @@ are in the model.
 
 `Title` earns its place twice over: the generated catalogues carry it as an XML documentation
 comment, so hovering `SonarRule.S1144` in an editor says what the rule is about
-([ADR-0014](../adr/0014-ship-the-vendors-rule-title-as-a-catalogues-documentation.md)). Give yours a
+([ADR-0014](../adr/0014-ship-the-vendors-rule-title-as-a-catalogues-documentation.en.md)). Give yours a
 `Title` and your users get the same.
 
 ## Where the catalogue should live

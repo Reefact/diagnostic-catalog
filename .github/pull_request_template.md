@@ -91,7 +91,7 @@
 
 <!-- Every pull request is checked against the ADR base (doc/adr/). Most embark no
      architectural decision — tick the first box. Agents draft ADRs as `Proposed`;
-     the maintainer accepts or supersedes. See doc/adr/README.md. -->
+     the maintainer accepts or supersedes. See doc/adr/README.en.md. -->
 
 * [ ] No architectural decision in this pull request
 * [ ] New decision recorded — ADR drafted as `Proposed`: ADR-____

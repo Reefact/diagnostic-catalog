@@ -8,7 +8,7 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 This train versions independently of the foundation and of the other catalogues,
 so following StyleCop.Analyzers' pace never drags anything else along
-([ADR-0002](../../doc/adr/0002-partition-releases-into-trains-by-commit-scope.md)).
+([ADR-0002](../../doc/adr/0002-partition-releases-into-trains-by-commit-scope.en.md)).
 That independence matters more here than elsewhere: this upstream moves rarely, and
 a catalogue tied to its numbering would have had no version available for a fix of
 its own. The upstream release a given version mirrors is recorded in the package's
@@ -29,7 +29,7 @@ _No other change yet._
 earlier version mirrored `StyleCop.Analyzers 1.1.118`. That stable was published in April
 2019 and the project has never left beta since, so the catalogue was describing a release
 almost nobody installs
-([ADR-0016](../../doc/adr/0016-mirror-stylecops-prerelease-line.md)).
+([ADR-0016](../../doc/adr/0016-mirror-stylecops-prerelease-line.en.md)).
 
 If you are on `1.1.118`, stay on **0.2.0**, the last version to mirror it.
 
@@ -62,7 +62,7 @@ category they shipped with. What moved is what each rule says about itself.
 * Every rule now carries the title its `DiagnosticDescriptor` declares as its
   documentation comment, so hovering a constant says what the rule is about
   instead of restating the identifier under the cursor
-  ([ADR-0014](../../doc/adr/0014-ship-the-vendors-rule-title-as-a-catalogues-documentation.md)).
+  ([ADR-0014](../../doc/adr/0014-ship-the-vendors-rule-title-as-a-catalogues-documentation.en.md)).
 
 ### Changed
 
@@ -99,7 +99,7 @@ category they shipped with. What moved is what each rule says about itself.
 * **Ids, categories and help links only.** Rule titles and descriptions are the
   StyleCop.Analyzers project's authored prose and are deliberately not
   redistributed
-  ([ADR-0011](../../doc/adr/0011-redistribute-rule-facts-only-never-the-vendors-prose.md)).
+  ([ADR-0011](../../doc/adr/0011-redistribute-rule-facts-only-never-the-vendors-prose.en.md)).
 * **Nothing is checked at compile time by this package alone.** It declares; the
   analyzers that validate declarations and use sites ship separately as
   `DiagnosticCatalog.Analyzers`, which does not exist yet.
@@ -111,4 +111,4 @@ category they shipped with. What moved is what each rule says about itself.
 This package is not affiliated with, endorsed by, or supported by the
 StyleCop.Analyzers project. Every value in it is read from the analyzers' own
 `DiagnosticDescriptor` instances
-([ADR-0009](../../doc/adr/0009-generate-catalog-content-from-analyzer-descriptors.md)).
+([ADR-0009](../../doc/adr/0009-generate-catalog-content-from-analyzer-descriptors.en.md)).

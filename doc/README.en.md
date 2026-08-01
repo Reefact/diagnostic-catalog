@@ -54,9 +54,9 @@ successor that supersedes it.
 
 Two are a good place to start, because most of the rest follow from them:
 
-* [ADR-0008](adr/0008-express-a-rule-as-a-marked-static-class-of-constants.md) — why a rule
+* [ADR-0008](adr/0008-express-a-rule-as-a-marked-static-class-of-constants.en.md) — why a rule
   is a marked static class of constants, rather than an interface or a base class.
-* [ADR-0009](adr/0009-generate-catalog-content-from-analyzer-descriptors.md) — why a
+* [ADR-0009](adr/0009-generate-catalog-content-from-analyzer-descriptors.en.md) — why a
   catalogue's content is read from the analyzers' own descriptors and never from their
   documentation.
 
@@ -71,16 +71,24 @@ beside each rule, how it is checked. Read it before adding a page.
 Every document in this folder exists as an English and a French page, and the banner at the
 top of each switches between them. **English is canonical**: where the two disagree, the
 English version is right
-([ADR-0022](adr/0022-maintain-every-document-under-doc-in-english-and-french.md)).
+([ADR-0022](adr/0022-maintain-every-document-under-doc-in-english-and-french.en.md)).
 
 A page and its translation land in the same commit, and
 `tests/DiagnosticCatalog.Documentation.UnitTests` fails a pair that is missing a half, a
 link that does not resolve, or a page nothing navigates to.
 
-Two things sit deliberately outside this rule. The [decision records](adr/) are English
-only, like everything else this repository records as history. The package READMEs under
-[`src/`](../src) are English only too, because nuget.org renders one file per package,
-offers no language switch, and resolves no relative link.
+The [decision records](adr/) are included rather than exempted, which ADR-0022 calls the
+uncomfortable half: they are the longest documents here and the ones a consumer never reads.
+They are in because the guides link into them for the *why*, and a guide whose reasoning is
+unreadable is a dead end. An accepted record is never edited in place, so its translation is
+written once and then costs nothing.
+
+What sits outside the rule is the package READMEs under [`src/`](../src) and the project
+`README.md` at the root. nuget.org renders one file per package, offers no language switch
+and resolves no relative link; and the rule ADR-0022 states is bounded to `doc/`
+deliberately, because a boundary is what stops the precedent widening to the error messages
+and eventually to the diagnostic titles, which cannot be translated at all — a `const`
+cannot be localised.
 
 ---
 
