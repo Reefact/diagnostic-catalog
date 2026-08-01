@@ -208,7 +208,7 @@ every anchor resolves to a heading in the target.
 
 ## What the documentation is checked against
 
-Two assertions reach outside the documentation and into the code, and they are the point of the
+These assertions reach outside the documentation and into the code, and they are the point of the
 whole test project:
 
 * **Every `DCAT` diagnostic the analyzers ship is documented, and every `DCAT` the guide documents
@@ -220,15 +220,46 @@ whole test project:
   commoner mistake and the one whose only signal is nobody using it. The obligation names a single
   page on purpose — spread across every document that mentions the tool it is one no document could
   discharge.
+* **Every `dcat` command the tool registers appears in that same page, and every command a document
+  shows is registered.** The option check stopped at the flags, which left the coarsest thing the
+  tool publishes — its command tree — as the one part of the CLI a change could move unnoticed.
+* **Every public type a consumer can name is described in
+  [`doc/specification`](specification.en.md).** The public API files are Roslyn's own tracking
+  format, and `RS0016` already fails the build when one drifts from the compiled surface — so a new
+  type is certain to be recorded in a file no consumer ever opens. Analyzers and code fix providers
+  are excluded: Roslyn discovers them, nobody writes their names down, and what a reader actually
+  meets is the `DCAT` id above.
 * **Every rule a sample shows is one its catalogue publishes.** `SonarRule.S1144` resolves against
   the compiled `DiagnosticCatalog.Sonar`, and the container is never pluralised. This one exists
   because it had already been needed: sixteen samples across three documents spelled the container
   `SonarRules`, and every one of them was uncompilable.
 
-All three compare a document against the compiled truth rather than against another document. That
-is the same reasoning as
+Every one of them compares a document against the compiled truth rather than against another
+document. That is the same reasoning as
 [ADR-0009](adr/0009-generate-catalog-content-from-analyzer-descriptors.md): the descriptors are what
 the analyzer reports with, so they are what a claim about them is checked against.
+
+### What no check here can reach
+
+Each of those works by enumerating a set from a file something else already keeps true. That is what
+makes them trustworthy, and it is exactly their boundary: a build property, a manifest key, a release
+train, a workflow, a hook, a `tools/` script, a page of this guide — none of them can be enumerated
+that way, and none of them is checked by anything in this project.
+
+So the general case is carried by the commit convention instead. A `feat` states what it documented,
+or states in words why it documented nothing:
+
+```text
+Docs: doc/guide/dcat-reference.en.md, doc/guide/dcat-reference.fr.md
+Docs: none — the cache is internal; nothing a consumer can name has moved
+```
+
+The footer's shape is linted with the rest of the message; whether the files it names were really
+touched is resolved against the commit in CI, and a page named in one language only is refused —
+both files exist, so the parity check above cannot see it. The rule, and what it deliberately does
+not guarantee, is
+[ADR-0025](adr/0025-bind-every-feature-commit-to-the-documentation-it-changed.md); the wording is in
+[`CONTRIBUTING.md`](../CONTRIBUTING.md).
 
 ### Showing a reference that does not exist
 

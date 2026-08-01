@@ -71,8 +71,21 @@
 
 ## Documentation
 
-* [ ] README / documentation updated
-* [ ] No documentation change required
+<!-- Every `feat` records what it documented in a `Docs:` footer on its own commit,
+     and CI resolves that footer against what the commit actually touched — see
+     CONTRIBUTING.md -> "The `Docs:` footer". THAT is the check; a tick here is not.
+     This section is where a reader learns what changed and why, which no check can
+     say. Write the sentence, do not just tick the box. -->
+
+* [ ] No `feat` in this pull request — nothing to record
+* [ ] Documentation changed: <!-- which pages, and what a reader can now find there -->
+* [ ] Documentation deliberately not changed: <!-- the reason, as the `Docs: none` footer states it -->
+
+<!-- Reminder: the enumerable surfaces are already enforced by the documentation
+     tests (DCAT ids, `dcat` options and commands, the public API, bilingual parity,
+     links, the reading order). Everything else a feature adds — a build property, a
+     manifest key, a workflow, a hook — has no check but the footer above. -->
+
 
 ## Architecture decisions
 

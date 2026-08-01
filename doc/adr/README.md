@@ -205,3 +205,4 @@ Optional supporting material:
 | [ADR-0022](0022-maintain-every-document-under-doc-in-english-and-french.md) | Maintain every document under `doc/` in English and French | Accepted |
 | [ADR-0023](0023-acquire-a-solutions-analyzers-by-declaration.md) | Acquire a solution's analyzers by declaration, never by discovery | Proposed |
 | [ADR-0024](0024-fail-on-any-diagnostic-the-ratchet-cannot-see.md) | Fail on any diagnostic the warning ratchet cannot see | Accepted |
+| [ADR-0025](0025-bind-every-feature-commit-to-the-documentation-it-changed.md) | Bind every feature commit to the documentation it changed | Proposed |

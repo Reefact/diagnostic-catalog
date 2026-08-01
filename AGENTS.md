@@ -36,6 +36,20 @@ Two roles are covered: **writing code** and **reviewing pull requests**.
   pull request and describe how the fix was verified instead — the proof may be
   skipped, never skipped silently. Full wording in
   [`CLAUDE.md`](CLAUDE.md), "Proving a fix".
+- **A `feat` carries a `Docs:` footer** naming the documentation the commit
+  changed — `Docs: doc/guide/dcat-reference.en.md, doc/guide/dcat-reference.fr.md`
+  — or saying why it changed none: `Docs: none — <reason>`. The reason is
+  required, and under [`doc/`](doc/) a page and its translation are named
+  together. `fix` is not bound: it restores behaviour the documentation already
+  promises. The footer's shape is linted at the hook and in CI; whether the files
+  it names were touched is resolved in CI by
+  `tools/commit-lint/check-docs-footer.sh`, runnable by hand with
+  `--commit HEAD`. The rule exists because the documentation tests only cover
+  what they can enumerate — the `DCAT` ids, the `dcat` options and commands, the
+  public API — and everything else a feature adds has no other check. Full
+  wording in [`CONTRIBUTING.md`](CONTRIBUTING.md), "The `Docs:` footer";
+  the decision is
+  [ADR-0025](doc/adr/0025-bind-every-feature-commit-to-the-documentation-it-changed.md).
 
 ## Release trains (code changes)
 

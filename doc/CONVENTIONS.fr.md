@@ -216,7 +216,7 @@ chaque ancre résout vers un titre du document visé.
 
 ## Ce contre quoi la documentation est vérifiée
 
-Deux assertions sortent de la documentation pour aller dans le code, et elles sont tout l'intérêt du
+Ces assertions sortent de la documentation pour aller dans le code, et elles sont tout l'intérêt du
 projet de test :
 
 * **Chaque diagnostic `DCAT` que les analyseurs livrent est documenté, et chaque `DCAT` que le guide
@@ -228,15 +228,49 @@ projet de test :
   renommé échoue ; un drapeau livré et jamais écrit aussi, ce qui est l'erreur la plus courante et
   celle dont le seul signal est que personne ne l'utilise. L'obligation nomme une page unique exprès —
   étalée sur chaque document qui mentionne l'outil, aucun document ne pourrait s'en acquitter.
+* **Chaque commande `dcat` que l'outil enregistre figure dans cette même page, et chaque commande
+  qu'un document montre est enregistrée.** La vérification des options s'arrêtait aux drapeaux, ce qui
+  laissait la chose la plus grossière que l'outil publie — son arbre de commandes — comme la seule
+  partie de la CLI qu'un changement pouvait déplacer sans que rien ne le remarque.
+* **Chaque type public qu'un consommateur peut nommer est décrit dans
+  [`doc/specification`](specification.fr.md).** Les fichiers d'API publique sont le format de suivi
+  propre à Roslyn, et `RS0016` fait déjà échouer la compilation quand l'un d'eux s'écarte de la
+  surface compilée — un nouveau type est donc certain d'être enregistré dans un fichier qu'aucun
+  consommateur n'ouvre jamais. Les analyseurs et les correcteurs sont exclus : c'est Roslyn qui les
+  découvre, personne n'écrit leur nom, et ce que le lecteur rencontre réellement est le `DCAT`
+  ci-dessus.
 * **Chaque règle qu'un exemple montre est une règle publiée par son catalogue.** `SonarRule.S1144`
   résout contre le `DiagnosticCatalog.Sonar` compilé, et le conteneur n'est jamais mis au pluriel.
   Celle-ci existe parce qu'elle avait déjà manqué : seize exemples répartis sur trois documents
   écrivaient le conteneur `SonarRules`, et aucun d'eux ne compilait.
 
-Les trois comparent un document à la vérité compilée plutôt qu'à un autre document. C'est le même
+Toutes comparent un document à la vérité compilée plutôt qu'à un autre document. C'est le même
 raisonnement qu'[ADR-0009](adr/0009-generate-catalog-content-from-analyzer-descriptors.md) : les
 descripteurs sont ce avec quoi l'analyseur signale, donc ce contre quoi une affirmation à leur sujet
 se vérifie.
+
+### Ce qu'aucune vérification d'ici ne peut atteindre
+
+Chacune d'elles fonctionne en énumérant un ensemble à partir d'un fichier que quelque chose d'autre
+maintient déjà vrai. C'est ce qui les rend dignes de confiance, et c'est exactement leur limite : une
+propriété de build, une clé de manifeste, un train de release, un workflow, un hook, un script
+`tools/`, une page de ce guide — rien de tout cela ne s'énumère ainsi, et rien de tout cela n'est
+vérifié par quoi que ce soit dans ce projet.
+
+Le cas général est donc porté par la convention de commit. Un `feat` déclare ce qu'il a documenté, ou
+déclare avec des mots pourquoi il n'a rien documenté :
+
+```text
+Docs: doc/guide/dcat-reference.en.md, doc/guide/dcat-reference.fr.md
+Docs: none — the cache is internal; nothing a consumer can name has moved
+```
+
+La forme du pied est vérifiée avec le reste du message ; que les fichiers qu'il nomme aient
+réellement été touchés est résolu contre le commit dans la CI, et une page nommée dans une seule
+langue est refusée — les deux fichiers existent, donc la vérification de parité ci-dessus ne peut pas
+la voir. La règle, et ce qu'elle ne garantit délibérément pas, est
+[ADR-0025](adr/0025-bind-every-feature-commit-to-the-documentation-it-changed.md) ; la formulation est
+dans [`CONTRIBUTING.md`](../CONTRIBUTING.md).
 
 ### Montrer une référence qui n'existe pas
 
