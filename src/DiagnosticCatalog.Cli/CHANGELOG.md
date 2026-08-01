@@ -18,8 +18,12 @@ reads their descriptors.
 
 ## [Unreleased]
 
-Nothing published yet. `dcat` has never been released, so everything below is what
-its first version will carry rather than a change against a previous one.
+_Nothing yet._
+
+## [1.0.0-preview.1] - 2026-08-01
+
+The first release of `dcat`. Everything below is what it carries, rather than a
+change against a previous version.
 
 ### Added
 
