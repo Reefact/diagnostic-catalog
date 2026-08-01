@@ -329,6 +329,24 @@ descriptor read and 2 minutes for a project evaluation, against measured times o
 seconds. Set `DCAT_TIMEOUT_SECONDS` to a positive whole number of seconds to give
 both longer.
 
+## Documentation
+
+- [**The `dcat` tool**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/dcat.en.md)
+  — the four verbs, which source to point it at, and why it reads descriptors rather than
+  documentation.
+- [**The `dcat` reference**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/dcat-reference.en.md)
+  — every command, option and exit code, checked against the tool's own settings types.
+- [**The catalogue manifest**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/catalogs-manifest.en.md)
+  — every key of `catalogs.json`.
+- [**Keeping a catalogue current**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/ci-integration.en.md)
+  — `validate` in a pipeline, the nightly drift pull request, and why exit codes `1` and `2`
+  must be handled differently.
+- [**Publishing a catalogue**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/authoring-a-catalogue.en.md)
+  — what the generated output has to satisfy, if you are about to ship one.
+
+The [**documentation map**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/README.en.md)
+picks a page by what you are trying to do; every guide exists in English and French.
+
 ---
 
 Unofficial with respect to every analyzer vendor it reads; not affiliated with or

@@ -237,18 +237,24 @@ interface or a base class — see
 
 ## 📖 Guides
 
-Three, by what you are trying to do.
+Twenty-six pages, organised by what you are trying to do rather than by how the code is
+arranged. Ten minutes end to end is
+[Getting started](doc/guide/getting-started.en.md): reference a catalogue, rewrite one
+suppression, break it on purpose and watch the compiler catch it.
 
-| If you… | Read |
-| --- | --- |
-| write `[SuppressMessage(...)]` and want it checked | [Writing suppressions that the compiler checks](doc/guide/writing-suppressions.en.md) |
-| ship an analyzer, or own rules nobody else publishes | [Publishing a catalogue](doc/guide/authoring-a-catalogue.en.md) |
-| saw a `DCATxxxx` and want to know what it means | [The `DCAT` diagnostics](doc/guide/diagnostics.en.md) |
+| If you… | Start at | Then |
+| --- | --- | --- |
+| are working out whether this is for you | [Why magic strings fail](doc/guide/the-problem.en.md) | [when *not* to use it](doc/guide/when-not-to-use.en.md), [the alternatives](doc/guide/alternatives.en.md) |
+| write `[SuppressMessage(...)]` and want it checked | [Writing suppressions that the compiler checks](doc/guide/writing-suppressions.en.md) | [adopting one on an existing codebase](doc/guide/adopting-a-catalogue.en.md), [configuration](doc/guide/configuration.en.md) |
+| ship an analyzer, or own rules nobody else publishes | [Publishing a catalogue](doc/guide/authoring-a-catalogue.en.md) | [versioning](doc/guide/versioning-a-catalogue.en.md), [packaging](doc/guide/packaging-a-catalogue.en.md) |
+| would rather generate a catalogue than write one | [The `dcat` tool](doc/guide/dcat.en.md) | [the full reference](doc/guide/dcat-reference.en.md), [keeping it current in CI](doc/guide/ci-integration.en.md) |
+| saw a `DCATxxxx` and want to know what it means | [The `DCAT` diagnostics](doc/guide/diagnostics.en.md) | [troubleshooting by symptom](doc/guide/troubleshooting.en.md), [the glossary](doc/guide/glossary.en.md) |
+| are contributing here | [Repository architecture](doc/guide/architecture.en.md) | [inside the generator](doc/guide/generator-internals.en.md), [the testing strategy](doc/guide/testing-strategy.en.md) |
 
-Every guide exists in English and French — the language banner at the top of each page switches
-between them, and each page carries previous/next navigation. The
-[documentation map](doc/guide/README.en.md) ([français](doc/guide/README.fr.md)) picks a page by
-what you are trying to do.
+The [documentation map](doc/guide/README.en.md) ([français](doc/guide/README.fr.md)) lists all
+twenty-six. Every page exists in English and French — the banner at the top switches between
+them — and each carries previous/next navigation, so the guide can also be read straight
+through.
 
 Per-package guides:
 [`DiagnosticCatalog`](src/DiagnosticCatalog/README.md) ·
@@ -256,7 +262,8 @@ Per-package guides:
 [`.Self`](src/DiagnosticCatalog.Self/README.md) ·
 [`.Sonar`](src/DiagnosticCatalog.Sonar/README.md) ·
 [`.NetAnalyzers`](src/DiagnosticCatalog.NetAnalyzers/README.md) ·
-[`.StyleCop`](src/DiagnosticCatalog.StyleCop/README.md)
+[`.StyleCop`](src/DiagnosticCatalog.StyleCop/README.md) ·
+[`.Cli`](src/DiagnosticCatalog.Cli/README.md)
 
 ## 🎯 When it is a good fit
 
@@ -293,11 +300,25 @@ release does not move the foundation's version. Verification details are in
 
 ## 📚 Documentation
 
+Everything lives under [`doc/`](doc/README.en.md) ([français](doc/README.fr.md)), which is a
+signpost to four kinds of document:
+
+- **[The guide](doc/guide/README.en.md)** — twenty-six pages on how to *do* things, in the
+  six tracks above.
 - **[Specification](doc/specification.en.md)** — the full design: the rule contract, the
   generator, the analyzer diagnostics, packaging, and the platform behaviour it all relies
-  on. A courtesy French translation is kept at
-  [`specification.fr.md`](doc/specification.fr.md); the English version is canonical.
-- **[Architecture decisions](doc/adr/)** — the lasting decisions and why they were taken.
+  on. Normative, and longer than any guide.
+- **[Architecture decisions](doc/adr/)** — the lasting decisions and why they were taken,
+  with the alternatives that were rejected.
+- **[Conventions](doc/CONVENTIONS.en.md)** — how these documents are laid out, and what the
+  documentation tests check about them.
+
+Every page under `doc/` exists in English and French, and **English is canonical**: where the
+two disagree, the English version wins
+([ADR-0022](doc/adr/0022-maintain-every-document-under-doc-in-english-and-french.md)).
+
+Outside `doc/`:
+
 - **[CONTRIBUTING.md](CONTRIBUTING.md)** — commit convention, release trains, the .NET
   Framework floor, and how to add a catalogue.
 - **[CHANGELOG.md](CHANGELOG.md)** — user-facing changes to the `lib` train.

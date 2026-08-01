@@ -74,6 +74,18 @@ analyzer's own descriptors — the difference being that theirs belong to somebo
 worked example: a static class of constants marked `[DiagnosticRule]`, generated from the analyzer
 that reports them. The marker ships in [`DiagnosticCatalog`](https://github.com/Reefact/diagnostic-catalog/blob/main/src/DiagnosticCatalog/README.md).
 
+## Documentation
+
+- [**The `DCAT` diagnostics**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/diagnostics.en.md)
+  — every rule catalogued here, seen from the side that reports it.
+- [**Writing suppressions that the compiler checks**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/writing-suppressions.en.md)
+  — how to use these constants, which is the same as for any other catalogue.
+- [**Repository architecture**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/architecture.en.md)
+  — the self-application loop this package is one half of, and why it runs in one direction.
+
+The [**documentation map**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/README.en.md)
+picks a page by what you are trying to do; every guide exists in English and French.
+
 ## Licence
 
 Apache-2.0.
