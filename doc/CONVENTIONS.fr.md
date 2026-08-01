@@ -239,6 +239,13 @@ projet de test :
   consommateur n'ouvre jamais. Les analyseurs et les correcteurs sont exclus : c'est Roslyn qui les
   découvre, personne n'écrit leur nom, et ce que le lecteur rencontre réellement est le `DCAT`
   ci-dessus.
+* **Chaque clé que le manifeste de catalogues accepte est décrite dans
+  [`doc/guide/catalogs-manifest`](guide/catalogs-manifest.fr.md), et chaque clé que cette page liste
+  est une clé que le manifeste accepte.** Lue depuis `eng/catalogs.schema.json` et non depuis
+  `eng/catalogs.json` : le manifeste n'est qu'une instance et n'emploie que huit des quinze clés,
+  donc le vérifier contre lui cesserait d'interroger précisément les clés pour lesquelles un lecteur
+  a besoin de la page. Le schéma n'est pas un second document — un test à côté de lui le tient aux
+  paramètres du lecteur lui-même.
 * **Chaque règle qu'un exemple montre est une règle publiée par son catalogue.** `SonarRule.S1144`
   résout contre le `DiagnosticCatalog.Sonar` compilé, et le conteneur n'est jamais mis au pluriel.
   Celle-ci existe parce qu'elle avait déjà manqué : seize exemples répartis sur trois documents
