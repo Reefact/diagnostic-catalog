@@ -102,6 +102,20 @@ mirroring other people's analyzers.
 
 ## I am contributing to this repository
 
+The four pages below are the internals track: they explain how the repository is put together, and
+none of them is needed to *use* any of this.
+
+* [**Repository architecture**](architecture.en.md) — the eight projects, the four splits each forced
+  by something, the self-application loop, and where each kind of check lives. One diagram.
+* [**Inside the generator**](generator-internals.en.md) — the path a `dcat` run takes, and what each
+  step refuses to do. One diagram.
+* [**Release trains**](release-trains.en.md) — the five lines, how a project joins one, and the
+  cross-train rule that follows. One diagram.
+* [**The testing strategy**](testing-strategy.en.md) — what each of the seven test projects asserts,
+  which run on the .NET Framework CLR, and the suite `dotnet test` cannot reach.
+
+Plus the two documents that are not guides:
+
 * [**CONTRIBUTING.md**](../../CONTRIBUTING.md) — building and testing, the .NET Framework floor,
   release trains, the commit convention, and how to add a catalogue.
 * [**doc/CONVENTIONS.en.md**](../CONVENTIONS.en.md) — how these documents are laid out and what the
@@ -111,7 +125,7 @@ mirroring other people's analyzers.
 
 Every page in this folder is threaded in one order, and each footer carries the previous and the
 next. Following it end to end takes you from a single suppression to publishing a catalogue of your
-own:
+own, and then into the repository itself:
 
 1. [Getting started](getting-started.en.md)
 2. [Why magic strings fail](the-problem.en.md)
@@ -135,6 +149,13 @@ own:
 20. [Troubleshooting](troubleshooting.en.md)
 21. [FAQ](faq.en.md)
 22. [Glossary](glossary.en.md)
+
+Then, for contributors only:
+
+23. [Repository architecture](architecture.en.md)
+24. [Inside the generator](generator-internals.en.md)
+25. [Release trains](release-trains.en.md)
+26. [The testing strategy](testing-strategy.en.md)
 
 ---
 
