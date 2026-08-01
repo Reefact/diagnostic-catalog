@@ -19,6 +19,14 @@ project:
 
 ## [Unreleased]
 
+_Nothing yet._
+
+## [1.0.0-preview.1] - 2026-08-01
+
+The first preview of the whole set. The foundation moves from 0.1.0 to a 1.0 line,
+and this train publishes two packages for the first time: the analyzers that check
+the contract, and the catalogue of their own rules.
+
 ### Added
 
 * **`DiagnosticCatalog.Analyzers`** — the checking. Seven diagnostics and seven code fixes: a
