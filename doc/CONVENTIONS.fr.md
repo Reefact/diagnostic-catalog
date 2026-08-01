@@ -34,6 +34,16 @@ vérification qui n'est plus que des exceptions. Un document qui ne doit pas êt
 à l'écart en ne portant aucun suffixe, et c'est pourquoi `doc/adr/template.md` — un squelette à
 copier, pas une page à lire — n'en a pas.
 
+**Ce que la parité affirme**, c'est que les deux moitiés ont la même *forme* : les mêmes titres, les
+mêmes exemples de code, et le même nombre d'éléments de liste, de lignes de tableau et de notes mises
+à l'écart. Rien ici ne lit le français, et une traduction n'est pas une transcription — les phrases
+fusionnent, se scindent et changent de longueur. Ce qu'une traduction fidèle ne peut pas faire, c'est
+proposer au lecteur un nombre différent de choses. Une note est comptée comme un bloc et non comme
+une ligne, car le français est plus long et la même citation passe couramment sur une ligne de plus.
+C'est ce qui attrape la page modifiée d'un seul côté : une puce ajoutée à l'anglais, une ligne
+ajoutée à un tableau, et le français passe encore toutes les autres vérifications tout en en disant
+discrètement moins.
+
 **Le dossier du guide est plat exprès.** Chaque lien inter-langues est alors un simple voisin
 (`./concepts.fr.md`), et chaque lien de navigation aussi. Une arborescence achèterait un regroupement
 que la [carte de la documentation](guide/README.fr.md) fournit déjà en prose, au prix d'un `../`
