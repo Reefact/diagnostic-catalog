@@ -229,6 +229,12 @@ whole test project:
   type is certain to be recorded in a file no consumer ever opens. Analyzers and code fix providers
   are excluded: Roslyn discovers them, nobody writes their names down, and what a reader actually
   meets is the `DCAT` id above.
+* **Every key the catalogue manifest accepts is described in
+  [`doc/guide/catalogs-manifest`](guide/catalogs-manifest.en.md), and every key that page lists is
+  one the manifest accepts.** Read from `eng/catalogs.schema.json` rather than from
+  `eng/catalogs.json`: the manifest is one instance and reaches for eight of the fifteen keys, so
+  checking against it would stop asking about exactly the keys a reader needs the page for. The
+  schema is not a second document — a test beside it holds it to the reader's own parameters.
 * **Every rule a sample shows is one its catalogue publishes.** `SonarRule.S1144` resolves against
   the compiled `DiagnosticCatalog.Sonar`, and the container is never pluralised. This one exists
   because it had already been needed: sixteen samples across three documents spelled the container
