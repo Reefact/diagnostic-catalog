@@ -203,6 +203,13 @@ relative to the manifest, so it works from any directory:
       "namespace": "My.Catalog",
       "container": "MyRule",
       "output": "../src/My.Catalog/MyRules.g.cs"
+    },
+    {
+      "solution": "../MySolution.slnx",
+      "configuration": "Release",
+      "namespace": "House.Catalog",
+      "container": "HouseRule",
+      "output": "../src/House.Catalog/HouseRules.g.cs"
     }
   ]
 }
