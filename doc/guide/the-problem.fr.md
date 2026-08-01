@@ -133,10 +133,10 @@ Une fois que la valeur est une référence et non du texte :
   catalogue et marquée `[Obsolete]`, en nommant la version qui l'a abandonnée. Vous obtenez
   `CS0618`, qui dit ce qui s'est passé, plutôt qu'un build qui passe encore avec une suppression qui
   ne signifie plus rien
-  ([ADR-0010](../adr/0010-carry-a-retired-rule-forward-as-obsolete.md)).
+  ([ADR-0010](../adr/0010-carry-a-retired-rule-forward-as-obsolete.fr.md)).
 * **La catégorie a une seule source.** Elle est lue dans le `DiagnosticDescriptor` de l'analyseur
   lui-même, jamais dans la documentation à son sujet
-  ([ADR-0009](../adr/0009-generate-catalog-content-from-analyzer-descriptors.md)).
+  ([ADR-0009](../adr/0009-generate-catalog-content-from-analyzer-descriptors.fr.md)).
 
 ## Les limites, dites franchement
 

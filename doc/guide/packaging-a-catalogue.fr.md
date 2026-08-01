@@ -112,7 +112,7 @@ Ce dépôt en avait cinq, en ligne sur des pages publiées, jusqu'à ce qu'un te
 
 **Il n'offre aucun sélecteur de langue.** Un fichier par paquet, dans une langue. C'est pourquoi
 `doc/` est bilingue ici et pas les READMEs de paquet
-([ADR-0022](../adr/0022-maintain-every-document-under-doc-in-english-and-french.md)).
+([ADR-0022](../adr/0022-maintain-every-document-under-doc-in-english-and-french.fr.md)).
 
 Deux choses que le README d'un catalogue doit porter et que rien d'autre ne dira au lecteur :
 
@@ -134,7 +134,7 @@ silencieusement de sa propre release.
 
 La règle qui va avec : un projet d'un train ne doit pas porter de `<ProjectReference>` vers un projet
 d'un autre, parce que `dotnet pack` estamperait une dépendance vers une version jamais publiée
-([ADR-0007](../adr/0007-depend-across-trains-through-published-packages.md)). C'est pourquoi les
+([ADR-0007](../adr/0007-depend-across-trains-through-published-packages.fr.md)). C'est pourquoi les
 catalogues d'ici prennent la fondation en `PackageReference` alors même que sa source est dans le même
 dépôt.
 

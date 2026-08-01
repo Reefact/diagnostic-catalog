@@ -108,7 +108,7 @@ This repository had five of those, live on published pages, until a test started
 
 **It offers no language switch.** One file per package, in one language. That is why `doc/` here is
 bilingual and the package READMEs are not
-([ADR-0022](../adr/0022-maintain-every-document-under-doc-in-english-and-french.md)).
+([ADR-0022](../adr/0022-maintain-every-document-under-doc-in-english-and-french.en.md)).
 
 Two things a catalogue's README should carry that nothing else will tell a reader:
 
@@ -129,7 +129,7 @@ projects a second time, so a renamed or moved one cannot silently drop out of it
 
 The rule that comes with it: a project on one train must not carry a `<ProjectReference>` to a project
 on another, because `dotnet pack` would stamp a dependency on a version that was never published
-([ADR-0007](../adr/0007-depend-across-trains-through-published-packages.md)). It is why the catalogues
+([ADR-0007](../adr/0007-depend-across-trains-through-published-packages.en.md)). It is why the catalogues
 here take the foundation as a `PackageReference` even though its source sits in the same repository.
 
 ## Where to go next

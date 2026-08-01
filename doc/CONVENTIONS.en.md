@@ -22,16 +22,16 @@ anything.
 | --- | --- | --- |
 | [`doc/guide/`](guide/) | The reader-facing documentation set. One flat folder. | English **and** French |
 | [`doc/specification.en.md`](specification.en.md) | The normative design document. Canonical. | English and French |
-| [`doc/adr/`](adr/) | Architecture decision records. | English today; French pending |
-| `README.md` at the repository root | The shop window. | English today; a French rendition is pending |
+| [`doc/adr/`](adr/) | Architecture decision records. | English **and** French |
+| `README.md` at the repository root | The shop window. | English only — outside `doc/`, see below |
 | `src/*/README.md` | The package pages on nuget.org. | English only — see below |
 
 **What the parity check actually sees** is any document whose name carries a language suffix —
-`<name>.en.md` or `<name>.fr.md`. The decision records under `doc/adr/` do not carry one yet: they
-are still `NNNN-short-title.md`, and converting them is a recorded follow-up of
-[ADR-0022](adr/0022-maintain-every-document-under-doc-in-english-and-french.md). Nothing is exempted
-by a list, which is deliberate — a check with an exception list drifts into a check with only
-exceptions.
+`<name>.en.md` or `<name>.fr.md`. Everything under `doc/` carries one, decision records included:
+`NNNN-short-title.en.md` and its French half. Nothing is exempted by a list, which is deliberate — a
+check with an exception list drifts into a check with only exceptions. A document that should not be
+paired is kept out by not carrying a suffix at all, which is why `doc/adr/template.md` — a skeleton
+to copy, not a page to read — has none.
 
 **The guide folder is flat on purpose.** Every cross-language link is then a plain sibling
 (`./concepts.fr.md`) and every navigation link is a plain sibling too. A nested tree buys grouping
@@ -56,7 +56,7 @@ doc/guide/getting-started.fr.md
 ```
 
 Kebab-case, because that is what the rest of the repository already uses — `specification.en.md`,
-`0001-floor-the-libraries-on-net-framework-4-7-2.md` — and a set of files that names itself two ways
+`0001-floor-the-libraries-on-net-framework-4-7-2.en.md` — and a set of files that names itself two ways
 teaches the reader nothing except that nobody decided.
 
 **The name is English in both languages.** `getting-started.fr.md`, never `demarrage.fr.md`. A file
@@ -236,7 +236,7 @@ whole test project:
 
 Every one of them compares a document against the compiled truth rather than against another
 document. That is the same reasoning as
-[ADR-0009](adr/0009-generate-catalog-content-from-analyzer-descriptors.md): the descriptors are what
+[ADR-0009](adr/0009-generate-catalog-content-from-analyzer-descriptors.en.md): the descriptors are what
 the analyzer reports with, so they are what a claim about them is checked against.
 
 ### What no check here can reach
@@ -258,7 +258,7 @@ The footer's shape is linted with the rest of the message; whether the files it 
 touched is resolved against the commit in CI, and a page named in one language only is refused —
 both files exist, so the parity check above cannot see it. The rule, and what it deliberately does
 not guarantee, is
-[ADR-0025](adr/0025-bind-every-feature-commit-to-the-documentation-it-changed.md); the wording is in
+[ADR-0025](adr/0025-bind-every-feature-commit-to-the-documentation-it-changed.en.md); the wording is in
 [`CONTRIBUTING.md`](../CONTRIBUTING.md).
 
 ### Showing a reference that does not exist

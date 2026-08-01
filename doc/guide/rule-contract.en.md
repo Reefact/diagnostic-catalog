@@ -38,7 +38,7 @@ could never be an attribute argument — which is the entire purpose. A static c
 in classic inheritance at all.
 
 So the contract is **verified by an analyzer** rather than imposed by a type system that has no way to
-impose it ([ADR-0008](../adr/0008-express-a-rule-as-a-marked-static-class-of-constants.md)).
+impose it ([ADR-0008](../adr/0008-express-a-rule-as-a-marked-static-class-of-constants.en.md)).
 
 ## The marker is matched by name, never by symbol
 
@@ -94,7 +94,7 @@ platform compares the two.
 That is not a gap in this library — it is the property the library exists because of. Accuracy here
 is a matter of the catalogue's credibility, which is why the catalogues in this repository are
 generated from descriptors rather than transcribed
-([ADR-0009](../adr/0009-generate-catalog-content-from-analyzer-descriptors.md)).
+([ADR-0009](../adr/0009-generate-catalog-content-from-analyzer-descriptors.en.md)).
 
 ## Categories declared once
 

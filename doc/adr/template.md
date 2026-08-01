@@ -5,7 +5,7 @@
      step-by-step "how it is built" OUT of every section — that is
      specification: it lives in the code and beside it, which this ADR links
      to. Test: if the implementation changed but the decision stood, this ADR
-     should not need editing. See doc/adr/README.md. -->
+     should not need editing. See doc/adr/README.en.md. -->
 
 **Status:** Proposed
 **Proposed:** YYYY-MM-DD

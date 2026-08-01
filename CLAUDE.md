@@ -19,7 +19,7 @@ documented, and close to the code that uses it.
   missing a half, a link that does not resolve, or a page nothing navigates to.
   The layout, the language banner and the navigation footer are specified in
   [`doc/CONVENTIONS.en.md`](doc/CONVENTIONS.en.md); the decision is
-  [ADR-0022](doc/adr/0022-maintain-every-document-under-doc-in-english-and-french.md).
+  [ADR-0022](doc/adr/0022-maintain-every-document-under-doc-in-english-and-french.en.md).
 * The package READMEs under `src/` stay **English-only**. nuget.org renders one
   file per package, offers no language switch, and resolves no relative link.
 
@@ -72,7 +72,7 @@ documented, and close to the code that uses it.
   promises; it may carry the footer, and nothing requires it. Full rule in
   [`CONTRIBUTING.md`](CONTRIBUTING.md) ("The `Docs:` footer"); the decision, and
   what it deliberately does not guarantee, is
-  [ADR-0025](doc/adr/0025-bind-every-feature-commit-to-the-documentation-it-changed.md).
+  [ADR-0025](doc/adr/0025-bind-every-feature-commit-to-the-documentation-it-changed.en.md).
 * The footer's **shape** is checked by the commit linter, at the hook and in CI.
   Whether the files it names were really touched is checked in CI by
   `tools/commit-lint/check-docs-footer.sh`, which you can run yourself on any
@@ -159,7 +159,7 @@ them rests on attention alone.
 Before finalizing a pull request, check the change against the ADR base under
 [`doc/adr/`](doc/adr/). This is **advisory**: produce a recommendation, never a
 blocker. Full procedure in [`AGENTS.md`](AGENTS.md) ("Architecture decisions");
-format and conventions in [`doc/adr/README.md`](doc/adr/README.md). The
+format and conventions in [`doc/adr/README.en.md`](doc/adr/README.en.md). The
 essentials, inlined so they hold even if `AGENTS.md` is not read:
 
 * An ADR records a **significant, lasting decision** — one a future maintainer

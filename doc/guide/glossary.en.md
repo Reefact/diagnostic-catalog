@@ -71,7 +71,7 @@ message format, category, severity, help link.
 
 The **source of truth** for everything a catalogue publishes. `dcat` constructs every analyzer it
 finds and reads the descriptors they actually declare, rather than the vendor's documentation about
-them ([ADR-0009](../adr/0009-generate-catalog-content-from-analyzer-descriptors.md)).
+them ([ADR-0009](../adr/0009-generate-catalog-content-from-analyzer-descriptors.en.md)).
 
 ## Foundation
 
@@ -125,8 +125,8 @@ A group of scopes that versions, tags and publishes together. `lib`, `cli`, `son
 
 A project joins one by declaring `<ReleaseTrain>` in its own `.csproj`, and that declaration is the
 whole membership. Trains exist so that following SonarSource's pace never drags the foundation's
-version along ([ADR-0002](../adr/0002-partition-releases-into-trains-by-commit-scope.md),
-[ADR-0015](../adr/0015-a-catalogues-version-runs-on-its-own-line.md)).
+version along ([ADR-0002](../adr/0002-partition-releases-into-trains-by-commit-scope.en.md),
+[ADR-0015](../adr/0015-a-catalogues-version-runs-on-its-own-line.en.md)).
 
 ## Rule
 

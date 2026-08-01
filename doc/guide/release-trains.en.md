@@ -13,8 +13,8 @@ stable. Tie them to one number and every Sonar refresh moves the foundation's ve
 every consumer of the foundation that something changed when nothing did.
 
 So the repository publishes on **five independent lines**
-([ADR-0002](../adr/0002-partition-releases-into-trains-by-commit-scope.md),
-[ADR-0015](../adr/0015-a-catalogues-version-runs-on-its-own-line.md)):
+([ADR-0002](../adr/0002-partition-releases-into-trains-by-commit-scope.en.md),
+[ADR-0015](../adr/0015-a-catalogues-version-runs-on-its-own-line.en.md)):
 
 | Train | Tag prefix | Scopes | What it publishes |
 | --- | --- | --- | --- |
@@ -92,7 +92,7 @@ never published — so the package would declare a dependency that does not exis
 for every consumer.
 
 Depend on another train through a `PackageReference` to a version actually on nuget.org
-([ADR-0007](../adr/0007-depend-across-trains-through-published-packages.md)). It is why the catalogues
+([ADR-0007](../adr/0007-depend-across-trains-through-published-packages.en.md)). It is why the catalogues
 here take the foundation as a package even though its source sits in the same repository — and why the
 foundation had to ship first, before any catalogue could depend on it.
 
@@ -117,7 +117,7 @@ drive no version.
 
 The scope list and the train table name the same set, in both directions. `cataloggen` joined the
 `cli` train when the generator was published inside `dcat`
-([ADR-0017](../adr/0017-publish-the-generator-as-a-cli-on-its-own-release-train.md)), and `testing`
+([ADR-0017](../adr/0017-publish-the-generator-as-a-cli-on-its-own-release-train.en.md)), and `testing`
 was dropped once it was clear it named a test-support package nobody was going to build. So there is
 neither a scope reaching no release note nor a train promising a package that does not exist.
 
@@ -126,7 +126,7 @@ neither a scope reaching no release note nor a train promising a package that do
 Push a train-prefixed SemVer tag — `lib-v1.2.3`, `sonar-v4.0.0`. The release workflow resolves the
 train from the prefix, builds and tests, packs **only that train**, attests the artifacts, publishes
 through OIDC trusted publishing, and creates a release whose notes contain only that train's commits
-([ADR-0006](../adr/0006-publish-through-trusted-publishing-with-provenance-and-an-sbom.md)).
+([ADR-0006](../adr/0006-publish-through-trusted-publishing-with-provenance-and-an-sbom.en.md)).
 
 Two things to know before the first one:
 

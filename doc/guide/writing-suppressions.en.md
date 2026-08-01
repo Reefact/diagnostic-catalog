@@ -73,7 +73,7 @@ because `SonarRule.S1144.Id` is a member the compiler resolves — no analyzer i
 The `DCAT` diagnostics below are a separate package, `DiagnosticCatalog.Analyzers`, and they are what
 finds the suppressions you have *not* converted yet. **It has no version on nuget.org today**, so a
 catalogue does not bring it along — nothing can reference a package that has never been published
-([ADR-0007](../adr/0007-depend-across-trains-through-published-packages.md)). It rides the `lib`
+([ADR-0007](../adr/0007-depend-across-trains-through-published-packages.en.md)). It rides the `lib`
 train, so the next tag there ships it;
 [project status](https://github.com/Reefact/diagnostic-catalog#-project-status) is the current
 answer.

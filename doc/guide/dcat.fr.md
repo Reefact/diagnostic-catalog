@@ -7,7 +7,7 @@ Pour quiconque génère un catalogue plutôt que de l'écrire à la main. Ce que
 source lui désigner, et la décision de conception qui explique l'essentiel de son comportement.
 
 > **Pas encore sur nuget.org.** `dcat` est construit dans ce dépôt et roule sur le train `cli`
-> ([ADR-0017](../adr/0017-publish-the-generator-as-a-cli-on-its-own-release-train.md)) ; le prochain
+> ([ADR-0017](../adr/0017-publish-the-generator-as-a-cli-on-its-own-release-train.fr.md)) ; le prochain
 > tag l'expédiera. D'ici là, `dotnet run --project src/DiagnosticCatalog.Cli -- <args>` exécute le
 > même outil depuis un clone.
 
@@ -37,7 +37,7 @@ n'a pas besoin.
 ## Il lit des descripteurs, jamais de la documentation
 
 C'est la décision d'où découle le reste
-([ADR-0009](../adr/0009-generate-catalog-content-from-analyzer-descriptors.md)).
+([ADR-0009](../adr/0009-generate-catalog-content-from-analyzer-descriptors.fr.md)).
 
 `dcat` charge les assemblages d'analyseur, **construit chaque `DiagnosticAnalyzer` qu'il y trouve**,
 et lit les instances de `DiagnosticDescriptor` qu'ils déclarent réellement. Pas le site de
@@ -89,7 +89,7 @@ flowchart TB
 NuGet lui-même : il lit donc votre hiérarchie `NuGet.config` exactement comme `dotnet restore`, et
 honore les identifiants qui y sont configurés — un paquet sur un flux privé fonctionne sans drapeau
 supplémentaire
-([ADR-0019](../adr/0019-resolve-packages-through-the-users-own-nuget-configuration.md)).
+([ADR-0019](../adr/0019-resolve-packages-through-the-users-own-nuget-configuration.fr.md)).
 
 **Un projet** retire de votre manifeste le chemin `bin/Release/net8.0/` — la seule partie d'une
 déclaration qui ne dit rien du catalogue et qui casse quand le projet change de cible ou est renommé.

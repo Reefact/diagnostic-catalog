@@ -52,7 +52,7 @@ qui s'est passé** — au lieu d'une erreur de compilation qui l'envoie chercher
 manquant ou un mauvais `using`.
 
 Cette différence est tout l'objet de la convention
-([ADR-0010](../adr/0010-carry-a-retired-rule-forward-as-obsolete.md)). L'alternative n'est pas « un
+([ADR-0010](../adr/0010-carry-a-retired-rule-forward-as-obsolete.fr.md)). L'alternative n'est pas « un
 catalogue plus propre » ; c'est une montée de version qui échoue pour une raison illisible.
 
 Nommez la version qui l'a abandonnée. La question suivante du consommateur est toujours « quand, et
@@ -69,7 +69,7 @@ avec le même `CS0117` inutile. Cela inclut le fait de ranger `ContosoCategory.C
 publié.
 
 Ce dépôt s'y tient lui-même
-([ADR-0012](../adr/0012-a-catalogue-never-renames-a-member-it-published.md)), et le cas qui a forcé la
+([ADR-0012](../adr/0012-a-catalogue-never-renames-a-member-it-published.fr.md)), et le cas qui a forcé la
 décision vaut d'être connu parce que ce n'était pas une erreur humaine : une nouvelle catégorie
 arrivant en amont, dont l'identifiant aplati entrait en collision avec un existant et se triait avant
 lui, aurait pris ce nom et poussé le titulaire sur un suffixe numéroté — renommant un membre publié,
@@ -105,7 +105,7 @@ pas bougé ne produit donc ni diff ni release.
 Un catalogue reflétant `SonarAnalyzer.CSharp 10.31.0` n'est **pas** en version `10.31.0`.
 
 Elle court sur sa propre ligne
-([ADR-0015](../adr/0015-a-catalogues-version-runs-on-its-own-line.md)), pour une raison qui devient
+([ADR-0015](../adr/0015-a-catalogues-version-runs-on-its-own-line.fr.md)), pour une raison qui devient
 évidente la première fois qu'on en a besoin : vous publierez un correctif au catalogue — une
 correction de métadonnée, un changement d'empaquetage, un titre perdu — sans que la version amont
 bouge. Si les numéros sont liés, cette release n'a aucun numéro disponible.
@@ -130,7 +130,7 @@ release Sonar n'entraîne donc jamais la version de la fondation, et réciproque
 
 Si l'analyseur que vous reflétez publie son vrai travail sur une ligne de préversion, reflétez cette
 ligne plutôt qu'une étiquette stable périmée. StyleCop est le cas qui a tranché ici
-([ADR-0016](../adr/0016-mirror-stylecops-prerelease-line.md)) : sa release stable a des années de
+([ADR-0016](../adr/0016-mirror-stylecops-prerelease-line.fr.md)) : sa release stable a des années de
 retard sur ce que tout le monde exécute réellement, et un catalogue la reflétant décrirait des règles
 que ses utilisateurs n'ont pas et omettrait celles qu'ils ont.
 

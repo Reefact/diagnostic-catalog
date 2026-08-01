@@ -75,7 +75,7 @@ identifiant, titre, format de message, catégorie, gravité, lien d'aide.
 
 La **source de vérité** de tout ce qu'un catalogue publie. `dcat` construit chaque analyseur qu'il
 trouve et lit les descripteurs qu'ils déclarent réellement, plutôt que la documentation de l'éditeur à
-leur sujet ([ADR-0009](../adr/0009-generate-catalog-content-from-analyzer-descriptors.md)).
+leur sujet ([ADR-0009](../adr/0009-generate-catalog-content-from-analyzer-descriptors.fr.md)).
 
 ## Fondation
 
@@ -162,8 +162,8 @@ Un groupe de scopes qui versionne, tagge et publie ensemble. `lib`, `cli`, `sona
 Un projet en rejoint un en déclarant `<ReleaseTrain>` dans son propre `.csproj`, et cette déclaration
 est toute l'appartenance. Les trains existent pour que suivre le rythme de SonarSource n'entraîne
 jamais la version de la fondation
-([ADR-0002](../adr/0002-partition-releases-into-trains-by-commit-scope.md),
-[ADR-0015](../adr/0015-a-catalogues-version-runs-on-its-own-line.md)).
+([ADR-0002](../adr/0002-partition-releases-into-trains-by-commit-scope.fr.md),
+[ADR-0015](../adr/0015-a-catalogues-version-runs-on-its-own-line.fr.md)).
 
 ## Trimmer
 

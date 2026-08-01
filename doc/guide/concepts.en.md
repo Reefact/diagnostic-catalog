@@ -42,7 +42,7 @@ you get `SonarRule.S1144Id`, a naming convention rather than a structure.
 mistake people make first, and the reason `DCAT0003` exists.
 
 Why the contract is *structural* — a marker attribute and two constants, rather than an interface or
-a base class — is [ADR-0008](../adr/0008-express-a-rule-as-a-marked-static-class-of-constants.md).
+a base class — is [ADR-0008](../adr/0008-express-a-rule-as-a-marked-static-class-of-constants.en.md).
 The short version: a `const` cannot be declared by an interface, so there was never an inheritance
 answer available.
 
@@ -122,7 +122,7 @@ and are not all out yet.
 | Reference | What you get |
 | --- | --- |
 | a vendor catalogue | Compile-checked constants. A misspelled rule is `CS0117`. A retired rule is `CS0618`. Rename and *Find All References* work. |
-| a vendor catalogue **today** | That, and nothing else. The catalogue does not bring `DiagnosticCatalog.Analyzers`, because that package has no version on nuget.org to point at ([ADR-0007](../adr/0007-depend-across-trains-through-published-packages.md)). |
+| a vendor catalogue **today** | That, and nothing else. The catalogue does not bring `DiagnosticCatalog.Analyzers`, because that package has no version on nuget.org to point at ([ADR-0007](../adr/0007-depend-across-trains-through-published-packages.en.md)). |
 | `DiagnosticCatalog.Analyzers`, once published | `DCAT0006` on every literal suppression it can replace, with a fix; `DCAT0001` on a mismatched pair; `DCAT0007` on a half-migrated one; `DCAT0009` on a trimmer suppression the trimmer will discard. |
 
 The distinction matters more than a footnote. **The core guarantee needs no analyzer**: it is the
@@ -151,11 +151,11 @@ Two consequences follow, and both shape how catalogues are versioned:
 
 * **A catalogue's version is its own.** It follows the vendor's pace, not the foundation's, which is
   why each rides a separate release train
-  ([ADR-0015](../adr/0015-a-catalogues-version-runs-on-its-own-line.md)).
+  ([ADR-0015](../adr/0015-a-catalogues-version-runs-on-its-own-line.en.md)).
 * **A rule is never deleted.** Constants are inlined into *your* assembly at *your* compile time, so
   removing one breaks your recompilation with a `CS0117` that names nothing useful. A retired rule is
   kept and marked `[Obsolete]` instead
-  ([ADR-0010](../adr/0010-carry-a-retired-rule-forward-as-obsolete.md)).
+  ([ADR-0010](../adr/0010-carry-a-retired-rule-forward-as-obsolete.en.md)).
 
 ## Where to go next
 

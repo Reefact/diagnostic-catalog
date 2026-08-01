@@ -107,7 +107,7 @@ pull request for a network blip.
 `dcat` resolves through NuGet's own client, so it reads the `NuGet.config` hierarchy exactly as
 `dotnet restore` does — machine, user, and every folder up from where you run it — and honours the
 credentials configured there, **including the encrypted and provider-supplied kinds**, which cannot
-be read by hand at all ([ADR-0019](../adr/0019-resolve-packages-through-the-users-own-nuget-configuration.md)).
+be read by hand at all ([ADR-0019](../adr/0019-resolve-packages-through-the-users-own-nuget-configuration.en.md)).
 
 A package on a private feed therefore works with no extra flag. `--source` pins one feed when several
 are configured.
@@ -163,7 +163,7 @@ The same upstream release yields the same bytes:
 * titles are read **culture-invariantly**;
 * a rule the vendor retired is carried forward as `[Obsolete]` rather than deleted, because consumers
   inline `const` values and removing one breaks their recompilation
-  ([ADR-0010](../adr/0010-carry-a-retired-rule-forward-as-obsolete.md)).
+  ([ADR-0010](../adr/0010-carry-a-retired-rule-forward-as-obsolete.en.md)).
 
 Pin `--date` when two runs of the same inputs must be byte-identical. Left unset it stamps today,
 which only ever reaches the file when something else changed too — so a night where upstream did not

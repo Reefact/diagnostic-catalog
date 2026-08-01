@@ -74,7 +74,7 @@ If the rule **used to exist**, see the next entry.
 ## `CS0618: 'SonarRule.S1144' is obsolete`
 
 The vendor retired the rule, and the catalogue carried it forward rather than deleting it
-([ADR-0010](../adr/0010-carry-a-retired-rule-forward-as-obsolete.md)).
+([ADR-0010](../adr/0010-carry-a-retired-rule-forward-as-obsolete.en.md)).
 
 The message names the release that dropped it. What to do:
 
@@ -125,7 +125,7 @@ The literal names a **different** rule from the reference beside it:
 
 Completing it from `S1144` would silence a different rule than the one silenced today, and let the
 original warning back in. That is a change of behaviour, not a migration
-([ADR-0018](../adr/0018-a-code-fix-never-decides-what-only-the-author-can.md)).
+([ADR-0018](../adr/0018-a-code-fix-never-decides-what-only-the-author-can.en.md)).
 
 Decide which rule you meant, and write it.
 

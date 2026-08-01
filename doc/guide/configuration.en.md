@@ -151,7 +151,7 @@ and disappears when there is not.
 
 * **Which rules a catalogue describes.** That is generated from the analyzer's own descriptors, and
   editing it by hand is the drift the generation exists to prevent
-  ([ADR-0009](../adr/0009-generate-catalog-content-from-analyzer-descriptors.md)).
+  ([ADR-0009](../adr/0009-generate-catalog-content-from-analyzer-descriptors.en.md)).
 * **Whether a suppression is *reasonable*.** No severity setting turns these into a judgement about
   whether silencing a rule at that site was a good idea. `Justification` is where that goes.
 * **`#pragma warning disable` and `.editorconfig` severity keys.** Not a setting — a limit. Both take

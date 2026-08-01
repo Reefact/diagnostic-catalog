@@ -44,7 +44,7 @@ l'erreur que l'on commet en premier, et la raison d'être de `DCAT0003`.
 
 Pourquoi le contrat est *structurel* — un attribut marqueur et deux constantes, plutôt qu'une
 interface ou une classe de base — c'est
-[ADR-0008](../adr/0008-express-a-rule-as-a-marked-static-class-of-constants.md). En bref : une
+[ADR-0008](../adr/0008-express-a-rule-as-a-marked-static-class-of-constants.fr.md). En bref : une
 `const` ne peut pas être déclarée par une interface, donc il n'y a jamais eu de réponse par héritage
 disponible.
 
@@ -126,7 +126,7 @@ indépendants et ne sont pas tous sortis.
 | Référence | Ce que vous obtenez |
 | --- | --- |
 | un catalogue d'éditeur | Des constantes vérifiées à la compilation. Une règle mal orthographiée donne `CS0117`. Une règle retirée donne `CS0618`. Le renommage et *Rechercher toutes les références* fonctionnent. |
-| un catalogue d'éditeur **aujourd'hui** | Cela, et rien d'autre. Le catalogue n'apporte pas `DiagnosticCatalog.Analyzers`, parce que ce paquet n'a aucune version sur nuget.org vers laquelle pointer ([ADR-0007](../adr/0007-depend-across-trains-through-published-packages.md)). |
+| un catalogue d'éditeur **aujourd'hui** | Cela, et rien d'autre. Le catalogue n'apporte pas `DiagnosticCatalog.Analyzers`, parce que ce paquet n'a aucune version sur nuget.org vers laquelle pointer ([ADR-0007](../adr/0007-depend-across-trains-through-published-packages.fr.md)). |
 | `DiagnosticCatalog.Analyzers`, une fois publié | `DCAT0006` sur chaque suppression littérale qu'il peut remplacer, avec correctif ; `DCAT0001` sur une paire incohérente ; `DCAT0007` sur une paire à moitié migrée ; `DCAT0009` sur une suppression que le *trimmer* jettera. |
 
 La distinction compte plus qu'une note de bas de page. **La garantie de fond n'a besoin d'aucun
@@ -156,11 +156,11 @@ Deux conséquences en découlent, et toutes deux façonnent le versionnement des
 
 * **La version d'un catalogue est la sienne.** Elle suit le rythme de l'éditeur, pas celui de la
   fondation, d'où un train de release séparé pour chacun
-  ([ADR-0015](../adr/0015-a-catalogues-version-runs-on-its-own-line.md)).
+  ([ADR-0015](../adr/0015-a-catalogues-version-runs-on-its-own-line.fr.md)).
 * **Une règle n'est jamais supprimée.** Les constantes sont incorporées dans *votre* assemblage à
   *votre* compilation : en retirer une casse votre recompilation avec un `CS0117` qui ne nomme rien
   d'utile. Une règle retirée est conservée et marquée `[Obsolete]`
-  ([ADR-0010](../adr/0010-carry-a-retired-rule-forward-as-obsolete.md)).
+  ([ADR-0010](../adr/0010-carry-a-retired-rule-forward-as-obsolete.fr.md)).
 
 ## Où aller ensuite
 

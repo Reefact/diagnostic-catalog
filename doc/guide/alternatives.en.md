@@ -52,7 +52,7 @@ suppression keeps compiling and stops meaning anything.
 **Where the line is.** Roughly: when you can no longer say, from memory, where each category value
 came from. A generated catalogue is this file with the values read from the analyzer's own
 `DiagnosticDescriptor` and regenerated when the vendor moves — which is
-[ADR-0009](../adr/0009-generate-catalog-content-from-analyzer-descriptors.md), and the reason `dcat`
+[ADR-0009](../adr/0009-generate-catalog-content-from-analyzer-descriptors.en.md), and the reason `dcat`
 exists.
 
 ## `GlobalSuppressions.cs`
