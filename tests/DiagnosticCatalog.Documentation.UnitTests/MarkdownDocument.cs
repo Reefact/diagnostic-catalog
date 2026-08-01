@@ -127,7 +127,7 @@ internal sealed class MarkdownDocument
         return string.Empty;
     }
 
-    private static IReadOnlyList<string> HeadingsOf(IReadOnlyList<string> lines)
+    private static List<string> HeadingsOf(IReadOnlyList<string> lines)
     {
         List<string> headings = [];
         foreach (string line in lines)
@@ -148,7 +148,7 @@ internal sealed class MarkdownDocument
     /// <c>&lt;div align="center"&gt;</c> and honours no Markdown equivalent, so a reader that saw
     /// only Markdown links would miss precisely the links the reading order is made of.
     /// </summary>
-    private static IReadOnlyList<MarkdownLink> LinksOf(string prose)
+    private static List<MarkdownLink> LinksOf(string prose)
     {
         List<MarkdownLink> links = [];
 
@@ -240,7 +240,7 @@ internal sealed record MarkdownLink(string Text, string Target)
         Target.StartsWith("mailto:", StringComparison.OrdinalIgnoreCase);
 
     /// <summary>Whether the target is an anchor inside the document that carries it.</summary>
-    internal bool IsLocalAnchor => Target.StartsWith("#", StringComparison.Ordinal);
+    internal bool IsLocalAnchor => Target.StartsWith('#');
 
     /// <summary>The path half of the target, without any anchor.</summary>
     internal string PathPart =>
