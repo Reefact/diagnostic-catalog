@@ -6,7 +6,7 @@ using Xunit;
 namespace DiagnosticCatalog.Documentation.UnitTests;
 
 /// <summary>
-/// A page and its translation land in the same commit (ADR-0020). These are what make that true
+/// A page and its translation land in the same commit (ADR-0022). These are what make that true
 /// rather than intended.
 /// </summary>
 /// <remarks>
