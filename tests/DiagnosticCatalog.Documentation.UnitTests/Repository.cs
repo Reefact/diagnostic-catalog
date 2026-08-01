@@ -160,7 +160,7 @@ internal static class Repository
         return root;
     }
 
-    private static IReadOnlyList<MarkdownDocument> LoadAll()
+    private static List<MarkdownDocument> LoadAll()
     {
         List<MarkdownDocument> documents = [];
 

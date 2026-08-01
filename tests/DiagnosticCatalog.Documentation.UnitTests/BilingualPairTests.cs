@@ -23,7 +23,7 @@ public sealed class BilingualPairTests
     /// </summary>
     public static TheoryData<string> BilingualDocuments()
     {
-        TheoryData<string> paths = new();
+        TheoryData<string> paths = [];
         foreach (MarkdownDocument document in Repository.Bilingual)
         {
             paths.Add(document.Path);

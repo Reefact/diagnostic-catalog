@@ -32,7 +32,7 @@ internal static class SolutionSource
             return null;
         }
 
-        IReadOnlyList<string>? projects = ProjectsIn(full);
+        List<string>? projects = ProjectsIn(full);
         if (projects is null) return null;
 
         List<string> declared = [];

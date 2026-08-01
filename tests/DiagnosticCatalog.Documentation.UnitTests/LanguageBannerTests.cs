@@ -24,7 +24,7 @@ public sealed class LanguageBannerTests
 
     public static TheoryData<string> BilingualDocuments()
     {
-        TheoryData<string> paths = new();
+        TheoryData<string> paths = [];
         foreach (MarkdownDocument document in Repository.Bilingual)
         {
             paths.Add(document.Path);
@@ -78,7 +78,7 @@ public sealed class LanguageBannerTests
         MarkdownDocument document = Repository.Require(path);
         string expected = document.Sibling![(document.Sibling!.LastIndexOf('/') + 1)..];
 
-        IReadOnlyList<MarkdownLink> links = document.Links
+        List<MarkdownLink> links = document.Links
             .Where(link => BannerOf(document).Contains($"]({link.Target})", StringComparison.Ordinal))
             .ToList();
 
