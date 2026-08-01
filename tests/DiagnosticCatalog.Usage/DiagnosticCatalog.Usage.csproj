@@ -1,0 +1,70 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    The usage suite. Not a test project: its BUILD is the assertion.
+
+    Every other test here compiles a snippet in-process and asserts what the analyzer reported.
+    That proves the analyzer answers correctly on the inputs somebody thought to write down. It
+    cannot answer the question a 1.0 actually rests on — does the analyzer stay quiet on ordinary
+    code it was not shown? A false positive is not found by asserting an expectation; it is found
+    by writing code that ought to be clean and discovering it is not.
+
+    So every file here is code a consumer could reasonably write, and the contract is that it
+    produces NO DCAT diagnostic. The repository's ratchet (TreatWarningsAsErrors, set in
+    Directory.Build.props) turns any that fires into a failed build, so nothing has to remember to
+    assert it.
+
+    Code that SHOULD be reported belongs in DiagnosticCatalog.Analyzers.UnitTests, where the
+    expectation can be stated. Never here: a deliberate violation in this project reads exactly
+    like a false positive nobody has triaged yet.
+  -->
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <RootNamespace>DiagnosticCatalog.Usage</RootNamespace>
+
+    <!--
+      Only a DCAT diagnostic may fail this project. Every other analyzer is turned off here, and
+      that is not laziness: the files below deliberately imitate other people's habits — naming
+      this repository would not choose, layouts its own style rules forbid — and a build drowning
+      in S-rules and IDE-rules would bury the one diagnostic the project exists to surface. The
+      repository's own style stays enforced everywhere else, which is where it applies.
+    -->
+    <EnableNETAnalyzers>false</EnableNETAnalyzers>
+    <EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
+    <AnalysisLevel>none</AnalysisLevel>
+    <RunAnalyzers>true</RunAnalyzers>
+  </PropertyGroup>
+
+  <!-- SonarAnalyzer is attached repository-wide by Directory.Build.props; drop it here. -->
+  <ItemGroup>
+    <PackageReference Remove="SonarAnalyzer.CSharp" />
+  </ItemGroup>
+
+  <!--
+    The analyzers under test, attached the way a consumer's package attaches them rather than
+    referenced as a library: OutputItemType="Analyzer" is what makes the compiler load them, and
+    ReferenceOutputAssembly="false" keeps their types out of this project's own name resolution —
+    a file here must not be able to see them, or it would stop resembling consumer code.
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\DiagnosticCatalog.Analyzers\DiagnosticCatalog.Analyzers.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\..\src\DiagnosticCatalog.CodeFixes\DiagnosticCatalog.CodeFixes.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+  <!-- The foundation's attributes, and the catalogues a suppression names. -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\DiagnosticCatalog\DiagnosticCatalog.csproj" />
+    <ProjectReference Include="..\..\src\DiagnosticCatalog.Sonar\DiagnosticCatalog.Sonar.csproj" />
+    <ProjectReference Include="..\..\src\DiagnosticCatalog.StyleCop\DiagnosticCatalog.StyleCop.csproj" />
+    <ProjectReference Include="..\..\src\DiagnosticCatalog.NetAnalyzers\DiagnosticCatalog.NetAnalyzers.csproj" />
+    <ProjectReference Include="..\..\src\DiagnosticCatalog.Self\DiagnosticCatalog.Self.csproj" />
+  </ItemGroup>
+
+</Project>
