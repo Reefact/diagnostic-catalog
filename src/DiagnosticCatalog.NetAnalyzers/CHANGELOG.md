@@ -22,6 +22,21 @@ number below.
 
 _No other change yet._
 
+## [1.0.0-preview.1] - 2026-08-01
+
+**Mirrors `Microsoft.CodeAnalysis.NetAnalyzers 10.0.302`** — unchanged upstream: no rule was added, retired or
+recategorised, and every identifier, category and constant is the one the previous
+version shipped. The generated catalogue is byte-identical.
+
+### Changed
+
+* The README now names the other catalogues and the foundation, so a reader landing
+  on this package's page from a search learns the set it belongs to. nuget.org renders
+  the README embedded in the package, so republishing is the only way an updated one
+  reaches that page.
+* The version joins the 1.0 line the whole set moves to with this preview. Nothing in
+  the mirrored the .NET analyzers rules changed with it.
+
 ## [0.2.1] - 2026-07-31
 
 **Mirrors `Microsoft.CodeAnalysis.NetAnalyzers 10.0.302`** — unchanged since 0.2.0: no
