@@ -809,6 +809,10 @@ public static class HouseRule
     }
 
     /// <summary>The marker through an alias, and an id that is not a C# identifier.</summary>
+    // DCAT0005 is expected here and cannot be cleared: the identifier carries a character C#
+    // forbids, so this name is already the closest one there is. Waived at the site rather than
+    // in .editorconfig, so the next declaration like it is met by a reader instead of by silence.
+    #pragma warning disable DCAT0005
     [TeamRule]
     public static class HR_0003
     {
@@ -818,6 +822,7 @@ public static class HouseRule
         /// <summary>The category, reached through the house container like every other rule.</summary>
         public const string Category = HouseCategory.Layout;
     }
+    #pragma warning restore DCAT0005
 }
 
 /// <summary>Suppressions naming the house catalogue rather than a shipped one.</summary>
