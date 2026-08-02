@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 using DiagnosticCatalog.CodeFixes;
 
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 
@@ -263,5 +264,27 @@ public sealed class MixedSuppressionTests
                 public void M() { }
             }
             """);
+
+    [Fact]
+    public async Task The_message_names_a_value_rather_than_a_literal()
+    {
+        // A constant NOT initialised from a rule member is still reported — the value is all the
+        // analyzer has — but there is no literal anywhere in the source it points at. Saying "the
+        // literal" would send its author hunting for something that is not written down.
+        ImmutableArray<Diagnostic> reported = await AnalyzerHarness.RunAsync(Analyzer, Usings + Rules + """
+            public sealed class Target
+            {
+                private const string RuleId = "S1144";
+
+                [SuppressMessage(SonarRules.S1144.Category, RuleId, Justification = "j")]
+                public void M() { }
+            }
+            """);
+
+        Diagnostic mixed = Assert.Single(reported, d => d.Id == "DCAT0007");
+
+        Assert.Contains("the string value \"S1144\"", mixed.GetMessage());
+        Assert.DoesNotContain("literal", mixed.GetMessage());
+    }
 
 }
