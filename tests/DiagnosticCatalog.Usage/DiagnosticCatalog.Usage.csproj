@@ -68,9 +68,21 @@
                       ReferenceOutputAssembly="false" />
   </ItemGroup>
 
-  <!-- The foundation's attributes, and the catalogues a suppression names. -->
+  <!--
+    The catalogues a suppression names. DiagnosticCatalog itself is NOT referenced here, and its
+    absence is load-bearing: the vendor catalogues reach the foundation through a PackageReference,
+    because they ride another release train (ADR-0007), so they carry the PUBLISHED assembly. Adding
+    a ProjectReference to src/DiagnosticCatalog alongside them puts two assemblies with the same
+    simple name in one compilation.
+
+    Nothing shows it in an ordinary build, where both sides are 0.0.0.0 and the resolver unifies
+    them silently. The release rehearsal builds with -p:Version, the two versions stop matching, and
+    the compiler answers CS1704. That is a job most changes never make anyone read, so it is written
+    down here instead: the marker attributes arrive transitively, and that is deliberate.
+
+    DiagnosticCatalog.Catalogs.UnitTests is shaped the same way, for the same reason.
+  -->
   <ItemGroup>
-    <ProjectReference Include="..\..\src\DiagnosticCatalog\DiagnosticCatalog.csproj" />
     <ProjectReference Include="..\..\src\DiagnosticCatalog.Sonar\DiagnosticCatalog.Sonar.csproj" />
     <ProjectReference Include="..\..\src\DiagnosticCatalog.StyleCop\DiagnosticCatalog.StyleCop.csproj" />
     <ProjectReference Include="..\..\src\DiagnosticCatalog.NetAnalyzers\DiagnosticCatalog.NetAnalyzers.csproj" />
