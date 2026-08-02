@@ -114,4 +114,51 @@ commit 'Merge pull request #68 from Reefact/claude/docs-reference-track
 Docs: doc/guide/dcat-reference.en.md'
 assert_equals 'a merge commit' 'ok' "$(check "$(head_of)")"
 
+# --- a footer wrapped over several lines -----------------------------------------------------
+# The failure this file exists for, in its purest form. Only the first line matches
+# `^Docs: `, so the resolver reads the paths it can see and exits 0 on a list it read
+# part of.
+#
+# Every path below is at the ROOT, deliberately. Under doc/ the bilingual-pair rule
+# fires on a truncated footer for its own reason — a lone `.en.md` — and a case that
+# passes because of THAT proves nothing about the parsing. Root paths take the pair
+# rule out of the way, so the only thing left to reject is the wrapping. Both files are
+# also genuinely touched, so a resolver reading the whole footer would accept them.
+printf 'wrapped\n' > "$fixture/README.md"
+printf 'wrapped too\n' > "$fixture/CONTRIBUTING.md"
+commit 'feat(cli): add the --wrapped switch
+
+Docs: README.md,
+ CONTRIBUTING.md'
+assert_equals 'a footer wrapped with an indented continuation' 'rejected' "$(check "$(head_of)")"
+
+printf 'again\n' > "$fixture/README.md"
+printf 'again too\n' > "$fixture/CONTRIBUTING.md"
+commit 'feat(cli): add the --unindented switch
+
+Docs: README.md,
+CONTRIBUTING.md'
+assert_equals 'a footer wrapped with an unindented continuation' 'rejected' "$(check "$(head_of)")"
+
+# A list ending in a separator is a list with something after it, even when nothing
+# follows in the message: whatever was meant to come next is unchecked either way.
+printf 'trailing\n' > "$fixture/README.md"
+commit 'feat(cli): add the --trailing switch
+
+Docs: README.md,'
+assert_equals 'a footer whose list ends in a comma' 'rejected' "$(check "$(head_of)")"
+
+# The continuation is only a continuation directly under the footer; an indented body
+# line further up is ordinary prose and must stay legal.
+printf 'indented body\n' > "$fixture/README.md"
+printf 'indented body too\n' > "$fixture/CONTRIBUTING.md"
+commit 'feat(cli): add the --indented-body switch
+
+The switch prints what would be written:
+
+    dcat generate --dry-run
+
+Docs: README.md, CONTRIBUTING.md'
+assert_equals 'an indented body line above the footer' 'ok' "$(check "$(head_of)")"
+
 finish
