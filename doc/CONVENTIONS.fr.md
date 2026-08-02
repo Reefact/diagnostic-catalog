@@ -55,7 +55,7 @@ un fichier bouge.
 ne peut porter ni le suffixe de langue ni un domicile dans ce dossier. La moitié française est
 [`README.fr.md`](README.fr.md), et les deux sont déclarées homologues aux vérifications — parité,
 bannière et liens compris
-([ADR-0028](adr/0028-pair-the-project-readme-across-the-doc-boundary.fr.md)). Cette page est aussi
+([ADR-0029](adr/0029-pair-the-project-readme-across-the-doc-boundary.fr.md)). Cette page est aussi
 l'index de ce dossier : le panneau indicateur vers le guide, la spécification, les décisions et ces
 conventions est une section du README du projet plutôt qu'une seconde page derrière lui.
 

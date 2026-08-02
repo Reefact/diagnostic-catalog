@@ -74,7 +74,7 @@ public sealed class LanguageBannerTests
     /// <remarks>
     /// The target is resolved the way a renderer resolves it, rather than matched against the
     /// sibling's file name. Almost every pair sits in one folder, where the two are the same
-    /// question; the project README and its translation do not (ADR-0028), and a check that compares
+    /// question; the project README and its translation do not (ADR-0029), and a check that compares
     /// file names would read a correct <c>doc/project-readme.fr.md</c> as pointing somewhere else.
     /// </remarks>
     [Theory]

@@ -52,7 +52,7 @@ moves.
 from a file called `README.md` at the root and from nothing else, so its English half can carry
 neither the language suffix nor a home in this folder. The French half is
 [`README.fr.md`](README.fr.md), and the two are declared to the checks as siblings — parity, banner
-and links included ([ADR-0028](adr/0028-pair-the-project-readme-across-the-doc-boundary.en.md)).
+and links included ([ADR-0029](adr/0029-pair-the-project-readme-across-the-doc-boundary.en.md)).
 That page is also this folder's index: the signpost to the guide, the specification, the records and
 these conventions is a section of the project README rather than a second page behind it.
 
