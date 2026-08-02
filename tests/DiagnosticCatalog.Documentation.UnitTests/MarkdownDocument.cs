@@ -28,6 +28,21 @@ internal sealed class MarkdownDocument
 {
     private static readonly TimeSpan MatchTimeout = TimeSpan.FromSeconds(10);
 
+    /// <summary>
+    /// The English half of the one pair whose halves do not sit beside each other. GitHub composes a
+    /// repository's landing page from a file called <c>README.md</c> at the root and from nothing
+    /// else, so this half can carry neither the language suffix nor a home under <c>doc/</c>
+    /// (ADR-0029).
+    /// </summary>
+    private const string ProjectReadme = "README.md";
+
+    /// <summary>
+    /// Its French half, which nothing displaces and which is therefore a documentation page like any
+    /// other. It carries the name the folder's own index used to, because that index was merged into
+    /// the project README rather than kept beside it.
+    /// </summary>
+    private const string ProjectReadmeTranslation = "doc/README.fr.md";
+
     private MarkdownDocument(string path, string text)
     {
         Path = path;
@@ -213,18 +228,28 @@ internal sealed class MarkdownDocument
 
     private static string? LanguageOf(string path)
     {
+        if (string.Equals(path, ProjectReadme, StringComparison.Ordinal)) return "en";
+
         if (path.EndsWith(".en.md", StringComparison.Ordinal)) return "en";
         if (path.EndsWith(".fr.md", StringComparison.Ordinal)) return "fr";
 
         return null;
     }
 
-    private static string? SiblingOf(string path, string? language) => language switch
+    private static string? SiblingOf(string path, string? language)
     {
-        "en" => string.Concat(path.AsSpan(0, path.Length - ".en.md".Length), ".fr.md"),
-        "fr" => string.Concat(path.AsSpan(0, path.Length - ".fr.md".Length), ".en.md"),
-        _ => null,
-    };
+        // The displaced pair is looked up before the suffix rule, which would otherwise send the
+        // French half to a doc/project-readme.en.md that must not exist.
+        if (string.Equals(path, ProjectReadme, StringComparison.Ordinal)) return ProjectReadmeTranslation;
+        if (string.Equals(path, ProjectReadmeTranslation, StringComparison.Ordinal)) return ProjectReadme;
+
+        return language switch
+        {
+            "en" => string.Concat(path.AsSpan(0, path.Length - ".en.md".Length), ".fr.md"),
+            "fr" => string.Concat(path.AsSpan(0, path.Length - ".fr.md".Length), ".en.md"),
+            _ => null,
+        };
+    }
 }
 
 /// <summary>One link: the text a reader sees, and where it points.</summary>

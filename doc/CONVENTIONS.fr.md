@@ -23,7 +23,7 @@ quoi que ce soit.
 | [`doc/guide/`](guide/) | Le jeu de documentation destiné au lecteur. Un dossier plat. | Anglais **et** français |
 | [`doc/specification.en.md`](specification.en.md) | Le document de conception normatif. Canonique. | Anglais et français |
 | [`doc/adr/`](adr/) | Les décisions d'architecture. | Anglais **et** français |
-| `README.md` à la racine du dépôt | La vitrine. | Anglais uniquement — hors de `doc/`, voir plus bas |
+| `README.md` à la racine du dépôt | La vitrine. | Anglais **et** français — la paire traverse la frontière, voir plus bas |
 | `src/*/README.md` | Les pages de paquet sur nuget.org. | Anglais uniquement — voir plus bas |
 
 **Ce que la vérification de parité voit réellement**, c'est tout document dont le nom porte un
@@ -49,6 +49,15 @@ discrètement moins.
 que la [carte de la documentation](guide/README.fr.md) fournit déjà en prose, au prix d'un `../`
 dans chaque lien — ce qui est la seule chose, dans un jeu Markdown, qui casse silencieusement quand
 un fichier bouge.
+
+**Le README du projet est apparié par-delà la frontière.** GitHub compose la page d'accueil du dépôt
+à partir d'un fichier nommé `README.md` à la racine et d'aucun autre, si bien que sa moitié anglaise
+ne peut porter ni le suffixe de langue ni un domicile dans ce dossier. La moitié française est
+[`README.fr.md`](README.fr.md), et les deux sont déclarées homologues aux vérifications — parité,
+bannière et liens compris
+([ADR-0029](adr/0029-pair-the-project-readme-across-the-doc-boundary.fr.md)). Cette page est aussi
+l'index de ce dossier : le panneau indicateur vers le guide, la spécification, les décisions et ces
+conventions est une section du README du projet plutôt qu'une seconde page derrière lui.
 
 **Les READMEs de paquet ne font pas partie de ce jeu.** Ils sont livrés dans le `.nupkg` en tant que
 `<PackageReadmeFile>` et rendus par nuget.org, qui ne résout aucun lien relatif et n'offre aucun
