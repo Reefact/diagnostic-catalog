@@ -4,6 +4,9 @@
 
 # DiagnosticCatalog
 
+🌍 **Languages:**  
+🇬🇧 English (this file) | 🇫🇷 [Français](doc/README.fr.md)
+
 |  |  |
 | :-- | :-- |
 | **Build** | [![ci](https://github.com/Reefact/diagnostic-catalog/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Reefact/diagnostic-catalog/actions/workflows/ci.yml) |
@@ -300,22 +303,47 @@ release does not move the foundation's version. Verification details are in
 
 ## 📚 Documentation
 
-Everything lives under [`doc/`](doc/README.en.md) ([français](doc/README.fr.md)), which is a
-signpost to four kinds of document:
+Everything lives under [`doc/`](doc/), which holds four kinds of document. They answer
+different questions:
 
-- **[The guide](doc/guide/README.en.md)** — twenty-six pages on how to *do* things, in the
-  six tracks above.
-- **[Specification](doc/specification.en.md)** — the full design: the rule contract, the
-  generator, the analyzer diagnostics, packaging, and the platform behaviour it all relies
-  on. Normative, and longer than any guide.
-- **[Architecture decisions](doc/adr/)** — the lasting decisions and why they were taken,
-  with the alternatives that were rejected.
-- **[Conventions](doc/CONVENTIONS.en.md)** — how these documents are laid out, and what the
-  documentation tests check about them.
+| If you want… | Read | Shape |
+| --- | --- | --- |
+| to *do* something | [**The guide**](doc/guide/README.en.md) | Twenty-six pages, threaded in one order, each with previous/next |
+| the exact behaviour, normatively | [**The specification**](doc/specification.en.md) | One long design document |
+| to know *why* something is the way it is | [**The decision records**](doc/adr/) | One file per decision, dated, never edited once accepted |
+| to add a page there | [**The conventions**](doc/CONVENTIONS.en.md) | The layout, and what the tests check |
 
-Every page under `doc/` exists in English and French, and **English is canonical**: where the
-two disagree, the English version wins
-([ADR-0022](doc/adr/0022-maintain-every-document-under-doc-in-english-and-french.en.md)).
+**The specification** is the canonical design document: the rule contract, the platform
+behaviour it relies on, the generator, the analyzer diagnostics, packaging. Read it when you
+need the exact answer rather than the usable one. Its appendix is worth knowing about on its
+own — every behavioural claim the design rests on was checked against the platform rather than
+assumed, and the appendix records what was checked and how.
+
+**The decision records** carry the reasoning: the context, the alternatives that were rejected
+and why, and the consequences accepted. They are a historical log — an accepted record is never
+edited, and a decision is revisited by writing a successor that supersedes it. Two are a good
+place to start, because most of the rest follow from them:
+
+- [ADR-0008](doc/adr/0008-express-a-rule-as-a-marked-static-class-of-constants.en.md) — why a
+  rule is a marked static class of constants, rather than an interface or a base class.
+- [ADR-0009](doc/adr/0009-generate-catalog-content-from-analyzer-descriptors.en.md) — why a
+  catalogue's content is read from the analyzers' own descriptors and never from their
+  documentation.
+
+**Both languages.** Every page under `doc/` exists in English and French, and **English is
+canonical**: where the two disagree, the English version wins
+([ADR-0022](doc/adr/0022-maintain-every-document-under-doc-in-english-and-french.en.md)). A page
+and its translation land in the same commit, and
+`tests/DiagnosticCatalog.Documentation.UnitTests` fails a pair that is missing a half, a link
+that does not resolve, or a page nothing navigates to.
+
+This page is part of that rule. GitHub composes the repository's landing page from a file called
+`README.md` at the root and from nothing else, so the English half cannot sit under `doc/`; its
+French half is `doc/README.fr.md` — the banner at the top of this page — and the two are checked as
+a pair like any other
+([ADR-0028](doc/adr/0028-pair-the-project-readme-across-the-doc-boundary.en.md)). What stays
+outside the rule is the package READMEs under [`src/`](src): nuget.org renders one file per
+package, offers no language switch and resolves no relative link.
 
 Outside `doc/`:
 

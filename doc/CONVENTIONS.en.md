@@ -23,7 +23,7 @@ anything.
 | [`doc/guide/`](guide/) | The reader-facing documentation set. One flat folder. | English **and** French |
 | [`doc/specification.en.md`](specification.en.md) | The normative design document. Canonical. | English and French |
 | [`doc/adr/`](adr/) | Architecture decision records. | English **and** French |
-| `README.md` at the repository root | The shop window. | English only — outside `doc/`, see below |
+| `README.md` at the repository root | The shop window. | English **and** French — the pair crosses the boundary, see below |
 | `src/*/README.md` | The package pages on nuget.org. | English only — see below |
 
 **What the parity check actually sees** is any document whose name carries a language suffix —
@@ -47,6 +47,14 @@ saying less.
 that the [documentation map](guide/README.en.md) already provides through prose, and costs a
 `../` in every link — which is the one thing in a Markdown set that breaks silently when a file
 moves.
+
+**The project README is paired across the boundary.** GitHub composes the repository's landing page
+from a file called `README.md` at the root and from nothing else, so its English half can carry
+neither the language suffix nor a home in this folder. The French half is
+[`README.fr.md`](README.fr.md), and the two are declared to the checks as siblings — parity, banner
+and links included ([ADR-0028](adr/0028-pair-the-project-readme-across-the-doc-boundary.en.md)).
+That page is also this folder's index: the signpost to the guide, the specification, the records and
+these conventions is a section of the project README rather than a second page behind it.
 
 **The package READMEs are not part of this set.** They are shipped inside the `.nupkg` as
 `<PackageReadmeFile>` and rendered by nuget.org, which resolves no relative link and offers no
