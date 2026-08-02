@@ -30,17 +30,23 @@ Les valeurs acceptées sont celles de Roslyn : `error`, `warning`, `suggestion`,
 
 | Identifiant | Défaut | Ce qu'une équipe veut d'ordinaire |
 | --- | --- | --- |
-| `DCAT0001` | Avertissement | `error` — la paire nomme deux règles différentes, la ligne ne fait donc pas ce qu'elle a l'air de faire |
+| `DCAT0001` | **Erreur** | la garder — la paire nomme deux règles différentes, la ligne ne fait donc pas ce qu'elle a l'air de faire |
 | `DCAT0002` | Avertissement | `error` si vous publiez un catalogue ; sans objet sinon |
 | `DCAT0003` | Avertissement | `error` si vous publiez un catalogue |
 | `DCAT0004` | Avertissement | `error` si vous publiez un catalogue |
-| `DCAT0006` | Avertissement | `suggestion` pendant la migration, `error` une fois converti |
-| `DCAT0007` | Avertissement | `error` — une suppression à moitié migrée est un défaut, pas une tâche de backlog |
+| `DCAT0006` | **Erreur** | `suggestion` le temps de migrer un codebase existant, puis retour |
+| `DCAT0007` | **Erreur** | la garder — une suppression à moitié migrée est un défaut, pas une tâche de backlog |
 | `DCAT0009` | Avertissement | `error` — le *trimmer* jette purement et simplement cette suppression |
 
 La distinction qui compte au moment de choisir : `DCAT0006` signale *du travail pas encore fait*, et
 les six autres signalent *quelque chose de déjà faux*. Seul le premier a sa place à `suggestion`
-pendant un temps.
+pendant un temps — et c'est ce que veut un codebase avec des suppressions littérales existantes le
+jour où il référence le paquet, puisque le défaut les transforme toutes en erreurs de build. Supprimez
+la ligne quand le dernier littéral a disparu.
+
+Les trois défauts côté usage sont des erreurs à dessein. Un codebase où la moitié des suppressions
+sont des chaînes magiques n'a pas la garantie que cette bibliothèque existe pour fournir ; il l'a là
+où quelqu'un y a pensé. Un avertissement laisserait cela à la mémoire.
 
 ## Gravité, pour tous d'un coup
 

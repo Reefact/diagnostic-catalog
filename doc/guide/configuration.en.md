@@ -29,16 +29,22 @@ The accepted values are Roslyn's own: `error`, `warning`, `suggestion`, `silent`
 
 | Id | Default | What a team usually wants |
 | --- | --- | --- |
-| `DCAT0001` | Warning | `error` — the pair names two different rules, so the line is not doing what it looks like |
+| `DCAT0001` | **Error** | keep it — the pair names two different rules, so the line is not doing what it looks like |
 | `DCAT0002` | Warning | `error` if you publish a catalogue; irrelevant otherwise |
 | `DCAT0003` | Warning | `error` if you publish a catalogue |
 | `DCAT0004` | Warning | `error` if you publish a catalogue |
-| `DCAT0006` | Warning | `suggestion` while migrating, `error` once converted |
-| `DCAT0007` | Warning | `error` — a half-migrated suppression is a defect, not a backlog item |
+| `DCAT0006` | **Error** | `suggestion` while migrating an existing codebase, then back |
+| `DCAT0007` | **Error** | keep it — a half-migrated suppression is a defect, not a backlog item |
 | `DCAT0009` | Warning | `error` — the trimmer discards that suppression outright |
 
 The distinction that matters when you pick: `DCAT0006` reports *work not yet done*, and the other six
-report *something already wrong*. Only the first belongs at `suggestion` for a while.
+report *something already wrong*. Only the first belongs at `suggestion` for a while — and it is what
+a codebase with existing literal suppressions wants on the day it references the package, since the
+default turns every one of them into a build error. Delete the line when the last literal is gone.
+
+The three use-site defaults are errors on purpose. A codebase where half the suppressions are magic
+strings does not have the guarantee this library exists to provide; it has it where someone
+remembered. A warning would leave that to memory.
 
 ## Severity, for all of them at once
 
