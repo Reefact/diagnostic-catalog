@@ -15,15 +15,25 @@ using DiagnosticCatalog;
 [assembly: CatalogSource(
     source:        "DiagnosticCatalog.Analyzers",
     sourceVersion: "1.0.0",
-    generatedOn:   "2026-07-31")]
+    generatedOn:   "2026-08-02")]
 
 namespace DiagnosticCatalog.Self;
 
 /// <summary>
 /// The diagnostic categories used by DiagnosticCatalog.Analyzers, declared once each.
 /// </summary>
+/// <remarks>
+/// INTERNAL by design. A category is reachable only through the rule that carries it:
+/// write <c>SomeRule.Sxxxx.Category</c>, never the category constant directly. The two
+/// spellings fold to the same string today and stop agreeing the day the vendor moves the
+/// rule to another category -- the rule member follows, a category named on its own does
+/// not, and the suppression silently stops matching. Keeping this class out of the public
+/// surface makes that decoupling unwritable rather than merely discouraged.
+/// The public <c>Category</c> constant on each rule is initialised from here and folds to
+/// the literal at compile time, so a consumer loses nothing.
+/// </remarks>
 [DiagnosticCategory]
-public static class DcatCategory
+internal static class DcatCategory
 {
     /// <summary>The <c>DiagnosticCatalog</c> category.</summary>
     public const string DiagnosticCatalog = "DiagnosticCatalog";

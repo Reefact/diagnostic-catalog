@@ -103,7 +103,7 @@ Une `const` initialisée depuis une autre `const` est **toujours une constante d
 
 ```csharp
 [DiagnosticCategory]
-public static class SonarCategory
+internal static class SonarCategory
 {
     public const string MajorCodeSmell = "Major Code Smell";
 }
@@ -117,8 +117,11 @@ public static class S1144
 ```
 
 `[DiagnosticCategory]` est optionnel. Ce qu'il apporte, c'est que l'outillage peut distinguer une
-constante de catégorie de n'importe quelle autre constante `string` de l'assemblage, si bien que le
-correctif de `DCAT0006` peut proposer `SonarCategory.MajorCodeSmell` plutôt qu'un littéral nu.
+constante de catégorie de n'importe quelle autre constante `string` de l'assemblage. Dans un catalogue
+généré par ce dépôt le conteneur est `internal`, si bien qu'une suppression ne nomme une catégorie
+qu'à travers la règle qui la porte — voir
+[ADR-0026](../adr/0026-reach-a-category-only-through-the-rule-that-carries-it.fr.md). Un catalogue
+écrit à la main peut encore en publier un ; le contrat ne l'interdit pas.
 
 ## Quels attributs sont analysés
 

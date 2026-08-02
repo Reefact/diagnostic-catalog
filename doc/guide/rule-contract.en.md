@@ -102,7 +102,7 @@ A `const` initialised from another `const` is **still a compile-time constant**:
 
 ```csharp
 [DiagnosticCategory]
-public static class SonarCategory
+internal static class SonarCategory
 {
     public const string MajorCodeSmell = "Major Code Smell";
 }
@@ -116,8 +116,10 @@ public static class S1144
 ```
 
 `[DiagnosticCategory]` is optional. What it buys is that tooling can tell a category constant from any
-other string constant in the assembly, so the `DCAT0006` fix can offer `SonarCategory.MajorCodeSmell`
-instead of a bare literal.
+other string constant in the assembly. In a catalogue this repository generates the container is
+`internal`, so a suppression names a category only through the rule that carries it — see
+[ADR-0026](../adr/0026-reach-a-category-only-through-the-rule-that-carries-it.en.md). A hand-written
+catalogue may still publish one; the contract does not forbid it.
 
 ## Which attributes are analysed
 
