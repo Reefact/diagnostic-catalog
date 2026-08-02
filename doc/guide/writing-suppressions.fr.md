@@ -186,21 +186,25 @@ dit.
 
 ## Les transformer en erreurs de build
 
-Tous sont des avertissements par défaut et se configurent comme n'importe quel diagnostic Roslyn :
+Les trois qui regardent un site d'usage sont des erreurs par défaut ; les autres des avertissements.
+Tous se configurent comme n'importe quel diagnostic Roslyn :
 
 ```ini
 # .editorconfig
 [*.cs]
-dotnet_diagnostic.DCAT0001.severity = error
+dotnet_diagnostic.DCAT0009.severity = error        # relever un livré en avertissement
 dotnet_diagnostic.DCAT0006.severity = suggestion   # migration progressive
 ```
 
-Une équipe à zéro avertissement voudra `DCAT0001` et `DCAT0007` en erreurs : les deux signifient
-qu'une suppression ne fait pas ce qu'elle a l'air de faire.
+`DCAT0001` et `DCAT0007` sont déjà des erreurs, `DCAT0006` aussi : les trois signifient qu'une
+suppression ne fait pas ce qu'elle a l'air de faire, et une garantie tenue seulement là où quelqu'un
+y a pensé n'en est pas une
+([ADR-0027](../adr/0027-ship-the-use-site-diagnostics-as-errors.fr.md)).
 
-Si vous adoptez un catalogue sur une base de code existante, `DCAT0006` se déclenche sur **toutes**
-les suppressions littérales d'un coup, et sous `TreatWarningsAsErrors` cela casse le build le jour
-où vous ajoutez le paquet. Descendez-le à `suggestion`, migrez à votre rythme, puis remontez-le.
+Cela a un coût qu'il vaut mieux connaître avant de référencer le paquet. Sur une base de code
+existante, `DCAT0006` se déclenche sur **toutes** les suppressions littérales d'un coup, et étant une
+erreur il casse le build ce jour-là — `TreatWarningsAsErrors` n'y est plus pour rien. Descendez-le à
+`suggestion`, migrez à votre rythme, puis supprimez la ligne.
 
 ## Ce que ça laisse dans mon application
 
