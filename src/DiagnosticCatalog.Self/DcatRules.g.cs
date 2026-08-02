@@ -88,6 +88,17 @@ public static class DcatRule
         public const string Category = DcatCategory.DiagnosticCatalog;
     }
 
+    /// <summary>The diagnostic rule type name should match its Id.</summary>
+    [DiagnosticRule]
+    public static class DCAT0005
+    {
+        /// <summary>The canonical identifier of this diagnostic.</summary>
+        public const string Id = nameof(DCAT0005);
+
+        /// <summary>The category declared by the analyzer's DiagnosticDescriptor.</summary>
+        public const string Category = DcatCategory.DiagnosticCatalog;
+    }
+
     /// <summary>Use a diagnostic catalog reference instead of string literals.</summary>
     [DiagnosticRule]
     public static class DCAT0006
@@ -127,6 +138,28 @@ public static class DcatRule
     {
         /// <summary>The canonical identifier of this diagnostic.</summary>
         public const string Id = nameof(DCAT0011);
+
+        /// <summary>The category declared by the analyzer's DiagnosticDescriptor.</summary>
+        public const string Category = DcatCategory.DiagnosticCatalog;
+    }
+
+    /// <summary>A rule identifier should be written as nameof.</summary>
+    [DiagnosticRule]
+    public static class DCAT0012
+    {
+        /// <summary>The canonical identifier of this diagnostic.</summary>
+        public const string Id = nameof(DCAT0012);
+
+        /// <summary>The category declared by the analyzer's DiagnosticDescriptor.</summary>
+        public const string Category = DcatCategory.DiagnosticCatalog;
+    }
+
+    /// <summary>The diagnostic rule type name does not say its Id.</summary>
+    [DiagnosticRule]
+    public static class DCAT0013
+    {
+        /// <summary>The canonical identifier of this diagnostic.</summary>
+        public const string Id = nameof(DCAT0013);
 
         /// <summary>The category declared by the analyzer's DiagnosticDescriptor.</summary>
         public const string Category = DcatCategory.DiagnosticCatalog;

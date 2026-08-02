@@ -410,8 +410,8 @@ public static class JustDummiesRules
 ```
 
 `nameof(JD0007)` inside `JD0007` resolves to the containing type's name and is a
-valid constant expression. Using it makes `DCAT0005` structurally impossible to
-violate.
+valid constant expression. Using it makes `DCAT0005` and `DCAT0013` structurally
+impossible to violate, and is the form `DCAT0012` asks for.
 
 ### 7.4 Naming the container
 
@@ -907,19 +907,25 @@ The provisional diagnostic prefix is `DCAT`.
 | `DCAT0002` | definition | A diagnostic rule must be declared as a static non-generic class | Warning | yes |
 | `DCAT0003` | definition | A diagnostic rule must expose a public constant string named Id | Warning | yes |
 | `DCAT0004` | definition | A diagnostic rule must expose a public constant string named Category | Warning | yes |
-| `DCAT0005` | definition | The diagnostic rule type name should match its Id | Info | no |
+| `DCAT0005` | definition | The diagnostic rule type name should match its Id | Info | yes |
 | `DCAT0006` | use site | Use a diagnostic catalog reference instead of string literals | Error | **yes — core** |
 | `DCAT0007` | use site | Suppression mixes a catalog reference with a string literal | Error | yes |
 | `DCAT0008` | use site | Suppression identifier does not resolve to a known diagnostic rule | None (opt-in) | no |
 | `DCAT0009` | use site | UnconditionalSuppressMessage only accepts IL#### identifiers | Warning | yes |
 | `DCAT0010` | use site | Referenced diagnostic rule type is malformed | Warning | no |
 | `DCAT0011` | definition | A diagnostic rule's category must reference a declared category constant | Warning | yes |
+| `DCAT0012` | definition | A rule identifier should be written as nameof | Warning | yes |
+| `DCAT0013` | definition | The diagnostic rule type name does not say its Id | Warning | yes |
 
-Definition diagnostics (`DCAT0002`–`DCAT0005`, `DCAT0011`) only fire on source the
-compiler can see. A malformed rule inside a *referenced assembly* produces nothing —
-which is what `DCAT0010` exists to cover, for every requirement it can evaluate over a
-metadata symbol. §8.5 is not one of them: it reads an initialiser, and metadata has
-none.
+Definition diagnostics (`DCAT0002`–`DCAT0005`, `DCAT0011`–`DCAT0013`) only fire on
+source the compiler can see. A malformed rule inside a *referenced assembly*
+produces nothing — which is what `DCAT0010` exists to cover, for every requirement
+it can evaluate over a metadata symbol.
+
+Two of them are narrower still, and permanently so, because they decide a question
+about the SOURCE rather than about the symbol and metadata carries no answer to it:
+§8.5 reads an initialiser (`DCAT0011`), and `DCAT0012` reads whether an identifier
+was written as `nameof` (§11.12).
 
 ### 11.1 `DCAT0001` — members from different rules
 
@@ -950,19 +956,62 @@ Same validations as `Id`.
 
 ```csharp
 [DiagnosticRule]
-public static class RuleSeven
+public static class RULE_0001
 {
-    public const string Id = "JD0007";
+    public const string Id = "RULE-0001";
     public const string Category = "Usage";
 }
 ```
 
-**Precise trigger condition:** report only when `SyntaxFacts.IsValidIdentifier(Id)`
-returns `true` *and* the id differs from the type name. Without that clause the
-diagnostic contradicts §8.2, which explicitly blesses `RULE_001` / `"RULE-001"`.
+Reported when the type name is not the identifier **and no name could have
+been**, which is the case §8.2 blesses: the identifier carries a character C#
+forbids in an identifier, and the type is named a legalisation of it.
 
-This diagnostic is low value — the recommended `nameof` form makes it
-unviolable — and is therefore excluded from the MVP.
+**Precise trigger condition.** With `Id` differing from the type name:
+
+1. `SyntaxFacts.IsValidIdentifier(Id)` is `false` — asked of the WHOLE
+   identifier, before any truncation; and
+2. the type name, reduced to its letters and digits, **starts with** the
+   identifier reduced the same way, after truncation at the first colon (§11.6).
+
+Otherwise the divergence was chosen rather than imposed, and `DCAT0013` (§11.13)
+reports it.
+
+**This replaces the trigger condition earlier revisions specified**, which used
+`IsValidIdentifier` as a *silencer* — report only when it returns `true` — and so
+said nothing at all about the declaration that most needs saying something about:
+
+```csharp
+[DiagnosticRule]
+public static class RULE42
+{
+    public const string Id = "RULE-0001";  // silent under the old condition
+    public const string Category = "Usage";
+}
+```
+
+The predicate answers *"was the exact name available?"*, not *"is the name
+excusable?"*. Used as a silencer it granted the excuse to every identifier that
+could not be a type name, whether or not the type made any attempt to render it.
+
+**Severity, and why it is reported at all.** Nothing is repairable here:
+`RULE_0001` and `RULE0001` both render `"RULE-0001"` and this specification
+elects neither. `Info` and no code fix follow from that. It is reported rather
+than passed over because `DCAT0013` fails the same comparison one step later — so
+this diagnostic is the boundary between the two made visible, and the only handle
+a consumer has for raising it in `.editorconfig`.
+
+Two `Id` values that are not valid C# identifiers, and land on opposite sides:
+
+```csharp
+public static class MW0002          { public const string Id = "MW-0002"; }        // DCAT0005
+public static class IL2026Annotated { public const string Id = "IL2026:Members…"; } // DCAT0005
+public static class RULE42          { public const string Id = "RULE-0001"; }      // DCAT0013
+```
+
+The second holds because the identifier is truncated at the first colon before
+comparison, exactly as §11.6 truncates a suppression's — a form ILLink honours
+must not be reported as a naming fault.
 
 ### 11.6 `DCAT0006` — replaceable string literals
 
@@ -1045,7 +1094,93 @@ unreachable from a generated catalogue, and a hand-written rule declaring
 
 Reported at the use site when a referenced `[DiagnosticRule]` type does not
 satisfy the structural contract, and is therefore unusable. Covers the blind
-spot left by `DCAT0002`–`DCAT0005` across assembly boundaries.
+spot left by `DCAT0002`–`DCAT0004` across assembly boundaries.
+
+Deliberately the structural contract alone. A naming fault does not make a rule
+unusable — the reference resolves and suppresses what it says it does — and the
+consumer of a catalogue cannot repair a name they do not own.
+
+### 11.11 `DCAT0011` — category not reached through a declared constant
+
+Specified in §8.5, which states the requirement and the forms that satisfy it.
+
+### 11.12 `DCAT0012` — identifier not written as `nameof`
+
+Reported when the value of `Id` **is** the type's name and the initialiser is not
+a `nameof` invocation.
+
+```csharp
+[DiagnosticRule]
+public static class JD0007
+{
+    public const string Id = "JD0007";  // reported
+    public const string Category = "Usage";
+}
+```
+
+Nothing is incorrect. The literal agrees with the type name at the moment it is
+written and nothing holds it there: renaming the type leaves it behind, still
+compiling, now naming a rule the type is not. §7.3 recommends `nameof` for
+exactly this reason, and this is the diagnostic that says so.
+
+**The only diagnostic in this specification decided on syntax.** `nameof(JD0007)`
+and `"JD0007"` are the same constant once folded, so `IFieldSymbol.ConstantValue`
+cannot separate them and a rule read from metadata carries no trace of which was
+written. It is therefore not reported against a referenced assembly, and that is
+not a gap: across that boundary there is no longer a form to recommend.
+
+**Any `nameof` satisfies it**, qualified or not — `nameof(Vendor.JD0007)` is held
+together by the same operator. An implementation MAY match the invocation on the
+token's text: a constant initialiser reading `nameof(...)` cannot be an ordinary
+call, since a call is not a constant expression.
+
+**Location.** The initialiser expression, not the type's identifier token where
+every other definition diagnostic reports. The fault is the expression, and the
+fix rewrites the expression.
+
+**Code fix — *Use `nameof`*.** Offered when `Id` is a field of its own; declined
+when one field declaration carries several declarators, per §12's rule against
+repairing a member the diagnostic did not name.
+
+### 11.13 `DCAT0013` — type name does not say the identifier
+
+Reported when the type name is not the identifier and **nothing forced that** —
+the complement of §11.5, and the branch that specification's earlier trigger
+condition left silent.
+
+```csharp
+[DiagnosticRule]
+public static class RuleSeven
+{
+    public const string Id = "JD0007";  // JD0007 was available as a type name
+    public const string Category = "Usage";
+}
+```
+
+**Precise trigger condition.** With `Id` differing from the type name, either:
+
+1. `SyntaxFacts.IsValidIdentifier(Id)` is `true` — the exact name was available
+   and was not taken; or
+2. it is `false`, and the type name reduced to its letters and digits does not
+   start with the identifier reduced the same way (§11.5).
+
+The first clause catches a case comparing letters and digits alone would forgive:
+`RULE001` declaring `"RULE_001"`, where an underscore is legal in an identifier
+and the type could have been spelled exactly.
+
+**Rationale.** The reference compiles, resolves and suppresses correctly, and
+reads as something it is not: `Vendor.RuleSeven.Id` names `JD0007` at every use
+site. That is a worse failure than an unusable rule, which announces itself.
+
+**No code fix.** Renaming the type changes a published name; rewriting the
+identifier changes which diagnostic is suppressed. Which of the two is the
+mistake is not knowable from the code (ADR-0018).
+
+**Severity.** `Warning`, alongside the other definition diagnostics rather than
+above them. The rule is new and has one known false-positive shape behind it — the
+friendly-name form of §11.5 — so it earns a release before being allowed to stop a
+build. A catalogue author wanting it stricter raises it in `.editorconfig`, which
+is what reporting it at all provides.
 
 ---
 
@@ -1127,7 +1262,8 @@ When it can be done unambiguously:
 * make `Category` public;
 * replace `static readonly string` with `const string` when the expression is
   constant;
-* add a missing member with a placeholder.
+* add a missing member with a placeholder;
+* rewrite an `Id` that spells its own type name as `nameof` (§11.12).
 
 ```csharp
 public const string Category = "TODO";
@@ -1148,9 +1284,18 @@ being §8.2's recommended form and derived from the declaration rather than
 invented; `Category` has no such source and takes the literal above.
 
 A placeholder category **stops the diagnostic being reported**, since `"TODO"`
-is not blank. That is the cost of the last item on the list, and it is the
-reason the fix is named for the constant it declares rather than for the rule it
-completes.
+is not blank. That is the cost of a placeholder, and it is the reason that fix
+is named for the constant it declares rather than for the rule it completes.
+
+The `nameof` rewrite is the one item on the list that repairs nothing broken, and
+so decides nothing: the value it writes is the value already there. It is refused
+for a field declaring several constants at once, on the shared rule above, and for
+a generic type, where `nameof` would have to name the constructed type.
+
+**No fix exists for `DCAT0005` or `DCAT0013`**, and none may be added. Neither
+has a repair the code determines: §11.5 has two renderings this specification
+declines to choose between, and §11.13 has two repairs that change different
+things — a published type name, or which diagnostic is suppressed.
 
 ---
 
@@ -1506,6 +1651,9 @@ dotnet_diagnostic.DCAT0006.severity = warning
 dotnet_diagnostic.DCAT0007.severity = error
 dotnet_diagnostic.DCAT0008.severity = warning   # opt-in strict mode
 dotnet_diagnostic.DCAT0009.severity = error
+dotnet_diagnostic.DCAT0011.severity = error
+dotnet_diagnostic.DCAT0012.severity = error
+dotnet_diagnostic.DCAT0013.severity = error
 ```
 
 The sample overrides every rule to show that every rule is reachable; it is not a
@@ -1529,7 +1677,7 @@ implementation must split into two:
 
 | Analyzer class | Diagnostics | Generated-code flags |
 | --- | --- | --- |
-| `DiagnosticRuleDefinitionAnalyzer` | `DCAT0002`–`DCAT0005` | `Analyze` |
+| `DiagnosticRuleDefinitionAnalyzer` | `DCAT0002`–`DCAT0005`, `DCAT0011`–`DCAT0013` | `Analyze` |
 | `SuppressionUsageAnalyzer` | `DCAT0001`, `DCAT0006`–`DCAT0010` | `None` |
 
 Rule definitions produced by an external tool must additionally be validated
@@ -1592,9 +1740,18 @@ either direction (Appendix B6).
 * a non-constant `Id`;
 * a non-constant `Category`;
 * an empty value;
-* an identifier differing from the class name;
-* an identifier that cannot be a C# identifier (must **not** report
-  `DCAT0005`);
+* an identifier differing from the class name, where the exact name was
+  available (must report `DCAT0013`);
+* an identifier that cannot be a C# identifier, rendered by the class name
+  (must report `DCAT0005`, and **not** `DCAT0013`);
+* an identifier that cannot be a C# identifier, ignored by the class name
+  (must report `DCAT0013`);
+* an identifier carrying a friendly-name suffix, whose class name renders its
+  head (must report `DCAT0005`);
+* an identifier equal to the class name, written as a literal (must report
+  `DCAT0012`) and written as `nameof` (must report nothing);
+* the same literal reached through a referenced assembly (must report nothing:
+  metadata carries no form);
 * a rule declared with a source-embedded attribute (§7.2).
 
 ### 21.2 Suppression tests
@@ -1756,13 +1913,15 @@ Version `1.0` must contain only the essentials.
 * the two code fixes for incoherent pairs;
 * the definition fixes of §12.4, each offered only where the repair is written
   in the code already;
+* the naming diagnostics `DCAT0005`, `DCAT0012` and `DCAT0013`, and the
+  `nameof` fix of the second;
 * two NuGet packages (§16.1) with analyzer release tracking;
 * documentation;
 * analyzer, compilation, end-to-end and packaging tests.
 
 **Out of scope**
 
-* `DCAT0005`, `DCAT0008`, `DCAT0010`;
+* `DCAT0008`, `DCAT0010`;
 * a catalogue source generator;
 * automatic import of external catalogues;
 * a CLI;

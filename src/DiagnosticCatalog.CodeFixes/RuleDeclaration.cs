@@ -102,6 +102,35 @@ internal static class RuleDeclaration
         return false;
     }
 
+    /// <summary><c>nameof(<paramref name="type"/>)</c>, as §7.3 recommends writing an identifier.</summary>
+    /// <remarks>
+    /// Here rather than in the provider that first needed it, so that the fix ADDING an <c>Id</c> and the
+    /// fix REWRITING one cannot end up spelling the recommended form two different ways.
+    /// </remarks>
+    internal static InvocationExpressionSyntax NameOf(TypeDeclarationSyntax type) =>
+        SyntaxFactory.InvocationExpression(
+            SyntaxFactory.IdentifierName(NameOfKeyword()),
+            SyntaxFactory.ArgumentList(
+                SyntaxFactory.SingletonSeparatedList(
+                    // The identifier token itself, not its text: a rule may be spelled `@class`, and
+                    // the text alone would write a keyword into the argument.
+                    SyntaxFactory.Argument(SyntaxFactory.IdentifierName(type.Identifier.WithoutTrivia())))));
+
+    /// <summary>The <c>nameof</c> token, as a contextual keyword rather than as a name.</summary>
+    /// <remarks>
+    /// <c>SyntaxFactory.IdentifierName("nameof")</c> looks like the same thing and is not: the binder
+    /// recognises the operator by the token's contextual kind, so an ordinary identifier binds as a call to
+    /// a method named <c>nameof</c> and the compilation fails with CS0103. Nothing about the printed source
+    /// differs, which is why this is written out rather than left to look redundant.
+    /// </remarks>
+    private static SyntaxToken NameOfKeyword() =>
+        SyntaxFactory.Identifier(
+            SyntaxTriviaList.Empty,
+            SyntaxKind.NameOfKeyword,
+            "nameof",
+            "nameof",
+            SyntaxTriviaList.Empty);
+
     /// <summary>Whether the token is one of the four accessibility keywords.</summary>
     internal static bool IsAccessibility(SyntaxToken token) =>
         token.IsKind(SyntaxKind.PublicKeyword)

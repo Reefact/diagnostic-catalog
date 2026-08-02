@@ -16,12 +16,15 @@ people.
 | [`DCAT0002`](#dcat0002) | definition | A diagnostic rule must be declared as a static non-generic class | Warning | yes, conditionally |
 | [`DCAT0003`](#dcat0003) | definition | A diagnostic rule must expose a public constant string named `Id` | Warning | yes, conditionally |
 | [`DCAT0004`](#dcat0004) | definition | A diagnostic rule must expose a public constant string named `Category` | Warning | yes, conditionally |
+| [`DCAT0005`](#dcat0005) | definition | The diagnostic rule type name should match its `Id` | Info | — |
 | [`DCAT0006`](#dcat0006) | use site | Use a diagnostic catalog reference instead of string literals | **Error** | yes |
 | [`DCAT0007`](#dcat0007) | use site | Suppression mixes a catalog reference with a string literal | **Error** | yes, conditionally |
 | [`DCAT0009`](#dcat0009) | use site | `UnconditionalSuppressMessage` only accepts `IL####` identifiers | Warning | — |
 | [`DCAT0011`](#dcat0011) | definition | A diagnostic rule's category must reference a declared category constant | Warning | — |
+| [`DCAT0012`](#dcat0012) | definition | A rule identifier should be written as `nameof` | Warning | yes, conditionally |
+| [`DCAT0013`](#dcat0013) | definition | The diagnostic rule type name does not say its `Id` | Warning | — |
 
-`DCAT0005`, `DCAT0008` and `DCAT0010` are specified but deliberately not in 1.0.
+`DCAT0008` and `DCAT0010` are specified but deliberately not in 1.0.
 
 ---
 
@@ -122,10 +125,14 @@ telling you to change something that works.
 
 These fire on code that declares rules. See [the catalogue author's guide](authoring-a-catalogue.en.md).
 
-The first three offer a fix **when the repair is written in the code already**, and stay silent about
-it otherwise. That line is not caution for its own sake: a fix that guessed would produce a rule the
-compiler accepts and nobody checks, which is the failure this library exists to remove. Where a fix is
-refused below, the diagnostic still names the type and the member — you finish it with what you know
+They fall into two groups. `DCAT0002`, `DCAT0003`, `DCAT0004` and `DCAT0011` say the rule is
+**unusable or unanchored**; `DCAT0005`, `DCAT0012` and `DCAT0013` say it works and its name does not
+tell you what it is.
+
+Those that offer a fix offer it **when the repair is written in the code already**, and stay silent
+about it otherwise. That line is not caution for its own sake: a fix that guessed would produce a rule
+the compiler accepts and nobody checks, which is the failure this library exists to remove. Where a fix
+is refused below, the diagnostic still names the type and the member — you finish it with what you know
 and the tool does not.
 
 `DCAT0011` offers none at all, for the same reason taken one step further: the repair is a class that
@@ -185,6 +192,39 @@ it scaffolds the member and leaves the value to you.
 > will notice — and a wrong category is invisible in every build, forever, because Roslyn matches a
 > suppression on its id alone. Apply it when you are about to fill it in, not to make the list shorter.
 
+### `DCAT0005`
+
+**The identifier cannot be a type name, so the type is named the closest thing to it.**
+
+```csharp
+[DiagnosticRule]
+public static class RULE_0001
+{
+    public const string Id = "RULE-0001";  // a hyphen is legal in a diagnostic id, not in a type name
+}
+```
+
+**There is nothing to do here, and that is the whole message.** `RULE_0001` and `RULE0001` are both
+faithful renderings of `"RULE-0001"`, and this library has no ground to elect one — so it asks for
+neither, offers no fix, and stays at `Info`, out of your build output.
+
+Why report it at all, then? Because [`DCAT0013`](#dcat0013) fails this same comparison one step later
+and *is* a warning. `DCAT0005` is the exception being visible: it marks the declarations where the
+divergence was imposed rather than chosen. An exception nobody can see, inside a rule that reports, is
+the one shape a reader cannot reason about — and it leaves you no id to raise in `.editorconfig` if you
+decide you want to know about these after all.
+
+An identifier is read as far as its first colon, exactly as a suppression is
+([`DCAT0006`](#dcat0006)). So the trimmer's friendly-name form lands here rather than under
+`DCAT0013`, and a type named for the head of it is doing everything a name can:
+
+```csharp
+public static class IL2026Annotated
+{
+    public const string Id = "IL2026:Members annotated with RequiresUnreferencedCode";
+}
+```
+
 ### `DCAT0011`
 
 **The category is not reached through a declared category constant.** `DCAT0004` asks whether the
@@ -224,6 +264,62 @@ the rule and you write the container.
 
 **Reported on source only**, like every definition diagnostic — and here by construction rather than by
 policy, since the check reads the initialiser and a rule reaching you through metadata has none.
+### `DCAT0012`
+
+**The identifier is a literal that happens to equal the type name.** Write `nameof` instead:
+
+```csharp
+public const string Id = "JD0007";        // reported
+public const string Id = nameof(JD0007);  // held together
+```
+
+Nothing is wrong with the literal today — that is the point. It agrees with the type name *now*, and
+nothing keeps it there. Rename the type and the literal stays behind: the declaration still compiles,
+and every use site goes on naming a rule the type no longer is. `nameof` cannot come apart.
+
+This is the one definition diagnostic that reads your **source** rather than your symbols.
+`nameof(JD0007)` and `"JD0007"` compile to the same constant, so a rule reaching this analyzer from a
+referenced assembly carries no trace of which was written — and nothing is reported there, because at
+that point there is no longer a form to recommend.
+
+Any `nameof` counts, qualified or not: `nameof(Vendor.JD0007)` is held together by the same operator.
+
+**Fix — *Use `nameof`*.** Offered whenever `Id` is a field of its own. Declined when one field
+declaration carries several constants — `public const string Id = "JD0007", Category = "Usage";` —
+because rewriting a shared declaration touches a member this diagnostic never mentioned.
+
+### `DCAT0013`
+
+**The type is named something its identifier does not say.**
+
+```csharp
+[DiagnosticRule]
+public static class RuleSeven
+{
+    public const string Id = "JD0007";  // reported
+}
+```
+
+`JD0007` is a perfectly legal type name. It was available, and the type is called something else, so
+every use site reads `Vendor.RuleSeven.Id` and suppresses `JD0007`. The reference compiles, resolves,
+works — and tells its reader nothing true. That is a worse failure than a broken rule, which at least
+announces itself.
+
+It is reported whenever the name does not say the identifier and nothing forced that. Both of these are
+reported, for the same reason:
+
+```csharp
+public static class RULE001 { public const string Id = "RULE_001"; }   // RULE_001 was available
+public static class RULE42  { public const string Id = "RULE-0001"; }  // not a legalisation of it
+```
+
+The second is the one worth knowing about. `"RULE-0001"` cannot be a type name at all — but `RULE42` is
+not a rendering of it either, and being unable to spell the identifier exactly does not license spelling
+something else.
+
+**No fix.** Two repairs exist and only you can choose: renaming the type changes a name your consumers
+have written down, and rewriting the identifier changes which diagnostic is suppressed. A tool that
+picked one would be deciding which of them was the typo.
 
 ---
 
@@ -244,6 +340,12 @@ dotnet_diagnostic.DCAT0002.severity = error
 dotnet_diagnostic.DCAT0003.severity = error
 dotnet_diagnostic.DCAT0004.severity = error
 dotnet_diagnostic.DCAT0011.severity = error
+dotnet_diagnostic.DCAT0012.severity = error
+dotnet_diagnostic.DCAT0013.severity = error
+
+# A name that could not have said its id. Raise it if you would rather review
+# every such declaration than let it pass.
+dotnet_diagnostic.DCAT0005.severity = warning
 
 # Migrating an existing codebase: keep it visible in the IDE, out of the build.
 # Delete the line when the last literal is gone.

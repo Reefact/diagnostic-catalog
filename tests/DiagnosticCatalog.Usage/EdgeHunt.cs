@@ -140,7 +140,7 @@ namespace EdgeHunt.Catalog
         [DiagnosticRule]
         public static class EH0005
         {
-            public const string Id = "EH0005", Category = EdgeHuntCategory.Layout;
+            public const string Id = nameof(EH0005), Category = EdgeHuntCategory.Layout;
         }
 
         /// <summary>The category an interpolated constant, named on the holder rather than in place.</summary>
@@ -297,9 +297,9 @@ namespace EdgeHunt.Catalog
 
     /// <summary>A file-local rule: a real type with a mangled metadata name.</summary>
     [DiagnosticRule]
-    file static class EdgeHuntFileLocalRule
+    file static class EH0500
     {
-        public const string Id = "EH0500";
+        public const string Id = nameof(EH0500);
 
         public const string Category = EdgeHuntCategory.Correctness;
     }
@@ -308,8 +308,8 @@ namespace EdgeHunt.Catalog
     internal static class FileLocalConsumer
     {
         [SuppressMessage(
-            EdgeHuntFileLocalRule.Category,
-            EdgeHuntFileLocalRule.Id,
+            EH0500.Category,
+            EH0500.Id,
             Justification = "The file-local rule is as real as any other.")]
         internal static int Suppressed() => 1;
     }
