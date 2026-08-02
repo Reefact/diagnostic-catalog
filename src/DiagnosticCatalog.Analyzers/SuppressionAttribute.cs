@@ -120,8 +120,62 @@ internal static class SuppressionAttribute
             return SuppressionArgument.FromRuleMember(declaringType, field, value);
         }
 
-        // §10.6 — an intermediate constant whose declaring type is not a rule type is not a blind spot:
-        // its value is compared exactly as a literal's would be. A plain literal lands here too.
+        // §10.6 — an intermediate constant hoisted from a rule member is the form the guide promotes,
+        // so it resolves to the RULE and not to its value. Exactly one hop is followed, and only from
+        // a declaring type that is NOT itself a rule: following it from a rule member is what the
+        // branch above is careful never to do, because Category = SonarCategory.MajorCodeSmell would
+        // then read as SonarCategory and fire DCAT0001 on every catalogue this repository generates.
+        if (model.GetSymbolInfo(expression).Symbol is IFieldSymbol hoisted
+            && hoisted.IsConst
+            && ThroughInitialiser(hoisted, model) is { } referenced)
+        {
+            return referenced;
+        }
+
+        // A constant initialised from anything else, and a plain literal, land here: the value is
+        // compared exactly as a literal's would be.
         return value is null ? SuppressionArgument.Unresolved : SuppressionArgument.FromConstant(value);
+    }
+
+    /// <summary>
+    /// The rule member an intermediate constant was initialised from, or null when it was initialised
+    /// from anything else.
+    /// </summary>
+    /// <remarks>
+    /// One hop only, and deliberately so: a chain of constants is not a form any document promotes, and
+    /// following it would cost a semantic model per link to recognise code nobody writes. A constant
+    /// declared in another assembly has no syntax to read and lands on null, which leaves it compared by
+    /// value — the behaviour it already had.
+    /// </remarks>
+    private static SuppressionArgument? ThroughInitialiser(IFieldSymbol hoisted, SemanticModel model)
+    {
+        foreach (SyntaxReference reference in hoisted.DeclaringSyntaxReferences)
+        {
+            if (reference.GetSyntax() is not VariableDeclaratorSyntax { Initializer.Value: { } initialiser })
+            {
+                continue;
+            }
+
+            // Reusing the caller's model matters: the constant is usually declared in the very file
+            // being analysed, and asking the compilation for a second model of that tree throws away
+            // everything it has already bound.
+            SemanticModel declaring = initialiser.SyntaxTree == model.SyntaxTree
+                ? model
+                : model.Compilation.GetSemanticModel(initialiser.SyntaxTree);
+
+            if (declaring.GetSymbolInfo(initialiser).Symbol is IFieldSymbol field
+                && field.ContainingType is { } declaringType
+                && RuleMarker.IsRule(declaringType))
+            {
+                Optional<object?> constant = declaring.GetConstantValue(initialiser);
+
+                return SuppressionArgument.FromRuleMember(
+                    declaringType,
+                    field,
+                    constant.HasValue ? constant.Value as string : null);
+            }
+        }
+
+        return null;
     }
 }
