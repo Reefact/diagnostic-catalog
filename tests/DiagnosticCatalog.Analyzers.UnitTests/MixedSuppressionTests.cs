@@ -236,4 +236,32 @@ public sealed class MixedSuppressionTests
         Assert.Equal(2, keys.Length);
         Assert.Single(keys.Distinct());
     }
+    [Fact]
+    public Task An_identifier_hoisted_into_a_constant_still_names_its_rule() =>
+        // The form the guide promotes under its ACCEPTED list: a rule member hoisted into a named
+        // constant so a second suppression can reuse it. Nothing here is a literal — the constant's
+        // initialiser names the rule — so DCAT0007, which exists for one reference and one literal,
+        // has no business firing.
+        AnalyzerHarness.ReportsNothingAsync(Analyzer, Usings + Rules + """
+            public sealed class Target
+            {
+                private const string RuleId = SonarRules.S1144.Id;
+
+                [SuppressMessage(SonarRules.S1144.Category, RuleId, Justification = "j")]
+                public void M() { }
+            }
+            """);
+
+    [Fact]
+    public Task A_category_hoisted_into_a_constant_still_names_its_rule() =>
+        AnalyzerHarness.ReportsNothingAsync(Analyzer, Usings + Rules + """
+            public sealed class Target
+            {
+                private const string RuleCategory = SonarRules.S1144.Category;
+
+                [SuppressMessage(RuleCategory, SonarRules.S1144.Id, Justification = "j")]
+                public void M() { }
+            }
+            """);
+
 }
