@@ -558,6 +558,14 @@ Every entry MUST be a Markdown path relative to the repository root, and under
 test sees two files that both exist and cannot tell that only one was updated
 ([ADR-0022](doc/adr/0022-maintain-every-document-under-doc-in-english-and-french.en.md)).
 
+The footer is **one line**, however long that line gets. Both checks below read
+the first line matching `Docs: ` and no further, so wrapping the list to fit a
+72-column log hides every path below the fold from both of them — and they would
+then report success on a list they had read part of. Folding it is refused rather
+than supported, in the linter and in the resolver: a rejection you can read beats
+a check that quietly does less. A trailing comma is refused for the same reason,
+being a list with something after it wherever that something went.
+
 The footer is checked twice, and the split is deliberate. Its *shape* is checked
 by the commit linter, so the `commit-msg` hook reports a missing or malformed
 footer before the commit is recorded. Whether the files it names were really

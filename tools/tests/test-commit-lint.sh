@@ -89,6 +89,43 @@ assert_equals 'a footer with an empty entry between two commas' 'rejected' \
 
 Docs: doc/guide/dcat-reference.en.md,,doc/guide/dcat-reference.fr.md')"
 
+# --- a footer wrapped over several lines ---------------------------------------------
+# The shape that reads as a courtesy to a 72-column log and is not one. Only the first
+# line matches `^Docs: `, so every path below it is invisible to both halves of the
+# rule: the linter validates the shape of what it can see, check-docs-footer.sh
+# resolves what it can see, and both report success on a list they only partly read.
+# Refused rather than supported, because a single line is the format CONTRIBUTING.md
+# describes and a rejection an author can read beats a check that quietly does less.
+assert_equals 'a footer wrapped with an indented continuation' 'rejected' \
+  "$(lint 'feat(cli): add the --dry-run switch
+
+Docs: doc/guide/dcat-reference.en.md,
+ doc/guide/dcat-reference.fr.md')"
+
+assert_equals 'a footer wrapped with an unindented continuation' 'rejected' \
+  "$(lint 'feat(cli): add the --dry-run switch
+
+Docs: doc/guide/dcat-reference.en.md,
+doc/guide/dcat-reference.fr.md')"
+
+# The trailing comma is the tell on its own: a list that ends in a separator is a list
+# with something after it, wherever that something went.
+assert_equals 'a footer whose list ends in a comma' 'rejected' \
+  "$(lint 'feat(cli): add the --dry-run switch
+
+Docs: doc/guide/dcat-reference.en.md,')"
+
+# The continuation is only a continuation directly under the footer. An ordinary
+# indented body line further down — a list, a quoted snippet — must stay legal.
+assert_equals 'an indented body line above the footer' 'ok' \
+  "$(lint 'feat(cli): add the --dry-run switch
+
+The switch prints what would be written:
+
+    dcat generate --dry-run
+
+Docs: doc/guide/dcat-reference.en.md, doc/guide/dcat-reference.fr.md')"
+
 # --- the footer is spelled one way --------------------------------------------------
 # Reported rather than ignored, for the same reason `Refs:` is: a footer the tooling
 # does not recognise reads, to its author, exactly like one it does.
