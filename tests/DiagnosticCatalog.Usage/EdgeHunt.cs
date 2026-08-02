@@ -960,35 +960,25 @@ namespace EdgeHunt.Indirection
     /// reading"). It is written here on that basis.
     /// </summary>
     // -----------------------------------------------------------------------------------------
-    // OPEN FINDINGS — the three sites below are kept BECAUSE they are reported, not in spite of
-    // it. One root cause: SuppressionAttribute.Resolve classifies an argument as a rule member
-    // only when GetSymbolInfo yields a field whose CONTAINING TYPE carries the marker. Every
-    // other constant, however it was derived from the catalogue, falls through and is compared
-    // "exactly as a literal".
+    // SETTLED. These sites were OPEN FINDINGS, kept because they were reported. Both are now
+    // reported by nothing, and the pragma that made the branch buildable is gone.
     //
-    // Not following the initialiser is deliberate and right for the rule member itself: a rule
-    // writes Category = SonarCategory.MajorCodeSmell, and walking through would make DCAT0001
-    // fire on every catalogue this repository ships. The consequence one level out looks
-    // unintended.
+    // OneSide / BothSides — the intermediate constant. Resolve now follows one hop into a
+    // constant's initialiser, so a rule member hoisted into a named constant resolves to its rule
+    // rather than being compared as a literal. Not following it FROM a rule member is still
+    // deliberate and still right: a rule writes Category = SonarCategory.MajorCodeSmell, and
+    // walking through would make DCAT0001 fire on every catalogue this repository ships. The hop
+    // is exactly one, and only from a declaring type that is not itself a rule.
     //
-    // OneSide / BothSides — the intermediate constant. doc/guide/rule-contract.en.md lists this
-    // shape under "Accepted syntactic forms at a use site" and says no fix is offered. It is
-    // reported, and a fix IS attached. Documentation, specification §10.6 and behaviour disagree.
+    // NamedCategoryConstant — settled the other way, and more sharply. The category container is
+    // now internal (ADR-0026), so naming a category apart from its rule is CS0122 rather than a
+    // diagnostic. The case is written out in prose below rather than exercised, because a suite
+    // whose build IS the assertion cannot hold source the compiler refuses.
     //
-    // NamedCategoryConstant — the strongest, and the one to settle first. SonarCategory is the
-    // catalogue's OWN [DiagnosticCategory] class, shipped in DiagnosticCatalog.Sonar, and
-    // SonarRule.S1144.Category is defined as SonarCategory.MajorCodeSmell. Both halves come from
-    // the same package and fold to the same value. The diagnostic calls one of them "the literal"
-    // and offers to complete it — so a consumer who reaches for IDE completion on SonarCategory.
-    // is warned for using the catalogue correctly. DiagnosticCategoryAttribute exists, by its own
-    // documentation, so tooling can tell a category constant from any other string constant; this
-    // analyzer never asks.
-    //
-    // Whether Resolve should follow one hop, or test the containing type for [DiagnosticCategory],
-    // touches specification §10.6 and is the maintainer's call. Nothing here presumes it. Remove
-    // the pragma the day it is settled, whichever way it goes.
+    // Both were found by writing what a consumer would plausibly write and letting the build
+    // answer. Neither was reachable from the analyzer's own unit tests, which assert what the
+    // analyzer does rather than what a reader of the guide would try.
     // -----------------------------------------------------------------------------------------
-#pragma warning disable DCAT0006, DCAT0007
 
     internal static class Factored
     {
@@ -1017,18 +1007,27 @@ namespace EdgeHunt.Indirection
         internal static int Parenthesised() => 3;
 
         /// <summary>
-        /// The category taken from the catalogue's own <c>[DiagnosticCategory]</c> class — the very
-        /// constant <c>SonarRule.S1144.Category</c> is itself initialised from — beside that rule's
-        /// <c>Id</c>. Both halves are catalogue references the compiler checks; neither is a literal.
+        /// The category named on its own — <c>SonarCategory.MajorCodeSmell</c> beside
+        /// <c>SonarRule.S1144.Id</c> — is deliberately ABSENT, and its absence is the finding.
         /// </summary>
-        [SuppressMessage(
-            SonarCategory.MajorCodeSmell,
-            SonarRule.S1144.Id,
-            Justification = "The reflection host reaches this member.")]
-        internal static int NamedCategoryConstant() => 4;
+        /// <remarks>
+        /// This suite wrote it as legitimate consumer code, because it reads like one: two catalogue
+        /// references, no literal, and an IDE completion list offers it. The build failed, and the
+        /// investigation that followed is
+        /// <see href="../../doc/adr/0026-reach-a-category-only-through-the-rule-that-carries-it.en.md">ADR-0026</see>:
+        /// the two spellings fold to the same string until the vendor moves the rule, after which the
+        /// rule member follows and the category named alone does not — the suppression keeps compiling
+        /// and silently stops matching.
+        ///
+        /// The container is now <c>internal</c>, so writing it here is <c>CS0122</c> rather than a
+        /// diagnostic. It cannot be exercised by a suite whose build IS the assertion: the file would
+        /// not compile, and a form the compiler refuses needs no coverage from us. The case is left
+        /// written out in prose rather than deleted, so the next reader learns the form was tried and
+        /// why it is gone, instead of finding a gap.
+        /// </remarks>
+        internal static int NamedCategoryConstantIsUnwritable() => 4;
     }
 
-#pragma warning restore DCAT0006, DCAT0007
 }
 
 /// <summary>
