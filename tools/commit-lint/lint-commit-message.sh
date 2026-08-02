@@ -246,6 +246,31 @@ if [ -n "$docs_footer" ]; then
     err "keep the documentation footer to a single 'Docs:' line; separate several paths with commas"
   fi
 
+  # A footer WRAPPED over several lines is refused rather than half-read. Only the
+  # first line matches `^Docs: `, so every path below it is invisible here and equally
+  # invisible to check-docs-footer.sh — both would report success on a list they read
+  # part of, which is the one direction this rule must never fail in. A single line is
+  # the format CONTRIBUTING.md describes; folding it to fit a 72-column log reads as a
+  # courtesy and is not one.
+  #
+  # Two tells, because a continuation comes in two shapes. An indented line directly
+  # under the footer is the classic fold. A value ending in a comma is a list that has
+  # something after it, wherever that something went — and it catches the unindented
+  # fold, which is otherwise indistinguishable from an ordinary body line. The pair a
+  # continuation with no comma AND no indent stays legal, deliberately: nothing tells
+  # it apart from a paragraph somebody wrote after the footer.
+  docs_wrapped="$(printf '%s\n' "$docs_body" | awk '
+    after && /^[ \t]/ && /[^ \t]/ { print "wrapped"; exit }
+    { after = ($0 ~ /^Docs: /) }
+  ')"
+  case "$(printf '%s\n' "$docs_footer" | sed -n '1p' | sed 's/[[:space:]]*$//')" in
+    *,) docs_wrapped='wrapped' ;;
+    *) ;; # the list ends on a path, as it should
+  esac
+  if [ -n "$docs_wrapped" ]; then
+    err "keep the documentation footer on ONE line — a wrapped one is only read as far as its first line, so the paths under it are checked by nothing. Separate several paths with commas, however long the line gets"
+  fi
+
   docs_value="$(printf '%s\n' "$docs_footer" | sed -n '1s/^Docs: //p' | sed 's/[[:space:]]*$//')"
 
   case "$docs_value" in

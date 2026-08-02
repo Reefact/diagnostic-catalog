@@ -76,6 +76,34 @@ footer="$(printf '%s\n' "$msg" | sed -n '2,$p' | grep -E '^Docs: ' | sed -n '1p'
 
 value="$(printf '%s' "$footer" | sed 's/^Docs: //' | sed 's/[[:space:]]*$//')"
 
+# A footer WRAPPED over several lines is refused before anything is resolved. The line
+# above takes the first `^Docs: ` and nothing else, so the paths under a folded footer
+# never reach the resolution below — and this script would then exit 0 having checked
+# part of a list, which is the one direction it must never fail in. The message linter
+# refuses the same shape at the hook; this is the second half, because the script is
+# documented as runnable by hand on any commit and a commit can reach CI without ever
+# meeting the hook.
+#
+# Two tells, one per shape of continuation. An indented line directly under the footer
+# is the classic fold. A value ending in a comma is a list with something after it,
+# wherever that something went, and it is what catches the unindented fold — which is
+# otherwise indistinguishable from an ordinary body line. A continuation with neither a
+# comma nor an indent stays legal, deliberately: nothing tells it apart from a
+# paragraph written after the footer.
+wrapped="$(printf '%s\n' "$msg" | sed -n '2,$p' | awk '
+  after && /^[ \t]/ && /[^ \t]/ { print "wrapped"; exit }
+  { after = ($0 ~ /^Docs: /) }
+')"
+case "$value" in
+  *,) wrapped='wrapped' ;;
+  *) ;; # the list ends on a path, as it should
+esac
+if [ -n "$wrapped" ]; then
+  printf 'check-docs-footer: this Docs: footer is wrapped over several lines\n\n  - only the first line is read, so the paths under it are resolved by nothing. Keep the footer on ONE line and separate paths with commas, however long the line gets\n\n  footer:  %s\n  subject: %s\n' \
+    "$footer" "$subject" >&2
+  exit 1
+fi
+
 # `Docs: none — <reason>` names no file, so there is nothing here to resolve. That
 # the reason is present is the linter's business.
 case "$value" in
