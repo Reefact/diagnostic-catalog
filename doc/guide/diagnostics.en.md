@@ -19,6 +19,7 @@ people.
 | [`DCAT0006`](#dcat0006) | use site | Use a diagnostic catalog reference instead of string literals | **Error** | yes |
 | [`DCAT0007`](#dcat0007) | use site | Suppression mixes a catalog reference with a string literal | **Error** | yes, conditionally |
 | [`DCAT0009`](#dcat0009) | use site | `UnconditionalSuppressMessage` only accepts `IL####` identifiers | Warning | — |
+| [`DCAT0011`](#dcat0011) | definition | A diagnostic rule's category must reference a declared category constant | Warning | — |
 
 `DCAT0005`, `DCAT0008` and `DCAT0010` are specified but deliberately not in 1.0.
 
@@ -121,11 +122,14 @@ telling you to change something that works.
 
 These fire on code that declares rules. See [the catalogue author's guide](authoring-a-catalogue.en.md).
 
-All three offer a fix **when the repair is written in the code already**, and stay silent about it
-otherwise. That line is not caution for its own sake: a fix that guessed would produce a rule the
+The first three offer a fix **when the repair is written in the code already**, and stay silent about
+it otherwise. That line is not caution for its own sake: a fix that guessed would produce a rule the
 compiler accepts and nobody checks, which is the failure this library exists to remove. Where a fix is
 refused below, the diagnostic still names the type and the member — you finish it with what you know
 and the tool does not.
+
+`DCAT0011` offers none at all, for the same reason taken one step further: the repair is a class that
+does not exist yet, holding a constant nobody has named.
 
 ### `DCAT0002`
 
@@ -181,6 +185,46 @@ it scaffolds the member and leaves the value to you.
 > will notice — and a wrong category is invisible in every build, forever, because Roslyn matches a
 > suppression on its id alone. Apply it when you are about to fill it in, not to make the list shorter.
 
+### `DCAT0011`
+
+**The category is not reached through a declared category constant.** `DCAT0004` asks whether the
+member exists; this asks where its value comes from. It must resolve to a `const string` declared in a
+class marked `[DiagnosticCategory]`:
+
+```csharp
+[DiagnosticCategory]
+internal static class ContosoCategory
+{
+    public const string Usage = "Usage";
+}
+
+[DiagnosticRule]
+public static class CT0001
+{
+    public const string Id = nameof(CT0001);
+    public const string Category = ContosoCategory.Usage;   // ← not a literal
+}
+```
+
+Nothing is broken when you write the literal instead. The rule compiles, folds to the same string in
+metadata, and suppresses exactly what it should — which is why this ships as a `Warning` and not as an
+error. What it costs is a **single spelling per category**: a catalogue repeats very few distinct
+values across very many rules, and every transcription is a place for one of them to drift. It also
+costs the marker, which is what lets tooling tell a category constant from any other string constant in
+the assembly — without it, no tool can offer the named constant when replacing a literal.
+
+Accepted alike are every spelling that binds to the same field: a qualified name, an aliased container,
+a `using static`, a container declared in another assembly. Rejected are the forms that are constant
+but not one reference — a literal, `nameof(...)`, two constants concatenated — because none of them
+leaves the value with a single declaration to be its source.
+
+**No fix is offered.** The repair is a class that may not exist yet, holding a constant nobody has
+named; a fix that invented both would be guessing at the catalogue's vocabulary. The diagnostic names
+the rule and you write the container.
+
+**Reported on source only**, like every definition diagnostic — and here by construction rather than by
+policy, since the check reads the initialiser and a rule reaching you through metadata has none.
+
 ---
 
 ## Configuring them
@@ -199,6 +243,7 @@ dotnet_diagnostic.DCAT0009.severity = error
 dotnet_diagnostic.DCAT0002.severity = error
 dotnet_diagnostic.DCAT0003.severity = error
 dotnet_diagnostic.DCAT0004.severity = error
+dotnet_diagnostic.DCAT0011.severity = error
 
 # Migrating an existing codebase: keep it visible in the IDE, out of the build.
 # Delete the line when the last literal is gone.

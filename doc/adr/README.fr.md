@@ -223,4 +223,5 @@ Matériel de support, optionnel :
 | [ADR-0025](0025-bind-every-feature-commit-to-the-documentation-it-changed.fr.md) | Lier chaque commit de fonctionnalité à la documentation qu'il a changée | Accepted |
 | [ADR-0026](0026-reach-a-category-only-through-the-rule-that-carries-it.fr.md) | N'atteindre une catégorie qu'à travers la règle qui la porte | Accepted |
 | [ADR-0027](0027-ship-the-use-site-diagnostics-as-errors.fr.md) | Livrer les diagnostics côté usage en erreurs | Accepted |
+| [ADR-0028](0028-require-every-rule-to-reach-its-category-through-a-declared-constant.fr.md) | Exiger que chaque règle atteigne sa catégorie via une constante déclarée | Proposed |
 | [ADR-0029](0029-pair-the-project-readme-across-the-doc-boundary.fr.md) | Apparier le README du projet par-delà la frontière de `doc/` | Accepted |

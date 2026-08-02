@@ -107,6 +107,27 @@ internal static class Descriptors
             + "cannot be one. The recommended form is nameof(TheRuleType), which cannot drift from the "
             + "type it names.");
 
+    internal static readonly DiagnosticDescriptor UnreferencedRuleCategory = new(
+        id: DiagnosticIds.UnreferencedRuleCategory,
+        title: "A diagnostic rule's category must reference a declared category constant",
+        messageFormat: "'{0}' does not reach its category through a constant declared in a [DiagnosticCategory] class",
+        category: Category,
+        // Warning, with the other definition diagnostics, and for ADR-0027's reason rather than by
+        // default: it addresses whoever AUTHORS a catalogue, not whoever consumes one. There is also
+        // no error to report — the rule compiles, folds to the right literal, and suppresses exactly
+        // what it should. What is wrong is that the value has no single declaration, which is a
+        // property of the catalogue rather than a defect in this rule.
+        defaultSeverity: DiagnosticSeverity.Warning,
+        isEnabledByDefault: true,
+        description:
+            "A catalogue repeats very few distinct categories across very many rules, and each "
+            + "transcription is a place for one of them to drift. Declaring every category once, in a "
+            + "class marked [DiagnosticCategory], gives the catalogue a single spelling per value — and "
+            + "the indirection is free, because a const initialised from another const is still a "
+            + "compile-time constant and still folds to the literal in metadata. The marker is what "
+            + "lets tooling tell a category constant from any other string constant in the assembly; "
+            + "without it the class is invisible and the reference buys nothing.");
+
     internal static readonly DiagnosticDescriptor InvalidRuleCategory = new(
         id: DiagnosticIds.InvalidRuleCategory,
         title: "A diagnostic rule must expose a public constant string named Category",

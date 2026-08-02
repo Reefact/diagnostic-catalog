@@ -32,4 +32,6 @@ internal static class DiagnosticIds
     internal const string MixedReferenceAndLiteral = "DCAT0007";
 
     internal const string NonIlUnconditionalSuppression = "DCAT0009";
+
+    internal const string UnreferencedRuleCategory = "DCAT0011";
 }

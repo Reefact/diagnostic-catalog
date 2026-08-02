@@ -14,34 +14,44 @@ mock-up, and CI fails if it ever stops matching the analyzers it mirrors.
 
 ## The whole contract
 
-A rule is a **static class**, marked, exposing **two public string constants**:
+A rule is a **static class**, marked, exposing **two public string constants**, one of which reaches a
+**declared category**:
 
 ```csharp
 using DiagnosticCatalog;
+
+[DiagnosticCategory]
+internal static class ContosoCategory
+{
+    public const string Usage = "Usage";
+}
 
 [DiagnosticRule]
 public static class CTS0001
 {
     public const string Id = nameof(CTS0001);
-    public const string Category = "Usage";
+    public const string Category = ContosoCategory.Usage;
 }
 ```
 
 That is it. No base class, no interface, nothing to register, no generator to run. If you are
 looking for the part you missed, there isn't one.
 
-Three details in that snippet earn their place:
+Four details in that snippet earn their place:
 
 * **`static`** — nothing ever instantiates a rule, and the analyzer rejects a non-static one.
 * **`const`, not `static readonly`** — a `static readonly` field has a value at run time but cannot
   be an attribute argument, which is the entire point. This is the mistake people make first.
 * **`nameof(CTS0001)`** rather than `"CTS0001"` — it resolves to the containing type's own name, so
   the identifier and the class cannot drift apart. Rename one in the IDE and the other follows.
+* **`ContosoCategory.Usage`** rather than `"Usage"` — one class holds each category once, and
+  `[DiagnosticCategory]` is what makes that class visible to tooling. Required, not advisory:
+  `DCAT0011` reports the literal. The next section is about the class itself.
 
 ## When you get it wrong, the analyzer offers to fix it
 
-`DCAT0002`, `DCAT0003` and `DCAT0004` report a declaration that misses the contract, and each carries
-a fix — **offered only where the repair is already written in the code**, and silent otherwise:
+`DCAT0002`, `DCAT0003`, `DCAT0004` and `DCAT0011` report a declaration that misses the contract. The
+first three carry a fix — **offered only where the repair is already written in the code**, and silent otherwise:
 
 | What you wrote | What is offered |
 | --- | --- |
@@ -49,7 +59,8 @@ a fix — **offered only where the repair is already written in the code**, and 
 | `private static readonly string Id = ...` | *Make 'Id' a public constant* — modifiers only; the value is left alone |
 | no `Id` member at all | *Declare 'public const string Id'*, written `nameof(CTS0001)` — read off your declaration rather than invented |
 
-Nothing is offered when the **value** is what is wrong — a `const int`, a blank string, a
+`DCAT0011` carries none: the repair is a class that may not exist yet, holding a constant nobody has
+named. Nothing is offered when the **value** is what is wrong either — a `const int`, a blank string, a
 non-constant initialiser. The code says nothing about what you meant, and a fix that guessed would
 produce a rule the compiler accepts and nobody checks.
 
@@ -73,7 +84,7 @@ public static class ContosoRule
     public static class CTS0001
     {
         public const string Id = nameof(CTS0001);
-        public const string Category = "Usage";
+        public const string Category = ContosoCategory.Usage;
     }
 }
 ```
@@ -117,9 +128,12 @@ public static class ContosoRule
 constant, so `ContosoRule.CTS0001.Category` is still valid as an attribute argument and still ends
 up as the literal `"Usage"` in the compiled assembly. Nothing downstream changes.
 
-`[DiagnosticCategory]` is optional — the constants work without it. What it buys is that tooling can
-tell a category constant from any other string constant in your assembly, so the `DCAT0006` fix can
-offer `ContosoCategory.Usage` instead of a bare literal.
+`[DiagnosticCategory]` is **required** — `DCAT0011` reports a rule that reaches its category any other
+way. The constants would work without it, and that is the point: what the marker buys is that tooling
+can tell a category constant from any other string constant in your assembly, so the `DCAT0006` fix can
+offer `ContosoCategory.Usage` instead of a bare literal. Unmarked, the class is invisible and the
+indirection buys nothing. The decision is
+[ADR-0028](../adr/0028-require-every-rule-to-reach-its-category-through-a-declared-constant.en.md).
 
 ## Optional metadata, and the one that costs you
 

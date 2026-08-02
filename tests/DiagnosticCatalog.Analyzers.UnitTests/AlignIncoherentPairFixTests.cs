@@ -182,11 +182,17 @@ public sealed class AlignIncoherentPairFixTests
             using DiagnosticCatalog;
             using System.Diagnostics.CodeAnalysis;
 
+            [DiagnosticCategory]
+            internal static class Cat
+            {
+                public const string X = "x";
+            }
+
             [SuppressMessage("{0}", "{1}")]
             [DiagnosticRule]
             public static class BadRule
             {
-                public const string Category = "x";
+                public const string Category = Cat.X;
             }
             """;
 

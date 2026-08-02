@@ -46,8 +46,10 @@ Une classe de valeurs de catégorie en `const string`, pour qu'une même catégo
 plutôt que dans chaque règle. `SonarCategory` en est une ; le catalogue Sonar dépense 456 déclarations
 de règles sur 13 de ses membres.
 
-La marquer `[DiagnosticCategory]` est optionnel. Ce que le marqueur apporte, c'est que l'outillage peut
-distinguer une constante de catégorie de n'importe quelle autre constante `string`. Dans un catalogue
+La marquer `[DiagnosticCategory]` est **exigé** : une règle doit atteindre sa catégorie via une
+constante déclarée dans une classe marquée, ce que signale `DCAT0011`. Ce que le marqueur apporte,
+c'est que l'outillage peut distinguer une constante de catégorie de n'importe quelle autre constante
+`string`. Dans un catalogue
 généré par ce dépôt le conteneur est `internal`, donc une suppression ne nomme une catégorie qu'à
 travers la règle qui la porte — `SonarRule.S1144.Category`, jamais la catégorie seule
 ([ADR-0026](../adr/0026-reach-a-category-only-through-the-rule-that-carries-it.fr.md)).

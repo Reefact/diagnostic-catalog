@@ -223,4 +223,5 @@ Optional supporting material:
 | [ADR-0025](0025-bind-every-feature-commit-to-the-documentation-it-changed.en.md) | Bind every feature commit to the documentation it changed | Accepted |
 | [ADR-0026](0026-reach-a-category-only-through-the-rule-that-carries-it.en.md) | Reach a category only through the rule that carries it | Accepted |
 | [ADR-0027](0027-ship-the-use-site-diagnostics-as-errors.en.md) | Ship the use-site diagnostics as errors | Accepted |
+| [ADR-0028](0028-require-every-rule-to-reach-its-category-through-a-declared-constant.en.md) | Require every rule to reach its category through a declared constant | Proposed |
 | [ADR-0029](0029-pair-the-project-readme-across-the-doc-boundary.en.md) | Pair the project README across the `doc/` boundary | Accepted |

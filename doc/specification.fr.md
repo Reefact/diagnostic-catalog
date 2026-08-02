@@ -592,14 +592,15 @@ plus : l'argument résout toujours vers le champ `Category` déclaré sur le typ
 règle, donc `DCAT0001` compare les deux mêmes symboles qu'avant. L'initialiseur ne
 participe pas à la résolution.
 
-**Ce que le marqueur apporte.** Rien au §8 n'exige que `Category` soit initialisée
-depuis une constante nommée plutôt que depuis un littéral : les catégories
-fonctionneraient sans lui. Le marqueur existe parce que, sans lui, un analyzer ne
-peut pas distinguer une constante de catégorie de n'importe quelle autre constante
-chaîne de l'assembly. Avec lui, le générateur marque le conteneur qu'il émet, et
-un contrôle ultérieur peut valider que la classe ne contient que des membres
-`const string` non vides. C'est aussi ce que lit l'analyse propre d'un catalogue.
-L'appliquer est facultatif ; un catalogue qui répète ses littéraux reste valide.
+**Ce que le marqueur apporte.** Les catégories se replieraient à l'identique en
+simples constantes sans lui, et c'est pourquoi le marqueur est nécessaire plutôt que
+pourquoi il serait facultatif : sans lui, un analyzer ne peut pas distinguer une
+constante de catégorie de n'importe quelle autre constante chaîne de l'assembly. Avec
+lui, le générateur marque le conteneur qu'il émet, et un contrôle ultérieur peut valider
+que la classe ne contient que des membres `const string` non vides. C'est aussi ce que
+lit l'analyse propre d'un catalogue. L'appliquer est **exigé** de toute classe par
+laquelle une règle atteint sa catégorie — §8.5, signalé par `DCAT0011`
+([ADR-0028](adr/0028-require-every-rule-to-reach-its-category-through-a-declared-constant.fr.md)).
 
 Un conteneur généré est `internal` ([ADR-0026](adr/0026-reach-a-category-only-through-the-rule-that-carries-it.fr.md)),
 donc aucun correctif ne peut proposer `SonarCategory.MajorCodeSmell` à un
@@ -687,6 +688,8 @@ La valeur doit être non vide et correspondre à la catégorie déclarée par le
 `DiagnosticDescriptor` de l'analyzer d'origine. Comme rien ne le vérifie à
 l'exécution (§3.2), l'exactitude relève ici de la crédibilité du catalogue.
 
+D'où vient cette valeur est une exigence distincte, §8.5.
+
 ### 8.4 Absence d'héritage
 
 Une règle ne doit pas hériter d'une classe de base représentant un diagnostic.
@@ -694,6 +697,47 @@ Une classe statique ne peut pas utiliser un modèle d'héritage classique, et de
 propriétés abstraites ne pourraient jamais servir d'arguments constants
 d'attribut. `DiagnosticCatalog` définit donc un contrat structurel vérifié par
 analyzer, et non un contrat orienté objet imposé par héritage.
+
+### 8.5 Le membre `Category` atteint une catégorie déclarée
+
+L'initialiseur de `Category` doit se résoudre vers une `const string` déclarée dans
+une classe marquée `[DiagnosticCategory]` (§7.7) :
+
+```csharp
+[DiagnosticCategory]
+internal static class ContosoCategory
+{
+    public const string Usage = "Usage";
+}
+
+[DiagnosticRule]
+public static class CT0001
+{
+    public const string Id = nameof(CT0001);
+    public const string Category = ContosoCategory.Usage;
+}
+```
+
+La résolution est sémantique, si bien que toute orthographe qui se lie au même champ
+satisfait l'exigence : un nom qualifié, un conteneur aliasé, un `using static`, un
+conteneur déclaré dans un autre assemblage. Ce qui ne la satisfait pas, c'est un
+initialiseur constant sans être une référence unique à un champ — un littéral, un
+`nameof`, une concaténation — parce qu'aucun ne laisse à la valeur une déclaration
+unique.
+
+Cette exigence porte sur le catalogue plutôt que sur la règle. Une règle qui y échoue
+compile, se replie sur le même littéral dans les métadonnées (annexe A10) et supprime
+exactement ce qu'elle doit ; §10 est inchangé, puisque l'argument se résout toujours
+vers le champ `Category` du type de règle et que l'initialiseur ne joue aucun rôle dans
+cette résolution. Ce que cela coûte, c'est une orthographe par valeur de catégorie, sur
+un catalogue qui en répète très peu sur un très grand nombre de règles.
+
+La violation est signalée par `DCAT0011`, en `Warning` : le public est celui qui écrit
+un catalogue, ce qui est le partage de l'ADR-0027, et il n'y a pas d'erreur à signaler.
+
+Parce que l'initialiseur est de la syntaxe, c'est la seule exigence du §8 qui ne peut
+pas être évaluée sur un symbole de métadonnées. Elle est donc strictement limitée à la
+source — `DCAT0010` (§11.10) ne la rejoue pas au travers d'une frontière d'assemblage.
 
 ---
 
@@ -898,11 +942,13 @@ Le préfixe provisoire des diagnostics est `DCAT`.
 | `DCAT0008` | utilisation | Suppression identifier does not resolve to a known diagnostic rule | Aucune (opt-in) | non |
 | `DCAT0009` | utilisation | UnconditionalSuppressMessage only accepts IL#### identifiers | Warning | oui |
 | `DCAT0010` | utilisation | Referenced diagnostic rule type is malformed | Warning | non |
+| `DCAT0011` | déclaration | A diagnostic rule's category must reference a declared category constant | Warning | oui |
 
-Les diagnostics de définition (`DCAT0002`–`DCAT0005`) ne se déclenchent que sur
+Les diagnostics de définition (`DCAT0002`–`DCAT0005`, `DCAT0011`) ne se déclenchent que sur
 du code source visible par le compilateur. Une règle mal formée dans une
 *assembly référencée* ne produit rien — c'est précisément ce que `DCAT0010`
-couvre.
+couvre, pour chaque exigence qu'il peut évaluer sur un symbole de métadonnées. Le §8.5
+n'en fait pas partie : il lit un initialiseur, et les métadonnées n'en ont pas.
 
 ### 11.1 `DCAT0001` — membres issus de règles différentes
 
@@ -1292,8 +1338,9 @@ Règles du générateur, toutes porteuses :
    aucun lien d'aide, plutôt que des liens assemblés depuis un motif d'URL
    deviné.
 6. **Déclarer chaque catégorie une seule fois** dans une classe
-   `[DiagnosticCategory]` et faire référer les règles à elle (§7.7), plutôt que de
-   répéter le littéral par règle.
+   `[DiagnosticCategory]` et faire référer les règles à elle (§7.7). C'est le §8.5
+   plutôt qu'une préférence : un générateur qui émet le littéral par règle produit un
+   catalogue qui signale `DCAT0011` sur chaque règle qu'il a écrite.
 7. **Prendre le langage demandé et les assemblies neutres, exclure les autres
    langages.** Les structures diffèrent et l'erreur est invisible : Sonar livre une
    assembly directement sous `analyzers/`, StyleCop utilise `analyzers/dotnet/cs/`,

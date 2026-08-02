@@ -16,14 +16,27 @@ public sealed class RuleDefinitionTests
     // The marker taken from the real foundation assembly, which the test project references.
     private const string UsingFoundation = "using DiagnosticCatalog;\n";
 
+    // §8.5 applies to every rule, so a fixture that carries a category at all declares the container
+    // and reaches its value through it. Writing the literal instead would add a DCAT0011 to tests that
+    // are about the type, the id or the marker; CategoryReferenceTests is where the category is what
+    // is under test.
+    private const string CategoryContainer = """
+        [DiagnosticCategory]
+        internal static class Cat
+        {
+            public const string Usage = "Usage";
+        }
+
+        """;
+
     [Fact]
     public Task A_rule_satisfying_the_contract_is_not_reported() =>
-        AnalyzerHarness.ReportsNothingAsync(Analyzer, UsingFoundation + """
+        AnalyzerHarness.ReportsNothingAsync(Analyzer, UsingFoundation + CategoryContainer + """
             [DiagnosticRule]
             public static class JD0007
             {
                 public const string Id = nameof(JD0007);
-                public const string Category = "Usage";
+                public const string Category = Cat.Usage;
             }
             """);
 
@@ -31,24 +44,24 @@ public sealed class RuleDefinitionTests
     public Task A_top_level_rule_is_valid_without_a_container() =>
         // §7.3: nesting inside a container is the canonical full form, not a requirement. An analyzer
         // demanding a container would reject the minimal example the specification itself blesses.
-        AnalyzerHarness.ReportsNothingAsync(Analyzer, UsingFoundation + """
+        AnalyzerHarness.ReportsNothingAsync(Analyzer, UsingFoundation + CategoryContainer + """
             [DiagnosticRule]
             public static class JD0001
             {
                 public const string Id = nameof(JD0001);
-                public const string Category = "Usage";
+                public const string Category = Cat.Usage;
             }
             """);
 
     [Fact]
     public Task An_id_that_is_not_a_valid_identifier_is_still_valid() =>
         // §8.2 explicitly blesses this pair. It is also why DCAT0005 needs its IsValidIdentifier guard.
-        AnalyzerHarness.ReportsNothingAsync(Analyzer, UsingFoundation + """
+        AnalyzerHarness.ReportsNothingAsync(Analyzer, UsingFoundation + CategoryContainer + """
             [DiagnosticRule]
             public static class RULE_001
             {
                 public const string Id = "RULE-001";
-                public const string Category = "Usage";
+                public const string Category = Cat.Usage;
             }
             """);
 
@@ -56,23 +69,23 @@ public sealed class RuleDefinitionTests
 
     [Fact]
     public Task A_non_static_rule_type_is_reported() =>
-        AnalyzerHarness.ReportsAsync(Analyzer, UsingFoundation + """
+        AnalyzerHarness.ReportsAsync(Analyzer, UsingFoundation + CategoryContainer + """
             [DiagnosticRule]
             public sealed class JD0007
             {
                 public const string Id = nameof(JD0007);
-                public const string Category = "Usage";
+                public const string Category = Cat.Usage;
             }
             """, "DCAT0002");
 
     [Fact]
     public Task A_generic_rule_type_is_reported() =>
-        AnalyzerHarness.ReportsAsync(Analyzer, UsingFoundation + """
+        AnalyzerHarness.ReportsAsync(Analyzer, UsingFoundation + CategoryContainer + """
             [DiagnosticRule]
             public static class JD0007<T>
             {
                 public const string Id = "JD0007";
-                public const string Category = "Usage";
+                public const string Category = Cat.Usage;
             }
             """, "DCAT0002");
 
@@ -95,11 +108,17 @@ public sealed class RuleDefinitionTests
 
             namespace Vendor.Catalog
             {
+                [global::DiagnosticCatalog.DiagnosticCategory]
+                internal static class Cat
+                {
+                    public const string Usage = "Usage";
+                }
+
                 [global::DiagnosticCatalog.DiagnosticRule]
                 public struct JD0007
                 {
                     public const string Id = nameof(JD0007);
-                    public const string Category = "Usage";
+                    public const string Category = Cat.Usage;
                 }
             }
             """, "DCAT0002");
@@ -108,11 +127,11 @@ public sealed class RuleDefinitionTests
 
     [Fact]
     public Task A_missing_id_is_reported() =>
-        AnalyzerHarness.ReportsAsync(Analyzer, UsingFoundation + """
+        AnalyzerHarness.ReportsAsync(Analyzer, UsingFoundation + CategoryContainer + """
             [DiagnosticRule]
             public static class JD0007
             {
-                public const string Category = "Usage";
+                public const string Category = Cat.Usage;
             }
             """, "DCAT0003");
 
@@ -130,34 +149,34 @@ public sealed class RuleDefinitionTests
     public Task A_static_readonly_id_is_reported() =>
         // The distinction that matters: this holds a value at run time but cannot be an attribute
         // argument, which is the whole reason the contract demands a constant.
-        AnalyzerHarness.ReportsAsync(Analyzer, UsingFoundation + """
+        AnalyzerHarness.ReportsAsync(Analyzer, UsingFoundation + CategoryContainer + """
             [DiagnosticRule]
             public static class JD0007
             {
                 public static readonly string Id = "JD0007";
-                public const string Category = "Usage";
+                public const string Category = Cat.Usage;
             }
             """, "DCAT0003");
 
     [Fact]
     public Task A_non_public_id_is_reported() =>
-        AnalyzerHarness.ReportsAsync(Analyzer, UsingFoundation + """
+        AnalyzerHarness.ReportsAsync(Analyzer, UsingFoundation + CategoryContainer + """
             [DiagnosticRule]
             public static class JD0007
             {
                 internal const string Id = "JD0007";
-                public const string Category = "Usage";
+                public const string Category = Cat.Usage;
             }
             """, "DCAT0003");
 
     [Fact]
     public Task An_id_of_the_wrong_type_is_reported() =>
-        AnalyzerHarness.ReportsAsync(Analyzer, UsingFoundation + """
+        AnalyzerHarness.ReportsAsync(Analyzer, UsingFoundation + CategoryContainer + """
             [DiagnosticRule]
             public static class JD0007
             {
                 public const int Id = 7;
-                public const string Category = "Usage";
+                public const string Category = Cat.Usage;
             }
             """, "DCAT0003");
 
