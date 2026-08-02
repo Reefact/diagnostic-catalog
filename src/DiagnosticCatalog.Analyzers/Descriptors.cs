@@ -23,7 +23,7 @@ internal static class Descriptors
         title: "Category and Id must reference the same diagnostic rule",
         messageFormat: "The category comes from '{0}' and the id from '{1}': a suppression must reference one rule",
         category: Category,
-        defaultSeverity: DiagnosticSeverity.Warning,
+        defaultSeverity: DiagnosticSeverity.Error,
         isEnabledByDefault: true,
         description:
             "The two arguments are compared by the rule that DECLARES them, not by their values. Two "
@@ -42,7 +42,7 @@ internal static class Descriptors
         // that. The cost is real and belongs in the release notes — adopting a catalogue turns every
         // existing literal suppression into a warning at once, and fails the build outright under
         // TreatWarningsAsErrors. Severity remains configurable per project in .editorconfig.
-        defaultSeverity: DiagnosticSeverity.Warning,
+        defaultSeverity: DiagnosticSeverity.Error,
         isEnabledByDefault: true,
         description:
             "The literals match a known diagnostic rule, so they can be replaced by references the "
@@ -56,7 +56,7 @@ internal static class Descriptors
         title: "Suppression mixes a catalog reference with a string literal",
         messageFormat: "This suppression references '{0}' on one side and writes the literal \"{1}\" on the other: {2}",
         category: Category,
-        defaultSeverity: DiagnosticSeverity.Warning,
+        defaultSeverity: DiagnosticSeverity.Error,
         isEnabledByDefault: true,
         description:
             "The most common half-migrated state, and the one case where the intended rule is known "

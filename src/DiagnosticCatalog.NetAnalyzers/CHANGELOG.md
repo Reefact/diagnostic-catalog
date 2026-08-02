@@ -22,6 +22,30 @@ number below.
 
 _No other change yet._
 
+## [1.0.0-preview.1] - 2026-08-01
+
+**Mirrors `Microsoft.CodeAnalysis.NetAnalyzers 10.0.302`** — unchanged upstream: no rule was added, retired or
+recategorised, and every identifier, category and constant is the one the previous
+version shipped. The generated catalogue carries one deliberate change of its
+own, and it is breaking: see below.
+
+### Changed
+
+* **BREAKING — the `NetAnalyzersCategory` container is now `internal`.** A suppression reaches a
+  category through the rule that carries it — `NetAnalyzersRule.CA1000.Category`, unchanged and still
+  public — so naming `NetAnalyzersCategory.Design` directly no longer compiles. The two
+  spellings fold to the same string today and stop agreeing the day Microsoft moves the
+  rule: the rule member follows it, a category named on its own does not, and the
+  suppression keeps compiling while it silently stops matching. The repair is one line,
+  and the compiler points at it
+  ([ADR-0026](../../doc/adr/0026-reach-a-category-only-through-the-rule-that-carries-it.en.md)).
+* The README now names the other catalogues and the foundation, so a reader landing
+  on this package's page from a search learns the set it belongs to. nuget.org renders
+  the README embedded in the package, so republishing is the only way an updated one
+  reaches that page.
+* The version joins the 1.0 line the whole set moves to with this preview. Nothing in
+  the mirrored the .NET analyzers rules changed with it.
+
 ## [0.2.1] - 2026-07-31
 
 **Mirrors `Microsoft.CodeAnalysis.NetAnalyzers 10.0.302`** — unchanged since 0.2.0: no

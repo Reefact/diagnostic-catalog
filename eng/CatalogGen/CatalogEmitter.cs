@@ -288,8 +288,18 @@ internal static class CatalogEmitter
         sb.AppendLine("/// <summary>");
         sb.AppendLine($"/// The diagnostic categories used by {catalogue.PackageId}, declared once each.");
         sb.AppendLine("/// </summary>");
+        sb.AppendLine("/// <remarks>");
+        sb.AppendLine("/// INTERNAL by design. A category is reachable only through the rule that carries it:");
+        sb.AppendLine("/// write <c>SomeRule.Sxxxx.Category</c>, never the category constant directly. The two");
+        sb.AppendLine("/// spellings fold to the same string today and stop agreeing the day the vendor moves the");
+        sb.AppendLine("/// rule to another category -- the rule member follows, a category named on its own does");
+        sb.AppendLine("/// not, and the suppression silently stops matching. Keeping this class out of the public");
+        sb.AppendLine("/// surface makes that decoupling unwritable rather than merely discouraged.");
+        sb.AppendLine("/// The public <c>Category</c> constant on each rule is initialised from here and folds to");
+        sb.AppendLine("/// the literal at compile time, so a consumer loses nothing.");
+        sb.AppendLine("/// </remarks>");
         sb.AppendLine("[DiagnosticCategory]");
-        sb.AppendLine($"public static class {categories.ContainerName}");
+        sb.AppendLine($"internal static class {categories.ContainerName}");
         sb.AppendLine("{");
         bool firstCategory = true;
         foreach (string c in categories.Ordered)

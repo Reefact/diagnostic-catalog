@@ -549,7 +549,7 @@ public sealed class DiagnosticCategoryAttribute : Attribute
 
 ```csharp
 [DiagnosticCategory]
-public static class SonarCategory
+internal static class SonarCategory
 {
     public const string MajorCodeSmell = "Major Code Smell";
     public const string MinorCodeSmell = "Minor Code Smell";
@@ -577,10 +577,15 @@ symbols it always did. The initialiser is not part of the resolution.
 a named constant rather than a literal, so the categories would work as plain
 constants without it. The marker exists because without it an analyzer cannot tell
 a category constant from any other string constant in the assembly. With it, the
-`DCAT0006` code fixer can offer `SonarCategory.MajorCodeSmell` instead of a bare
-literal, and a future check can validate that the class holds nothing but
-non-empty public `const string` members. Applying it is optional; a catalogue that
-repeats its literals stays valid.
+generator marks the container it emits, and a future check can validate that the
+class holds nothing but non-empty `const string` members. It is also what a
+catalogue's own analysis reads. Applying it is optional; a catalogue that repeats
+its literals stays valid.
+
+A generated container is `internal` ([ADR-0026](adr/0026-reach-a-category-only-through-the-rule-that-carries-it.en.md)),
+so no fix may offer `SonarCategory.MajorCodeSmell` to a consumer: naming a
+category apart from its rule survives the vendor recategorising that rule, and
+the suppression then stops matching in silence.
 
 Like the other two attributes, it must never be made `[Conditional]` (§3.4).
 
@@ -856,13 +861,13 @@ The provisional diagnostic prefix is `DCAT`.
 
 | Id | Target | Title | Default severity | MVP |
 | --- | --- | --- | --- | --- |
-| `DCAT0001` | use site | Category and Id must reference the same diagnostic rule | Warning | yes |
+| `DCAT0001` | use site | Category and Id must reference the same diagnostic rule | Error | yes |
 | `DCAT0002` | definition | A diagnostic rule must be declared as a static non-generic class | Warning | yes |
 | `DCAT0003` | definition | A diagnostic rule must expose a public constant string named Id | Warning | yes |
 | `DCAT0004` | definition | A diagnostic rule must expose a public constant string named Category | Warning | yes |
 | `DCAT0005` | definition | The diagnostic rule type name should match its Id | Info | no |
-| `DCAT0006` | use site | Use a diagnostic catalog reference instead of string literals | Warning | **yes — core** |
-| `DCAT0007` | use site | Suppression mixes a catalog reference with a string literal | Warning | yes |
+| `DCAT0006` | use site | Use a diagnostic catalog reference instead of string literals | Error | **yes — core** |
+| `DCAT0007` | use site | Suppression mixes a catalog reference with a string literal | Error | yes |
 | `DCAT0008` | use site | Suppression identifier does not resolve to a known diagnostic rule | None (opt-in) | no |
 | `DCAT0009` | use site | UnconditionalSuppressMessage only accepts IL#### identifiers | Warning | yes |
 | `DCAT0010` | use site | Referenced diagnostic rule type is malformed | Warning | no |
@@ -1165,7 +1170,7 @@ using DiagnosticCatalog;
 namespace DiagnosticCatalog.Sonar;
 
 [DiagnosticCategory]
-public static class SonarCategory
+internal static class SonarCategory
 {
     public const string MajorCodeSmell = "Major Code Smell";
 }

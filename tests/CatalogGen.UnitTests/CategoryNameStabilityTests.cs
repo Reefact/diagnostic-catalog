@@ -7,15 +7,19 @@ using Xunit;
 namespace CatalogGen.UnitTests;
 
 /// <summary>
-/// A category constant is a member consumers reference by hand — <c>SonarCategory.MajorCodeSmell</c>
-/// appears in their source. Its NAME is therefore part of the published contract, and the one thing
-/// that must never move under them.
+/// A category constant is <c>internal</c> in a generated catalogue
+/// (ADR-0026), so its name is no longer something a consumer writes and a rename no longer breaks
+/// their build. That was this test's original reason to exist, and it is gone; what remains is
+/// narrower and still worth holding.
 ///
-/// Names are assigned in ordinal order, which makes that fragile without care: two categories
+/// Names are assigned in ordinal order, which makes them unstable without care: two categories
 /// differing only in punctuation flatten to one identifier, and whichever sorts first takes the base
 /// name. The day upstream adds a category that both collides with an existing one and sorts before
-/// it, the newcomer would claim the base name and push the EXISTING constant onto a numbered suffix
-/// — every project referencing it stops compiling, out of an unattended nightly run.
+/// it, the newcomer would claim the base name and push the EXISTING constant onto a numbered suffix.
+/// Nothing outside the assembly notices now — but every rule that names the moved constant is
+/// rewritten, so an unattended nightly run would open a pull request whose diff is hundreds of lines
+/// of churn with no upstream change behind it, and the real change in that run would be invisible
+/// inside it.
 /// </summary>
 public sealed class CategoryNameStabilityTests : IDisposable
 {

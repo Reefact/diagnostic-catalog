@@ -221,3 +221,5 @@ Matériel de support, optionnel :
 | [ADR-0023](0023-acquire-a-solutions-analyzers-by-declaration.fr.md) | Acquérir les analyseurs d'une solution par déclaration, jamais par découverte | Accepted |
 | [ADR-0024](0024-fail-on-any-diagnostic-the-ratchet-cannot-see.fr.md) | Échouer sur tout diagnostic que le cliquet d'avertissements ne voit pas | Accepted |
 | [ADR-0025](0025-bind-every-feature-commit-to-the-documentation-it-changed.fr.md) | Lier chaque commit de fonctionnalité à la documentation qu'il a changée | Accepted |
+| [ADR-0026](0026-reach-a-category-only-through-the-rule-that-carries-it.fr.md) | N'atteindre une catégorie qu'à travers la règle qui la porte | Accepted |
+| [ADR-0027](0027-ship-the-use-site-diagnostics-as-errors.fr.md) | Livrer les diagnostics côté usage en erreurs | Accepted |
