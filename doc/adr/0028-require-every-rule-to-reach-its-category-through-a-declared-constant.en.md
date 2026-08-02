@@ -113,11 +113,43 @@ Rather than requiring a form, report two rules in one assembly whose categories 
 only by case, spacing or a near miss — the actual defect that declaring each category
 once prevents.
 
-Rejected as the decision, though not as an idea: it catches drift wherever it comes
-from, needs no contract change, and fires only where factorisation would have helped.
-But it delivers nothing for uniformity, which is what is being bought here, and it is
-silent on a catalogue whose literals all happen to agree today. It remains worth having
-later, alongside this requirement rather than instead of it.
+Rejected as the decision: it delivers nothing for uniformity, which is what is being
+bought here, and it is silent on a catalogue whose literals all happen to agree today.
+
+It was initially recorded here as worth having later, alongside this requirement. That
+was wrong, and measuring it after this decision was accepted is what showed it. Two
+findings, both against.
+
+**The heuristic misfires on the catalogues we already ship.** Run over the four
+generated containers — Sonar's 13 values, StyleCop's 8, NetAnalyzers' 10, this
+repository's 1 — a strict normalisation (case-folded, non-alphanumerics stripped) finds
+zero collisions, and every looser threshold finds only false ones. At a Levenshtein
+distance of 2 it reports three pairs, all Sonar's: `Major Bug` / `Minor Bug`,
+`Major Code Smell` / `Minor Code Smell`, `Major Vulnerability` / `Minor Vulnerability`.
+Sonar's categories are `{Severity} {Type}` pairs, so near-identical values are the
+taxonomy rather than a defect. At a distance of 3, StyleCop adds
+`StyleCop.CSharp.NamingRules` / `StyleCop.CSharp.SpacingRules`. The strict threshold is
+safe precisely because it catches almost nothing, and what little it would catch — one
+container holding two constants differing only in case — is two near-twin lines side by
+side in a short list read as a unit, which is the one place drift is already visible.
+
+**It would fire on generated code, for something the generator must not change.** The
+definition analyzer runs on generated code deliberately, because a catalogue is
+generated. A generated catalogue must mirror the vendor's descriptors faithfully and
+synthesise nothing (ADR-0009), so a vendor shipping two near-identical categories obliges
+the catalogue to carry both — and the diagnostic would then be unactionable noise on
+every build, about a taxonomy its author does not own. Suppressing it for generated code
+is not a setting: `ConfigureGeneratedCodeAnalysis` is per-analyzer rather than
+per-diagnostic, which is already why the definition and use-site analyzers are separate
+classes, so it would need a third.
+
+Exact duplication across containers is also legitimate and common: one assembly may hold
+several unrelated catalogues, and this repository's own usage suite has eleven marked
+containers in a single assembly, three of them carrying the value `Trimming`.
+
+What this requirement genuinely does not catch therefore stays uncaught, and the honest
+statement of that belongs in the risks below rather than in a follow-up that implies a
+remedy is coming.
 
 ### Ship it as an error
 
@@ -164,6 +196,11 @@ hand-written one's are not. Worth revisiting once the shape is established.
   it; the pages that describe it say plainly that the value itself is checked by
   nothing. If that framing erodes, the requirement starts being cited for a guarantee
   it does not provide.
+* Category drift within one catalogue stays uncaught, and now stays uncaught with no
+  remedy planned — the alternative that would have caught it was measured and dropped.
+  The exposure is narrow after this requirement, since each rule names a container
+  constant rather than transcribing a value, but it is not nil: two near-twin constants
+  in one container, or two containers in one assembly, are still nobody's diagnostic.
 * It is the first requirement of §8 that cannot be evaluated over a metadata symbol,
   because it reads an initialiser. `DCAT0010` will therefore cover four of the five
   requirements across an assembly boundary rather than all of them, and the asymmetry
@@ -171,8 +208,13 @@ hand-written one's are not. Worth revisiting once the shape is established.
 
 ## Follow-up Actions
 
-* Consider the intra-catalogue divergence check described above, which catches drift
-  this requirement does not.
+* ~~Consider the intra-catalogue divergence check described above.~~ Considered and
+  dropped; the measurements are recorded with the alternative.
+* Consider the check that does have a referent: comparing a rule's category against the
+  `DiagnosticDescriptor` of the same id when both are visible in one compilation. The
+  first-party guide already recommends building the descriptor from the catalogue's
+  constants, and nothing verifies it — unlike this requirement, that one catches a
+  category whose value is *wrong*.
 * Revisit a code fix for `DCAT0011` once the container is a shape authors expect.
 
 ## References

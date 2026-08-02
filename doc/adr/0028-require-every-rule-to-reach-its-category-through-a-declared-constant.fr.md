@@ -118,11 +118,47 @@ Plutôt qu'exiger une forme, signaler deux règles d'un même assemblage dont le
 ne diffèrent que par la casse, l'espacement ou un quasi-doublon — le défaut réel que
 prévient le fait de déclarer chaque catégorie une seule fois.
 
-Rejetée comme décision, mais pas comme idée : elle attrape la dérive d'où qu'elle vienne,
-n'exige aucun changement de contrat et ne se déclenche que là où la factorisation aurait
-servi. Mais elle n'apporte rien à l'uniformité, qui est ce qui est acheté ici, et elle
-reste muette sur un catalogue dont tous les littéraux se trouvent concorder aujourd'hui.
-Elle reste souhaitable plus tard, à côté de cette exigence plutôt qu'à sa place.
+Rejetée comme décision : elle n'apporte rien à l'uniformité, qui est ce qui est acheté
+ici, et elle reste muette sur un catalogue dont tous les littéraux se trouvent concorder
+aujourd'hui.
+
+Elle avait d'abord été consignée ici comme souhaitable plus tard, à côté de cette
+exigence. C'était faux, et c'est de l'avoir mesurée après l'acceptation de cette décision
+qui l'a montré. Deux constats, tous deux à charge.
+
+**L'heuristique se déclenche à tort sur les catalogues que nous livrons déjà.** Passée
+sur les quatre conteneurs générés — les 13 valeurs de Sonar, les 8 de StyleCop, les 10 de
+NetAnalyzers, la 1 de ce dépôt — une normalisation stricte (casse repliée, caractères non
+alphanumériques retirés) ne trouve aucune collision, et tout seuil plus lâche n'en trouve
+que des fausses. À une distance de Levenshtein de 2, elle signale trois paires, toutes de
+Sonar : `Major Bug` / `Minor Bug`, `Major Code Smell` / `Minor Code Smell`,
+`Major Vulnerability` / `Minor Vulnerability`. Les catégories de Sonar sont des paires
+`{Sévérité} {Type}`, si bien que des valeurs quasi identiques sont la taxonomie et non un
+défaut. À une distance de 3, StyleCop ajoute `StyleCop.CSharp.NamingRules` /
+`StyleCop.CSharp.SpacingRules`. Le seuil strict est sûr précisément parce qu'il n'attrape
+presque rien, et le peu qu'il attraperait — un conteneur portant deux constantes ne
+différant que par la casse — ce sont deux lignes quasi jumelles côte à côte dans une liste
+courte lue d'un bloc, soit le seul endroit où la dérive est déjà visible.
+
+**Elle se déclencherait sur du code généré, pour une chose que le générateur ne doit pas
+changer.** L'analyzer de déclaration tourne délibérément sur le code généré, parce qu'un
+catalogue est généré. Un catalogue généré doit refléter fidèlement les descripteurs du
+fournisseur et ne rien synthétiser (ADR-0009), si bien qu'un fournisseur livrant deux
+catégories quasi identiques oblige le catalogue à porter les deux — et le diagnostic
+serait alors du bruit inactionnable à chaque build, à propos d'une taxonomie dont son
+auteur n'est pas propriétaire. L'éteindre pour le code généré n'est pas un réglage :
+`ConfigureGeneratedCodeAnalysis` est par analyzer et non par diagnostic, ce qui est déjà
+la raison pour laquelle les analyzers de déclaration et d'utilisation sont deux classes
+séparées ; il en faudrait donc une troisième.
+
+La duplication exacte entre conteneurs est par ailleurs légitime et courante : un
+assemblage peut porter plusieurs catalogues sans rapport, et la suite d'usage de ce dépôt
+compte onze conteneurs marqués dans un seul assemblage, dont trois portent la valeur
+`Trimming`.
+
+Ce que cette exigence n'attrape réellement pas reste donc non attrapé, et l'énoncé honnête
+de ce fait appartient aux risques ci-dessous plutôt qu'à une action de suivi qui laisserait
+entendre qu'un remède arrive.
 
 ### La livrer en erreur
 
@@ -169,6 +205,12 @@ la forme établie.
   fausse a été induit en erreur par lui ; les pages qui le décrivent disent clairement que
   la valeur elle-même n'est vérifiée par rien. Si ce cadrage s'érode, l'exigence commence
   à être citée pour une garantie qu'elle ne fournit pas.
+* La dérive de catégorie à l'intérieur d'un catalogue reste non attrapée, et le reste
+  désormais sans remède prévu — l'alternative qui l'aurait attrapée a été mesurée puis
+  abandonnée. L'exposition est étroite après cette exigence, puisque chaque règle nomme
+  une constante de conteneur au lieu de transcrire une valeur, mais elle n'est pas nulle :
+  deux constantes quasi jumelles dans un conteneur, ou deux conteneurs dans un assemblage,
+  ne sont le diagnostic de personne.
 * C'est la première exigence du §8 qui ne peut pas être évaluée sur un symbole de
   métadonnées, parce qu'elle lit un initialiseur. `DCAT0010` couvrira donc quatre
   exigences sur cinq au travers d'une frontière d'assemblage plutôt que toutes, et
@@ -176,8 +218,13 @@ la forme établie.
 
 ## Follow-up Actions
 
-* Étudier le contrôle de divergence intra-catalogue décrit plus haut, qui attrape une
-  dérive que cette exigence n'attrape pas.
+* ~~Étudier le contrôle de divergence intra-catalogue décrit plus haut.~~ Étudié et
+  abandonné ; les mesures sont consignées avec l'alternative.
+* Étudier le contrôle qui, lui, a un référent : comparer la catégorie d'une règle au
+  `DiagnosticDescriptor` de même identifiant quand les deux sont visibles dans une même
+  compilation. Le guide des analyzers maison recommande déjà de construire le descripteur
+  à partir des constantes du catalogue, et rien ne le vérifie — contrairement à cette
+  exigence, celui-là attrape une catégorie dont la valeur est *fausse*.
 * Revoir la question d'un correctif pour `DCAT0011` une fois le conteneur devenu une
   forme attendue des auteurs.
 
