@@ -26,10 +26,19 @@ _No other change yet._
 
 **Mirrors `SonarAnalyzer.CSharp 10.31.0.145097`** — unchanged upstream: no rule was added, retired or
 recategorised, and every identifier, category and constant is the one the previous
-version shipped. The generated catalogue is byte-identical.
+version shipped. The generated catalogue carries one deliberate change of its
+own, and it is breaking: see below.
 
 ### Changed
 
+* **BREAKING — the `SonarCategory` container is now `internal`.** A suppression reaches a
+  category through the rule that carries it — `SonarRule.S100.Category`, unchanged and still
+  public — so naming `SonarCategory.MinorCodeSmell` directly no longer compiles. The two
+  spellings fold to the same string today and stop agreeing the day SonarSource moves the
+  rule: the rule member follows it, a category named on its own does not, and the
+  suppression keeps compiling while it silently stops matching. The repair is one line,
+  and the compiler points at it
+  ([ADR-0026](../../doc/adr/0026-reach-a-category-only-through-the-rule-that-carries-it.en.md)).
 * The README now names the other catalogues and the foundation, so a reader landing
   on this package's page from a search learns the set it belongs to. nuget.org renders
   the README embedded in the package, so republishing is the only way an updated one
