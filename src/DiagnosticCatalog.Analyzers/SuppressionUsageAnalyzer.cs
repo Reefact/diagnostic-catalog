@@ -123,7 +123,7 @@ public sealed class SuppressionUsageAnalyzer : DiagnosticAnalyzer
             literal.Value,
             agrees
                 ? "complete it from that rule"
-                : "the literal names something else, so completing it would change what is suppressed"));
+                : "that value names something else, so completing it would change what is suppressed"));
     }
 
     private static void ReportReplaceableLiterals(
