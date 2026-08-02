@@ -38,6 +38,19 @@ the contract, and the catalogue of their own rules.
   [a real restore asserts](tools/packaging/verify-consumption.sh) rather than the package merely
   claiming it.
 
+  `DCAT0001`, `DCAT0006` and `DCAT0007` ship as **errors**. They are what a consumer references the
+  package for, and a codebase where half the suppressions are magic strings does not have the
+  guarantee — it has it where somebody remembered. The three addressed to a catalogue's *author*
+  (`DCAT0002`–`DCAT0004`) stay warnings, and so does `DCAT0009` while it still misses an identifier
+  reached through a constant. Every severity is overridable per id and per path in `.editorconfig`
+  ([ADR-0027](doc/adr/0027-ship-the-use-site-diagnostics-as-errors.en.md)); the
+  [configuration guide](doc/guide/configuration.en.md) gives the one line that downgrades `DCAT0006`
+  while an existing codebase migrates.
+
+  An identifier or category hoisted into a named constant — the form the guide promotes so a second
+  suppression can reuse it — resolves to the rule it was initialised from rather than to its value.
+  One hop, and only from a declaring type that is not itself a rule.
+
   The three fixes for a rule *declaration* (§12.4) are each offered only where the repair is already
   written in the code — a class that could carry `static`, a member whose modifiers are wrong but
   whose value is not, an absent `Id` whose type name supplies it. Where the value itself is what is

@@ -888,13 +888,13 @@ Le préfixe provisoire des diagnostics est `DCAT`.
 
 | Id | Cible | Titre | Sévérité par défaut | MVP |
 | --- | --- | --- | --- | --- |
-| `DCAT0001` | utilisation | Category and Id must reference the same diagnostic rule | Warning | oui |
+| `DCAT0001` | utilisation | Category and Id must reference the same diagnostic rule | Error | oui |
 | `DCAT0002` | définition | A diagnostic rule must be declared as a static non-generic class | Warning | oui |
 | `DCAT0003` | définition | A diagnostic rule must expose a public constant string named Id | Warning | oui |
 | `DCAT0004` | définition | A diagnostic rule must expose a public constant string named Category | Warning | oui |
 | `DCAT0005` | définition | The diagnostic rule type name should match its Id | Info | non |
-| `DCAT0006` | utilisation | Use a diagnostic catalog reference instead of string literals | Warning | **oui — cœur** |
-| `DCAT0007` | utilisation | Suppression mixes a catalog reference with a string literal | Warning | oui |
+| `DCAT0006` | utilisation | Use a diagnostic catalog reference instead of string literals | Error | **oui — cœur** |
+| `DCAT0007` | utilisation | Suppression mixes a catalog reference with a string literal | Error | oui |
 | `DCAT0008` | utilisation | Suppression identifier does not resolve to a known diagnostic rule | Aucune (opt-in) | non |
 | `DCAT0009` | utilisation | UnconditionalSuppressMessage only accepts IL#### identifiers | Warning | oui |
 | `DCAT0010` | utilisation | Referenced diagnostic rule type is malformed | Warning | non |
