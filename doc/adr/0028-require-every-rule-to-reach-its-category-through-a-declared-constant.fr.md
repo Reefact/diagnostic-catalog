@@ -3,11 +3,12 @@
 🌍 **Langues :**  
 🇬🇧 [English](./0028-require-every-rule-to-reach-its-category-through-a-declared-constant.en.md) | 🇫🇷 Français (ce fichier)
 
-**Statut :** Proposé
-**Proposé :** 2026-08-02
-**Décideurs :** Reefact
+**Status:** Accepted
+**Proposed:** 2026-08-02
+**Accepted:** 2026-08-02
+**Decision Makers:** Reefact
 
-## Contexte
+## Context
 
 Une règle satisfaisait quatre exigences : le marqueur, une classe statique non
 générique, une `const string Id` publique et une `const string Category` publique. Rien
@@ -50,13 +51,13 @@ autre.
 `AnalyzerReleases.Shipped.md` est vide, donc aucun build de consommateur ne voit
 actuellement le moindre diagnostic `DCAT`.
 
-## Décision
+## Decision
 
 **Le `Category` d'une règle doit se résoudre vers une `const string` déclarée dans une
 classe marquée `[DiagnosticCategory]`**, ce qui devient la cinquième exigence du contrat
 structurel et est signalé par `DCAT0011` en `Warning`.
 
-## Raisonnement
+## Rationale
 
 L'exigence ne rend pas juste une catégorie fausse, et il ne faut pas la défendre comme
 si c'était le cas. Une constante de catégorie est déclarée par la même main, dans le même
@@ -98,7 +99,7 @@ consommateur comme une partie du contrat plutôt que comme un changement de celu
 même exigence ajoutée après publication rendrait bruyant d'un coup le build de tous les
 catalogues existants, pour une propriété qu'on ne leur avait jamais demandé d'avoir.
 
-## Alternatives considérées
+## Alternatives Considered
 
 ### Laisser le marqueur optionnel et le recommander dans les guides
 
@@ -143,9 +144,9 @@ deux devinerait le vocabulaire du catalogue — les règles de nommage d'un cont
 sont mécaniques, celles d'un conteneur écrit à la main ne le sont pas. À revoir une fois
 la forme établie.
 
-## Conséquences
+## Consequences
 
-### Positives
+### Positive
 
 * Chaque catalogue a la même forme, quel qu'en soit l'auteur et qu'il soit généré ou non.
 * L'outillage peut supposer qu'un conteneur marqué existe, si bien qu'un correctif
@@ -154,14 +155,14 @@ la forme établie.
   catalogue, et cinq pages qui n'ont plus à expliquer un choix.
 * Les catalogues générés et la forme qu'enseignent les guides sont désormais la même.
 
-### Négatives
+### Negative
 
 * Tout catalogue écrit à la main doit déclarer un conteneur, y compris le plus petit.
 * Un nouveau diagnostic de déclaration à documenter, traduire et tenir à jour.
 * `DCAT0011` arrive sans correctif, là où les trois diagnostics de déclaration à côté de
   lui en portent tous un.
 
-### Risques
+### Risks
 
 * L'exigence achète de l'uniformité, pas de la correction, et les deux sont faciles à
   confondre. Un lecteur qui prend `DCAT0011` pour une protection contre une catégorie
@@ -173,14 +174,14 @@ la forme établie.
   exigences sur cinq au travers d'une frontière d'assemblage plutôt que toutes, et
   l'asymétrie devra être gardée en tête au moment d'écrire ce diagnostic.
 
-## Actions de suivi
+## Follow-up Actions
 
 * Étudier le contrôle de divergence intra-catalogue décrit plus haut, qui attrape une
   dérive que cette exigence n'attrape pas.
 * Revoir la question d'un correctif pour `DCAT0011` une fois le conteneur devenu une
   forme attendue des auteurs.
 
-## Références
+## References
 
 * [ADR-0008](0008-express-a-rule-as-a-marked-static-class-of-constants.fr.md) — le
   contrat structurel auquel ceci ajoute une exigence.
