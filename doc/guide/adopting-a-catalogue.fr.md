@@ -24,15 +24,14 @@ une suppression qu'une référence de catalogue pourrait remplacer, et après l'
 toutes remplissent la condition. Une version qui les distillerait serait une version qui ne finirait
 jamais.
 
-Cela devient un problème dans exactement une configuration, et elle est courante :
+Et `DCAT0006` est livré en **erreur**
+([ADR-0027](../adr/0027-ship-the-use-site-diagnostics-as-errors.fr.md)), donc cela n'attend pas qu'un
+`<TreatWarningsAsErrors>` morde : le build qui a ajouté le paquet est le build qui a échoué, avec des
+centaines d'erreurs, dans du code que personne n'a touché. Les équipes en concluent raisonnablement
+que la bibliothèque n'est pas prête.
 
-```xml
-<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-```
-
-Alors le build qui a ajouté le paquet est le build qui a échoué, avec des centaines d'erreurs, dans
-du code que personne n'a touché. Les équipes en concluent raisonnablement que la bibliothèque n'est
-pas prête.
+C'est pourquoi la première ligne de la rampe ci-dessous n'est pas optionnelle sur une base de code
+existante. C'est la seule baisse délibérée que le défaut attend de vous.
 
 ## La rampe
 
@@ -42,7 +41,7 @@ Trois réglages sur trois moments, et toute l'adoption tient dedans.
 flowchart LR
     A["<b>Jour 1</b><br/>suggestion<br/><i>visible dans l'IDE,<br/>muette dans le build</i>"]
     B["<b>Migration</b><br/>Corriger toutes les occurrences,<br/>projet par projet"]
-    C["<b>Terminé</b><br/>warning, puis error<br/><i>un nouveau littéral ne passe plus</i>"]
+    C["<b>Terminé</b><br/>retour à l'erreur par défaut<br/><i>un nouveau littéral ne passe plus</i>"]
     A --> B --> C
 ```
 
@@ -58,28 +57,27 @@ Une suggestion apparaît dans l'IDE sous forme d'ampoule et dans `dotnet build` 
 build qui ajoute le paquet est vert, et la migration démarre quand vous le décidez plutôt que quand
 le paquet arrive.
 
-**Pendant la migration — laissez les trois autres en avertissement.**
+**Pendant la migration — ne touchez pas aux trois autres.**
 
-`DCAT0001` et `DCAT0007` ne sont pas du backlog. Ils signifient qu'une suppression *ne fait pas ce
-qu'elle a l'air de faire* : une paire nommant deux règles différentes, ou une paire à moitié
-convertie. Ce sont deux défauts que vous voulez voir signalés dès qu'ils apparaissent, et aucun ne se
-déclenche en masse — ils n'existent que là où quelqu'un a déjà commencé à utiliser des références.
-`DCAT0009` est du même ordre : il signale une suppression que le *trimmer* jettera purement et
-simplement.
+`DCAT0001` et `DCAT0007` sont déjà des erreurs, et doivent le rester. Ils signifient qu'une
+suppression *ne fait pas ce qu'elle a l'air de faire* : une paire nommant deux règles différentes, ou
+une paire à moitié convertie. Ce sont deux défauts que vous voulez voir signalés dès qu'ils
+apparaissent, et aucun ne se déclenche en masse — ils n'existent que là où quelqu'un a déjà commencé
+à utiliser des références. `DCAT0009` est du même ordre mais reste livré en avertissement, parce
+qu'il rate un identifiant atteint via une constante ; relevez-le si un build *trimmé* compte pour
+vous.
 
 ```ini
-dotnet_diagnostic.DCAT0001.severity = error
-dotnet_diagnostic.DCAT0007.severity = error
 dotnet_diagnostic.DCAT0009.severity = error
 ```
 
-**Quand vous avez fini — fermez la porte.**
+**Quand vous avez fini — supprimez la ligne.**
 
 ```ini
-dotnet_diagnostic.DCAT0006.severity = error
+# disparue : dotnet_diagnostic.DCAT0006.severity = suggestion
 ```
 
-Le monter en dernier est tout l'objet de la rampe : à partir de là, une nouvelle suppression
+Retirer la baisse restaure le défaut : à partir de là, une nouvelle suppression
 littérale ne peut plus être fusionnée, et c'est ce qui maintient la base convertie une fois que la
 personne qui l'a convertie est passée à autre chose.
 

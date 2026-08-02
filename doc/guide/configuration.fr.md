@@ -21,7 +21,7 @@ chemin — que `.editorconfig` fait déjà, et fait mieux.
 ```ini
 # .editorconfig
 [*.cs]
-dotnet_diagnostic.DCAT0001.severity = error
+dotnet_diagnostic.DCAT0009.severity = error
 dotnet_diagnostic.DCAT0006.severity = suggestion
 ```
 

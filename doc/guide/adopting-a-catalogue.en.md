@@ -22,14 +22,13 @@ That is not a defect. It is the diagnostic doing exactly what it is for: it repo
 that a catalogue reference could replace, and after you add the catalogue, every one of them
 qualifies. A version that trickled would be a version that never finished.
 
-It becomes a problem in exactly one configuration, and it is a common one:
+And `DCAT0006` ships as an **error**
+([ADR-0027](../adr/0027-ship-the-use-site-diagnostics-as-errors.en.md)), so this does not wait for a
+`<TreatWarningsAsErrors>` to bite: the build that added the package is the build that failed, with
+hundreds of errors, in code nobody touched. Teams reasonably conclude the library is not ready.
 
-```xml
-<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-```
-
-Then the build that added the package is the build that failed, with hundreds of errors, in code
-nobody touched. Teams reasonably conclude the library is not ready.
+Which is why the first line of the ramp below is not optional on an existing codebase. It is the one
+deliberate downgrade the default expects you to make.
 
 ## The ramp
 
@@ -39,7 +38,7 @@ Three settings over three moments, and the whole adoption fits inside them.
 flowchart LR
     A["<b>Day 1</b><br/>suggestion<br/><i>visible in the IDE,<br/>silent in the build</i>"]
     B["<b>Migrating</b><br/>Fix all occurrences,<br/>project by project"]
-    C["<b>Done</b><br/>warning, then error<br/><i>a new literal cannot land</i>"]
+    C["<b>Done</b><br/>back to the default error<br/><i>a new literal cannot land</i>"]
     A --> B --> C
 ```
 
@@ -54,26 +53,26 @@ dotnet_diagnostic.DCAT0006.severity = suggestion
 A suggestion appears in the IDE as a lightbulb and in `dotnet build` as nothing. The build that adds
 the package is green, and the migration starts when you decide rather than when the package arrives.
 
-**While migrating — leave the other three at warning.**
+**While migrating — leave the other three alone.**
 
-`DCAT0001` and `DCAT0007` are not backlog. They mean a suppression is *not doing what it looks like*:
-a pair naming two different rules, or a half-converted one. Both are defects you want reported the
-moment they appear, and neither fires in bulk — they only exist where somebody has already started
-using references. `DCAT0009` is the same: it reports a suppression the trimmer will discard outright.
+`DCAT0001` and `DCAT0007` are errors already, and they should stay that way. They mean a suppression
+is *not doing what it looks like*: a pair naming two different rules, or a half-converted one. Both
+are defects you want reported the moment they appear, and neither fires in bulk — they only exist
+where somebody has already started using references. `DCAT0009` is the same in kind but still ships
+as a warning, because it misses an identifier reached through a constant; raise it if a trimmed build
+matters to you.
 
 ```ini
-dotnet_diagnostic.DCAT0001.severity = error
-dotnet_diagnostic.DCAT0007.severity = error
 dotnet_diagnostic.DCAT0009.severity = error
 ```
 
-**When you finish — close the door.**
+**When you finish — delete the line.**
 
 ```ini
-dotnet_diagnostic.DCAT0006.severity = error
+# gone: dotnet_diagnostic.DCAT0006.severity = suggestion
 ```
 
-Raising it last is the point of the whole ramp: from then on a new literal suppression cannot merge,
+Removing the downgrade restores the default: from then on a new literal suppression cannot merge,
 which is what keeps the codebase converted after the person who converted it moves on.
 
 ## Converting

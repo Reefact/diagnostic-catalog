@@ -34,8 +34,10 @@ A class of `const string` category values, so the same category is written once 
 rule. `SonarCategory` is one; the Sonar catalogue spends 456 rule declarations on 13 of its members.
 
 Marking it `[DiagnosticCategory]` is optional. What the marker buys is that tooling can tell a
-category constant from any other string constant, so the `DCAT0006` fix can offer
-`SonarCategory.MajorCodeSmell` instead of a bare literal.
+category constant from any other string constant. In a catalogue this repository generates the
+container is `internal`, so a suppression names a category only through the rule that carries it —
+`SonarRule.S1144.Category`, never the category on its own
+([ADR-0026](../adr/0026-reach-a-category-only-through-the-rule-that-carries-it.en.md)).
 
 ## Check id
 

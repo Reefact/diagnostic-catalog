@@ -1461,9 +1461,12 @@ dotnet_diagnostic.DCAT0008.severity = warning   # opt-in strict mode
 dotnet_diagnostic.DCAT0009.severity = error
 ```
 
-A team applying a zero-warning policy can thereby turn incoherent suppressions
-into build errors. No proprietary configuration format is required for the first
-version.
+The sample overrides every rule to show that every rule is reachable; it is not a
+statement of the defaults, which §16 gives. `DCAT0001`, `DCAT0006` and `DCAT0007`
+already ship at `Error`, so the line that matters in practice is the one going the
+other way — `DCAT0006` down to `suggestion` while an existing codebase migrates
+([ADR-0027](adr/0027-ship-the-use-site-diagnostics-as-errors.en.md)). No
+proprietary configuration format is required for the first version.
 
 ---
 

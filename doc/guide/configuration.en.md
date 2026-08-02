@@ -21,7 +21,7 @@ That is a decision, not an omission. A proprietary format would be one more file
 ```ini
 # .editorconfig
 [*.cs]
-dotnet_diagnostic.DCAT0001.severity = error
+dotnet_diagnostic.DCAT0009.severity = error
 dotnet_diagnostic.DCAT0006.severity = suggestion
 ```
 

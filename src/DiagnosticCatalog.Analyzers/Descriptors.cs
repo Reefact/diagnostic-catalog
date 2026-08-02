@@ -54,16 +54,19 @@ internal static class Descriptors
     internal static readonly DiagnosticDescriptor MixedReferenceAndLiteral = new(
         id: DiagnosticIds.MixedReferenceAndLiteral,
         title: "Suppression mixes a catalog reference with a string literal",
-        messageFormat: "This suppression references '{0}' on one side and writes the literal \"{1}\" on the other: {2}",
+        messageFormat: "This suppression references '{0}' on one side and the string value \"{1}\" on the other: {2}",
         category: Category,
         defaultSeverity: DiagnosticSeverity.Error,
         isEnabledByDefault: true,
         description:
             "The most common half-migrated state, and the one case where the intended rule is known "
             + "without ambiguity — the already-migrated argument names it. Completing it is offered only "
-            + "when the literal agrees with what that rule declares: replacing a literal that names "
-            + "something else would change which diagnostic is suppressed, which is a decision for the "
-            + "author rather than a mechanical migration.");
+            + "when the value agrees with what that rule declares: replacing one that names something "
+            + "else would change which diagnostic is suppressed, which is a decision for the author "
+            + "rather than a mechanical migration. The message says VALUE rather than literal because "
+            + "the argument need not be one: a constant carrying the same string reads identically to "
+            + "the analyzer, and telling its author to look for a literal sends them hunting for source "
+            + "that is not there.");
 
     internal static readonly DiagnosticDescriptor NonIlUnconditionalSuppression = new(
         id: DiagnosticIds.NonIlUnconditionalSuppression,
