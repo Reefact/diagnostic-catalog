@@ -139,4 +139,57 @@ internal static class Descriptors
             "The category must be usable as an attribute argument, under the same rules as Id. Its value "
             + "should be the one the originating analyzer's DiagnosticDescriptor declares; nothing in the "
             + "platform verifies that, which is why the constant exists at all.");
+
+    internal static readonly DiagnosticDescriptor RuleTypeNameDiffersFromId = new(
+        id: DiagnosticIds.RuleTypeNameDiffersFromId,
+        title: "The diagnostic rule type name should match its Id",
+        messageFormat: "'{0}' cannot be named for its identifier \"{1}\", which is not a valid C# identifier",
+        category: Category,
+        // Info, and it stays Info however plainly the divergence reads: there is nothing for the author
+        // to do. Between RULE_0001 and RULE0001 for "RULE-0001" this library has no ground to elect a
+        // winner, and a diagnostic whose only repair is to swap one blessed spelling for another blessed
+        // spelling is noise. What it IS for is being seen and configurable — silence would leave the
+        // exception DCAT0013 carves out invisible, and an invisible exception inside a rule that fails
+        // builds is the one shape nobody can reason about.
+        defaultSeverity: DiagnosticSeverity.Info,
+        isEnabledByDefault: true,
+        description:
+            "The identifier carries a character C# forbids in a type name, so the name is the identifier "
+            + "legalised and no closer spelling exists. Reported rather than passed over in silence: the "
+            + "same divergence is an error when nothing forced it (DCAT0013), and a reader who cannot see "
+            + "where the boundary falls cannot tell a blessed declaration from one nobody has checked.");
+
+    internal static readonly DiagnosticDescriptor IdNotWrittenAsNameOf = new(
+        id: DiagnosticIds.IdNotWrittenAsNameOf,
+        title: "A rule identifier should be written as nameof",
+        messageFormat: "Write nameof({0}) rather than a literal, so the identifier cannot drift from the type",
+        category: Category,
+        defaultSeverity: DiagnosticSeverity.Warning,
+        isEnabledByDefault: true,
+        description:
+            "The literal agrees with the type name today and nothing holds it there: renaming the type "
+            + "leaves the identifier behind, and the declaration goes on compiling while every reference "
+            + "to it names a rule it no longer identifies. The nameof form cannot come apart, which is why "
+            + "§7.3 recommends it. This is the one check here that reads syntax — nameof(X) and \"X\" fold "
+            + "to the same constant, so a referenced assembly carries no trace of which was written, and "
+            + "there is nothing to report against.");
+
+    internal static readonly DiagnosticDescriptor RuleTypeNameDoesNotSayId = new(
+        id: DiagnosticIds.RuleTypeNameDoesNotSayId,
+        title: "The diagnostic rule type name does not say its Id",
+        messageFormat: "'{0}' declares the identifier \"{1}\", which its name does not say",
+        category: Category,
+        // Warning, alongside the other three definition diagnostics, and NOT Error. The rule is new and
+        // already has one known false-positive shape behind it — the friendly-name form, which cost a
+        // reading of the usage corpus to find — so it earns a release before it is allowed to stop a
+        // build. Anyone wanting it stricter today writes one line of .editorconfig; that escalation is
+        // exactly what reporting it at all buys, and it is why silence was never the alternative.
+        defaultSeverity: DiagnosticSeverity.Warning,
+        isEnabledByDefault: true,
+        description:
+            "The identifier is a valid C# identifier, so the type could have been named it, and was not. "
+            + "Every use site then reads a name that does not say which diagnostic it suppresses — the "
+            + "reference compiles, resolves and works, and misleads every reader of it. No fix is offered: "
+            + "renaming the type changes a published name, and rewriting the identifier changes which "
+            + "diagnostic is suppressed. Which of those is the typo is not something a tool can know.");
 }

@@ -17,12 +17,15 @@ d'utilisation** regardent une suppression que vous avez écrite, ce qui concerne
 | [`DCAT0002`](#dcat0002) | déclaration | Une règle doit être déclarée comme classe statique non générique | Avertissement | oui, sous condition |
 | [`DCAT0003`](#dcat0003) | déclaration | Une règle doit exposer une constante `string` publique nommée `Id` | Avertissement | oui, sous condition |
 | [`DCAT0004`](#dcat0004) | déclaration | Une règle doit exposer une constante `string` publique nommée `Category` | Avertissement | oui, sous condition |
+| [`DCAT0005`](#dcat0005) | déclaration | Le nom du type de règle devrait correspondre à son `Id` | Info | — |
 | [`DCAT0006`](#dcat0006) | site d'utilisation | Utiliser une référence de catalogue plutôt que des littéraux | **Erreur** | oui |
 | [`DCAT0007`](#dcat0007) | site d'utilisation | La suppression mêle une référence de catalogue et un littéral | **Erreur** | oui, sous condition |
 | [`DCAT0009`](#dcat0009) | site d'utilisation | `UnconditionalSuppressMessage` n'accepte que les identifiants `IL####` | Avertissement | — |
 | [`DCAT0011`](#dcat0011) | déclaration | La catégorie d'une règle doit référencer une constante de catégorie déclarée | Avertissement | — |
+| [`DCAT0012`](#dcat0012) | déclaration | Un identifiant de règle devrait s'écrire `nameof` | Avertissement | oui, sous condition |
+| [`DCAT0013`](#dcat0013) | déclaration | Le nom du type de règle ne dit pas son `Id` | Avertissement | — |
 
-`DCAT0005`, `DCAT0008` et `DCAT0010` sont spécifiés mais délibérément hors de la 1.0.
+`DCAT0008` et `DCAT0010` sont spécifiés mais délibérément hors de la 1.0.
 
 ---
 
@@ -129,8 +132,12 @@ fonctionne.
 Ceux-ci se déclenchent sur du code qui déclare des règles. Voir
 [le guide de l'auteur de catalogue](authoring-a-catalogue.fr.md).
 
-Les trois premiers proposent un correctif **quand la réparation est déjà écrite dans le code**, et se
-taisent sinon. Cette ligne n'est pas de la prudence pour elle-même : un correctif qui devinerait
+Ils se répartissent en deux groupes. `DCAT0002`, `DCAT0003`, `DCAT0004` et `DCAT0011` disent que la
+règle est **inutilisable ou sans ancrage** ; `DCAT0005`, `DCAT0012` et `DCAT0013` disent qu'elle
+fonctionne et que son nom ne dit pas ce qu'elle est.
+
+Ceux qui proposent un correctif le proposent **quand la réparation est déjà écrite dans le code**, et
+se taisent sinon. Cette ligne n'est pas de la prudence pour elle-même : un correctif qui devinerait
 produirait une règle que le compilateur accepte et que personne ne vérifie, c'est-à-dire la
 défaillance que cette bibliothèque existe pour éliminer. Là où un correctif est refusé ci-dessous, le
 diagnostic nomme quand même le type et le membre — vous terminez avec ce que vous savez, et l'outil
@@ -197,6 +204,40 @@ correctif n'a aucun moyen de la connaître ; il échafaude donc le membre et vou
 > identifiant seul. Appliquez-le quand vous êtes sur le point de le remplir, pas pour raccourcir la
 > liste.
 
+### `DCAT0005`
+
+**L'identifiant ne peut pas être un nom de type : le type porte donc ce qui s'en approche le plus.**
+
+```csharp
+[DiagnosticRule]
+public static class RULE_0001
+{
+    public const string Id = "RULE-0001";  // un tiret est légal dans un id, pas dans un nom de type
+}
+```
+
+**Il n'y a rien à faire ici, et c'est tout le message.** `RULE_0001` et `RULE0001` rendent aussi
+fidèlement `"RULE-0001"` l'un que l'autre, et cette bibliothèque n'a aucun titre à en élire un — elle
+n'en réclame donc aucun, ne propose aucun correctif, et reste en `Info`, hors de votre sortie de build.
+
+Pourquoi le signaler, alors ? Parce que [`DCAT0013`](#dcat0013) échoue à cette même comparaison une
+étape plus loin et, lui, avertit. `DCAT0005`, c'est l'exception rendue visible : il marque les
+déclarations où la divergence a été **subie** plutôt que choisie. Une exception que personne ne voit,
+à l'intérieur d'une règle qui signale, est la seule forme sur laquelle un lecteur ne peut pas
+raisonner — et elle ne vous laisserait aucun identifiant à hausser dans `.editorconfig` si vous
+décidiez finalement de vouloir en être informé.
+
+Un identifiant est lu jusqu'à son premier deux-points, exactement comme une suppression
+([`DCAT0006`](#dcat0006)). La forme à nom convivial du *trimmer* atterrit donc ici plutôt que sous
+`DCAT0013`, et un type nommé d'après sa tête fait tout ce qu'un nom peut faire :
+
+```csharp
+public static class IL2026Annotated
+{
+    public const string Id = "IL2026:Members annotated with RequiresUnreferencedCode";
+}
+```
+
 ### `DCAT0011`
 
 **La catégorie n'est pas atteinte via une constante de catégorie déclarée.** `DCAT0004` demande si le
@@ -239,6 +280,64 @@ vocabulaire du catalogue. Le diagnostic nomme la règle et vous écrivez le cont
 **Signalé sur la source uniquement**, comme tout diagnostic de déclaration — et ici par construction
 plutôt que par politique, puisque le contrôle lit l'initialiseur et qu'une règle qui vous parvient par
 les métadonnées n'en a pas.
+### `DCAT0012`
+
+**L'identifiant est un littéral qui se trouve égaler le nom du type.** Écrivez `nameof` à la place :
+
+```csharp
+public const string Id = "JD0007";        // signalé
+public const string Id = nameof(JD0007);  // solidaires
+```
+
+Rien n'est faux dans ce littéral aujourd'hui — c'est bien le problème. Il s'accorde avec le nom du
+type *maintenant*, et rien ne l'y retient. Renommez le type et le littéral reste en arrière : la
+déclaration compile toujours, et chaque site d'utilisation continue de nommer une règle que le type
+n'est plus. `nameof` ne peut pas se disjoindre.
+
+C'est le seul diagnostic de déclaration qui lit votre **source** plutôt que vos symboles.
+`nameof(JD0007)` et `"JD0007"` compilent vers la même constante : une règle qui parvient à cet
+analyseur depuis une assembly référencée ne porte aucune trace de ce qui a été écrit — et rien n'y est
+signalé, puisqu'à ce stade il n'y a plus de forme à recommander.
+
+Tout `nameof` compte, qualifié ou non : `nameof(Vendor.JD0007)` est tenu par le même opérateur.
+
+**Correctif — *Use `nameof`*.** Proposé dès lors qu'`Id` est un champ à lui seul. Refusé quand une
+déclaration de champ porte plusieurs constantes — `public const string Id = "JD0007", Category =
+"Usage";` — car réécrire une déclaration partagée toucherait un membre que ce diagnostic n'a jamais
+mentionné.
+
+### `DCAT0013`
+
+**Le type porte un nom que son identifiant ne dit pas.**
+
+```csharp
+[DiagnosticRule]
+public static class RuleSeven
+{
+    public const string Id = "JD0007";  // signalé
+}
+```
+
+`JD0007` est un nom de type parfaitement légal. Il était disponible, et le type s'appelle autrement :
+chaque site d'utilisation lit donc `Vendor.RuleSeven.Id` et supprime `JD0007`. La référence compile,
+se résout, fonctionne — et ne dit rien de vrai à qui la lit. C'est un défaut pire qu'une règle cassée,
+laquelle au moins s'annonce.
+
+Il est signalé dès que le nom ne dit pas l'identifiant sans que rien ne l'ait imposé. Les deux cas
+suivants le sont, pour la même raison :
+
+```csharp
+public static class RULE001 { public const string Id = "RULE_001"; }   // RULE_001 était disponible
+public static class RULE42  { public const string Id = "RULE-0001"; }  // n'en est pas une légalisation
+```
+
+Le second est celui qu'il faut connaître. `"RULE-0001"` ne peut pas être un nom de type du tout — mais
+`RULE42` n'en est pas non plus un rendu, et ne pas pouvoir épeler l'identifiant exactement n'autorise
+pas à en épeler un autre.
+
+**Aucun correctif.** Deux réparations existent et vous seul pouvez trancher : renommer le type change
+un nom que vos consommateurs ont écrit chez eux, et réécrire l'identifiant change quel diagnostic est
+supprimé. Un outil qui en choisirait une déciderait laquelle des deux était la faute de frappe.
 
 ---
 
@@ -259,6 +358,12 @@ dotnet_diagnostic.DCAT0002.severity = error
 dotnet_diagnostic.DCAT0003.severity = error
 dotnet_diagnostic.DCAT0004.severity = error
 dotnet_diagnostic.DCAT0011.severity = error
+dotnet_diagnostic.DCAT0012.severity = error
+dotnet_diagnostic.DCAT0013.severity = error
+
+# Un nom qui n'aurait pas pu dire son id. Haussez-le si vous préférez revoir
+# chacune de ces déclarations plutôt que de la laisser passer.
+dotnet_diagnostic.DCAT0005.severity = warning
 
 # Migrer un codebase existant : visible dans l'IDE, hors du build.
 # Supprimez la ligne quand le dernier littéral a disparu.

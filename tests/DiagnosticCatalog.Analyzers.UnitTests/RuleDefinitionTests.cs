@@ -54,16 +54,20 @@ public sealed class RuleDefinitionTests
             """);
 
     [Fact]
-    public Task An_id_that_is_not_a_valid_identifier_is_still_valid() =>
-        // §8.2 explicitly blesses this pair. It is also why DCAT0005 needs its IsValidIdentifier guard.
-        AnalyzerHarness.ReportsNothingAsync(Analyzer, UsingFoundation + CategoryContainer + """
+    public Task An_id_that_is_not_a_valid_identifier_satisfies_the_structural_contract() =>
+        // §8.2 explicitly blesses this pair, and the structural contract holds: DCAT0002, DCAT0003 and
+        // DCAT0004 have nothing to say about it. What it does draw is DCAT0005, because the name and the
+        // id differ and a reader cannot otherwise tell a blessed divergence from an unexamined one. Why
+        // that is Info rather than silence belongs to RuleNamingTests; what is asserted here is only that
+        // §8 does not object.
+        AnalyzerHarness.ReportsAsync(Analyzer, UsingFoundation + CategoryContainer + """
             [DiagnosticRule]
             public static class RULE_001
             {
                 public const string Id = "RULE-001";
                 public const string Category = Cat.Usage;
             }
-            """);
+            """, "DCAT0005");
 
     // --- DCAT0002, the type itself ------------------------------------------------------------
 
@@ -80,11 +84,13 @@ public sealed class RuleDefinitionTests
 
     [Fact]
     public Task A_generic_rule_type_is_reported() =>
+        // nameof(JD0007<T>), not the literal: the identifier is the type's own name either way, and the
+        // literal form would additionally draw DCAT0012 and make a test about the TYPE assert two things.
         AnalyzerHarness.ReportsAsync(Analyzer, UsingFoundation + CategoryContainer + """
             [DiagnosticRule]
             public static class JD0007<T>
             {
-                public const string Id = "JD0007";
+                public const string Id = nameof(JD0007<T>);
                 public const string Category = Cat.Usage;
             }
             """, "DCAT0002");

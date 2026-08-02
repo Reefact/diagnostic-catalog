@@ -266,31 +266,10 @@ public sealed class AddRuleMemberCodeFixProvider : CodeFixProvider
         return anywhere.Length > 0 ? anywhere[0] : SyntaxFactory.LineFeed;
     }
 
-    /// <summary>The <c>nameof</c> token, as a contextual keyword rather than as a name.</summary>
-    /// <remarks>
-    /// <c>SyntaxFactory.IdentifierName("nameof")</c> looks like the same thing and is not: the binder
-    /// recognises the operator by the token's contextual kind, so an ordinary identifier binds as a call to
-    /// a method named <c>nameof</c> and the compilation fails with CS0103. Nothing about the printed source
-    /// differs, which is why this is written out rather than left to look redundant.
-    /// </remarks>
-    private static SyntaxToken NameOf() =>
-        SyntaxFactory.Identifier(
-            SyntaxTriviaList.Empty,
-            SyntaxKind.NameOfKeyword,
-            "nameof",
-            "nameof",
-            SyntaxTriviaList.Empty);
-
     private static FieldDeclarationSyntax Declaration(TypeDeclarationSyntax type, string member)
     {
         ExpressionSyntax value = member == RuleDeclaration.IdMember
-            ? SyntaxFactory.InvocationExpression(
-                SyntaxFactory.IdentifierName(NameOf()),
-                SyntaxFactory.ArgumentList(
-                    SyntaxFactory.SingletonSeparatedList(
-                        // The identifier token itself, not its text: a rule may be spelled `@class`, and
-                        // the text alone would write a keyword into the argument.
-                        SyntaxFactory.Argument(SyntaxFactory.IdentifierName(type.Identifier.WithoutTrivia())))))
+            ? RuleDeclaration.NameOf(type)
             : SyntaxFactory.LiteralExpression(
                 SyntaxKind.StringLiteralExpression,
                 SyntaxFactory.Literal(CategoryPlaceholder));

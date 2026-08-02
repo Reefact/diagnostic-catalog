@@ -28,7 +28,10 @@ public sealed class DiagnosticRuleDefinitionAnalyzer : DiagnosticAnalyzer
             Descriptors.InvalidRuleType,
             Descriptors.InvalidRuleId,
             Descriptors.InvalidRuleCategory,
-            Descriptors.UnreferencedRuleCategory);
+            Descriptors.UnreferencedRuleCategory,
+            Descriptors.RuleTypeNameDiffersFromId,
+            Descriptors.IdNotWrittenAsNameOf,
+            Descriptors.RuleTypeNameDoesNotSayId);
 
     /// <inheritdoc />
     public override void Initialize(AnalysisContext context)
@@ -60,7 +63,6 @@ public sealed class DiagnosticRuleDefinitionAnalyzer : DiagnosticAnalyzer
         if (!RuleMarker.IsRule(type)) { return; }
 
         RuleContractResult result = RuleContract.Check(type);
-        if (result.IsSatisfied) { return; }
 
         // Every applicable violation is reported, rather than the first. A type that is neither static
         // nor carries an Id has two separate things to fix, and hiding one behind the other means
@@ -68,6 +70,12 @@ public sealed class DiagnosticRuleDefinitionAnalyzer : DiagnosticAnalyzer
         Report(context, type, RuleContractViolations.NotAStaticNonGenericClass, Descriptors.InvalidRuleType, result);
         Report(context, type, RuleContractViolations.InvalidId, Descriptors.InvalidRuleId, result);
         Report(context, type, RuleContractViolations.InvalidCategory, Descriptors.InvalidRuleCategory, result);
+
+        // The naming diagnostics all read what Id HOLDS, so none of them has anything to say until §8.2
+        // holds. A type failing that already carries DCAT0003, which is the thing to fix first.
+        if (result.Id is null || result.IdField is null) { return; }
+
+        ReportNaming(context, type, result.Id, result.IdField);
     }
 
     /// <summary>§8.5 — the category must be reached through a marked category constant (DCAT0011).</summary>
@@ -113,6 +121,32 @@ public sealed class DiagnosticRuleDefinitionAnalyzer : DiagnosticAnalyzer
         }
     }
 
+    /// <summary>DCAT0005, DCAT0012 and DCAT0013: what the type's NAME says about the id it declares.</summary>
+    private static void ReportNaming(
+        SymbolAnalysisContext context,
+        INamedTypeSymbol type,
+        string id,
+        IFieldSymbol idField)
+    {
+        switch (RuleNaming.Classify(id, type.Name))
+        {
+            case RuleNameVerdict.Matches:
+                ReportLiteralIdentifier(context, type, idField);
+
+                break;
+
+            case RuleNameVerdict.Forced:
+                ReportOnType(context, type, Descriptors.RuleTypeNameDiffersFromId, type.Name, id);
+
+                break;
+
+            case RuleNameVerdict.Arbitrary:
+                ReportOnType(context, type, Descriptors.RuleTypeNameDoesNotSayId, type.Name, id);
+
+                break;
+        }
+    }
+
     /// <summary>
     /// True when <paramref name="expression"/> is a reference to a constant declared in a
     /// <c>[DiagnosticCategory]</c> class.
@@ -135,6 +169,54 @@ public sealed class DiagnosticRuleDefinitionAnalyzer : DiagnosticAnalyzer
         model.GetSymbolInfo(expression, cancellationToken).Symbol is IFieldSymbol { IsConst: true } source
         && CategoryMarker.IsCategoryContainer(source.ContainingType);
 
+    /// <summary>
+    /// DCAT0012 — the name and the id agree, and only the source says whether they are held together.
+    /// </summary>
+    /// <remarks>
+    /// The one place this analyzer reads syntax, and the one place it can. <c>nameof(JD0007)</c> and
+    /// <c>"JD0007"</c> fold to the same constant, so <see cref="IFieldSymbol.ConstantValue"/> cannot tell
+    /// them apart and a field with no syntax at all — the metadata case — carries no answer to give. That
+    /// is not a gap: in a referenced assembly there is no longer a form to recommend.
+    ///
+    /// Reported on the INITIALISER rather than on the type's identifier, which is where every other
+    /// definition diagnostic points. The fault is the expression, and the fix rewrites the expression;
+    /// underlining the type name instead would leave the line that changes unmarked.
+    /// </remarks>
+    private static void ReportLiteralIdentifier(
+        SymbolAnalysisContext context,
+        INamedTypeSymbol type,
+        IFieldSymbol idField)
+    {
+        foreach (SyntaxReference reference in idField.DeclaringSyntaxReferences)
+        {
+            if (reference.GetSyntax(context.CancellationToken) is not VariableDeclaratorSyntax declarator)
+            {
+                continue;
+            }
+
+            ExpressionSyntax? value = declarator.Initializer?.Value;
+
+            // Any nameof, not only nameof(ThisType). A qualified argument spells the same operator, and
+            // the value has already been checked to be the type's own name — an initialiser that both
+            // reads nameof and folds to the right string is holding the two together, however it is
+            // written.
+            if (value is null || IsNameOf(value)) { continue; }
+
+            context.ReportDiagnostic(
+                Diagnostic.Create(Descriptors.IdNotWrittenAsNameOf, value.GetLocation(), type.Name));
+        }
+    }
+
+    /// <remarks>
+    /// Matched on the token's text rather than its contextual kind. A constant initialiser that reads
+    /// <c>nameof(...)</c> and compiles cannot be anything else: an ordinary invocation is not a constant
+    /// expression, so the compiler would have rejected the field long before this ran.
+    /// </remarks>
+    private static bool IsNameOf(ExpressionSyntax value) =>
+        value is InvocationExpressionSyntax invocation
+        && invocation.Expression is IdentifierNameSyntax name
+        && name.Identifier.ValueText == "nameof";
+
     private static void Report(
         SymbolAnalysisContext context,
         INamedTypeSymbol type,
@@ -144,6 +226,15 @@ public sealed class DiagnosticRuleDefinitionAnalyzer : DiagnosticAnalyzer
     {
         if ((result.Violations & violation) == 0) { return; }
 
+        ReportOnType(context, type, descriptor, type.Name);
+    }
+
+    private static void ReportOnType(
+        SymbolAnalysisContext context,
+        INamedTypeSymbol type,
+        DiagnosticDescriptor descriptor,
+        params object[] messageArguments)
+    {
         foreach (Location location in type.Locations)
         {
             // A partial type has one location per part, and only the ones in source can carry a
@@ -151,7 +242,7 @@ public sealed class DiagnosticRuleDefinitionAnalyzer : DiagnosticAnalyzer
             // reporting on a metadata location throws.
             if (location.IsInSource)
             {
-                context.ReportDiagnostic(Diagnostic.Create(descriptor, location, type.Name));
+                context.ReportDiagnostic(Diagnostic.Create(descriptor, location, messageArguments));
             }
         }
     }

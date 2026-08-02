@@ -39,6 +39,16 @@ public sealed class DefaultSeverityTests
             ["DCAT0003"] = DiagnosticSeverity.Warning,
             ["DCAT0004"] = DiagnosticSeverity.Warning,
             ["DCAT0011"] = DiagnosticSeverity.Warning,
+            ["DCAT0012"] = DiagnosticSeverity.Warning,
+            ["DCAT0013"] = DiagnosticSeverity.Warning,
+
+            // Definition, and the only Info shipped. Alone in that tier because it is the only rule
+            // reporting something its author cannot act on: the identifier carries a character C# will
+            // not take, so the name is already as close as a name can get. It is reported anyway because
+            // DCAT0013 fails the same comparison one step later, and an exception nobody can see is one
+            // nobody can reason about — Info is what makes the boundary visible and configurable without
+            // asking for work that does not exist.
+            ["DCAT0005"] = DiagnosticSeverity.Info,
 
             // Use site, but still under-detecting: it misses an identifier reached through a constant,
             // so promoting it would fail builds unevenly for a reason the author cannot see.

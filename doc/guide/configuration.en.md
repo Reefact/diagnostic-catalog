@@ -33,12 +33,17 @@ The accepted values are Roslyn's own: `error`, `warning`, `suggestion`, `silent`
 | `DCAT0002` | Warning | `error` if you publish a catalogue; irrelevant otherwise |
 | `DCAT0003` | Warning | `error` if you publish a catalogue |
 | `DCAT0004` | Warning | `error` if you publish a catalogue |
+| `DCAT0005` | Info | leave it — there is nothing to repair; `warning` only if you want each such name reviewed |
 | `DCAT0006` | **Error** | `suggestion` while migrating an existing codebase, then back |
 | `DCAT0007` | **Error** | keep it — a half-migrated suppression is a defect, not a backlog item |
 | `DCAT0009` | Warning | `error` — the trimmer discards that suppression outright |
+| `DCAT0011` | Warning | `error` if you publish a catalogue — one spelling per category is the point |
+| `DCAT0012` | Warning | `error` if you publish a catalogue — the repair is mechanical |
+| `DCAT0013` | Warning | `error` if you publish a catalogue and want every name to say its rule |
 
-The distinction that matters when you pick: `DCAT0006` reports *work not yet done*, and the other six
-report *something already wrong*. Only the first belongs at `suggestion` for a while — and it is what
+The distinction that matters when you pick: `DCAT0006` reports *work not yet done*, and the others
+report *something already wrong* — except `DCAT0005`, which reports something that is right and could
+not have been written otherwise. Only the first belongs at `suggestion` for a while — and it is what
 a codebase with existing literal suppressions wants on the day it references the package, since the
 default turns every one of them into a build error. Delete the line when the last literal is gone.
 
@@ -89,7 +94,7 @@ the two groups need opposite settings:
 | Analyzer | Diagnostics | On generated code |
 | --- | --- | --- |
 | `SuppressionUsageAnalyzer` | `DCAT0001`, `DCAT0006`, `DCAT0007`, `DCAT0009` | **not reported** |
-| `DiagnosticRuleDefinitionAnalyzer` | `DCAT0002`, `DCAT0003`, `DCAT0004` | **reported** |
+| `DiagnosticRuleDefinitionAnalyzer` | `DCAT0002`–`DCAT0005`, `DCAT0011`–`DCAT0013` | **reported** |
 
 A suppression inside a generated file is not the author's to fix, so reporting it would flood every
 generated file with work nobody can do. A *rule declaration* inside a generated file is the opposite
