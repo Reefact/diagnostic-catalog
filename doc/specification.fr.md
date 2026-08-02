@@ -567,7 +567,7 @@ public sealed class DiagnosticCategoryAttribute : Attribute
 
 ```csharp
 [DiagnosticCategory]
-public static class SonarCategory
+internal static class SonarCategory
 {
     public const string MajorCodeSmell = "Major Code Smell";
     public const string MinorCodeSmell = "Minor Code Smell";
@@ -596,11 +596,16 @@ participe pas à la résolution.
 depuis une constante nommée plutôt que depuis un littéral : les catégories
 fonctionneraient sans lui. Le marqueur existe parce que, sans lui, un analyzer ne
 peut pas distinguer une constante de catégorie de n'importe quelle autre constante
-chaîne de l'assembly. Avec lui, le code fixer de `DCAT0006` peut proposer
-`SonarCategory.MajorCodeSmell` au lieu d'un littéral nu, et un contrôle ultérieur
-peut valider que la classe ne contient que des membres `public const string` non
-vides. L'appliquer est facultatif ; un catalogue qui répète ses littéraux reste
-valide.
+chaîne de l'assembly. Avec lui, le générateur marque le conteneur qu'il émet, et
+un contrôle ultérieur peut valider que la classe ne contient que des membres
+`const string` non vides. C'est aussi ce que lit l'analyse propre d'un catalogue.
+L'appliquer est facultatif ; un catalogue qui répète ses littéraux reste valide.
+
+Un conteneur généré est `internal` ([ADR-0026](adr/0026-reach-a-category-only-through-the-rule-that-carries-it.fr.md)),
+donc aucun correctif ne peut proposer `SonarCategory.MajorCodeSmell` à un
+consommateur : nommer une catégorie hors de sa règle survit à la recatégorisation
+de cette règle par le fournisseur, et la suppression cesse alors de correspondre
+en silence.
 
 Comme les deux autres attributs, il ne doit jamais être rendu `[Conditional]`
 (§3.4).
@@ -1207,7 +1212,7 @@ using DiagnosticCatalog;
 namespace DiagnosticCatalog.Sonar;
 
 [DiagnosticCategory]
-public static class SonarCategory
+internal static class SonarCategory
 {
     public const string MajorCodeSmell = "Major Code Smell";
 }
