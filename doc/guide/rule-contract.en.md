@@ -7,9 +7,9 @@ For anyone who needs the exact shape rather than the shortest one — writing a 
 hand-written catalogue, or working out why a declaration is not recognised. The normative source is
 [the specification](../specification.en.md), §7 to §10; this is it distilled.
 
-## The whole contract, in four requirements
+## The whole contract, in five requirements
 
-A rule is a type that satisfies all four:
+A rule is a type that satisfies all five:
 
 | # | Requirement | Reported by |
 | --- | --- | --- |
@@ -17,17 +17,29 @@ A rule is a type that satisfies all four:
 | 2 | A **static, non-generic class** | `DCAT0002` |
 | 3 | A public `const string` named `Id`, non-blank | `DCAT0003` |
 | 4 | A public `const string` named `Category`, non-blank | `DCAT0004` |
+| 5 | That `Category` reaches a constant declared in a `[DiagnosticCategory]` class | `DCAT0011` |
 
 ```csharp
+[DiagnosticCategory]
+internal static class JdCategory
+{
+    public const string Usage = "Usage";
+}
+
 [DiagnosticRule]
 public static class JD0007
 {
     public const string Id = nameof(JD0007);
-    public const string Category = "Usage";
+    public const string Category = JdCategory.Usage;
 }
 ```
 
 Nothing else is required. No base class, no interface, nothing to register.
+
+Requirements 4 and 5 are two questions about the same member, and they are worth keeping apart.
+The fourth asks whether the category can be an attribute argument at all; the fifth asks whether the
+value has one declaration or many. The first is about a rule that does not work. The second is about a
+catalogue that works and drifts.
 
 ## Why structural rather than inherited
 
@@ -78,7 +90,7 @@ identifier**. When they differ, the type name yields:
 public static class RULE_001
 {
     public const string Id = "RULE-001";
-    public const string Category = "Usage";
+    public const string Category = ContosoCategory.Usage;
 }
 ```
 
@@ -87,16 +99,18 @@ blank id.
 
 ## `Category` — the member nothing can verify
 
-Same shape, same rules. What differs is that its *value* has no mechanical check anywhere: it should
-be the category the originating analyzer's `DiagnosticDescriptor` declares, and nothing in the
-platform compares the two.
+Same shape, same rules, plus requirement 5 on where the value comes from. What no requirement reaches
+is the value *itself*, and the distinction is worth being exact about: requirement 5 checks that the
+category has a single declaration, never that the string in it is right. What it should be is the
+category the originating analyzer's `DiagnosticDescriptor` declares, and nothing in the platform
+compares the two.
 
 That is not a gap in this library — it is the property the library exists because of. Accuracy here
 is a matter of the catalogue's credibility, which is why the catalogues in this repository are
 generated from descriptors rather than transcribed
 ([ADR-0009](../adr/0009-generate-catalog-content-from-analyzer-descriptors.en.md)).
 
-## Categories declared once
+## Categories declared once — requirement 5
 
 A `const` initialised from another `const` is **still a compile-time constant**:
 
@@ -115,11 +129,17 @@ public static class S1144
 }
 ```
 
-`[DiagnosticCategory]` is optional. What it buys is that tooling can tell a category constant from any
-other string constant in the assembly. In a catalogue this repository generates the container is
+`[DiagnosticCategory]` is **required**, and requirement 5 is what requires it. The constants would fold
+identically without it; what the marker buys is that tooling can tell a category constant from any
+other string constant in the assembly, which is what lets a fix offer the named constant in place of a
+literal. In a catalogue this repository generates the container is
 `internal`, so a suppression names a category only through the rule that carries it — see
 [ADR-0026](../adr/0026-reach-a-category-only-through-the-rule-that-carries-it.en.md). A hand-written
-catalogue may still publish one; the contract does not forbid it.
+catalogue may still publish one; the contract does not forbid it, and the container may live in another
+assembly.
+
+The decision to require it, and what it deliberately does not buy, is
+[ADR-0028](../adr/0028-require-every-rule-to-reach-its-category-through-a-declared-constant.en.md).
 
 ## Which attributes are analysed
 

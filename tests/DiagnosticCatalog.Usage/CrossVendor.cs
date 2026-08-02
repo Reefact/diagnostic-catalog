@@ -214,6 +214,14 @@ internal static class LegacyImport
     internal static string Describe(string payload) => Rebuild(payload);
 }
 
+/// <summary>The categories the in-house trimmer rules are declared under.</summary>
+[DiagnosticCategory]
+internal static class TrimmerCategory
+{
+    /// <summary>The category ILLink's own descriptors declare.</summary>
+    public const string Trimming = "Trimming";
+}
+
 /// <summary>An in-house rule for a trimmer identifier — the only shape UnconditionalSuppressMessage honours.</summary>
 internal static class TrimmerRule
 {
@@ -225,7 +233,7 @@ internal static class TrimmerRule
         public const string Id = nameof(IL2026);
 
         /// <summary>The category ILLink's own descriptor declares.</summary>
-        public const string Category = "Trimming";
+        public const string Category = TrimmerCategory.Trimming;
     }
 }
 

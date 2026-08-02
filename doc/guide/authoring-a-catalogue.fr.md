@@ -14,23 +14,30 @@ et la CI échoue s'il cesse un jour de correspondre aux analyseurs qu'il reflèt
 
 ## Le contrat en entier
 
-Une règle est une **classe statique**, marquée, exposant **deux constantes `string` publiques** :
+Une règle est une **classe statique**, marquée, exposant **deux constantes `string` publiques**, dont
+l'une atteint une **catégorie déclarée** :
 
 ```csharp
 using DiagnosticCatalog;
+
+[DiagnosticCategory]
+internal static class ContosoCategory
+{
+    public const string Usage = "Usage";
+}
 
 [DiagnosticRule]
 public static class CTS0001
 {
     public const string Id = nameof(CTS0001);
-    public const string Category = "Usage";
+    public const string Category = ContosoCategory.Usage;
 }
 ```
 
 C'est tout. Pas de classe de base, pas d'interface, rien à enregistrer, aucun générateur à lancer.
 Si vous cherchez la partie que vous auriez manquée, il n'y en a pas.
 
-Trois détails de cet extrait méritent leur place :
+Quatre détails de cet extrait méritent leur place :
 
 * **`static`** — rien n'instancie jamais une règle, et l'analyseur rejette une règle non statique.
 * **`const`, pas `static readonly`** — un champ `static readonly` a une valeur à l'exécution mais ne
@@ -38,11 +45,15 @@ Trois détails de cet extrait méritent leur place :
   premier.
 * **`nameof(CTS0001)`** plutôt que `"CTS0001"` — cela résout vers le nom du type conteneur, si bien
   que l'identifiant et la classe ne peuvent pas diverger. Renommez l'un dans l'IDE et l'autre suit.
+* **`ContosoCategory.Usage`** plutôt que `"Usage"` — une seule classe porte chaque catégorie une fois,
+  et `[DiagnosticCategory]` est ce qui rend cette classe visible à l'outillage. Exigé, pas conseillé :
+  `DCAT0011` signale le littéral. La section suivante porte sur cette classe.
 
 ## Quand vous vous trompez, l'analyseur propose de corriger
 
-`DCAT0002`, `DCAT0003` et `DCAT0004` signalent une déclaration qui rate le contrat, et chacun porte un
-correctif — **proposé uniquement là où la réparation est déjà écrite dans le code**, et muet sinon :
+`DCAT0002`, `DCAT0003`, `DCAT0004` et `DCAT0011` signalent une déclaration qui rate le contrat. Les
+trois premiers portent un correctif — **proposé uniquement là où la réparation est déjà écrite dans le
+code**, et muet sinon :
 
 | Ce que vous avez écrit | Ce qui est proposé |
 | --- | --- |
@@ -50,8 +61,9 @@ correctif — **proposé uniquement là où la réparation est déjà écrite da
 | `private static readonly string Id = ...` | *Make 'Id' a public constant* — les modificateurs seulement ; la valeur est laissée telle quelle |
 | aucun membre `Id` | *Declare 'public const string Id'*, écrit `nameof(CTS0001)` — lu sur votre déclaration plutôt qu'inventé |
 
-Rien n'est proposé quand c'est la **valeur** qui est fausse — un `const int`, une chaîne vide, un
-initialiseur non constant. Le code ne dit rien de ce que vous vouliez, et un correctif qui devinerait
+`DCAT0011` n'en porte aucun : la réparation est une classe qui n'existe peut-être pas encore, portant
+une constante que personne n'a nommée. Rien n'est proposé non plus quand c'est la **valeur** qui est
+fausse — un `const int`, une chaîne vide, un initialiseur non constant. Le code ne dit rien de ce que vous vouliez, et un correctif qui devinerait
 produirait une règle que le compilateur accepte et que personne ne vérifie.
 
 > **Celui auquel réfléchir avant d'appuyer.** *Declare 'public const string Category'* écrit `"TODO"`.
@@ -75,7 +87,7 @@ public static class ContosoRule
     public static class CTS0001
     {
         public const string Id = nameof(CTS0001);
-        public const string Category = "Usage";
+        public const string Category = ContosoCategory.Usage;
     }
 }
 ```
@@ -119,10 +131,13 @@ public static class ContosoRule
 de compilation : `ContosoRule.CTS0001.Category` reste donc valide comme argument d'attribut et
 finit toujours en littéral `"Usage"` dans l'assemblage compilé. Rien ne change en aval.
 
-`[DiagnosticCategory]` est optionnel — les constantes fonctionnent sans. Ce qu'il apporte, c'est que
+`[DiagnosticCategory]` est **exigé** — `DCAT0011` signale une règle qui atteint sa catégorie
+autrement. Les constantes fonctionneraient sans, et c'est justement le point. Ce qu'il apporte, c'est que
 l'outillage peut distinguer une constante de catégorie de n'importe quelle autre constante `string`
 de votre assemblage, si bien que le correctif de `DCAT0006` peut proposer `ContosoCategory.Usage`
-plutôt qu'un littéral nu.
+plutôt qu'un littéral nu. Non marquée, la classe est invisible et l'indirection n'achète rien. La
+décision est
+[ADR-0028](../adr/0028-require-every-rule-to-reach-its-category-through-a-declared-constant.fr.md).
 
 ## Les métadonnées optionnelles, et celle qui coûte cher
 

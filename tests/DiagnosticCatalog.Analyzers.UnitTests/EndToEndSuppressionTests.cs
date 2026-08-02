@@ -71,7 +71,7 @@ public sealed class EndToEndSuppressionTests
         [DiagnosticRule]
         public static class Malformed
         {
-            public const string Category = "Usage";
+            public const string Category = DcatCategory.DiagnosticCatalog;
         }
         """;
 

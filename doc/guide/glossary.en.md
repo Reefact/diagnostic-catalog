@@ -33,7 +33,8 @@ the vendor's documentation says about it.
 A class of `const string` category values, so the same category is written once rather than in every
 rule. `SonarCategory` is one; the Sonar catalogue spends 456 rule declarations on 13 of its members.
 
-Marking it `[DiagnosticCategory]` is optional. What the marker buys is that tooling can tell a
+Marking it `[DiagnosticCategory]` is **required**: a rule must reach its category through a constant
+declared in a marked class, which `DCAT0011` reports. What the marker buys is that tooling can tell a
 category constant from any other string constant. In a catalogue this repository generates the
 container is `internal`, so a suppression names a category only through the rule that carries it —
 `SonarRule.S1144.Category`, never the category on its own

@@ -573,14 +573,14 @@ argument and still folds to the literal `"Major Code Smell"` in metadata
 field `Category` declared on the rule type, so `DCAT0001` compares the same two
 symbols it always did. The initialiser is not part of the resolution.
 
-**What the marker buys.** Nothing in §8 requires `Category` to be initialised from
-a named constant rather than a literal, so the categories would work as plain
-constants without it. The marker exists because without it an analyzer cannot tell
-a category constant from any other string constant in the assembly. With it, the
-generator marks the container it emits, and a future check can validate that the
-class holds nothing but non-empty `const string` members. It is also what a
-catalogue's own analysis reads. Applying it is optional; a catalogue that repeats
-its literals stays valid.
+**What the marker buys.** The categories would fold identically as plain constants
+without it, and that is why the marker is needed rather than why it is optional:
+without it an analyzer cannot tell a category constant from any other string constant
+in the assembly. With it, the generator marks the container it emits, and a future
+check can validate that the class holds nothing but non-empty `const string` members.
+It is also what a catalogue's own analysis reads. Applying it is **required** of any
+class a rule reaches its category through — §8.5, reported as `DCAT0011`
+([ADR-0028](adr/0028-require-every-rule-to-reach-its-category-through-a-declared-constant.en.md)).
 
 A generated container is `internal` ([ADR-0026](adr/0026-reach-a-category-only-through-the-rule-that-carries-it.en.md)),
 so no fix may offer `SonarCategory.MajorCodeSmell` to a consumer: naming a
@@ -665,6 +665,8 @@ The value must be non-empty and must match the category declared by the
 originating analyzer's `DiagnosticDescriptor`. Because nothing verifies this at
 runtime (§3.2), accuracy here is a matter of catalogue credibility.
 
+Where that value comes from is a separate requirement, §8.5.
+
 ### 8.4 No inheritance
 
 A rule must not inherit from a base class representing a diagnostic. A static
@@ -672,6 +674,46 @@ class cannot participate in classic inheritance, and abstract properties could
 never be used as constant attribute arguments. `DiagnosticCatalog` therefore
 defines an analyzer-verified structural contract, not an inheritance-imposed
 object-oriented one.
+
+### 8.5 The `Category` member reaches a declared category
+
+The initialiser of `Category` must resolve to a `const string` declared in a class
+marked `[DiagnosticCategory]` (§7.7):
+
+```csharp
+[DiagnosticCategory]
+internal static class ContosoCategory
+{
+    public const string Usage = "Usage";
+}
+
+[DiagnosticRule]
+public static class CT0001
+{
+    public const string Id = nameof(CT0001);
+    public const string Category = ContosoCategory.Usage;
+}
+```
+
+Resolution is semantic, so every spelling binding to the same field satisfies this: a
+qualified name, an aliased container, a `using static`, a container declared in another
+assembly. What does not satisfy it is an initialiser that is constant without being one
+field reference — a literal, a `nameof`, a concatenation — because none of those leaves
+the value with a single declaration.
+
+This requirement is about the catalogue rather than about the rule. A rule failing it
+compiles, folds to the same literal in metadata (Appendix A10) and suppresses exactly what
+it should; §10 is unaffected, since the argument still resolves to the `Category` field on
+the rule type and the initialiser plays no part in that resolution. What it costs is one
+spelling per category value, across a catalogue that repeats very few of them over very
+many rules.
+
+Violation is reported as `DCAT0011`, at `Warning`: the audience is whoever authors a
+catalogue, which is ADR-0027's split, and there is no error to report.
+
+Because the initialiser is syntax, this is the one requirement of §8 that cannot be
+evaluated over a metadata symbol. It is therefore source-only in the strict sense —
+`DCAT0010` (§11.10) does not replay it across an assembly boundary.
 
 ---
 
@@ -871,10 +913,13 @@ The provisional diagnostic prefix is `DCAT`.
 | `DCAT0008` | use site | Suppression identifier does not resolve to a known diagnostic rule | None (opt-in) | no |
 | `DCAT0009` | use site | UnconditionalSuppressMessage only accepts IL#### identifiers | Warning | yes |
 | `DCAT0010` | use site | Referenced diagnostic rule type is malformed | Warning | no |
+| `DCAT0011` | definition | A diagnostic rule's category must reference a declared category constant | Warning | yes |
 
-Definition diagnostics (`DCAT0002`–`DCAT0005`) only fire on source the compiler
-can see. A malformed rule inside a *referenced assembly* produces nothing —
-which is what `DCAT0010` exists to cover.
+Definition diagnostics (`DCAT0002`–`DCAT0005`, `DCAT0011`) only fire on source the
+compiler can see. A malformed rule inside a *referenced assembly* produces nothing —
+which is what `DCAT0010` exists to cover, for every requirement it can evaluate over a
+metadata symbol. §8.5 is not one of them: it reads an initialiser, and metadata has
+none.
 
 ### 11.1 `DCAT0001` — members from different rules
 
@@ -1247,7 +1292,9 @@ Rules for the generator, each of which is load-bearing:
    catalogue carries no help links rather than links assembled from a guessed
    URL pattern.
 6. **Declare each category once** in a `[DiagnosticCategory]` class and have the
-   rules refer to it (§7.7), rather than repeating the literal per rule.
+   rules refer to it (§7.7). This is §8.5 rather than a preference: a generator
+   emitting the literal per rule produces a catalogue that reports `DCAT0011` on
+   every rule it wrote.
 7. **Take the requested language and the language-neutral assemblies, exclude the
    other languages.** Layouts differ and the difference is invisible if you get it
    wrong: Sonar ships one assembly directly under `analyzers/`, StyleCop uses

@@ -1,6 +1,3 @@
-using System;
-using System.Linq;
-
 using Microsoft.CodeAnalysis;
 
 namespace DiagnosticCatalog.Analyzers;
@@ -35,25 +32,5 @@ internal static class RuleMarker
     /// An error type still carries its name, so the comparison below survives that case.
     /// </remarks>
     internal static bool IsRule(INamedTypeSymbol type) =>
-        type.GetAttributes().Any(IsMarker);
-
-    private static bool IsMarker(AttributeData attribute)
-    {
-        INamedTypeSymbol? attributeClass = attribute.AttributeClass;
-
-        return attributeClass is not null
-            && string.Equals(FullMetadataName(attributeClass), AttributeMetadataName, StringComparison.Ordinal);
-    }
-
-    // ToDisplayString would spell a nested or generic type differently from the metadata name, and
-    // MetadataName alone drops the namespace. Building it explicitly keeps the comparison exact for the
-    // shape that matters here: a top-level, non-generic attribute class.
-    private static string FullMetadataName(INamedTypeSymbol type)
-    {
-        string @namespace = type.ContainingNamespace is { IsGlobalNamespace: false } containing
-            ? containing.ToDisplayString()
-            : string.Empty;
-
-        return @namespace.Length == 0 ? type.MetadataName : @namespace + "." + type.MetadataName;
-    }
+        AttributeMarker.Carries(type, AttributeMetadataName);
 }

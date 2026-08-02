@@ -12,3 +12,4 @@ DCAT0004 | DiagnosticCatalog | Warning | A diagnostic rule must expose a public 
 DCAT0006 | DiagnosticCatalog | Error | Use a diagnostic catalog reference instead of string literals
 DCAT0007 | DiagnosticCatalog | Error | Suppression mixes a catalog reference with a string literal
 DCAT0009 | DiagnosticCatalog | Warning | UnconditionalSuppressMessage only accepts IL#### identifiers
+DCAT0011 | DiagnosticCatalog | Warning | A diagnostic rule's category must reference a declared category constant
