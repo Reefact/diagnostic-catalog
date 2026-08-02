@@ -7,9 +7,9 @@ Pour quiconque a besoin de la forme exacte plutôt que de la plus courte — éc
 relire un catalogue écrit à la main, ou comprendre pourquoi une déclaration n'est pas reconnue. La
 source normative est [la spécification](../specification.fr.md), §7 à §10 ; ceci en est la distillation.
 
-## Le contrat en entier, en quatre exigences
+## Le contrat en entier, en cinq exigences
 
-Une règle est un type qui satisfait les quatre :
+Une règle est un type qui satisfait les cinq :
 
 | # | Exigence | Signalée par |
 | --- | --- | --- |
@@ -17,17 +17,29 @@ Une règle est un type qui satisfait les quatre :
 | 2 | Une **classe statique, non générique** | `DCAT0002` |
 | 3 | Une `const string` publique nommée `Id`, non vide | `DCAT0003` |
 | 4 | Une `const string` publique nommée `Category`, non vide | `DCAT0004` |
+| 5 | Que ce `Category` atteigne une constante déclarée dans une classe `[DiagnosticCategory]` | `DCAT0011` |
 
 ```csharp
+[DiagnosticCategory]
+internal static class JdCategory
+{
+    public const string Usage = "Usage";
+}
+
 [DiagnosticRule]
 public static class JD0007
 {
     public const string Id = nameof(JD0007);
-    public const string Category = "Usage";
+    public const string Category = JdCategory.Usage;
 }
 ```
 
 Rien d'autre n'est exigé. Pas de classe de base, pas d'interface, rien à enregistrer.
+
+Les exigences 4 et 5 sont deux questions sur le même membre, et il vaut la peine de les garder
+distinctes. La quatrième demande si la catégorie peut être un argument d'attribut ; la cinquième
+demande si la valeur a une déclaration ou plusieurs. La première parle d'une règle qui ne fonctionne
+pas. La seconde parle d'un catalogue qui fonctionne et qui dérive.
 
 ## Pourquoi structurel plutôt qu'hérité
 
@@ -79,7 +91,7 @@ valide**. Quand ils diffèrent, le nom du type cède :
 public static class RULE_001
 {
     public const string Id = "RULE-001";
-    public const string Category = "Usage";
+    public const string Category = ContosoCategory.Usage;
 }
 ```
 
@@ -88,16 +100,18 @@ l'id vide.
 
 ## `Category` — le membre que rien ne peut vérifier
 
-Même forme, mêmes règles. Ce qui diffère, c'est que sa *valeur* n'a de vérification mécanique nulle
-part : elle devrait être la catégorie que déclare le `DiagnosticDescriptor` de l'analyseur d'origine,
-et rien dans la plateforme ne compare les deux.
+Même forme, mêmes règles, plus l'exigence 5 sur la provenance de la valeur. Ce qu'aucune exigence
+n'atteint, c'est la valeur *elle-même*, et la distinction mérite d'être exacte : l'exigence 5 vérifie
+que la catégorie a une déclaration unique, jamais que la chaîne qu'elle contient est la bonne. Ce
+qu'elle devrait être, c'est la catégorie que déclare le `DiagnosticDescriptor` de l'analyseur
+d'origine, et rien dans la plateforme ne compare les deux.
 
 Ce n'est pas un manque de cette bibliothèque — c'est la propriété à cause de laquelle elle existe.
 L'exactitude ici relève de la crédibilité du catalogue, ce qui explique que les catalogues de ce dépôt
 soient générés depuis les descripteurs plutôt que transcrits
 ([ADR-0009](../adr/0009-generate-catalog-content-from-analyzer-descriptors.fr.md)).
 
-## Les catégories déclarées une seule fois
+## Les catégories déclarées une seule fois — exigence 5
 
 Une `const` initialisée depuis une autre `const` est **toujours une constante de compilation** :
 
@@ -116,12 +130,18 @@ public static class S1144
 }
 ```
 
-`[DiagnosticCategory]` est optionnel. Ce qu'il apporte, c'est que l'outillage peut distinguer une
-constante de catégorie de n'importe quelle autre constante `string` de l'assemblage. Dans un catalogue
+`[DiagnosticCategory]` est **exigé**, et c'est l'exigence 5 qui l'exige. Les constantes se replieraient
+à l'identique sans lui ; ce que le marqueur apporte, c'est que l'outillage peut distinguer une
+constante de catégorie de n'importe quelle autre constante `string` de l'assemblage, ce qui est ce qui
+permet à un correctif de proposer la constante nommée à la place d'un littéral. Dans un catalogue
 généré par ce dépôt le conteneur est `internal`, si bien qu'une suppression ne nomme une catégorie
 qu'à travers la règle qui la porte — voir
 [ADR-0026](../adr/0026-reach-a-category-only-through-the-rule-that-carries-it.fr.md). Un catalogue
-écrit à la main peut encore en publier un ; le contrat ne l'interdit pas.
+écrit à la main peut encore en publier un ; le contrat ne l'interdit pas, et le conteneur peut vivre
+dans un autre assemblage.
+
+La décision de l'exiger, et ce qu'elle n'achète délibérément pas, est
+[ADR-0028](../adr/0028-require-every-rule-to-reach-its-category-through-a-declared-constant.fr.md).
 
 ## Quels attributs sont analysés
 

@@ -120,4 +120,15 @@ public static class DcatRule
         /// <summary>The category declared by the analyzer's DiagnosticDescriptor.</summary>
         public const string Category = DcatCategory.DiagnosticCatalog;
     }
+
+    /// <summary>A diagnostic rule's category must reference a declared category constant.</summary>
+    [DiagnosticRule]
+    public static class DCAT0011
+    {
+        /// <summary>The canonical identifier of this diagnostic.</summary>
+        public const string Id = nameof(DCAT0011);
+
+        /// <summary>The category declared by the analyzer's DiagnosticDescriptor.</summary>
+        public const string Category = DcatCategory.DiagnosticCatalog;
+    }
 }

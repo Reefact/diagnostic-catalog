@@ -44,12 +44,19 @@ mode that choice was made to design out — but do not rely on it.
 ## Declaring a rule
 
 A rule is a static, non-generic class marked `[DiagnosticRule]`, exposing two mandatory
-public constants:
+public constants. The category must reach a constant declared in a class marked
+`[DiagnosticCategory]`:
 
 ```csharp
 using DiagnosticCatalog;
 
 namespace JustDummies.Analyzers.Suppressions;
+
+[DiagnosticCategory]
+internal static class DummiesCategory
+{
+    public const string Usage = "Usage";
+}
 
 public static class Dummies
 {
@@ -57,7 +64,7 @@ public static class Dummies
     public static class JD0007
     {
         public const string Id = nameof(JD0007);
-        public const string Category = "Usage";
+        public const string Category = DummiesCategory.Usage;
     }
 }
 ```
@@ -65,6 +72,12 @@ public static class Dummies
 Both members must be `const`. A property, a `static readonly` field or a `record`
 cannot be used as an attribute argument, which is also why the contract is structural
 rather than an interface or a base class.
+
+The category class earns its place on a catalogue of any size: very few distinct
+categories are spread over very many rules, and declaring each once is what keeps a
+single spelling per value. The marker is what makes that class legible to tooling, so a
+fix can offer the named constant in place of a literal. A rule reaching its category any
+other way is reported as `DCAT0011`.
 
 Keep container names short — every use site pays for them twice. One constraint bounds
 the shortening: **never name the container after the first segment of its own
@@ -97,7 +110,7 @@ a plain string, so this adds no dependency beyond this package:
 public static class JD0007
 {
     public const string Id = nameof(JD0007);
-    public const string Category = "Usage";
+    public const string Category = DummiesCategory.Usage;
     public const string Title = "Dummy factories should follow the expected convention";
     public const string MessageFormat = "Type '{0}' does not follow the convention";
     public const string Description = "Explains the condition detected by the analyzer.";

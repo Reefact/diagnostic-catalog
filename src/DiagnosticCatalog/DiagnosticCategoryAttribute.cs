@@ -40,10 +40,8 @@ namespace DiagnosticCatalog;
 ///
 /// <para><b>What the marker is for</b></para>
 /// <para>
-/// The categories would work as plain constants without it — nothing in the structural
-/// contract of a rule (see <see cref="DiagnosticRuleAttribute"/>) requires that
-/// <c>Category</c> be initialised from a named constant rather than a literal. The marker
-/// exists because without it an analyzer cannot tell a category constant from any other
+/// The categories would work as plain constants without it, and that is precisely why the
+/// marker exists: without it an analyzer cannot tell a category constant from any other
 /// string constant in the assembly. With it, tooling can offer the named constant when
 /// replacing a literal category, and can validate that the class holds nothing but
 /// non-empty public <c>const string</c> members.
@@ -54,8 +52,13 @@ namespace DiagnosticCatalog;
 /// conditional marker would make every catalogue shipped as a package invisible.
 /// </para>
 /// <para>
-/// Applying this attribute is optional. A catalogue that repeats its category literals
-/// remains perfectly valid; it simply gives up the single source of truth.
+/// Applying this attribute is <b>required</b> of any class a rule reaches its category
+/// through, which is every rule: the structural contract of
+/// <see cref="DiagnosticRuleAttribute"/> holds that a rule's <c>Category</c> must resolve to
+/// a constant declared in a marked class, and <c>DCAT0011</c> reports one that does not.
+/// A catalogue repeating its category literals still compiles and still folds to the same
+/// strings; what it gives up is the single source of truth, which is what the requirement
+/// exists to keep. The decision is ADR-0028.
 /// </para>
 /// </remarks>
 /// <seealso cref="DiagnosticRuleAttribute"/>

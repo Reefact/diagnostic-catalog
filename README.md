@@ -212,12 +212,18 @@ Reference the foundation:
 ```
 
 A rule is a static, non-generic class marked `[DiagnosticRule]`, with two mandatory
-public constants:
+public constants — and the category is reached through a class of its own:
 
 ```csharp
 using DiagnosticCatalog;
 
 namespace Contoso.Analyzers.Suppressions;
+
+[DiagnosticCategory]
+internal static class ContosoCategory
+{
+    public const string Usage = "Usage";
+}
 
 public static class Rules
 {
@@ -225,7 +231,7 @@ public static class Rules
     public static class CT0001
     {
         public const string Id = nameof(CT0001);
-        public const string Category = "Usage";
+        public const string Category = ContosoCategory.Usage;
     }
 }
 ```
@@ -234,6 +240,12 @@ Both members must be `const`: a property, a `static readonly` field or a `record
 be an attribute argument. That is also why the contract is structural rather than an
 interface or a base class — see
 [ADR-0008](doc/adr/0008-express-a-rule-as-a-marked-static-class-of-constants.en.md).
+
+The category class is not decoration. A catalogue repeats very few distinct categories
+across very many rules — 456 Sonar rules over 13 values — and declaring each one once
+gives every catalogue the same shape, which is what lets tooling offer the named constant
+in place of a literal. `DCAT0011` reports a rule that reaches its category any other way
+([ADR-0028](doc/adr/0028-require-every-rule-to-reach-its-category-through-a-declared-constant.en.md)).
 
 ## 📖 Guides
 

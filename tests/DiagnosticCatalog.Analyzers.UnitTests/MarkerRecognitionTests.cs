@@ -38,11 +38,17 @@ public sealed class MarkerRecognitionTests
 
             namespace Vendor.Catalog
             {
+                [global::DiagnosticCatalog.DiagnosticCategory]
+                internal static class Cat
+                {
+                    public const string Usage = "Usage";
+                }
+
                 [global::DiagnosticCatalog.DiagnosticRule]
                 public sealed class JD0007
                 {
                     public const string Id = nameof(JD0007);
-                    public const string Category = "Usage";
+                    public const string Category = Cat.Usage;
                 }
             }
             """, "DCAT0002");

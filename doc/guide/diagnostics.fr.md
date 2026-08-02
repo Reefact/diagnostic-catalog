@@ -20,6 +20,7 @@ d'utilisation** regardent une suppression que vous avez écrite, ce qui concerne
 | [`DCAT0006`](#dcat0006) | site d'utilisation | Utiliser une référence de catalogue plutôt que des littéraux | **Erreur** | oui |
 | [`DCAT0007`](#dcat0007) | site d'utilisation | La suppression mêle une référence de catalogue et un littéral | **Erreur** | oui, sous condition |
 | [`DCAT0009`](#dcat0009) | site d'utilisation | `UnconditionalSuppressMessage` n'accepte que les identifiants `IL####` | Avertissement | — |
+| [`DCAT0011`](#dcat0011) | déclaration | La catégorie d'une règle doit référencer une constante de catégorie déclarée | Avertissement | — |
 
 `DCAT0005`, `DCAT0008` et `DCAT0010` sont spécifiés mais délibérément hors de la 1.0.
 
@@ -128,12 +129,15 @@ fonctionne.
 Ceux-ci se déclenchent sur du code qui déclare des règles. Voir
 [le guide de l'auteur de catalogue](authoring-a-catalogue.fr.md).
 
-Tous les trois proposent un correctif **quand la réparation est déjà écrite dans le code**, et se
+Les trois premiers proposent un correctif **quand la réparation est déjà écrite dans le code**, et se
 taisent sinon. Cette ligne n'est pas de la prudence pour elle-même : un correctif qui devinerait
 produirait une règle que le compilateur accepte et que personne ne vérifie, c'est-à-dire la
 défaillance que cette bibliothèque existe pour éliminer. Là où un correctif est refusé ci-dessous, le
 diagnostic nomme quand même le type et le membre — vous terminez avec ce que vous savez, et l'outil
 s'en abstient.
+
+`DCAT0011` n'en propose aucun, pour la même raison poussée d'un cran : la réparation est une classe
+qui n'existe pas encore, portant une constante que personne n'a nommée.
 
 ### `DCAT0002`
 
@@ -193,6 +197,49 @@ correctif n'a aucun moyen de la connaître ; il échafaude donc le membre et vou
 > identifiant seul. Appliquez-le quand vous êtes sur le point de le remplir, pas pour raccourcir la
 > liste.
 
+### `DCAT0011`
+
+**La catégorie n'est pas atteinte via une constante de catégorie déclarée.** `DCAT0004` demande si le
+membre existe ; celui-ci demande d'où vient sa valeur. Elle doit se résoudre vers une `const string`
+déclarée dans une classe marquée `[DiagnosticCategory]` :
+
+```csharp
+[DiagnosticCategory]
+internal static class ContosoCategory
+{
+    public const string Usage = "Usage";
+}
+
+[DiagnosticRule]
+public static class CT0001
+{
+    public const string Id = nameof(CT0001);
+    public const string Category = ContosoCategory.Usage;   // ← pas un littéral
+}
+```
+
+Rien n'est cassé quand vous écrivez le littéral à la place. La règle compile, se replie sur la même
+chaîne dans les métadonnées et supprime exactement ce qu'elle doit — c'est pourquoi ceci est livré en
+`Avertissement` et non en erreur. Ce que cela coûte, c'est **une seule orthographe par catégorie** :
+un catalogue répète très peu de valeurs distinctes sur un très grand nombre de règles, et chaque
+transcription est un endroit où l'une d'elles peut dériver. Cela coûte aussi le marqueur, qui est ce
+qui permet à l'outillage de distinguer une constante de catégorie de n'importe quelle autre constante
+`string` de l'assembly — sans lui, aucun outil ne peut proposer la constante nommée en remplacement
+d'un littéral.
+
+Sont acceptées à égalité toutes les orthographes qui se lient au même champ : un nom qualifié, un
+conteneur aliasé, un `using static`, un conteneur déclaré dans un autre assembly. Sont rejetées les
+formes qui sont constantes sans être une référence unique — un littéral, `nameof(...)`, deux
+constantes concaténées — parce qu'aucune ne laisse à la valeur une déclaration unique pour source.
+
+**Aucun correctif n'est proposé.** La réparation est une classe qui n'existe peut-être pas encore,
+portant une constante que personne n'a nommée ; un correctif qui inventerait les deux devinerait le
+vocabulaire du catalogue. Le diagnostic nomme la règle et vous écrivez le conteneur.
+
+**Signalé sur la source uniquement**, comme tout diagnostic de déclaration — et ici par construction
+plutôt que par politique, puisque le contrôle lit l'initialiseur et qu'une règle qui vous parvient par
+les métadonnées n'en a pas.
+
 ---
 
 ## Les configurer
@@ -211,6 +258,7 @@ dotnet_diagnostic.DCAT0009.severity = error
 dotnet_diagnostic.DCAT0002.severity = error
 dotnet_diagnostic.DCAT0003.severity = error
 dotnet_diagnostic.DCAT0004.severity = error
+dotnet_diagnostic.DCAT0011.severity = error
 
 # Migrer un codebase existant : visible dans l'IDE, hors du build.
 # Supprimez la ligne quand le dernier littéral a disparu.
