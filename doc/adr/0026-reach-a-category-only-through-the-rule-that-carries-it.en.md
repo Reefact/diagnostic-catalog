@@ -3,8 +3,9 @@
 🌍 **Languages:**  
 🇬🇧 English (this file) | 🇫🇷 [Français](./0026-reach-a-category-only-through-the-rule-that-carries-it.fr.md)
 
-**Status:** Proposed
+**Status:** Accepted
 **Proposed:** 2026-08-02
+**Accepted:** 2026-08-02
 **Decision Makers:** Reefact
 
 ## Context
@@ -72,8 +73,8 @@ inside `SuppressMessageAttribute` arguments". After this decision that sentence
 describes something that no longer compiles. ADR-0012's actual rule — that a
 catalogue never renames a member it published — is untouched and still binds
 every public member. Only its premise about which members are public narrows.
-ADR-0012 is not edited here; if this is accepted, its successor status is the
-maintainer's to record.
+ADR-0012 is not edited here, and recording its superseded status stays the
+maintainer's to make separately.
 
 **It is a breaking change on three published packages.** `DiagnosticCatalog.Sonar`,
 `DiagnosticCatalog.NetAnalyzers` and `DiagnosticCatalog.StyleCop` are on

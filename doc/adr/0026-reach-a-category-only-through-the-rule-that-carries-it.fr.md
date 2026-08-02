@@ -3,11 +3,12 @@
 🌍 **Langues :**  
 🇫🇷 Français (ce fichier) | 🇬🇧 [English](./0026-reach-a-category-only-through-the-rule-that-carries-it.en.md)
 
-**Statut :** Proposed
-**Proposé :** 2026-08-02
-**Décideurs :** Reefact
+**Status:** Accepted
+**Proposed:** 2026-08-02
+**Accepted:** 2026-08-02
+**Decision Makers:** Reefact
 
-## Contexte
+## Context
 
 Un catalogue généré publie deux choses qu'une suppression peut nommer. Le membre
 de règle :
@@ -44,7 +45,7 @@ comme *mélanger une référence de catalogue et un littéral*, ce qui n'est pas
 qui s'est passé. Et un avertissement est un conseil : il peut être supprimé,
 ignoré, ou jamais montré par un build qui ne les traite pas en erreurs.
 
-## Décision
+## Decision
 
 **Une constante de catégorie ne fait pas partie de la surface publique d'un
 catalogue.** Le générateur émet le conteneur `[DiagnosticCategory]` en
@@ -67,7 +68,7 @@ consommateur qui tente la mauvaise orthographe reçoit `CS0122` du compilateur a
 point d'usage, pas un avertissement qu'il verra peut-être, et pas une règle de
 lint qu'il peut désactiver.
 
-## Conséquences
+## Consequences
 
 **Ceci supersede une partie de l'[ADR-0012](0012-a-catalogue-never-renames-a-member-it-published.fr.md).**
 Le contexte de ce record énonce qu'un catalogue publie « une constante de
@@ -76,8 +77,8 @@ consommateur, à l'intérieur d'arguments de `SuppressMessageAttribute` ». Apr�
 cette décision, cette phrase décrit quelque chose qui ne compile plus. La règle
 effective de l'ADR-0012 — un catalogue ne renomme jamais un membre qu'il a
 publié — est intacte et lie toujours chaque membre public. Seule sa prémisse sur
-l'ensemble des membres publics se rétrécit. L'ADR-0012 n'est pas édité ici ; si
-ceci est accepté, l'enregistrement de son statut de superseded revient au
+l'ensemble des membres publics se rétrécit. L'ADR-0012 n'est pas édité ici, et
+enregistrer son statut de superseded reste une décision distincte du
 mainteneur.
 
 **C'est un changement cassant sur trois paquets publiés.**
@@ -111,7 +112,7 @@ toujours publier un conteneur de catégories public ; le contrat ne l'interdit
 pas, et `DCAT0002`–`DCAT0004` ne disent rien des catégories. Cette décision lie
 ce que *ce dépôt génère*.
 
-## Actions de suivi
+## Follow-up Actions
 
 * Signaler séparément le faux positif sur la constante intermédiaire, et
   trancher si `Resolve` doit suivre un saut — la trouvaille que cette décision
