@@ -1512,9 +1512,13 @@ dotnet_diagnostic.DCAT0008.severity = warning   # mode strict opt-in
 dotnet_diagnostic.DCAT0009.severity = error
 ```
 
-Une équipe appliquant une politique zéro warning pourra ainsi transformer les
-suppressions incohérentes en erreurs de compilation. Aucun format de
-configuration propriétaire n'est requis pour la première version.
+L'exemple surcharge toutes les règles pour montrer que toutes sont atteignables ;
+ce n'est pas un énoncé des défauts, que donne le §16. `DCAT0001`, `DCAT0006` et
+`DCAT0007` sont déjà livrés en `Error`, donc la ligne qui compte en pratique est
+celle qui va dans l'autre sens — `DCAT0006` descendu à `suggestion` le temps
+qu'une base de code existante migre
+([ADR-0027](adr/0027-ship-the-use-site-diagnostics-as-errors.fr.md)). Aucun format
+de configuration propriétaire n'est requis pour la première version.
 
 ---
 
