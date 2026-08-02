@@ -94,7 +94,7 @@ public sealed class DiagnosticSeverityDocumentationTests
         string path = Path.Combine(Repository.Root, relative);
         Assert.True(File.Exists(path), $"{relative} does not exist");
 
-        IReadOnlyDictionary<string, string> shipped = ShippedSeverities();
+        Dictionary<string, string> shipped = ShippedSeverities();
         string[] lines = File.ReadAllLines(path);
 
         int column = -1;
@@ -155,7 +155,7 @@ public sealed class DiagnosticSeverityDocumentationTests
     {
         // The check above compares the rows a table HAS. A row silently deleted would leave it with
         // nothing to disagree with, so the set is asserted separately.
-        IReadOnlyDictionary<string, string> shipped = ShippedSeverities();
+        Dictionary<string, string> shipped = ShippedSeverities();
         string reference = Path.Combine(Repository.Root, "doc", "guide", "diagnostics.en.md");
         string text = File.ReadAllText(reference);
 
@@ -164,7 +164,7 @@ public sealed class DiagnosticSeverityDocumentationTests
         Assert.True(missing.Count == 0, "the diagnostics guide lists no severity for: " + string.Join(", ", missing));
     }
 
-    private static IReadOnlyDictionary<string, string> ShippedSeverities()
+    private static Dictionary<string, string> ShippedSeverities()
     {
         Dictionary<string, string> severities = new(StringComparer.Ordinal);
 
