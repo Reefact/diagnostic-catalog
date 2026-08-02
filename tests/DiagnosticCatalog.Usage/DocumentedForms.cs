@@ -37,10 +37,11 @@ namespace DiagnosticCatalog.Usage.DocumentedForms
 {
     // === rule-contract.en.md — the declaration side =============================================
 
-    /// <summary>The guide's own example, satisfying all four requirements.</summary>
-    // rule-contract.en.md, "The whole contract, in four requirements" — rows 1 to 4, all satisfied:
+    /// <summary>The guide's own example, satisfying all five requirements.</summary>
+    // rule-contract.en.md, "The whole contract, in five requirements" — rows 1 to 5, all satisfied:
     // marked, a static non-generic class, a public non-blank `const string Id`, the same for
-    // `Category`. "Nothing else is required. No base class, no interface, nothing to register."
+    // `Category`, and that `Category` reaching a constant declared in a `[DiagnosticCategory]` class.
+    // "Nothing else is required. No base class, no interface, nothing to register."
     [DiagnosticRule]
     public static class JD0007
     {
@@ -48,11 +49,11 @@ namespace DiagnosticCatalog.Usage.DocumentedForms
         public const string Id = nameof(JD0007);
 
         /// <summary>The category declared by the analyzer's DiagnosticDescriptor.</summary>
-        public const string Category = "Usage";
+        public const string Category = DummyCategory.Usage;
     }
 
     /// <summary>A type shaped like a rule, carrying no marker.</summary>
-    // rule-contract.en.md, "The whole contract, in four requirements", row 1 — "an unmarked type is
+    // rule-contract.en.md, "The whole contract, in five requirements", row 1 — "an unmarked type is
     // simply not a rule". This one fails rows 2, 3 and 4 outright: it is not static, its `Id` is not a
     // constant, and its `Category` is not a string. None of DCAT0002, DCAT0003 or DCAT0004 may fire,
     // because the marker is the only signal there is.
@@ -76,13 +77,15 @@ namespace DiagnosticCatalog.Usage.DocumentedForms
         public const string Id = "RULE-001";
 
         /// <summary>The category declared by the analyzer's DiagnosticDescriptor.</summary>
-        public const string Category = "Usage";
+        public const string Category = DummyCategory.Usage;
     }
 
     /// <summary>A rule whose category nothing anywhere can confirm.</summary>
     // rule-contract.en.md, "`Category` — the member nothing can verify" — its VALUE "has no mechanical
     // check anywhere". Any non-blank string satisfies the contract, including one no analyzer on earth
-    // publishes; accuracy is a matter of the catalogue's credibility, not of a check.
+    // publishes; accuracy is a matter of the catalogue's credibility, not of a check. Requirement 5
+    // does not change that: it checks that the category has a single declaration, never that the
+    // string in it is right, so declaring this value once leaves it exactly as unverifiable.
     [DiagnosticRule]
     public static class JD0008
     {
@@ -90,18 +93,24 @@ namespace DiagnosticCatalog.Usage.DocumentedForms
         public const string Id = nameof(JD0008);
 
         /// <summary>The category declared by the analyzer's DiagnosticDescriptor.</summary>
-        public const string Category = "Dummy Hygiene";
+        public const string Category = DummyCategory.DummyHygiene;
     }
 
     /// <summary>The categories this catalogue uses, declared once each.</summary>
-    // rule-contract.en.md, "Categories declared once" — `[DiagnosticCategory]` is optional, and what it
-    // buys is that tooling can tell a category constant from any other string constant in the assembly.
-    // Declaring it is not itself checked by anything, and must report nothing.
+    // rule-contract.en.md, "Categories declared once — requirement 5" — the marker is REQUIRED, and
+    // what it buys is that tooling can tell a category constant from any other string constant in the
+    // assembly. Declaring the container is not itself checked by anything, and must report nothing.
     [DiagnosticCategory]
     public static class DummyCategory
     {
         /// <summary>The <c>Usage</c> category.</summary>
         public const string Usage = "Usage";
+
+        /// <summary>A category no analyzer on earth publishes.</summary>
+        public const string DummyHygiene = "Dummy Hygiene";
+
+        /// <summary>The category the trim warnings mirrored below are declared under.</summary>
+        public const string Trimming = "Trimming";
     }
 
     /// <summary>A rule whose category is initialised from another constant.</summary>
@@ -131,7 +140,7 @@ namespace DiagnosticCatalog.Usage.DocumentedForms
         public const string Id = nameof(JD0010);
 
         /// <summary>The category declared by the analyzer's DiagnosticDescriptor.</summary>
-        public const string Category = "Usage";
+        public const string Category = DummyCategory.Usage;
 
         /// <summary>The severity the analyzer declares, as a plain string rather than an enum.</summary>
         public const string Severity = "Warning";
@@ -154,7 +163,7 @@ namespace DiagnosticCatalog.Usage.DocumentedForms
             public const string Id = nameof(IL3050);
 
             /// <summary>The category declared by the analyzer's DiagnosticDescriptor.</summary>
-            public const string Category = "Trimming";
+            public const string Category = DummyCategory.Trimming;
         }
 
         /// <summary>The same warning, published in the trimmer's own friendly-name form.</summary>
@@ -170,7 +179,7 @@ namespace DiagnosticCatalog.Usage.DocumentedForms
             public const string Id = "IL2026:Members annotated with RequiresUnreferencedCode";
 
             /// <summary>The category declared by the analyzer's DiagnosticDescriptor.</summary>
-            public const string Category = "Trimming";
+            public const string Category = DummyCategory.Trimming;
         }
     }
 }
@@ -181,7 +190,7 @@ namespace Contoso.CodeQuality
     // "an attribute of the same **short** name in another namespace is somebody else's and is
     // deliberately not matched." Somebody else's marker, in somebody else's namespace.
     //
-    // The type it decorates satisfies none of the four requirements: it is not static, it has no `Id`
+    // The type it decorates satisfies none of the five requirements: it is not static, it has no `Id`
     // and no `Category`. A marker matched on the short name — or on any name but the fully qualified
     // `DiagnosticCatalog.DiagnosticRuleAttribute` — would report DCAT0002, DCAT0003 and DCAT0004 here,
     // against a type that is none of this library's business. Nothing may be reported.

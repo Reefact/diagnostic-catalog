@@ -59,8 +59,10 @@ public static class MeridianCategory
 /// The categories inherited from the analyzer Meridian.Analyzers replaced, kept for the rules that
 /// were carried over unchanged.
 /// </summary>
-// Permitted shape: category constants on a holder with no marker at all — [DiagnosticCategory] is
-// optional, and buys tooling rather than validity.
+// Permitted shape: a marked holder whose own constants are chained through another holder. The
+// marker is what a rule's category must reach (DCAT0011); how that holder builds its value is its
+// own business, so the concatenation below is untouched by the requirement.
+[DiagnosticCategory]
 public static class LegacyCategory
 {
     // Permitted shape: a constant chained through a second holder, one hop further from the literal.
@@ -281,8 +283,10 @@ internal static class MeridianInternalRule
     }
 
     /// <summary>A metric name should be declared once, as a constant.</summary>
-    // Permitted shape: the category read off a member with nameof, at the rule rather than at the
-    // holder — the value is "Telemetry", and the constant is what the compiler folds in.
+    // Permitted shape: the category read off a marked holder whose own constant is written with
+    // nameof — the value is "Telemetry", and the constant is what the compiler folds in. The nameof
+    // belongs on the holder: written at the RULE it is not a reference to a declared constant, which
+    // is DCAT0011.
     [DiagnosticRule]
     internal static class MRD8002
     {
@@ -290,6 +294,6 @@ internal static class MeridianInternalRule
         public const string Id = nameof(MRD8002);
 
         /// <summary>The category declared by the analyzer's DiagnosticDescriptor.</summary>
-        public const string Category = nameof(InternalCategory.Telemetry);
+        public const string Category = InternalCategory.Telemetry;
     }
 }

@@ -83,6 +83,9 @@ namespace EdgeHunt.Catalog
         /// <summary>Assembled by a constant interpolated string (C# 10).</summary>
         public const string Layout = $"{Vendor}{Separator}Layout";
 
+        /// <summary>The same assembly, one interpolation deeper.</summary>
+        public const string VendorInterpolated = $"{Vendor} Interpolated";
+
         /// <summary>A category holding a colon. Only the identifier is truncated at one.</summary>
         public const string Qualified = Vendor + ":Layout";
 
@@ -140,13 +143,16 @@ namespace EdgeHunt.Catalog
             public const string Id = "EH0005", Category = EdgeHuntCategory.Layout;
         }
 
-        /// <summary>The category interpolated in place rather than named.</summary>
+        /// <summary>The category an interpolated constant, named on the holder rather than in place.</summary>
+        // Interpolating AT THE RULE is DCAT0011 — a constant expression is not a reference to a
+        // declared constant — so the interpolation sits where it is legal. The rejected form is in
+        // DiagnosticCatalog.Analyzers.UnitTests, which is where a deliberate violation belongs.
         [DiagnosticRule]
         public static class EH0006
         {
             public const string Id = nameof(EH0006);
 
-            public const string Category = $"{EdgeHuntCategory.Vendor} Interpolated";
+            public const string Category = EdgeHuntCategory.VendorInterpolated;
         }
 
         /// <summary>The two constants typed through an alias and through <c>String</c>.</summary>
@@ -1034,10 +1040,20 @@ namespace EdgeHunt.Indirection
 /// A rule in the global namespace: no containing namespace at all, which is the one shape the
 /// sweep's namespace walk and the fix's namespace arithmetic both special-case.
 /// </summary>
+/// <summary>
+/// Its category container, also in the global namespace: the marker is matched by metadata name and
+/// the container is found by symbol, so neither cares that there is no namespace to walk.
+/// </summary>
+[DiagnosticCategory]
+public static class EdgeHuntGlobalCategory
+{
+    public const string Global = "EdgeHunt Global";
+}
+
 [DiagnosticRule]
 public static class EdgeHuntGlobalRule
 {
     public const string Id = nameof(EdgeHuntGlobalRule);
 
-    public const string Category = "EdgeHunt Global";
+    public const string Category = EdgeHuntGlobalCategory.Global;
 }
