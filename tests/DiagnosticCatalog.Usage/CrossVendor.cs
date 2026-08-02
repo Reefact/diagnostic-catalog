@@ -278,35 +278,24 @@ internal static class SampleIds
 }
 
 // ---------------------------------------------------------------------------------------------
-// OPEN FINDING — the one case in this project that does not build clean, kept because it is the
-// finding rather than in spite of it.
-//
-// `doc/guide/rule-contract.en.md` lists "An intermediate constant" under **Accepted syntactic
-// forms at a use site** and gives this very shape as its example:
+// SETTLED. This block was an OPEN FINDING: the shape below is listed under **Accepted syntactic
+// forms at a use site** in `doc/guide/rule-contract.en.md`,
 //
 //     private const string RuleId = SonarRule.S1144.Id;
 //     [SuppressMessage(SonarRule.S1144.Category, RuleId)]
 //
-// The analyzer reports DCAT0007 on it. The behaviour is deliberate — SuppressionAttribute.Resolve
-// classifies by DECLARING TYPE and never follows an initialiser, on purpose, and
-// LiteralSuppressionTests.An_intermediate_constant_is_compared_by_value asserts the value
-// comparison. So this is not a slipped bug; it is documentation and behaviour disagreeing, and
-// three things are worth separating before anyone changes code:
+// and the analyzer reported DCAT0007 on it anyway. The suite kept it because it was reported, and
+// carried a pragma so the branch would still build.
 //
-//   * the guide is wrong either way. A form that is reported does not belong under "Accepted"
-//     without saying so.
-//   * the two cases are not alike. `const string X = "S1144"` IS a literal in disguise and
-//     reporting it is right. `const string X = SonarRule.S1144.Id` is a compile-checked chain to
-//     the same rule the category comes from: rename the rule and it follows, misspell it and the
-//     compiler objects. Every guarantee the library sells survives the hop.
-//   * the message says something untrue. It reads "writes the literal "S1144" on the other", and
-//     there is no literal in this source.
+// SuppressionAttribute.Resolve now follows one hop into a constant's initialiser, so a rule member
+// hoisted into a named constant resolves to its rule. The pragma is gone and this file compiles
+// clean — which is the assertion. What settled it, and why the hop is exactly one and only from a
+// declaring type that is not itself a rule, is in the fix's own commit; the reasoning that made it
+// urgent is ADR-0027, since as an error the false positive would have failed a consumer's build.
 //
-// Whether the analyzer should follow one hop is a decision for the maintainer and touches
-// specification §10.6, so nothing here presumes it. The pragma keeps the branch buildable; remove
-// it the day the question is settled, in either direction.
+// The third point that block made also landed: the message said "writes the literal", where there
+// need be no literal. It now says "the string value".
 // ---------------------------------------------------------------------------------------------
-#pragma warning disable DCAT0007
 
 /// <summary>Ids shared by several suppressions, each reached from its rule (doc/guide/rule-contract.en.md, §10.6).</summary>
 internal static class SharedRules
@@ -328,4 +317,3 @@ internal static class ScheduledJobs
     }
 }
 
-#pragma warning restore DCAT0007
