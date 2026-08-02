@@ -3,8 +3,9 @@
 🌍 **Languages:**  
 🇬🇧 English (this file) | 🇫🇷 [Français](./0028-require-every-rule-to-reach-its-category-through-a-declared-constant.fr.md)
 
-**Status:** Proposed
+**Status:** Accepted
 **Proposed:** 2026-08-02
+**Accepted:** 2026-08-02
 **Decision Makers:** Reefact
 
 ## Context
