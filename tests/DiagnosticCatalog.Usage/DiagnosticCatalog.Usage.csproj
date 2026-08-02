@@ -1,0 +1,92 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    The usage suite. Not a test project: its BUILD is the assertion.
+
+    Every other test here compiles a snippet in-process and asserts what the analyzer reported.
+    That proves the analyzer answers correctly on the inputs somebody thought to write down. It
+    cannot answer the question a 1.0 actually rests on — does the analyzer stay quiet on ordinary
+    code it was not shown? A false positive is not found by asserting an expectation; it is found
+    by writing code that ought to be clean and discovering it is not.
+
+    So every file here is code a consumer could reasonably write, and the contract is that it
+    produces NO DCAT diagnostic, and the build is what enforces it — nothing has to remember to
+    assert anything.
+
+    Code that SHOULD be reported belongs in DiagnosticCatalog.Analyzers.UnitTests, where the
+    expectation can be stated. Never here: a deliberate violation in this project reads exactly
+    like a false positive nobody has triaged yet.
+  -->
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <RootNamespace>DiagnosticCatalog.Usage</RootNamespace>
+
+    <!--
+      Only a DCAT diagnostic may fail this project. Every other analyzer is turned off here, and
+      that is not laziness: the files below deliberately imitate other people's habits — naming
+      this repository would not choose, layouts its own style rules forbid — and a build drowning
+      in S-rules and IDE-rules would bury the one diagnostic the project exists to surface. The
+      repository's own style stays enforced everywhere else, which is where it applies.
+    -->
+    <EnableNETAnalyzers>false</EnableNETAnalyzers>
+    <EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
+    <AnalysisLevel>none</AnalysisLevel>
+    <RunAnalyzers>true</RunAnalyzers>
+
+    <!--
+      Promoted HERE, unconditionally, and not inherited from Directory.Build.props: the ratchet
+      there is scoped to CI so a half-finished refactoring can warn without blocking the inner
+      loop. That trade is right for the rest of the repository and wrong for this project, whose
+      whole premise is that the build IS the assertion. Gated on CI it would be an assertion that
+      holds on the server and nowhere else — and the local run would print "Build succeeded" over
+      a false positive, which is exactly the silence this project exists to break. It cost one
+      before it was noticed.
+    -->
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <!-- SonarAnalyzer is attached repository-wide by Directory.Build.props; drop it here. -->
+  <ItemGroup>
+    <PackageReference Remove="SonarAnalyzer.CSharp" />
+  </ItemGroup>
+
+  <!--
+    The analyzers under test, attached the way a consumer's package attaches them rather than
+    referenced as a library: OutputItemType="Analyzer" is what makes the compiler load them, and
+    ReferenceOutputAssembly="false" keeps their types out of this project's own name resolution —
+    a file here must not be able to see them, or it would stop resembling consumer code.
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\DiagnosticCatalog.Analyzers\DiagnosticCatalog.Analyzers.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\..\src\DiagnosticCatalog.CodeFixes\DiagnosticCatalog.CodeFixes.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+  <!--
+    The catalogues a suppression names. DiagnosticCatalog itself is NOT referenced here, and its
+    absence is load-bearing: the vendor catalogues reach the foundation through a PackageReference,
+    because they ride another release train (ADR-0007), so they carry the PUBLISHED assembly. Adding
+    a ProjectReference to src/DiagnosticCatalog alongside them puts two assemblies with the same
+    simple name in one compilation.
+
+    Nothing shows it in an ordinary build, where both sides are 0.0.0.0 and the resolver unifies
+    them silently. The release rehearsal builds with -p:Version, the two versions stop matching, and
+    the compiler answers CS1704. That is a job most changes never make anyone read, so it is written
+    down here instead: the marker attributes arrive transitively, and that is deliberate.
+
+    DiagnosticCatalog.Catalogs.UnitTests is shaped the same way, for the same reason.
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\DiagnosticCatalog.Sonar\DiagnosticCatalog.Sonar.csproj" />
+    <ProjectReference Include="..\..\src\DiagnosticCatalog.StyleCop\DiagnosticCatalog.StyleCop.csproj" />
+    <ProjectReference Include="..\..\src\DiagnosticCatalog.NetAnalyzers\DiagnosticCatalog.NetAnalyzers.csproj" />
+    <ProjectReference Include="..\..\src\DiagnosticCatalog.Self\DiagnosticCatalog.Self.csproj" />
+  </ItemGroup>
+
+</Project>
