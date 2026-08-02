@@ -10,9 +10,8 @@
     by writing code that ought to be clean and discovering it is not.
 
     So every file here is code a consumer could reasonably write, and the contract is that it
-    produces NO DCAT diagnostic. The repository's ratchet (TreatWarningsAsErrors, set in
-    Directory.Build.props) turns any that fires into a failed build, so nothing has to remember to
-    assert it.
+    produces NO DCAT diagnostic, and the build is what enforces it — nothing has to remember to
+    assert anything.
 
     Code that SHOULD be reported belongs in DiagnosticCatalog.Analyzers.UnitTests, where the
     expectation can be stated. Never here: a deliberate violation in this project reads exactly
@@ -36,6 +35,17 @@
     <EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
     <AnalysisLevel>none</AnalysisLevel>
     <RunAnalyzers>true</RunAnalyzers>
+
+    <!--
+      Promoted HERE, unconditionally, and not inherited from Directory.Build.props: the ratchet
+      there is scoped to CI so a half-finished refactoring can warn without blocking the inner
+      loop. That trade is right for the rest of the repository and wrong for this project, whose
+      whole premise is that the build IS the assertion. Gated on CI it would be an assertion that
+      holds on the server and nowhere else — and the local run would print "Build succeeded" over
+      a false positive, which is exactly the silence this project exists to break. It cost one
+      before it was noticed.
+    -->
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <!-- SonarAnalyzer is attached repository-wide by Directory.Build.props; drop it here. -->
