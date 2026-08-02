@@ -222,12 +222,18 @@ la fondation :
 ```
 
 Une règle est une classe statique, non générique, marquée `[DiagnosticRule]`, avec deux
-constantes publiques obligatoires :
+constantes publiques obligatoires — et la catégorie est atteinte via une classe à elle :
 
 ```csharp
 using DiagnosticCatalog;
 
 namespace Contoso.Analyzers.Suppressions;
+
+[DiagnosticCategory]
+internal static class ContosoCategory
+{
+    public const string Usage = "Usage";
+}
 
 public static class Rules
 {
@@ -235,7 +241,7 @@ public static class Rules
     public static class CT0001
     {
         public const string Id = nameof(CT0001);
-        public const string Category = "Usage";
+        public const string Category = ContosoCategory.Usage;
     }
 }
 ```
@@ -244,6 +250,13 @@ Les deux membres doivent être `const` : une propriété, un champ `static reado
 ne peuvent pas être un argument d'attribut. C'est aussi pourquoi le contrat est structurel plutôt
 qu'une interface ou une classe de base — voir
 [ADR-0008](adr/0008-express-a-rule-as-a-marked-static-class-of-constants.fr.md).
+
+La classe de catégorie n'est pas de la décoration. Un catalogue répète très peu de catégories
+distinctes sur un très grand nombre de règles — 456 règles Sonar pour 13 valeurs — et déclarer
+chacune une seule fois donne à tout catalogue la même forme, ce qui est ce qui permet à
+l'outillage de proposer la constante nommée à la place d'un littéral. `DCAT0011` signale une
+règle qui atteint sa catégorie autrement
+([ADR-0028](adr/0028-require-every-rule-to-reach-its-category-through-a-declared-constant.fr.md)).
 
 ## 📖 Guides
 

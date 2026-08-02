@@ -38,6 +38,7 @@ public sealed class DefaultSeverityTests
             ["DCAT0002"] = DiagnosticSeverity.Warning,
             ["DCAT0003"] = DiagnosticSeverity.Warning,
             ["DCAT0004"] = DiagnosticSeverity.Warning,
+            ["DCAT0011"] = DiagnosticSeverity.Warning,
 
             // Use site, but still under-detecting: it misses an identifier reached through a constant,
             // so promoting it would fail builds unevenly for a reason the author cannot see.
