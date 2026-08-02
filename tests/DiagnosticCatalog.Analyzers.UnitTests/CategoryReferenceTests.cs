@@ -206,6 +206,26 @@ public sealed class CategoryReferenceTests
             """, "DCAT0011");
 
     [Fact]
+    public Task A_category_interpolated_at_the_rule_is_reported() =>
+        // A constant interpolated string is a compile-time constant (C# 10), so §8.3 holds and the
+        // value folds correctly. It is still not a reference to a declared constant. Moved here from
+        // the usage suite, which admits no deliberate violation.
+        AnalyzerHarness.ReportsAsync(Analyzer, UsingFoundation + """
+            [DiagnosticCategory]
+            internal static class ContosoCategory
+            {
+                public const string Vendor = "Contoso";
+            }
+
+            [DiagnosticRule]
+            public static class CT0001
+            {
+                public const string Id = nameof(CT0001);
+                public const string Category = $"{ContosoCategory.Vendor} Usage";
+            }
+            """, "DCAT0011");
+
+    [Fact]
     public Task A_category_reached_through_nameof_is_reported() =>
         AnalyzerHarness.ReportsAsync(Analyzer, UsingFoundation + """
             internal static class Usage { }

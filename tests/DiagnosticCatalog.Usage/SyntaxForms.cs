@@ -778,6 +778,9 @@ public static class HouseCategory
 
     /// <summary>Rules about naming.</summary>
     public const string Naming = "House.Naming";
+
+    /// <summary>Rules about layout.</summary>
+    public const string Layout = "House.Layout";
 }
 
 /// <summary>The house rules, with the marker written three ways.</summary>
@@ -812,8 +815,8 @@ public static class HouseRule
         /// <summary>The canonical identifier, which the type name cannot spell.</summary>
         public const string Id = "HR-0003";
 
-        /// <summary>The category, written as a literal the way a small catalogue does.</summary>
-        public const string Category = "House.Layout";
+        /// <summary>The category, reached through the house container like every other rule.</summary>
+        public const string Category = HouseCategory.Layout;
     }
 }
 
