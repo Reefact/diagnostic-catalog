@@ -12,12 +12,12 @@ people.
 
 | Id | Looks at | Title | Default | Fix |
 | --- | --- | --- | --- | --- |
-| [`DCAT0001`](#dcat0001) | use site | Category and Id must reference the same diagnostic rule | Warning | two, unranked |
+| [`DCAT0001`](#dcat0001) | use site | Category and Id must reference the same diagnostic rule | **Error** | two, unranked |
 | [`DCAT0002`](#dcat0002) | definition | A diagnostic rule must be declared as a static non-generic class | Warning | yes, conditionally |
 | [`DCAT0003`](#dcat0003) | definition | A diagnostic rule must expose a public constant string named `Id` | Warning | yes, conditionally |
 | [`DCAT0004`](#dcat0004) | definition | A diagnostic rule must expose a public constant string named `Category` | Warning | yes, conditionally |
-| [`DCAT0006`](#dcat0006) | use site | Use a diagnostic catalog reference instead of string literals | Warning | yes |
-| [`DCAT0007`](#dcat0007) | use site | Suppression mixes a catalog reference with a string literal | Warning | yes, conditionally |
+| [`DCAT0006`](#dcat0006) | use site | Use a diagnostic catalog reference instead of string literals | **Error** | yes |
+| [`DCAT0007`](#dcat0007) | use site | Suppression mixes a catalog reference with a string literal | **Error** | yes, conditionally |
 | [`DCAT0009`](#dcat0009) | use site | `UnconditionalSuppressMessage` only accepts `IL####` identifiers | Warning | — |
 
 `DCAT0005`, `DCAT0008` and `DCAT0010` are specified but deliberately not in 1.0.
@@ -191,21 +191,23 @@ Standard Roslyn mechanisms, no proprietary format:
 # .editorconfig
 [*.cs]
 
-# A suppression that names two rules is not doing what it looks like.
-dotnet_diagnostic.DCAT0001.severity = error
-dotnet_diagnostic.DCAT0007.severity = error
-
-# A suppression the trimmer discards.
+# A suppression the trimmer discards. Not an error by default only because
+# DCAT0009 still misses an identifier reached through a constant.
 dotnet_diagnostic.DCAT0009.severity = error
-
-# Migrating gradually: keep it visible in the IDE, out of the build.
-dotnet_diagnostic.DCAT0006.severity = suggestion
 
 # Declaring rules — you only need these if you publish a catalogue.
 dotnet_diagnostic.DCAT0002.severity = error
 dotnet_diagnostic.DCAT0003.severity = error
 dotnet_diagnostic.DCAT0004.severity = error
+
+# Migrating an existing codebase: keep it visible in the IDE, out of the build.
+# Delete the line when the last literal is gone.
+dotnet_diagnostic.DCAT0006.severity = suggestion
 ```
+
+`DCAT0001`, `DCAT0006` and `DCAT0007` are already errors, so nothing above raises them —
+the only one of the three worth touching is the last, and only while migrating
+([ADR-0027](../adr/0027-ship-the-use-site-diagnostics-as-errors.en.md)).
 
 The category is `DiagnosticCatalog`, so you can also set them all at once:
 

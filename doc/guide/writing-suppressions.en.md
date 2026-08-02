@@ -173,21 +173,24 @@ you wrote does nothing, and nothing else in the toolchain would ever have told y
 
 ## Turning them into build errors
 
-All of them are warnings by default and configurable like any Roslyn diagnostic:
+The three that look at a use site are errors by default; the rest are warnings. All are configurable
+like any Roslyn diagnostic:
 
 ```ini
 # .editorconfig
 [*.cs]
-dotnet_diagnostic.DCAT0001.severity = error
+dotnet_diagnostic.DCAT0009.severity = error        # raising one that ships as a warning
 dotnet_diagnostic.DCAT0006.severity = suggestion   # migrating gradually
 ```
 
-A team with a zero-warning policy will want `DCAT0001` and `DCAT0007` as errors: both mean a
-suppression is not doing what it appears to do.
+`DCAT0001` and `DCAT0007` are errors already, and so is `DCAT0006`: all three mean a suppression is
+not doing what it appears to do, and a guarantee held only where somebody remembered is not one
+([ADR-0027](../adr/0027-ship-the-use-site-diagnostics-as-errors.en.md)).
 
-If you are adopting a catalogue on an existing codebase, `DCAT0006` fires on **every** literal
-suppression at once, and under `TreatWarningsAsErrors` that fails the build the day you add the
-package. Lower it to `suggestion`, migrate at your own pace, then raise it.
+That has a cost worth knowing before you reference the package. On an existing codebase `DCAT0006`
+fires on **every** literal suppression at once, and being an error it fails the build that day —
+`TreatWarningsAsErrors` no longer has anything to do with it. Lower it to `suggestion`, migrate at
+your own pace, then delete the line.
 
 ## Does this end up in my application?
 

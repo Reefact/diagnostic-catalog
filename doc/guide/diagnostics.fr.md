@@ -13,12 +13,12 @@ d'utilisation** regardent une suppression que vous avez écrite, ce qui concerne
 
 | Identifiant | Regarde | Titre | Défaut | Correctif |
 | --- | --- | --- | --- | --- |
-| [`DCAT0001`](#dcat0001) | site d'utilisation | `Category` et `Id` doivent référencer la même règle | Avertissement | deux, non classés |
+| [`DCAT0001`](#dcat0001) | site d'utilisation | `Category` et `Id` doivent référencer la même règle | **Erreur** | deux, non classés |
 | [`DCAT0002`](#dcat0002) | déclaration | Une règle doit être déclarée comme classe statique non générique | Avertissement | oui, sous condition |
 | [`DCAT0003`](#dcat0003) | déclaration | Une règle doit exposer une constante `string` publique nommée `Id` | Avertissement | oui, sous condition |
 | [`DCAT0004`](#dcat0004) | déclaration | Une règle doit exposer une constante `string` publique nommée `Category` | Avertissement | oui, sous condition |
-| [`DCAT0006`](#dcat0006) | site d'utilisation | Utiliser une référence de catalogue plutôt que des littéraux | Avertissement | oui |
-| [`DCAT0007`](#dcat0007) | site d'utilisation | La suppression mêle une référence de catalogue et un littéral | Avertissement | oui, sous condition |
+| [`DCAT0006`](#dcat0006) | site d'utilisation | Utiliser une référence de catalogue plutôt que des littéraux | **Erreur** | oui |
+| [`DCAT0007`](#dcat0007) | site d'utilisation | La suppression mêle une référence de catalogue et un littéral | **Erreur** | oui, sous condition |
 | [`DCAT0009`](#dcat0009) | site d'utilisation | `UnconditionalSuppressMessage` n'accepte que les identifiants `IL####` | Avertissement | — |
 
 `DCAT0005`, `DCAT0008` et `DCAT0010` sont spécifiés mais délibérément hors de la 1.0.
@@ -203,21 +203,23 @@ Mécanismes Roslyn standards, aucun format propriétaire :
 # .editorconfig
 [*.cs]
 
-# Une suppression qui nomme deux règles ne fait pas ce qu'elle a l'air de faire.
-dotnet_diagnostic.DCAT0001.severity = error
-dotnet_diagnostic.DCAT0007.severity = error
-
-# Une suppression que le trimmer jette.
+# Une suppression que le trimmer jette. Pas une erreur par défaut uniquement
+# parce que DCAT0009 rate encore un identifiant atteint via une constante.
 dotnet_diagnostic.DCAT0009.severity = error
-
-# Migration progressive : visible dans l'IDE, hors du build.
-dotnet_diagnostic.DCAT0006.severity = suggestion
 
 # Déclarer des règles — vous n'en avez besoin que si vous publiez un catalogue.
 dotnet_diagnostic.DCAT0002.severity = error
 dotnet_diagnostic.DCAT0003.severity = error
 dotnet_diagnostic.DCAT0004.severity = error
+
+# Migrer un codebase existant : visible dans l'IDE, hors du build.
+# Supprimez la ligne quand le dernier littéral a disparu.
+dotnet_diagnostic.DCAT0006.severity = suggestion
 ```
+
+`DCAT0001`, `DCAT0006` et `DCAT0007` sont déjà des erreurs, donc rien ci-dessus ne les
+relève — le seul des trois à toucher est le dernier, et seulement le temps de migrer
+([ADR-0027](../adr/0027-ship-the-use-site-diagnostics-as-errors.fr.md)).
 
 La catégorie est `DiagnosticCatalog`, vous pouvez donc aussi les régler tous d'un coup :
 
