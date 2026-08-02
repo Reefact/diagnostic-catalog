@@ -350,7 +350,7 @@ lien qui ne résout pas, ou une page que rien ne référence.
 Cette page fait partie de cette règle. GitHub compose la page d'accueil du dépôt à partir d'un
 fichier nommé `README.md` à la racine et d'aucun autre, si bien que la moitié anglaise ne peut pas
 siéger sous `doc/` ; sa moitié française est cette page, et les deux sont vérifiées comme une paire
-ordinaire ([ADR-0028](adr/0028-pair-the-project-readme-across-the-doc-boundary.fr.md)). Ce qui reste
+ordinaire ([ADR-0029](adr/0029-pair-the-project-readme-across-the-doc-boundary.fr.md)). Ce qui reste
 hors de la règle, ce sont les README de paquets sous [`src/`](../src) : nuget.org rend un fichier par
 paquet, n'offre aucun sélecteur de langue et ne résout aucun lien relatif.
 

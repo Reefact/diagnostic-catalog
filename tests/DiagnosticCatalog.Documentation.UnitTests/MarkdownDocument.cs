@@ -32,7 +32,7 @@ internal sealed class MarkdownDocument
     /// The English half of the one pair whose halves do not sit beside each other. GitHub composes a
     /// repository's landing page from a file called <c>README.md</c> at the root and from nothing
     /// else, so this half can carry neither the language suffix nor a home under <c>doc/</c>
-    /// (ADR-0028).
+    /// (ADR-0029).
     /// </summary>
     private const string ProjectReadme = "README.md";
 

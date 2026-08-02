@@ -1,7 +1,7 @@
-# ADR-0028 | Pair the project README across the `doc/` boundary
+# ADR-0029 | Pair the project README across the `doc/` boundary
 
 🌍 **Languages:**  
-🇬🇧 English (this file) | 🇫🇷 [Français](./0028-pair-the-project-readme-across-the-doc-boundary.fr.md)
+🇬🇧 English (this file) | 🇫🇷 [Français](./0029-pair-the-project-readme-across-the-doc-boundary.fr.md)
 
 **Status:** Accepted
 **Proposed:** 2026-08-02

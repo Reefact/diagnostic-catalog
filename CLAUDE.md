@@ -27,7 +27,7 @@ documented, and close to the code that uses it.
   [`doc/README.fr.md`](doc/README.fr.md), which is also that folder's index. The
   two are declared to the documentation tests as siblings and checked like any
   other pair; the decision is
-  [ADR-0028](doc/adr/0028-pair-the-project-readme-across-the-doc-boundary.en.md).
+  [ADR-0029](doc/adr/0029-pair-the-project-readme-across-the-doc-boundary.en.md).
 * The package READMEs under `src/` stay **English-only**. nuget.org renders one
   file per package, offers no language switch, and resolves no relative link.
 
