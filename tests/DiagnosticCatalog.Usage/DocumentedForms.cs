@@ -70,6 +70,10 @@ namespace DiagnosticCatalog.Usage.DocumentedForms
     // rule-contract.en.md, "`Id` — and when it differs from the type name" — "not every identifier is
     // a valid C# identifier". When the two differ, the type name yields and the constant carries the
     // canonical form. The guide's own example, verbatim.
+    // DCAT0005 is expected here and cannot be cleared: the identifier carries a character C#
+    // forbids, so this name is already the closest one there is. Waived at the site rather than
+    // in .editorconfig, so the next declaration like it is met by a reader instead of by silence.
+    #pragma warning disable DCAT0005
     [DiagnosticRule]
     public static class RULE_001
     {
@@ -79,6 +83,7 @@ namespace DiagnosticCatalog.Usage.DocumentedForms
         /// <summary>The category declared by the analyzer's DiagnosticDescriptor.</summary>
         public const string Category = DummyCategory.Usage;
     }
+    #pragma warning restore DCAT0005
 
     /// <summary>A rule whose category nothing anywhere can confirm.</summary>
     // rule-contract.en.md, "`Category` — the member nothing can verify" — its VALUE "has no mechanical
@@ -172,6 +177,10 @@ namespace DiagnosticCatalog.Usage.DocumentedForms
         // rather than applying a stricter pattern. Reporting an identifier the trimmer *does* honour
         // would be telling you to change something that works." The id is not a valid C# identifier,
         // which the "`Id` — and when it differs from the type name" section already blesses.
+        // DCAT0005 is expected here and cannot be cleared: the identifier carries a character C#
+        // forbids, so this name is already the closest one there is. Waived at the site rather than
+        // in .editorconfig, so the next declaration like it is met by a reader instead of by silence.
+        #pragma warning disable DCAT0005
         [DiagnosticRule]
         public static class IL2026Annotated
         {
@@ -181,6 +190,7 @@ namespace DiagnosticCatalog.Usage.DocumentedForms
             /// <summary>The category declared by the analyzer's DiagnosticDescriptor.</summary>
             public const string Category = DummyCategory.Trimming;
         }
+        #pragma warning restore DCAT0005
     }
 }
 
