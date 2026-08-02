@@ -11,7 +11,7 @@ documented, and close to the code that uses it.
   commit messages, branch names, PR titles and descriptions, and issues.
 * You may reply to me in French in the chat. Outside [`doc/`](doc/), never write
   repository content in French.
-* **[`doc/`](doc/) is bilingual**, and it is the only place that is. Every
+* **[`doc/`](doc/) is bilingual.** Every
   document there exists as an `.en.md` / `.fr.md` pair — the guides, the
   specification, the decision records. **English is canonical**: where the two
   disagree, the English version wins. A page and its translation land in the same
@@ -20,6 +20,14 @@ documented, and close to the code that uses it.
   The layout, the language banner and the navigation footer are specified in
   [`doc/CONVENTIONS.en.md`](doc/CONVENTIONS.en.md); the decision is
   [ADR-0022](doc/adr/0022-maintain-every-document-under-doc-in-english-and-french.en.md).
+* **The project `README.md` is bilingual as well**, and it is the one pair whose
+  halves do not sit beside each other. GitHub composes the repository's landing
+  page from a `README.md` at the root and from nothing else, so the English half
+  carries no language suffix and cannot live under `doc/`; its French half is
+  [`doc/README.fr.md`](doc/README.fr.md), which is also that folder's index. The
+  two are declared to the documentation tests as siblings and checked like any
+  other pair; the decision is
+  [ADR-0028](doc/adr/0028-pair-the-project-readme-across-the-doc-boundary.en.md).
 * The package READMEs under `src/` stay **English-only**. nuget.org renders one
   file per package, offers no language switch, and resolves no relative link.
 

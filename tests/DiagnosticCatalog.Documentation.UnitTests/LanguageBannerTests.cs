@@ -71,12 +71,17 @@ public sealed class LanguageBannerTests
     /// offers a language it is already written in; a link to anything else means a reader clicking
     /// "Français" lands somewhere nobody intended.
     /// </summary>
+    /// <remarks>
+    /// The target is resolved the way a renderer resolves it, rather than matched against the
+    /// sibling's file name. Almost every pair sits in one folder, where the two are the same
+    /// question; the project README and its translation do not (ADR-0028), and a check that compares
+    /// file names would read a correct <c>doc/project-readme.fr.md</c> as pointing somewhere else.
+    /// </remarks>
     [Theory]
     [MemberData(nameof(BilingualDocuments))]
     public void The_banner_links_to_the_translation(string path)
     {
         MarkdownDocument document = Repository.Require(path);
-        string expected = document.Sibling![(document.Sibling!.LastIndexOf('/') + 1)..];
 
         List<MarkdownLink> links = document.Links
             .Where(link => BannerOf(document).Contains($"]({link.Target})", StringComparison.Ordinal))
@@ -87,9 +92,12 @@ public sealed class LanguageBannerTests
             $"{path}: the language banner carries {links.Count} links; it must carry exactly one, " +
             "pointing at the translation.");
 
+        string? target = Repository.Resolve(document, links[0].PathPart);
+
         Assert.True(
-            links[0].Target == $"./{expected}" || links[0].Target == expected,
-            $"{path}: the language banner points at {links[0].Target}, not at {expected}.");
+            string.Equals(target, document.Sibling, StringComparison.Ordinal),
+            $"{path}: the language banner points at {links[0].Target}, which resolves to " +
+            $"{target ?? "nothing"}, not at {document.Sibling}.");
     }
 
     [Fact]

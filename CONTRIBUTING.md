@@ -159,6 +159,15 @@ and it is bilingual: every document there exists as an `.en.md` / `.fr.md` pair,
 with the **English version canonical** wherever the two disagree
 ([ADR-0022](doc/adr/0022-maintain-every-document-under-doc-in-english-and-french.en.md)).
 
+The project `README.md` is bilingual too, and it is the one pair whose halves do
+not sit beside each other: GitHub composes the repository's landing page from a
+file called `README.md` at the root and from nothing else, so the English half
+carries no language suffix and cannot live under `doc/`. Its French half is
+[`doc/README.fr.md`](doc/README.fr.md), which is also that folder's index — the
+signpost to the guide, the specification, the records and the conventions is a
+section of the README rather than a page behind it
+([ADR-0028](doc/adr/0028-pair-the-project-readme-across-the-doc-boundary.en.md)).
+
 The package READMEs under `src/` stay English-only. nuget.org renders one file
 per package, offers no language switch, and resolves no relative link — which is
 also why those READMEs link outward with absolute addresses.
