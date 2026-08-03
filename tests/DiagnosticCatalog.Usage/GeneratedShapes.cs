@@ -324,6 +324,10 @@ internal static class AlsoInThisFile
             {
                 public static class Constraints
                 {
+                    // DCAT0005 is expected here and cannot be cleared: the identifier carries a character C#
+                    // forbids, so this name is already the closest one there is. Waived at the site rather than
+                    // in .editorconfig, so the next declaration like it is met by a reader instead of by silence.
+                    #pragma warning disable DCAT0005
                     [DiagnosticRule]
                     public static class MW0002
                     {
@@ -331,6 +335,7 @@ internal static class AlsoInThisFile
 
                         public const string Category = MachineWrittenCategory.Emitted;
                     }
+                    #pragma warning restore DCAT0005
                 }
             }
         }

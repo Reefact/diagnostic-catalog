@@ -29,3 +29,8 @@ DiagnosticCatalog.CodeFixes.AddRuleMemberCodeFixProvider.AddRuleMemberCodeFixPro
 override DiagnosticCatalog.CodeFixes.AddRuleMemberCodeFixProvider.FixableDiagnosticIds.get -> System.Collections.Immutable.ImmutableArray<string!>
 override DiagnosticCatalog.CodeFixes.AddRuleMemberCodeFixProvider.GetFixAllProvider() -> Microsoft.CodeAnalysis.CodeFixes.FixAllProvider!
 override DiagnosticCatalog.CodeFixes.AddRuleMemberCodeFixProvider.RegisterCodeFixesAsync(Microsoft.CodeAnalysis.CodeFixes.CodeFixContext context) -> System.Threading.Tasks.Task!
+DiagnosticCatalog.CodeFixes.UseNameOfCodeFixProvider
+DiagnosticCatalog.CodeFixes.UseNameOfCodeFixProvider.UseNameOfCodeFixProvider() -> void
+override DiagnosticCatalog.CodeFixes.UseNameOfCodeFixProvider.FixableDiagnosticIds.get -> System.Collections.Immutable.ImmutableArray<string!>
+override DiagnosticCatalog.CodeFixes.UseNameOfCodeFixProvider.GetFixAllProvider() -> Microsoft.CodeAnalysis.CodeFixes.FixAllProvider!
+override DiagnosticCatalog.CodeFixes.UseNameOfCodeFixProvider.RegisterCodeFixesAsync(Microsoft.CodeAnalysis.CodeFixes.CodeFixContext context) -> System.Threading.Tasks.Task!

@@ -27,6 +27,8 @@ internal static class DiagnosticIds
 
     internal const string InvalidRuleCategory = "DCAT0004";
 
+    internal const string RuleTypeNameDiffersFromId = "DCAT0005";
+
     internal const string ReplaceableStringLiterals = "DCAT0006";
 
     internal const string MixedReferenceAndLiteral = "DCAT0007";
@@ -34,4 +36,8 @@ internal static class DiagnosticIds
     internal const string NonIlUnconditionalSuppression = "DCAT0009";
 
     internal const string UnreferencedRuleCategory = "DCAT0011";
+
+    internal const string IdNotWrittenAsNameOf = "DCAT0012";
+
+    internal const string RuleTypeNameDoesNotSayId = "DCAT0013";
 }

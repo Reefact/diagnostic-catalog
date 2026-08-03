@@ -162,6 +162,10 @@ public static partial class MeridianRule
     // Permitted shape: an identifier that is not a valid C# identifier. nameof cannot spell it, so
     // the constant carries the canonical form and the type name carries the closest legal one.
     /// <summary>A public constant should be named in PascalCase.</summary>
+    // DCAT0005 is expected here and cannot be cleared: the identifier carries a character C#
+    // forbids, so this name is already the closest one there is. Waived at the site rather than
+    // in .editorconfig, so the next declaration like it is met by a reader instead of by silence.
+    #pragma warning disable DCAT0005
     [DiagnosticRule]
     public static class MRD_0100
     {
@@ -171,6 +175,7 @@ public static partial class MeridianRule
         /// <summary>The category declared by the analyzer's DiagnosticDescriptor.</summary>
         public const string Category = MeridianCategory.Naming;
     }
+    #pragma warning restore DCAT0005
 
     /// <summary>An awaitable-returning method should be named with the 'Async' suffix.</summary>
     // Permitted shape: the marker applied through a using alias declared at the top of this file.
