@@ -1335,10 +1335,12 @@ and "index once per compilation" understates it. Two mandatory mitigations:
    else cannot contain a rule.
 2. **Build the index lazily** inside `RegisterCompilationStartAction`, behind a
    `Lazy<T>`, so the cost is paid only when a use site actually needs a
-   value-based lookup — that is, only for `DCAT0006` / `DCAT0007` / `DCAT0008`.
+   value-based lookup — that is, only for `DCAT0006` / `DCAT0008`.
 
-`DCAT0001` needs no index at all: it compares two symbols resolved from the
-attribute itself.
+`DCAT0001`, `DCAT0007` and `DCAT0009` need no index at all: each resolves its
+rule from the attribute itself. `DCAT0007` does compare a value, but against the
+rule its already-migrated argument names (§11.7), so it never looks one up —
+comparing a value and looking one up are not the same need.
 
 ---
 
