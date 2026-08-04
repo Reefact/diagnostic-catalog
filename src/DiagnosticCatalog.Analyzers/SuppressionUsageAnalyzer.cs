@@ -40,10 +40,10 @@ public sealed class SuppressionUsageAnalyzer : DiagnosticAnalyzer
         context.RegisterCompilationStartAction(start =>
         {
             // Lazy, and §13.1 requires it. Building the index sweeps the metadata of every referenced
-            // assembly that could hold a rule; DCAT0001 and DCAT0009 resolve everything from the
-            // attribute itself, so a project whose suppressions are already catalogue references never
-            // pays for the sweep at all. Lazy<T>'s default mode is thread-safe, which matters under the
-            // concurrent execution enabled above.
+            // assembly that could hold a rule; DCAT0001, DCAT0007 and DCAT0009 resolve everything from
+            // the attribute itself, so a project whose suppressions are already catalogue references —
+            // or half migrated — never pays for the sweep at all. Lazy<T>'s default mode is thread-safe,
+            // which matters under the concurrent execution enabled above.
             Lazy<RuleIndex> index = new(() => RuleIndex.Build(start.Compilation));
 
             // A syntax node action, because AttributeData folds the constants away and takes the field
