@@ -193,6 +193,28 @@ public sealed class MixedSuppressionTests
             """);
 
     [Fact]
+    public Task A_reference_in_the_wrong_slot_is_still_reported() =>
+        // The category slot holds S1144's Id. Half-migrated, so still DCAT0007's — but the migrated
+        // half is itself wrong, which is the part the completion must notice.
+        AnalyzerHarness.ReportsAsync(Analyzer, Usings + Rules + """
+            [SuppressMessage(SonarRules.S1144.Id, "S1144", Justification = "j")]
+            public sealed class Target { }
+            """, "DCAT0007");
+
+    [Fact]
+    public Task A_reference_in_the_wrong_slot_gets_no_fix() =>
+        // Completing from the other slot here writes SonarRules.S1144.Id into BOTH arguments: the
+        // literal agrees with the declared Id, so the completion reads as deterministic while the
+        // reference it completes from is in the category's place. The result compiles, resolves,
+        // suppresses nothing, and — both halves now being rule members of one rule in the wrong
+        // slots — is exactly the shape DCAT0001 was widened to report. The fix must not manufacture
+        // the defect the analyzer next door exists to catch.
+        CodeFixHarness.OffersNothingAsync(Analyzer, Provider, Usings + Rules + """
+            [SuppressMessage(SonarRules.S1144.Id, "S1144", Justification = "j")]
+            public sealed class Target { }
+            """);
+
+    [Fact]
     public async Task The_using_is_inserted_when_the_rule_lives_in_another_namespace()
     {
         string fixedSource = await CodeFixHarness.ApplyAsync(
