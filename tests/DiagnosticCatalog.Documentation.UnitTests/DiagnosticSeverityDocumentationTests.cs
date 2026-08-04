@@ -117,10 +117,10 @@ public sealed class DiagnosticSeverityDocumentationTests
 
             string? id = IdOf(cells.Length > 0 ? cells[0] : string.Empty);
 
-            // A row for an id the analyzers do not ship — the specification lists DCAT0005, DCAT0008
-            // and DCAT0010, which are designed and deliberately not implemented. There is nothing to
-            // compare them against, and inventing an expectation would make this test the authority
-            // on a severity nobody has chosen yet.
+            // A row for an id the analyzers do not ship — the specification lists DCAT0008 and
+            // DCAT0010, which are designed and deliberately left out of 1.0 (§24). There is nothing
+            // to compare them against, and inventing an expectation would make this test the
+            // authority on a severity nobody has chosen yet.
             if (id is null || !shipped.TryGetValue(id, out string? expected)) { continue; }
 
             Assert.True(

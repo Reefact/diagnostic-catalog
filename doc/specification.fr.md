@@ -1393,10 +1393,12 @@ prix. Deux mitigations obligatoires :
 2. **Construire l'index paresseusement** dans
    `RegisterCompilationStartAction`, derrière un `Lazy<T>`, pour ne payer le coût
    que si un site d'utilisation a réellement besoin d'une recherche par valeur —
-   c'est-à-dire uniquement pour `DCAT0006` / `DCAT0007` / `DCAT0008`.
+   c'est-à-dire uniquement pour `DCAT0006` / `DCAT0008`.
 
-`DCAT0001` n'a besoin d'aucun index : il compare deux symboles résolus depuis
-l'attribut lui-même.
+`DCAT0001`, `DCAT0007` et `DCAT0009` n'ont besoin d'aucun index : chacun résout
+sa règle depuis l'attribut lui-même. `DCAT0007` compare bien une valeur, mais à
+la règle que son argument déjà migré nomme (§11.7), sans jamais en chercher une —
+comparer une valeur et en rechercher une ne sont pas le même besoin.
 
 ---
 
