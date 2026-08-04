@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
@@ -191,6 +192,35 @@ public sealed class MixedSuppressionTests
             [SuppressMessage(SonarRules.S1144.Category, "S9999", Justification = "j")]
             public sealed class Target { }
             """);
+
+    [Fact]
+    public async Task A_literal_matching_a_suffixed_declared_identifier_is_completed()
+    {
+        // The other end of the same asymmetry as DCAT0006's: here `declared` is the raw declared Id
+        // and `written` is normalised, so a literal that is byte-identical to what the rule declares
+        // compares unequal. The fix was withheld and the message said the value "names something
+        // else" — about an exact match.
+        string fixedSource = await CodeFixHarness.ApplyAsync(Analyzer, Provider, Usings + SuffixedRules + """
+            [SuppressMessage(TrimRules.IL2026.Category, "IL2026:Members annotated with RequiresUnreferencedCode", Justification = "j")]
+            public sealed class Target { }
+            """).ConfigureAwait(false);
+
+        Assert.Contains("TrimRules.IL2026.Id", fixedSource, StringComparison.Ordinal);
+    }
+
+    /// <summary>A rule whose declared Id carries a friendly-name suffix (§8.2 blesses the form).</summary>
+    private const string SuffixedRules = """
+        public static class TrimRules
+        {
+            [DiagnosticRule]
+            public static class IL2026
+            {
+                public const string Id = "IL2026:Members annotated with RequiresUnreferencedCode";
+                public const string Category = "Trimming";
+            }
+        }
+
+        """;
 
     [Fact]
     public Task A_reference_in_the_wrong_slot_is_still_reported() =>

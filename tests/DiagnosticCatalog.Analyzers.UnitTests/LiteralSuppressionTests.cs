@@ -133,6 +133,45 @@ public sealed class LiteralSuppressionTests
             public sealed class Target { }
             """, "DCAT0006");
 
+    // --- a DECLARED identifier carrying a friendly name ---------------------------------------
+
+    /// <summary>
+    /// A rule whose declared Id carries the suffix. §8.2 blesses it — the identifier need not be a
+    /// valid C# identifier — and the usage corpus ships one, so it is a shape the library supports
+    /// rather than a curiosity.
+    /// </summary>
+    private const string SuffixedRule = """
+        public static class TrimRules
+        {
+            [DiagnosticRule]
+            public static class IL2026
+            {
+                public const string Id = "IL2026:Members annotated with RequiresUnreferencedCode";
+                public const string Category = "Trimming";
+            }
+        }
+
+        """;
+
+    [Fact]
+    public Task A_rule_declaring_a_suffixed_identifier_is_found_by_the_bare_form() =>
+        // The index is keyed on the declared value and every lookup is normalised, so a declared Id
+        // carrying a colon could be matched by nothing at all — no suppression can produce a key that
+        // contains one. Truncation has to be applied at BOTH ends of the comparison or at neither.
+        AnalyzerHarness.ReportsAsync(Analyzer, Usings + SuffixedRule + """
+            [SuppressMessage("Trimming", "IL2026", Justification = "...")]
+            public sealed class Target { }
+            """, "DCAT0006");
+
+    [Fact]
+    public Task A_rule_declaring_a_suffixed_identifier_is_found_by_the_written_suffixed_form() =>
+        // The same rule, written out in full. Both sides truncate to IL2026, so this must match for
+        // the same reason the bare form does — and today it fails for the same reason too.
+        AnalyzerHarness.ReportsAsync(Analyzer, Usings + SuffixedRule + """
+            [SuppressMessage("Trimming", "IL2026:Members annotated with RequiresUnreferencedCode")]
+            public sealed class Target { }
+            """, "DCAT0006");
+
     // --- §21.2, rules that live in another assembly -------------------------------------------
 
     [Fact]

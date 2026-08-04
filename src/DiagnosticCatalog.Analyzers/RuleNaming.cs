@@ -84,13 +84,13 @@ internal static class RuleNaming
     /// Truncated at the first colon, exactly as §11.6 truncates a suppression's identifier and for the
     /// same reason: Roslyn and ILLink both read the head and treat the rest as a friendly name. A type
     /// named after the head has said everything the identifier identifies.
+    ///
+    /// Through <see cref="CheckId.Normalise"/> rather than a second hand-written truncation. The two
+    /// were written separately and drifted apart at the other end — the index kept the raw declared
+    /// value while every lookup was normalised — so one spelling of the operation is the point, not a
+    /// tidiness.
     /// </remarks>
-    private static string Core(string id)
-    {
-        int colon = id.IndexOf(':');
-
-        return Alphanumerics(colon < 0 ? id : id.Substring(0, colon));
-    }
+    private static string Core(string id) => Alphanumerics(CheckId.Normalise(id));
 
     /// <summary>
     /// The letters and digits, in order.
