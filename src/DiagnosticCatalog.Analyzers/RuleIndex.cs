@@ -130,7 +130,11 @@ internal sealed class RuleIndex
             contract.Id!,
             contract.Category!);
 
-        FunctionalKey key = new(definition.Category, definition.Id);
+        // Normalised on the way IN, because every lookup is normalised on the way out: Find contracts
+        // for it, so no query can ever produce a key containing a colon. Keying on the raw value made
+        // a rule whose declared Id carries a friendly-name suffix — a form §8.2 blesses and the usage
+        // corpus ships — unreachable by any suppression at all, including one writing it verbatim.
+        FunctionalKey key = new(definition.Category, CheckId.Normalise(definition.Id));
 
         if (!collected.TryGetValue(key, out List<RuleDefinition>? bucket))
         {

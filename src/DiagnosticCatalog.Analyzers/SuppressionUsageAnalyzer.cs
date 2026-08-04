@@ -113,10 +113,12 @@ public sealed class SuppressionUsageAnalyzer : DiagnosticAnalyzer
             ? SuppressionArgumentOrder.CheckIdSlot
             : SuppressionArgumentOrder.CategorySlot;
 
-        string declared = categoryIsReference ? contract.Id! : contract.Category!;
-
         // Normalised on the identifier side only, so "S1144:Unused private members should be removed"
         // is recognised as naming S1144 — and replaced by the reference, dropping the suffix (§11.6).
+        // BOTH ends, not just the written one: a rule may declare a suffixed Id too, and truncating
+        // one side alone made a literal identical to the declared value compare unequal.
+        string declared = categoryIsReference ? CheckId.Normalise(contract.Id!) : contract.Category!;
+
         string written = categoryIsReference ? CheckId.Normalise(literal.Value!) : literal.Value!;
 
         bool agrees = referenceInPlace && string.Equals(declared, written, StringComparison.Ordinal);
