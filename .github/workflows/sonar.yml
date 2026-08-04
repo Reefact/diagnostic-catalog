@@ -103,6 +103,21 @@ jobs:
       # every metric about the code a human actually wrote. Coverage is unaffected either way —
       # a `const` compiles to no IL, so those files contribute nothing to cover.
       #
+      # The usage suite is excluded on the same principle, and its case is stronger: there the
+      # reported shape IS the assertion. Every file in tests/DiagnosticCatalog.Usage deliberately
+      # imitates habits this repository would not choose — `RULE_001` class names, methods that
+      # return a constant, empty bodies, types outside a namespace — because the project exists to
+      # prove the DCAT analyzers stay quiet on code they were not shown. Its own .csproj switches
+      # every non-DCAT analyzer off for that reason, and that setting cannot reach this workflow:
+      # `begin` attaches its own SonarAnalyzer.CSharp, configured from the server's profile, so the
+      # project's `PackageReference Remove` has no effect here — and the build below neutralises the
+      # ratchet, so the findings are collected and uploaded without turning anything red. Measured
+      # before this exclusion: 136 of the project's 138 open issues, both of its two reported bugs,
+      # and 162 lines at zero coverage that no test will ever execute, because this suite asserts by
+      # BUILDING and is never run. Acting on any of them would break the test. The pattern is
+      # anchored on the directory name rather than on `tests/` so it does not depend on where the
+      # scanner computes sonar.projectBaseDir. ADR-0030 records the decision.
+      #
       # Three of the shell rules are switched off for the scripts, and only those three. They
       # assume bash. Every script in this repository is `#!/bin/sh` and is run by /bin/sh — dash
       # on the runner images — which is what `sh tools/tests/run.sh` executes and what the lint
@@ -136,7 +151,7 @@ jobs:
           /d:sonar.token="$SONAR_TOKEN"
           /d:sonar.host.url="https://sonarcloud.io"
           /d:sonar.cs.opencover.reportsPaths="artifacts/coverage/**/coverage.opencover.xml"
-          /d:sonar.exclusions="**/*.g.cs"
+          /d:sonar.exclusions="**/*.g.cs,**/DiagnosticCatalog.Usage/**"
           /d:sonar.issue.ignore.multicriteria="bashism1,bashism2,bashism3"
           /d:sonar.issue.ignore.multicriteria.bashism1.ruleKey="shelldre:S7679"
           /d:sonar.issue.ignore.multicriteria.bashism1.resourceKey="**/*.sh"
