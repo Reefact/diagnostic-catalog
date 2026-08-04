@@ -38,10 +38,13 @@ public sealed class DiagnosticRuleDefinitionAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
 
-        // Analyze, not None: a generated catalogue is the main thing this has to check. Getting this
-        // flag backwards costs nothing visible — the analyzer simply goes quiet on exactly the files it
-        // exists for.
-        context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze);
+        // Analyze AND ReportDiagnostics, not None: a generated catalogue is the main thing this has to
+        // check. The two flags are separate and both are needed — Analyze alone runs the callbacks over
+        // generated trees and then discards everything they report, which costs nothing visible and
+        // leaves the analyzer quiet on exactly the files it exists for. GeneratedCodeTests holds both
+        // halves, here and on the use-site analyzer, whose None is the deliberate opposite.
+        context.ConfigureGeneratedCodeAnalysis(
+            GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
 
         context.RegisterSymbolAction(Analyze, SymbolKind.NamedType);
 
