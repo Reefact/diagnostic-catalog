@@ -62,6 +62,16 @@ attribut du même nom court ailleurs appartient à quelqu'un d'autre, et n'est d
 `internal` est le bon choix : rien hors de votre assemblage n'a besoin de l'appliquer, et une copie
 publique entrerait en collision avec la vraie pour tout consommateur qui référence les deux.
 
+**Ce que la copie retire.** En .NET, l'identité d'un type est son assemblage *plus* son nom : votre
+copie et la vraie sont donc deux types sans lien qui se contentent de porter le même nom — invisible
+jusqu'à ce que quelque chose lise votre catalogue par réflexion à l'exécution et apparie **par type**,
+car `GetCustomAttribute<DiagnosticRuleAttribute>()` lie l'attribut de la fondation, jamais le vôtre, et
+rend `null` sur chacune des règles que vous livrez. Apparier sur `GetType().FullName` les retrouve
+toutes : c'est ainsi que les analyseurs, `dcat` et les propres `GeneratedCatalogTests` de ce dépôt
+lisent un catalogue. Cela mérite une ligne dans votre README, car à la différence de
+`PrivateAssets="all"` ci-dessus, cette défaillance-ci est silencieuse : l'outil annonce un catalogue de
+zéro règle, indiscernable d'un assemblage qui n'en déclare aucune.
+
 ## Ce qui se propage à vos consommateurs
 
 Si votre catalogue référence `DiagnosticCatalog.Analyzers`, les analyseurs atteignent **vos
