@@ -92,6 +92,15 @@ public sealed class SuppressionUsageAnalyzer : DiagnosticAnalyzer
 
         INamedTypeSymbol ruleType = reference.RuleType!;
 
+        // The migrated half must itself be the member its slot calls for. Completing from a reference
+        // that is in the wrong place writes the SAME member into both arguments — the literal agrees
+        // with the declared value, so the completion looks deterministic — and produces a suppression
+        // that resolves, compiles and silences nothing. Still reported: the pair is half-migrated
+        // whatever the reference names. Only the fix is withheld.
+        string expected = categoryIsReference ? RuleContract.CategoryMember : RuleContract.IdMember;
+
+        bool referenceInPlace = reference.Field!.Name == expected;
+
         // No index lookup anywhere here — the rule is named by the migrated argument, which is exactly
         // what §11.7 means by the only fully deterministic case. A malformed rule is left to the
         // definition diagnostics rather than half-reported by this one.
@@ -110,7 +119,7 @@ public sealed class SuppressionUsageAnalyzer : DiagnosticAnalyzer
         // is recognised as naming S1144 — and replaced by the reference, dropping the suffix (§11.6).
         string written = categoryIsReference ? CheckId.Normalise(literal.Value!) : literal.Value!;
 
-        bool agrees = string.Equals(declared, written, StringComparison.Ordinal);
+        bool agrees = referenceInPlace && string.Equals(declared, written, StringComparison.Ordinal);
 
         context.ReportDiagnostic(Diagnostic.Create(
             Descriptors.MixedReferenceAndLiteral,
@@ -121,9 +130,12 @@ public sealed class SuppressionUsageAnalyzer : DiagnosticAnalyzer
             agrees ? FixProperties.ForCompletion(ruleType, slot) : ImmutableDictionary<string, string?>.Empty,
             ruleType.Name,
             literal.Value,
-            agrees
-                ? "complete it from that rule"
-                : "that value names something else, so completing it would change what is suppressed"));
+            !referenceInPlace
+                ? "the reference fills the other argument's slot, so completing from it would name one "
+                  + "member twice"
+                : agrees
+                    ? "complete it from that rule"
+                    : "that value names something else, so completing it would change what is suppressed"));
     }
 
     private static void ReportReplaceableLiterals(
@@ -184,17 +196,38 @@ public sealed class SuppressionUsageAnalyzer : DiagnosticAnalyzer
         // happen to share a category still produce a diagnostic: the pairing is a copy-paste error
         // whose consequence is deferred to the day one of them is recategorised, at which point the
         // suppression silently carries the wrong category.
-        if (SymbolEqualityComparer.Default.Equals(category.RuleType, checkId.RuleType)) { return; }
+        bool sameRule = SymbolEqualityComparer.Default.Equals(category.RuleType, checkId.RuleType);
+
+        // And the members, not only the types that declare them. A rule type carries more than the
+        // pair — a generated catalogue emits HelpLinkUri beside it, and completion offers all of them
+        // — so one rule's own members can land in each other's slots, or the identifier slot can hold
+        // something that is neither. Roslyn matches a suppression on the identifier alone, so such a
+        // suppression resolves, compiles and silences nothing at all. Comparing declaring types is
+        // blind to it precisely when both members come from the same rule.
+        bool membersInPlace =
+            category.Field!.Name == RuleContract.CategoryMember
+            && checkId.Field!.Name == RuleContract.IdMember;
+
+        if (sameRule && membersInPlace) { return; }
 
         context.ReportDiagnostic(Diagnostic.Create(
             Descriptors.MembersFromDifferentRules,
             attribute.GetLocation(),
-            // Both corrections, always. §12.1 forbids the fix from guessing which rule was intended,
-            // and sending one of them would be exactly that guess made a step earlier.
-            FixProperties.ForIncoherentPair(category.RuleType!, checkId.RuleType!),
-            category.RuleType!.Name,
-            checkId.RuleType!.Name));
+            // Both corrections, always — but only for the pairing. §12.1 forbids the fix from guessing
+            // which rule was intended, and sending one of them would be exactly that guess made a step
+            // earlier. A misplaced member gets no fix at all: the two alignments rewrite one slot to
+            // the other's rule and would leave the wrong member sitting in the other, and choosing
+            // between "this names the wrong member" and "this names the wrong rule" is the author's.
+            membersInPlace
+                ? FixProperties.ForIncoherentPair(category.RuleType!, checkId.RuleType!)
+                : ImmutableDictionary<string, string?>.Empty,
+            Reference(category),
+            Reference(checkId)));
     }
+
+    /// <summary>Names an argument as the rule member it references.</summary>
+    private static string Reference(SuppressionArgument argument) =>
+        argument.RuleType!.Name + "." + argument.Field!.Name;
 
     private static void ReportNonIlIdentifier(
         SyntaxNodeAnalysisContext context,

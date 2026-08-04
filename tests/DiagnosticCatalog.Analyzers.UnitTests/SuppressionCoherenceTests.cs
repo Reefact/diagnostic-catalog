@@ -92,6 +92,48 @@ public sealed class SuppressionCoherenceTests
             public sealed class Target { }
             """, "DCAT0001");
 
+    // --- the right member in the right slot ---------------------------------------------------
+
+    /// <summary>A rule carrying the optional members a generated catalogue emits beside the pair.</summary>
+    private const string RuleWithOptionalMembers = """
+        [DiagnosticRule]
+        public static class RULE003
+        {
+            public const string Id = nameof(RULE003);
+            public const string Category = "Usage";
+            public const string HelpLinkUri = "https://example.invalid/RULE003";
+        }
+
+        """;
+
+    [Fact]
+    public Task Members_of_one_rule_written_into_each_other_s_slots_are_reported() =>
+        // One rule, both members referenced, and the suppression still silences nothing: Roslyn matches
+        // on the identifier alone, so the identifier slot holding "Usage" names no diagnostic. Comparing
+        // declaring types alone cannot see this — the two members come from the same type.
+        AnalyzerHarness.ReportsAsync(Analyzer, SameCategoryRules + """
+            [SuppressMessage(SomeRules.RULE001.Id, SomeRules.RULE001.Category, Justification = "...")]
+            public sealed class Target { }
+            """, "DCAT0001");
+
+    [Fact]
+    public Task A_member_that_is_neither_Id_nor_Category_in_the_identifier_slot_is_reported() =>
+        // The shape a catalogue makes reachable: StyleCop and .NET analyzer catalogues declare a
+        // HelpLinkUri on every rule, so the wrong member is one completion away and resolves to a
+        // perfectly good constant.
+        AnalyzerHarness.ReportsAsync(Analyzer, Usings + RuleWithOptionalMembers + """
+            [SuppressMessage(RULE003.Category, RULE003.HelpLinkUri, Justification = "...")]
+            public sealed class Target { }
+            """, "DCAT0001");
+
+    [Fact]
+    public Task The_pair_in_its_own_slots_is_still_not_reported() =>
+        // The control for the two above: the same rule, the same members, in their own slots.
+        AnalyzerHarness.ReportsNothingAsync(Analyzer, Usings + RuleWithOptionalMembers + """
+            [SuppressMessage(RULE003.Category, RULE003.Id, Justification = "...")]
+            public sealed class Target { }
+            """);
+
     // --- the accepted syntactic forms of §10.5 ------------------------------------------------
 
     [Fact]

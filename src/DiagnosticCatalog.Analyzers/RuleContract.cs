@@ -78,6 +78,12 @@ internal sealed class RuleContractResult
 /// </remarks>
 internal static class RuleContract
 {
+    /// <summary>The member holding the identifier (§8.2).</summary>
+    internal const string IdMember = "Id";
+
+    /// <summary>The member holding the category (§8.3).</summary>
+    internal const string CategoryMember = "Category";
+
     /// <summary>Evaluates <paramref name="rule"/> against §8. The caller decides it is a rule.</summary>
     internal static RuleContractResult Check(INamedTypeSymbol rule)
     {
@@ -97,12 +103,12 @@ internal static class RuleContract
             violations |= RuleContractViolations.NotAStaticNonGenericClass;
         }
 
-        if (!TryReadConstant(rule, "Id", out IFieldSymbol? idField, out string? id))
+        if (!TryReadConstant(rule, IdMember, out IFieldSymbol? idField, out string? id))
         {
             violations |= RuleContractViolations.InvalidId;
         }
 
-        if (!TryReadConstant(rule, "Category", out IFieldSymbol? categoryField, out string? category))
+        if (!TryReadConstant(rule, CategoryMember, out IFieldSymbol? categoryField, out string? category))
         {
             violations |= RuleContractViolations.InvalidCategory;
         }
