@@ -3,8 +3,8 @@
 🌍 **Langues :**  
 🇬🇧 [English](./architecture.en.md) | 🇫🇷 Français (ce fichier)
 
-Pour quiconque contribue, relit, ou se demande pourquoi il y a huit projets pour ce qui ressemble à
-une seule idée. Chaque séparation ici est imposée par quelque chose ; cette page dit par quoi.
+Pour quiconque contribue, relit, ou se demande pourquoi il y a vingt-sept projets pour ce qui
+ressemble à une seule idée. Chaque séparation ici est imposée par quelque chose ; cette page dit par quoi.
 
 ## La carte
 
@@ -53,8 +53,8 @@ flowchart TB
 ```
 
 `src/` est ce qui atteint un consommateur. `eng/` est de l'outillage de compilation qui n'est jamais
-livré comme paquet. `tests/` compte sept projets, et lesquels tournent sur le CLR .NET Framework est
-une décision par projet.
+livré comme paquet. `tests/` compte dix projets : sept qui assertent, et trois qui existent pour être compilés ou lus
+par eux. Lesquels des sept tournent sur le CLR .NET Framework est une décision par projet.
 
 ## Quatre séparations, toutes imposées
 
