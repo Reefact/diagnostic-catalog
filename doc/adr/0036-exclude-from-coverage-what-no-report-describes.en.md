@@ -32,8 +32,21 @@ all of them uncovered. Measured on `main` at the 2026-08-05T23:37 analysis:
 | `eng` | 1 144 | 166 | 82.4 % |
 
 **532 of the 747 uncovered lines are Python** — 71 % of the shortfall — while both trees of C# are
-already above the bar the gate asks for. Removing them from the denominator puts the project at
-about **91.3 %**.
+already above the bar the gate asks for. Removing them from the denominator takes the project to
+**86.8 %**, measured on `main` once this decision was applied.
+
+**Two coverage figures are easy to confuse, and the gate reads only one of them.** This is worth
+naming because the first estimate written into this record confused them. `line_coverage` counts
+lines alone. `coverage` — the metric the gate's condition is written against — blends lines and
+conditions:
+
+```
+coverage = (covered lines + covered conditions) / (lines to cover + conditions to cover)
+```
+
+Excluding the Python takes `line_coverage` to 91.3 % and `coverage` to 86.8 %, the gap being
+`branch_coverage` at 78.7 % pulling the blend down. Both clear 80. Only the second is the one the
+condition reads, and it is the number this record commits to.
 
 **The excluded code is not untested code.** `tools/tests/test-check-icon-template.sh` exercises it
 on every pull request, in the `Test the shell tooling` job, with seven assertions: that the shipped
@@ -123,8 +136,9 @@ and the next genuine regression would arrive into a red that everyone had alread
 
 ### Positive
 
-* The gate's coverage condition is projected to move from 76.3 % to about 91.3 %, which should
-  return the gate to green — every other condition already reads OK.
+* The gate's coverage condition moved from 76.3 % to **86.8 %**, and the gate returned to green
+  with all six conditions OK — measured on the `main` analysis of 2026-08-05T23:49, the first
+  after this landed.
 * The figure the gate reports becomes a figure about the code its report describes.
 * `sonar-gate.yml` becomes informative again: a red nightly means something changed.
 
@@ -150,8 +164,9 @@ and the next genuine regression would arrive into a red that everyone had alread
 
 * Delete this exclusion if a Python coverage report is ever wired into the analysis, and supersede
   this record rather than editing it.
-* Confirm on the next `main` analysis that `new_coverage` clears 80. If it does not, the cause is
-  elsewhere and this record did not address it.
+* ~~Confirm on the next `main` analysis that `new_coverage` clears 80.~~ **Done.** The
+  2026-08-05T23:49 analysis reads `new_coverage` 86.8 against a threshold of 80, with the gate OK
+  on all six conditions and no open issue.
 
 ## References
 

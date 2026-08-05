@@ -32,8 +32,21 @@ toutes non couvertes. Mesuré sur `main` à l'analyse du 2026-08-05T23:37 :
 | `eng` | 1 144 | 166 | 82,4 % |
 
 **532 des 747 lignes non couvertes sont du Python** — 71 % du déficit — alors que les deux arbres
-de C# dépassent déjà la barre exigée par le gate. Les retirer du dénominateur place le projet aux
-alentours de **91,3 %**.
+de C# dépassent déjà la barre exigée par le gate. Les retirer du dénominateur porte le projet à
+**86,8 %**, mesuré sur `main` une fois la décision appliquée.
+
+**Deux chiffres de couverture se confondent aisément, et le gate n'en lit qu'un.** Cela mérite
+d'être nommé, car la première estimation inscrite dans cet enregistrement les a confondus.
+`line_coverage` ne compte que les lignes. `coverage` — la métrique contre laquelle la condition du
+gate est écrite — mélange lignes et conditions :
+
+```
+coverage = (lignes couvertes + conditions couvertes) / (lignes à couvrir + conditions à couvrir)
+```
+
+Exclure le Python porte `line_coverage` à 91,3 % et `coverage` à 86,8 %, l'écart venant de
+`branch_coverage` à 78,7 % qui tire le mélange vers le bas. Les deux dépassent 80. Seul le second
+est celui que la condition lit, et c'est le chiffre sur lequel cet enregistrement s'engage.
 
 **Le code exclu n'est pas du code non testé.** `tools/tests/test-check-icon-template.sh` l'exerce à
 chaque pull request, dans le job `Test the shell tooling`, avec sept assertions : que les icônes
@@ -128,8 +141,9 @@ monde aurait déjà appris à ignorer.
 
 ### Positives
 
-* La condition de couverture du gate devrait passer de 76,3 % à environ 91,3 %, ce qui devrait
-  ramener le gate au vert — toutes les autres conditions sont déjà OK.
+* La condition de couverture du gate est passée de 76,3 % à **86,8 %**, et le gate est revenu au
+  vert avec ses six conditions OK — mesuré sur l'analyse de `main` du 2026-08-05T23:49, la
+  première après l'arrivée de ce changement.
 * Le chiffre que le gate rapporte devient un chiffre sur le code que son rapport décrit.
 * `sonar-gate.yml` redevient informatif : un rouge nocturne veut dire que quelque chose a changé.
 
@@ -157,8 +171,9 @@ monde aurait déjà appris à ignorer.
 
 * Supprimer cette exclusion si un rapport de couverture Python est un jour branché sur l'analyse, et
   remplacer le présent enregistrement plutôt que de l'éditer.
-* Vérifier à la prochaine analyse de `main` que `new_coverage` dépasse 80. Si ce n'est pas le cas,
-  la cause est ailleurs et le présent enregistrement ne l'a pas traitée.
+* ~~Vérifier à la prochaine analyse de `main` que `new_coverage` dépasse 80.~~ **Fait.** L'analyse
+  du 2026-08-05T23:49 donne `new_coverage` à 86,8 pour un seuil de 80, avec le gate OK sur ses six
+  conditions et aucune issue ouverte.
 
 ## Références
 
