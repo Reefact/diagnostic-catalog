@@ -3,7 +3,7 @@
 ## Supported Versions
 
 Security updates are provided for the latest stable release of each
-DiagnosticCatalog release train (`lib`, `sonar`, `netanalyzers`, `stylecop` —
+DiagnosticCatalog release train (`lib`, `sonar`, `netanalyzers`, `stylecop`, `codestyle` —
 see [CONTRIBUTING.md](CONTRIBUTING.md)). The trains version independently, so
 "latest stable" is read per train, not across the repository.
 

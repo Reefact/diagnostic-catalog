@@ -422,13 +422,22 @@ When present it MUST be lowercase and MUST be one of:
 | `sonar` | The **catalog of SonarQube/SonarAnalyzer rules** |
 | `netanalyzers` | The **catalog of Microsoft .NET analyzer (CAxxxx) rules** |
 | `stylecop` | The **catalog of StyleCop analyzer rules** |
+| `codestyle` | The **catalog of Roslyn IDE code-style (IDExxxx) rules** |
 | `cataloggen` | The **generation engine** (`eng/CatalogGen`) — acquiring analyzer assemblies, reading their descriptors, emitting a catalog |
 
 > `analyzers` and `netanalyzers` are close in spelling and far apart in meaning.
 > `analyzers` is *code this repository ships* — Roslyn analyzers that enforce our
-> own contract. `netanalyzers`, `sonar` and `stylecop` are *catalogs describing
+> own contract. `netanalyzers`, `sonar`, `stylecop` and `codestyle` are *catalogs describing
 > somebody else's rules*, which is the product. When in doubt: if the commit
 > changes a rule catalog, its scope is the vendor's name.
+
+> `stylecop` and `codestyle` are closer still, and they are two different
+> vendors' rules: `stylecop` mirrors the StyleCop.Analyzers project's `SAxxxx`,
+> `codestyle` mirrors Roslyn's own `IDExxxx`. The tags differ by the same two
+> syllables — `stylecop-v1.2.0` and `codestyle-v1.2.0` publish different packages
+> — so read a release tag twice before pushing it. Each is named after the
+> package it publishes, which is the rule everywhere here; the resemblance is the
+> upstreams' and not this repository's to fix.
 
 This list lives here, in the repository, where a tool can check it — it is the
 `SCOPES` list in `tools/commit-lint/lint-commit-message.sh`, and the two MUST be
@@ -449,6 +458,7 @@ independently:
 | `sonar` | `sonar` | Follows SonarSource's release cadence. |
 | `netanalyzers` | `netanalyzers` | Follows the .NET SDK's analyzer releases. |
 | `stylecop` | `stylecop` | Follows StyleCop's releases. |
+| `codestyle` | `codestyle` | Follows Roslyn's releases: the upstream package is versioned with the compiler. |
 
 Two scopes ride the `cli` train, and the distinction between them is worth
 keeping. `cli` is the shell — the command tree, the arguments, the exit codes;

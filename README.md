@@ -64,9 +64,10 @@ has exactly one published source of truth, read from the analyzer's own
 | **`DiagnosticCatalog.Sonar`** | The [SonarAnalyzer.CSharp](https://github.com/SonarSource/sonar-dotnet) rules, ids and categories read from the analyzers' own descriptors. |
 | **`DiagnosticCatalog.NetAnalyzers`** | The .NET code analysis (`CAxxxx`) rules, same treatment. |
 | **`DiagnosticCatalog.StyleCop`** | The [StyleCop.Analyzers](https://github.com/DotNetAnalyzers/StyleCopAnalyzers) (`SAxxxx`) rules, same treatment. |
+| **`DiagnosticCatalog.CodeStyle`** | The Roslyn IDE code-style (`IDExxxx`) rules — the ones `.editorconfig` configures and `EnforceCodeStyleInBuild` turns on — same treatment. |
 | **`DiagnosticCatalog.Analyzers`** | The checking. Diagnostics that read a rule declaration against the structural contract and a suppression against the rule it names — a category and an id taken from two different rules, a suppression left half migrated — and the code fixes that turn a literal into a catalogue reference, complete a half-migrated one from the rule it already names, or repair a hand-written rule declaration where the code already says how. A build-time dependency: these assemblies never reach your runtime. |
 | **`DiagnosticCatalog.Self`** | The `DCATxxxx` rules the analyzers above report, catalogued the same way — so that suppressing one of *this* library's own diagnostics is a checked reference rather than the magic string everything here exists to remove. |
-| **`DiagnosticCatalog.Cli`**, the `dcat` tool | The generator, as a .NET tool. Point it at an analyzer package or at assemblies on disk and it writes a catalogue the same way this repository writes the four above. |
+| **`DiagnosticCatalog.Cli`**, the `dcat` tool | The generator, as a .NET tool. Point it at an analyzer package or at assemblies on disk and it writes a catalogue the same way this repository writes the five above. |
 
 The last three are built here but have no version on nuget.org yet; see **Project status** below.
 
@@ -119,7 +120,7 @@ sequenceDiagram
 ```
 
 **Read the descriptors, not the documentation.** `eng/CatalogGen` loads the upstream
-analyzer package, constructs every `DiagnosticAnalyzer` it contains, and reads the
+analyzer package, constructs the analyzers it marks with `[DiagnosticAnalyzer]`, and reads the
 `DiagnosticDescriptor` instances they actually declare. Rule metadata published as JSON or
 as prose drifts from what the analyzer really does, and since nothing in the platform
 validates a category, a value copied from documentation that had gone stale would produce
@@ -278,6 +279,7 @@ Per-package guides:
 [`.Sonar`](src/DiagnosticCatalog.Sonar/README.md) ·
 [`.NetAnalyzers`](src/DiagnosticCatalog.NetAnalyzers/README.md) ·
 [`.StyleCop`](src/DiagnosticCatalog.StyleCop/README.md) ·
+[`.CodeStyle`](src/DiagnosticCatalog.CodeStyle/README.md) ·
 [`.Cli`](src/DiagnosticCatalog.Cli/README.md)
 
 ## 🎯 When it is a good fit

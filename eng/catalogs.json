@@ -49,6 +49,22 @@
     },
     {
       "$comment": [
+        "The Roslyn IDE code-style rules. Microsoft.CodeAnalysis.CSharp.CodeStyle is the package that",
+        "carries them; the same analyzers reach most projects through the .NET SDK instead, where",
+        "EnforceCodeStyleInBuild turns them on and .editorconfig sets their severity.",
+        "",
+        "The package is versioned with the COMPILER, not with the SDK: installing one that declares a",
+        "newer compiler than the running one is refused with CS9057. That constrains which release a",
+        "consumer can install, and not what can be read here — dcat reads descriptors and runs no",
+        "analyzer — but it is why this catalogue rides a train of its own."
+      ],
+      "package": "Microsoft.CodeAnalysis.CSharp.CodeStyle",
+      "namespace": "DiagnosticCatalog.CodeStyle",
+      "container": "CodeStyleRule",
+      "output": "../src/DiagnosticCatalog.CodeStyle/CodeStyleRules.g.cs"
+    },
+    {
+      "$comment": [
         "StyleCop.Analyzers' latest STABLE is 1.1.118, published in April 2019; the project has",
         "lived on 1.2.0-beta ever since, and that is what projects actually install. Mirroring the",
         "stable therefore mirrored a release almost nobody runs — and one rule already disagreed:",

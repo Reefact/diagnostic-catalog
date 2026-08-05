@@ -23,6 +23,7 @@ So the repository publishes on **five independent lines**
 | `sonar` | `sonar-v` | `sonar` | The SonarQube rule catalogue |
 | `netanalyzers` | `netanalyzers-v` | `netanalyzers` | The Microsoft .NET analyzer rule catalogue |
 | `stylecop` | `stylecop-v` | `stylecop` | The StyleCop rule catalogue |
+| `codestyle` | `codestyle-v` | `codestyle` | The Roslyn IDE code-style rule catalogue |
 
 That table lives once, in [`tools/trains.sh`](../../tools/trains.sh). The packaging and release-notes
 scripts **source** it, so what a release publishes and what its notes describe cannot drift apart.
@@ -68,6 +69,9 @@ flowchart TB
     subgraph T["stylecop"]
         SC["DiagnosticCatalog.StyleCop"]
     end
+    subgraph I["codestyle"]
+        CS["DiagnosticCatalog.CodeStyle"]
+    end
     CF["DiagnosticCatalog.CodeFixes<br/><i>no train — bundled into the analyzers' package</i>"]
     GEN["eng/CatalogGen<br/><i>no train — bundled into dcat</i>"]
     A -. "packs" .-> CF
@@ -75,6 +79,7 @@ flowchart TB
     SO -- "PackageReference" --> F
     NA -- "PackageReference" --> F
     SC -- "PackageReference" --> F
+    CS -- "PackageReference" --> F
     SELF -- "PackageReference" --> F
 ```
 

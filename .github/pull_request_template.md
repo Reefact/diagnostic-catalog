@@ -37,6 +37,7 @@
 * [ ] `sonar`
 * [ ] `netanalyzers`
 * [ ] `stylecop`
+* [ ] `codestyle`
 * [ ] None — this PR carries no `feat` or `fix` (infrastructure, docs, chore)
 
 ## Changes

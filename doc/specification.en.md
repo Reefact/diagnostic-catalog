@@ -301,7 +301,8 @@ DiagnosticCatalog/
 │   ├── DiagnosticCatalog.CodeFixes/        → code fix assemblies
 │   ├── DiagnosticCatalog.Sonar/            → generated catalogue (§14)
 │   ├── DiagnosticCatalog.NetAnalyzers/     → generated catalogue (§14)
-│   └── DiagnosticCatalog.StyleCop/         → generated catalogue (§14)
+│   ├── DiagnosticCatalog.StyleCop/         → generated catalogue (§14)
+│   └── DiagnosticCatalog.CodeStyle/        → generated catalogue (§14)
 ├── eng/
 │   └── CatalogGen/                         → generator, never shipped (§14.1)
 ├── tests/
@@ -1388,6 +1389,7 @@ from the descriptors of their upstream package:
 | `DiagnosticCatalog.Sonar` | `SonarAnalyzer.CSharp 10.31.0.145097` | 456 | 13 | 0 of 465 |
 | `DiagnosticCatalog.NetAnalyzers` | `Microsoft.CodeAnalysis.NetAnalyzers 10.0.302` | 318 | 10 | 318 of 318 |
 | `DiagnosticCatalog.StyleCop` | `StyleCop.Analyzers 1.1.118` | 193 | 8 | 193 of 193 |
+| `DiagnosticCatalog.CodeStyle` | `Microsoft.CodeAnalysis.CSharp.CodeStyle 5.6.0` | 120 | 3 | 117 of 120 |
 
 ```csharp
 using DiagnosticCatalog;

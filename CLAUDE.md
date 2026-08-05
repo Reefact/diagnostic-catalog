@@ -104,6 +104,7 @@ versions and publishes independently:
 | `sonar` | `sonar` | Follows SonarSource's releases. |
 | `netanalyzers` | `netanalyzers` | Follows the .NET SDK's analyzer releases. |
 | `stylecop` | `stylecop` | Follows StyleCop's releases. |
+| `codestyle` | `codestyle` | Follows Roslyn's releases. |
 
 This is why `commit-lint` **requires a scope on `feat` and `fix`**: an unscoped
 one matches no train and is silently dropped from the release notes and the
@@ -113,8 +114,8 @@ inside `dcat` (ADR-0017), and `testing` was dropped once it was clear it named a
 test-support package nobody was going to build. So there is neither a scope that
 reaches no release note nor a train that promises a package that does not exist.
 The full table, with the
-`analyzers` / `netanalyzers` distinction and why the shell and the engine keep
-separate scopes, is in [`CONTRIBUTING.md`](CONTRIBUTING.md).
+`analyzers` / `netanalyzers` and `stylecop` / `codestyle` distinctions and why the
+shell and the engine keep separate scopes, is in [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 Two rules follow, and both are checked on every pull request by the release
 rehearsal:
@@ -193,7 +194,7 @@ essentials, inlined so they hold even if `AGENTS.md` is not read:
 * PR titles, descriptions, commits, and branch names must be written in English.
 * Write every commit message per [`CONTRIBUTING.md`](CONTRIBUTING.md):
   Conventional Commits, a closed type list, the scopes
-  `analyzers, cataloggen, cli, core, netanalyzers, sonar, stylecop`, an imperative
+  `analyzers, cataloggen, cli, codestyle, core, netanalyzers, sonar, stylecop`, an imperative
   header within 72 characters, a `Docs:` footer on every `feat` (see *Documenting
   a feature*), and `Refs: #NN` in a footer when a GitHub issue exists
   (issue-closing keywords belong in the PR description, not the commit).

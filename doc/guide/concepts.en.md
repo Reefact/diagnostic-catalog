@@ -80,8 +80,10 @@ flowchart TB
         S["DiagnosticCatalog.Sonar"]
         N["DiagnosticCatalog.NetAnalyzers"]
         T["DiagnosticCatalog.StyleCop"]
+        CS["DiagnosticCatalog.CodeStyle"]
         S --> F
         N --> F
+        CS --> F
         T --> F
     end
     subgraph SOON["Built here, not published yet"]
