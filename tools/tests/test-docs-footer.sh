@@ -27,11 +27,18 @@ commit() {
     commit -q --no-verify -m "$1"
 }
 
+# `ok` / `rejected` rather than a status code, so a failing assertion prints which way
+# round it went. Named once rather than spelled at each call site: under `set -u` a typo
+# in an expectation is then a shell error, where a mistyped literal would quietly expect
+# a verdict nothing ever prints.
+OK='ok'
+REJECTED='rejected'
+
 check() {
   if "$root/tools/commit-lint/check-docs-footer.sh" --commit "$1" >/dev/null 2>&1; then
-    printf 'ok'
+    printf '%s' "$OK"
   else
-    printf 'rejected'
+    printf '%s' "$REJECTED"
   fi
 }
 
@@ -55,14 +62,14 @@ printf 'la reference, avec le nouveau commutateur\n' > "$fixture/doc/guide/dcat-
 commit 'feat(cli): add the --dry-run switch
 
 Docs: doc/guide/dcat-reference.en.md, doc/guide/dcat-reference.fr.md'
-assert_equals 'both named pages were touched' 'ok' "$(check "$(head_of)")"
+assert_equals 'both named pages were touched' "$OK" "$(check "$(head_of)")"
 
 # --- a footer that names a page the commit never opened ----------------------------------
 printf 'the front door, mentioning the switch\n' > "$fixture/README.md"
 commit 'feat(cli): add the --verbose switch
 
 Docs: doc/guide/dcat-reference.en.md, doc/guide/dcat-reference.fr.md'
-assert_equals 'neither named page was touched' 'rejected' "$(check "$(head_of)")"
+assert_equals 'neither named page was touched' "$REJECTED" "$(check "$(head_of)")"
 
 # --- half a bilingual pair ----------------------------------------------------------------
 # Both files change, so BilingualPairTests sees a complete pair and says nothing. Only
@@ -72,32 +79,32 @@ printf 'la reference, encore\n' > "$fixture/doc/guide/dcat-reference.fr.md"
 commit 'feat(cli): add the --quiet switch
 
 Docs: doc/guide/dcat-reference.en.md'
-assert_equals 'only the English half is named' 'rejected' "$(check "$(head_of)")"
+assert_equals 'only the English half is named' "$REJECTED" "$(check "$(head_of)")"
 
 # --- an English-only document has no sibling to name ---------------------------------------
 printf 'the front door, again\n' > "$fixture/README.md"
 commit 'feat(core): publish the catalogue marker
 
 Docs: README.md'
-assert_equals 'a root document names no translation' 'ok' "$(check "$(head_of)")"
+assert_equals 'a root document names no translation' "$OK" "$(check "$(head_of)")"
 
 # --- a footer that names what the commit removed -------------------------------------------
 rm "$fixture/README.md"
 commit 'feat(core): retire the marker
 
 Docs: README.md'
-assert_equals 'the named document was deleted, not written' 'rejected' "$(check "$(head_of)")"
+assert_equals 'the named document was deleted, not written' "$REJECTED" "$(check "$(head_of)")"
 
 # --- nothing to resolve ---------------------------------------------------------------------
 printf 'restored\n' > "$fixture/README.md"
 commit 'feat(core): restore the marker
 
 Docs: none — the marker is internal until the catalogue ships'
-assert_equals 'a reasoned exemption names no file' 'ok' "$(check "$(head_of)")"
+assert_equals 'a reasoned exemption names no file' "$OK" "$(check "$(head_of)")"
 
 printf 'again\n' > "$fixture/README.md"
 commit 'fix(core): stop trimming a nested category'
-assert_equals 'a commit with no footer' 'ok' "$(check "$(head_of)")"
+assert_equals 'a commit with no footer' "$OK" "$(check "$(head_of)")"
 
 # --- the exemptions the linter also makes -------------------------------------------------------
 # A placeholder carries the footer of the commit it will be folded into, and resolving
@@ -106,13 +113,13 @@ printf 'more\n' > "$fixture/README.md"
 commit 'fixup! feat(cli): add the --dry-run switch
 
 Docs: doc/guide/dcat-reference.en.md, doc/guide/dcat-reference.fr.md'
-assert_equals 'an autosquash placeholder' 'ok' "$(check "$(head_of)")"
+assert_equals 'an autosquash placeholder' "$OK" "$(check "$(head_of)")"
 
 printf 'yet more\n' > "$fixture/README.md"
 commit 'Merge pull request #68 from Reefact/claude/docs-reference-track
 
 Docs: doc/guide/dcat-reference.en.md'
-assert_equals 'a merge commit' 'ok' "$(check "$(head_of)")"
+assert_equals 'a merge commit' "$OK" "$(check "$(head_of)")"
 
 # --- a footer wrapped over several lines -----------------------------------------------------
 # The failure this file exists for, in its purest form. Only the first line matches
@@ -130,7 +137,7 @@ commit 'feat(cli): add the --wrapped switch
 
 Docs: README.md,
  CONTRIBUTING.md'
-assert_equals 'a footer wrapped with an indented continuation' 'rejected' "$(check "$(head_of)")"
+assert_equals 'a footer wrapped with an indented continuation' "$REJECTED" "$(check "$(head_of)")"
 
 printf 'again\n' > "$fixture/README.md"
 printf 'again too\n' > "$fixture/CONTRIBUTING.md"
@@ -138,7 +145,7 @@ commit 'feat(cli): add the --unindented switch
 
 Docs: README.md,
 CONTRIBUTING.md'
-assert_equals 'a footer wrapped with an unindented continuation' 'rejected' "$(check "$(head_of)")"
+assert_equals 'a footer wrapped with an unindented continuation' "$REJECTED" "$(check "$(head_of)")"
 
 # A list ending in a separator is a list with something after it, even when nothing
 # follows in the message: whatever was meant to come next is unchecked either way.
@@ -146,7 +153,7 @@ printf 'trailing\n' > "$fixture/README.md"
 commit 'feat(cli): add the --trailing switch
 
 Docs: README.md,'
-assert_equals 'a footer whose list ends in a comma' 'rejected' "$(check "$(head_of)")"
+assert_equals 'a footer whose list ends in a comma' "$REJECTED" "$(check "$(head_of)")"
 
 # The continuation is only a continuation directly under the footer; an indented body
 # line further up is ordinary prose and must stay legal.
@@ -159,6 +166,6 @@ The switch prints what would be written:
     dcat generate --dry-run
 
 Docs: README.md, CONTRIBUTING.md'
-assert_equals 'an indented body line above the footer' 'ok' "$(check "$(head_of)")"
+assert_equals 'an indented body line above the footer' "$OK" "$(check "$(head_of)")"
 
 finish
