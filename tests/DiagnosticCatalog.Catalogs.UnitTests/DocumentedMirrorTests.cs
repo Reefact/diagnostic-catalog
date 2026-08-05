@@ -31,6 +31,7 @@ public sealed class DocumentedMirrorTests
             { "DiagnosticCatalog.StyleCop", "StyleCopRules.g.cs" },
             { "DiagnosticCatalog.CodeStyle", "CodeStyleRules.g.cs" },
             { "DiagnosticCatalog.Xunit", "XunitRules.g.cs" },
+            { "DiagnosticCatalog.NUnit", "NUnitRules.g.cs" },
         };
 
     [Theory]

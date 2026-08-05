@@ -3,7 +3,7 @@
 🌍 **Languages:**  
 🇬🇧 English (this file) | 🇫🇷 [Français](./release-trains.fr.md)
 
-For anyone adding a project, cutting a release, or wondering why a commit needs a scope. Five trains,
+For anyone adding a project, cutting a release, or wondering why a commit needs a scope. Eight trains,
 one declaration, and one rule that follows from both.
 
 ## Why not one version
@@ -12,7 +12,7 @@ A catalogue follows its vendor's pace. SonarSource ships often; the foundation i
 stable. Tie them to one number and every Sonar refresh moves the foundation's version — which tells
 every consumer of the foundation that something changed when nothing did.
 
-So the repository publishes on **seven independent lines**
+So the repository publishes on **eight independent lines**
 ([ADR-0002](../adr/0002-partition-releases-into-trains-by-commit-scope.en.md),
 [ADR-0015](../adr/0015-a-catalogues-version-runs-on-its-own-line.en.md)):
 
@@ -25,6 +25,7 @@ So the repository publishes on **seven independent lines**
 | `stylecop` | `stylecop-v` | `stylecop` | The StyleCop rule catalogue |
 | `codestyle` | `codestyle-v` | `codestyle` | The Roslyn IDE code-style rule catalogue |
 | `xunit` | `xunit-v` | `xunit` | The xUnit.net analyzer rule catalogue |
+| `nunit` | `nunit-v` | `nunit` | The NUnit analyzer rule catalogue |
 
 That table lives once, in [`tools/trains.sh`](../../tools/trains.sh). The packaging and release-notes
 scripts **source** it, so what a release publishes and what its notes describe cannot drift apart.
@@ -76,6 +77,9 @@ flowchart TB
     subgraph X["xunit"]
         XU["DiagnosticCatalog.Xunit"]
     end
+    subgraph NU["nunit"]
+        NUC["DiagnosticCatalog.NUnit"]
+    end
     CF["DiagnosticCatalog.CodeFixes<br/><i>no train — bundled into the analyzers' package</i>"]
     GEN["eng/CatalogGen<br/><i>no train — bundled into dcat</i>"]
     A -. "packs" .-> CF
@@ -85,6 +89,7 @@ flowchart TB
     SC -- "PackageReference" --> F
     CS -- "PackageReference" --> F
     XU -- "PackageReference" --> F
+    NUC -- "PackageReference" --> F
     SELF -- "PackageReference" --> F
 ```
 
