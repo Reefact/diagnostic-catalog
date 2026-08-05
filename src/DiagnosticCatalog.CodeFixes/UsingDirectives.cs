@@ -56,15 +56,20 @@ internal static class UsingDirectives
         return false;
     }
 
-    /// <summary>Appends the import to the file's directives.</summary>
+    /// <summary>Appends the imports to the file's directives.</summary>
     /// <remarks>
     /// Appended rather than sorted into place: the file's ordering is the author's, and a fix that
     /// reordered every using would bury its own change in the diff.
+    /// <para>
+    /// Several at once, because a fix-all over one document may need one import per catalog it references
+    /// and they all belong at the same place. Added in the order the occurrences appear rather than
+    /// sorted, so that regenerating the same fix produces the same file.
+    /// </para>
     /// </remarks>
-    internal static CompilationUnitSyntax Add(CompilationUnitSyntax unit, string @namespace) =>
-        unit.AddUsings(SyntaxFactory
+    internal static CompilationUnitSyntax Add(CompilationUnitSyntax unit, IReadOnlyList<string> namespaces) =>
+        unit.AddUsings([.. namespaces.Select(@namespace => SyntaxFactory
             .UsingDirective(SyntaxFactory.ParseName(@namespace))
-            .WithTrailingTrivia(SyntaxFactory.ElasticCarriageReturnLineFeed));
+            .WithTrailingTrivia(SyntaxFactory.ElasticCarriageReturnLineFeed))]);
 
     /// <summary>The declaration's full name, since a nested block declares only its own segment.</summary>
     private static string FullName(BaseNamespaceDeclarationSyntax declaration)

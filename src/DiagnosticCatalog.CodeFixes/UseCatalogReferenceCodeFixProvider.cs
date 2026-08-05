@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
+using System.Threading;
 using System.Threading.Tasks;
 
 using DiagnosticCatalog.Analyzers;
@@ -39,8 +41,49 @@ public sealed class UseCatalogReferenceCodeFixProvider : CodeFixProvider
     public override ImmutableArray<string> FixableDiagnosticIds { get; } =
         ImmutableArray.Create(DiagnosticIds.ReplaceableStringLiterals);
 
+    /// <summary>
+    /// Every occurrence of a document in one pass, not the batch fixer.
+    /// </summary>
+    /// <remarks>
+    /// Each occurrence may need its rule's namespace imported, and every import lands at the same offset.
+    /// <see cref="DocumentFixAllProvider"/> says what the batch fixer does with that, and why migrating a
+    /// file that references two catalogs used to migrate one of them.
+    /// </remarks>
+    private static readonly FixAllProvider FixAll =
+        new DocumentFixAllProvider("Use catalog references throughout", FixAllAsync);
+
     /// <inheritdoc />
-    public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
+    public override FixAllProvider GetFixAllProvider() => FixAll;
+
+    private static Task<Document> FixAllAsync(
+        Document document,
+        ImmutableArray<Diagnostic> diagnostics,
+        string? equivalenceKey,
+        CancellationToken cancellation)
+    {
+        _ = equivalenceKey;
+
+        List<SuppressionFixRequest> requests = [];
+
+        foreach (Diagnostic diagnostic in diagnostics)
+        {
+            // The same refusal RegisterCodeFixesAsync makes, and for the same reason: several rules
+            // matching one pair get a diagnostic and no automatic fix (§11.6). A fix-all must not pick
+            // one on the author's behalf either.
+            if (!diagnostic.Properties.TryGetValue(FixProperties.Reference, out string? reference)
+                || string.IsNullOrEmpty(reference))
+            {
+                continue;
+            }
+
+            diagnostic.Properties.TryGetValue(FixProperties.Namespace, out string? @namespace);
+
+            requests.Add(new SuppressionFixRequest(
+                diagnostic, reference!, @namespace, rewriteCategory: true, rewriteCheckId: true));
+        }
+
+        return SuppressionFix.ApplyAllAsync(document, requests, cancellation);
+    }
 
     /// <inheritdoc />
     public override Task RegisterCodeFixesAsync(CodeFixContext context)

@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Globalization;
+using System.Threading;
 using System.Threading.Tasks;
 
 using DiagnosticCatalog.Analyzers;
@@ -38,8 +40,52 @@ public sealed class CompleteCatalogReferenceCodeFixProvider : CodeFixProvider
     public override ImmutableArray<string> FixableDiagnosticIds { get; } =
         ImmutableArray.Create(DiagnosticIds.MixedReferenceAndLiteral);
 
+    /// <summary>Every occurrence of a document in one pass — see <see cref="DocumentFixAllProvider"/>.</summary>
+    private static readonly FixAllProvider FixAll =
+        new DocumentFixAllProvider("Complete the suppressions from their rules", FixAllAsync);
+
     /// <inheritdoc />
-    public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
+    public override FixAllProvider GetFixAllProvider() => FixAll;
+
+    private static Task<Document> FixAllAsync(
+        Document document,
+        ImmutableArray<Diagnostic> diagnostics,
+        string? equivalenceKey,
+        CancellationToken cancellation)
+    {
+        _ = equivalenceKey;
+
+        List<SuppressionFixRequest> requests = [];
+
+        foreach (Diagnostic diagnostic in diagnostics)
+        {
+            if (!diagnostic.Properties.TryGetValue(FixProperties.Reference, out string? reference)
+                || string.IsNullOrEmpty(reference))
+            {
+                continue;
+            }
+
+            // Absent when the literal names something else: the analyzer withholds the slot rather than
+            // let a migration change what is suppressed, and a fix-all must honour that too.
+            if (!diagnostic.Properties.TryGetValue(FixProperties.Slot, out string? slot)
+                || !int.TryParse(slot, NumberStyles.None, CultureInfo.InvariantCulture, out int side))
+            {
+                continue;
+            }
+
+            bool rewriteCategory = side == SuppressionArgumentOrder.CategorySlot;
+            bool rewriteCheckId = side == SuppressionArgumentOrder.CheckIdSlot;
+
+            if (!rewriteCategory && !rewriteCheckId) { continue; }
+
+            diagnostic.Properties.TryGetValue(FixProperties.Namespace, out string? @namespace);
+
+            requests.Add(new SuppressionFixRequest(
+                diagnostic, reference!, @namespace, rewriteCategory, rewriteCheckId));
+        }
+
+        return SuppressionFix.ApplyAllAsync(document, requests, cancellation);
+    }
 
     /// <inheritdoc />
     public override Task RegisterCodeFixesAsync(CodeFixContext context)
