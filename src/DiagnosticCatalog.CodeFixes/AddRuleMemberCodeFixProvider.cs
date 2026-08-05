@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
@@ -72,8 +74,90 @@ public sealed class AddRuleMemberCodeFixProvider : CodeFixProvider
     public override ImmutableArray<string> FixableDiagnosticIds { get; } =
         ImmutableArray.Create(DiagnosticIds.InvalidRuleId, DiagnosticIds.InvalidRuleCategory);
 
+    /// <summary>
+    /// Every occurrence of a document in one pass, not the batch fixer.
+    /// </summary>
+    /// <remarks>
+    /// A rule declaring neither constant raises DCAT0003 and DCAT0004 together, both actions carry the
+    /// one equivalence key above, and on an empty body both insertions land just after the open brace —
+    /// the same offset. See <see cref="DocumentFixAllProvider"/> for what the batch fixer does with two
+    /// edits at one offset; here it declared <c>Id</c> and dropped <c>Category</c>.
+    /// </remarks>
+    private static readonly FixAllProvider FixAll =
+        new DocumentFixAllProvider("Declare the missing rule constants", FixAllAsync);
+
     /// <inheritdoc />
-    public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
+    public override FixAllProvider GetFixAllProvider() => FixAll;
+
+    private static async Task<Document> FixAllAsync(
+        Document document,
+        ImmutableArray<Diagnostic> diagnostics,
+        string? equivalenceKey,
+        CancellationToken cancellation)
+    {
+        _ = equivalenceKey;
+
+        SyntaxNode? root = await document.GetSyntaxRootAsync(cancellation).ConfigureAwait(false);
+
+        if (root is null) { return document; }
+
+        // Grouped by the type that must declare them, because the two diagnostics of one rule are two
+        // insertions into one body and the second one's position depends on the first having happened.
+        List<TypeDeclarationSyntax> types = [];
+        Dictionary<TypeDeclarationSyntax, List<string>> wanted = [];
+
+        foreach (Diagnostic diagnostic in diagnostics)
+        {
+            if (RuleDeclaration.MemberOf(diagnostic.Id) is not string member) { continue; }
+
+            if (RuleDeclaration.Find(root, diagnostic) is not TypeDeclarationSyntax type) { continue; }
+
+            if (!CanDeclare(type, member)) { continue; }
+
+            if (!wanted.TryGetValue(type, out List<string>? members))
+            {
+                members = [];
+                wanted.Add(type, members);
+                types.Add(type);
+            }
+
+            // A partial type is already refused by CanDeclare; this guards the ordinary duplicate, which
+            // is one diagnostic reported at each of a type's locations.
+            if (!members.Contains(member, StringComparer.Ordinal)) { members.Add(member); }
+        }
+
+        if (types.Count == 0) { return document; }
+
+        // The SECOND argument, so a rule nested inside another type this same fix-all is changing keeps
+        // the change made to it.
+        return document.WithSyntaxRoot(root.ReplaceNodes(
+            types,
+            (original, current) => Declaring(current, wanted[original], root)));
+    }
+
+    /// <summary>The type, with every constant it is missing declared in the specified order.</summary>
+    /// <remarks>
+    /// <c>Id</c> first whatever order the diagnostics arrived in, so that <see cref="Position"/> finds it
+    /// when it places <c>Category</c> and the pair reads as every example in the specification writes it.
+    /// </remarks>
+    private static TypeDeclarationSyntax Declaring(
+        TypeDeclarationSyntax type,
+        List<string> members,
+        SyntaxNode root)
+    {
+        TypeDeclarationSyntax declared = type;
+
+        foreach (string member in members.OrderBy(name => name == RuleDeclaration.IdMember ? 0 : 1))
+        {
+            int position = Position(declared, member);
+
+            declared = declared.WithMembers(declared.Members.Insert(
+                position,
+                LaidOut(Declaration(declared, member), declared, position, root)));
+        }
+
+        return declared;
+    }
 
     /// <inheritdoc />
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
