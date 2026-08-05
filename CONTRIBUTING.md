@@ -181,7 +181,9 @@ already describes four of those (`nupkg`, `projects`, `solution`, `assemblies`) 
    because the type shrinks to fit and a six-letter badge lands at under 5px on
    that listing, which reads as nothing at all
    ([ADR-0033](doc/adr/0033-cap-the-badge-at-three-letters.en.md)). You do not
-   draw it: add the badge to the table in `tools/icon/render-icon.py` and run
+   draw it: add the badge to the table in `tools/icon/badges.py` — a catalogue
+   missing from it fails *Check the catalogue icons*, which is the step that
+   would otherwise be silent — and run
    `tools/icon/render-icon.py --all`, which redraws every catalogue from
    [`assets/icon-template.svg`](assets/icon-template.svg) — same mark, same
    gradient, same face, at the size the plate allows. `check-icon-template.py`
