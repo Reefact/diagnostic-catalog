@@ -58,8 +58,8 @@
          loads an upstream analyzer assembly reflectively. Build-time tooling only: the shipped
          catalogs carry no Roslyn dependency. Workspaces is needed because some upstream
          analyzers derive from types that reference it. -->
-    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" />
-    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.14.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="5.6.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.6.0" />
     <!-- The command tree, argument parsing and help output of the `dcat` tool. Chosen over a
          hand-rolled parser because the tool is published: the parser it replaced read arguments in
          pairs, which made a switch left dangling at the end of a command line neither applied nor
