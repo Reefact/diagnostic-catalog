@@ -44,12 +44,12 @@ internal static class Descriptors
         title: "Use a diagnostic catalog reference instead of string literals",
         messageFormat: "Reference {2} instead of the string literals \"{0}\" and \"{1}\"",
         category: Category,
-        // Warning, where the specification table says Info. The catalogue package being referenced at
-        // all is the statement of intent: a project that has taken the dependency has decided its
-        // suppressions are catalogue references, and a suggestion no build output shows does not carry
-        // that. The cost is real and belongs in the release notes — adopting a catalogue turns every
-        // existing literal suppression into a warning at once, and fails the build outright under
-        // TreatWarningsAsErrors. Severity remains configurable per project in .editorconfig.
+        // Error, alongside the other two use-site rules and for ADR-0027's reason. The catalogue
+        // package being referenced at all is the statement of intent: a project that has taken the
+        // dependency has decided its suppressions are catalogue references, and a suggestion no build
+        // output shows does not carry that. The cost is real and belongs in the release notes —
+        // adopting a catalogue fails the build on every existing literal suppression at once.
+        // Severity remains configurable per project in .editorconfig.
         defaultSeverity: DiagnosticSeverity.Error,
         isEnabledByDefault: true,
         description:

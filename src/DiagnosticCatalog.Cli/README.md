@@ -252,7 +252,7 @@ dcat validate --manifest eng/catalogs.json
 | `2` | Out of date — regenerate. |
 | `1` | Could not be checked: the source would not resolve. Distinct on purpose, so a feed outage is never reported as a drifted contract. |
 
-This is the question no analyzer can answer for you. `DCAT0001`–`DCAT0007` check that a
+This is the question no analyzer can answer for you. The `DCAT` diagnostics check that a
 catalogue is well formed and correctly used, at compile time, which is the better place
 for those — but none of them can check that it is still *current*, because that needs the
 vendor's package and a compiler has no business fetching one. And staleness is the failure

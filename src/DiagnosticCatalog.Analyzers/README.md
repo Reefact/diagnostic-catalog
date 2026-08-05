@@ -2,10 +2,11 @@
 
 Roslyn analyzers for [DiagnosticCatalog](https://github.com/Reefact/diagnostic-catalog).
 
-They check two things: that a rule **declaration** satisfies the structural contract, and that a
-**suppression** referencing one is coherent — a category and an id taken from two different rules, a
-half-migrated suppression mixing a reference with a literal, a literal that a catalogue reference
-would replace.
+They check two things: that a rule **declaration** satisfies the structural contract — its shape, its
+`Id`, its `Category`, how that category is reached and what its type name says — and that a
+**suppression** referencing one is coherent: two arguments that do not name one rule's `Category` and
+that same rule's `Id`, a half-migrated suppression mixing a reference with a literal, a literal that a
+catalogue reference would replace, and an `UnconditionalSuppressMessage` the trimmer discards.
 
 ## Migrating an existing codebase
 
@@ -62,7 +63,7 @@ changes it.
 ## Writing a rule by hand
 
 A catalogue is normally generated, and generated code satisfies the contract by construction. When you
-write one yourself, three fixes are there for the mechanical part:
+write one yourself, code fixes are there for the mechanical part:
 
 ```csharp
 [DiagnosticRule]
@@ -127,7 +128,7 @@ constants and keep you there.
 - [**Adopting a catalogue on an existing codebase**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/adopting-a-catalogue.en.md)
   — the severity ramp and what order to convert in, when the migration above is large.
 - [**The rule contract**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/rule-contract.en.md)
-  — the four requirements these analyzers check a declaration against, and every syntactic
+  — the five requirements these analyzers check a declaration against, and every syntactic
   form a use site may take.
 - [**Troubleshooting**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/troubleshooting.en.md)
   — by symptom, starting with "nothing is reported at all".

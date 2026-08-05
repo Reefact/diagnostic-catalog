@@ -10,7 +10,7 @@ namespace DiagnosticCatalog.Analyzers;
 
 /// <summary>
 /// Checks that a type declared as a diagnostic rule satisfies the structural contract of §8:
-/// DCAT0002, DCAT0003, DCAT0004 and DCAT0011.
+/// DCAT0002–DCAT0005 and DCAT0011–DCAT0013.
 /// </summary>
 /// <remarks>
 /// Split from the use-site analyzer for a reason that is mechanical rather than stylistic (§18):

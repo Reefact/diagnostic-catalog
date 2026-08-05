@@ -14,7 +14,7 @@ every build passes, every suppression keeps working — and every one of them no
 the vendor does not use.
 
 Nothing reports it. Not a compiler, not an analyzer, not a test in your repository or theirs. The
-compile-time checks (`DCAT0001`–`DCAT0009`) verify that a catalogue is well formed and correctly
+compile-time checks (the `DCAT` diagnostics) verify that a catalogue is well formed and correctly
 used; none of them can verify that it is still **true**, because that needs the vendor's package and
 a compiler has no business fetching one.
 

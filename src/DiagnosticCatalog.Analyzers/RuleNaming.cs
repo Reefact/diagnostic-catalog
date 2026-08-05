@@ -21,7 +21,7 @@ internal enum RuleNameVerdict
     Forced,
 
     /// <summary>
-    /// The name does not say the identifier, and nothing forced that — reported as DCAT0012.
+    /// The name does not say the identifier, and nothing forced that — reported as DCAT0013.
     /// </summary>
     Arbitrary,
 }

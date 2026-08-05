@@ -33,10 +33,12 @@ namespace DiagnosticCatalog.CodeFixes;
 /// because there is nothing in the code to derive it from: the category belongs to the analyzer the rule
 /// mirrors, and inventing a plausible one is the failure this library exists to prevent — nothing in a
 /// consumer's build would ever report it (§3.2). <b>Note the consequence, which is real:</b> the
-/// placeholder is a non-blank string, so DCAT0004 stops being reported the moment the fix is applied. The
-/// fix trades a warning that names the problem for a marker only a reader will notice. That is the deal
-/// §12.4 struck, and it is the reason the title of this action names the constant it declares rather than
-/// claiming to complete the rule.
+/// placeholder is a non-blank string, so DCAT0004 stops being reported the moment the fix is applied.
+/// What replaces it is DCAT0011: the placeholder is emitted as a literal, and a category that reaches no
+/// declared constant is exactly what that rule reports — so the build keeps naming the unfinished work,
+/// through the rule that asks for the category to be declared where the catalogue declares its
+/// categories. That is why the title of this action names the constant it declares rather than claiming
+/// to complete the rule.
 /// </para>
 /// <para>
 /// Refused on a <c>partial</c> type: DCAT0003 is reported once per part, so a <i>Fix all</i> would insert

@@ -14,7 +14,7 @@ namespace DiagnosticCatalog.Cli;
 /// written. What it reports is the difference.
 /// </para>
 /// <para>
-/// This is the question no analyzer can answer. <c>DCAT0001</c>–<c>DCAT0007</c> check that a
+/// This is the question no analyzer can answer. The <c>DCAT</c> diagnostics check that a
 /// catalogue is well formed and used correctly, at compile time, which is the better place for
 /// those. None of them can check that it is still <em>current</em>: that needs the vendor's package,
 /// and a compiler has no business fetching one. And staleness is the failure with no symptom —

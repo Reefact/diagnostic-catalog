@@ -26,12 +26,15 @@ internal static partial class FixProperties
     internal const string Namespace = "Namespace";
 
     /// <summary>
-    /// Which argument the fix must rewrite, as the slot number: absent means both.
+    /// Which argument the fix must rewrite, as the slot number.
     /// </summary>
     /// <remarks>
-    /// DCAT0007 rewrites one side and must leave the other exactly as written — it is already a
-    /// reference. Which side that is cannot be re-derived from syntax alone, since a constant declared
-    /// outside any rule looks like a member access too, so the analyzer says.
+    /// Written on DCAT0007 alone, which rewrites one side and must leave the other exactly as written
+    /// — it is already a reference. Which side that is cannot be re-derived from syntax alone, since a
+    /// constant declared outside any rule looks like a member access too, so the analyzer says.
+    ///
+    /// Absent everywhere else, and nothing derives a default from that absence: the DCAT0006 fix
+    /// rewrites both arguments by construction, because both of them are values.
     /// </remarks>
     internal const string Slot = "Slot";
 

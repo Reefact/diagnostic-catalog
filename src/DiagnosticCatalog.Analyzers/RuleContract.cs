@@ -66,8 +66,9 @@ internal sealed class RuleContractResult
 /// The structural contract of specification §8, evaluated over symbols alone.
 /// </summary>
 /// <remarks>
-/// No syntax, deliberately, and not for tidiness. Definition diagnostics (DCAT0002–DCAT0005) fire only
-/// on source the compiler can see, so a malformed rule inside a REFERENCED assembly produces nothing
+/// No syntax, deliberately, and not for tidiness. Definition diagnostics (DCAT0002–DCAT0005 and
+/// DCAT0011–DCAT0013) fire only on source the compiler can see, so a malformed rule inside a
+/// REFERENCED assembly produces nothing
 /// from them — the blind spot DCAT0010 covers by running this same contract at the use site, against a
 /// metadata symbol that has no syntax at all (§11 preamble). Writing this against syntax now would mean
 /// rewriting it then.

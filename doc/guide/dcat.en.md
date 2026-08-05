@@ -144,7 +144,7 @@ dcat validate --manifest eng/catalogs.json
 That distinction is the whole value of the command in a pipeline —
 [keeping a catalogue current](ci-integration.en.md) is what to do with it.
 
-`DCAT0001`–`DCAT0009` check that a catalogue is well formed and correctly used, at compile time, which
+The `DCAT` diagnostics check that a catalogue is well formed and correctly used, at compile time, which
 is the better place for those. None of them can check that it is still *current*: that needs the
 vendor's package, and a compiler has no business fetching one.
 
