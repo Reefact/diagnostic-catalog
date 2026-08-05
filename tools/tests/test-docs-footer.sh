@@ -88,6 +88,28 @@ commit 'feat(core): publish the catalogue marker
 Docs: README.md'
 assert_equals 'a root document names no translation' "$OK" "$(check "$(head_of)")"
 
+# --- the project README is a pair whose halves do not sit beside each other -----------------
+# Its English half is the root README, because GitHub composes the landing page from there
+# and from nowhere else (ADR-0029). Deriving the French half's sibling by suffix would ask
+# for doc/README.en.md, which does not exist — so naming both halves would be REJECTED and
+# the pair would be undescribable. Named together, it resolves.
+printf 'the front door, paired\n' > "$fixture/README.md"
+printf 'la porte d entree\n' > "$fixture/doc/README.fr.md"
+commit 'feat(core): name the catalogue set on the landing page
+
+Docs: README.md, doc/README.fr.md'
+assert_equals 'the project README pair crosses the doc boundary' "$OK" "$(check "$(head_of)")"
+
+# --- and the French half still may not be named alone ---------------------------------------
+# The asymmetry is deliberate: English is canonical (ADR-0022), so the half that must never
+# travel without its counterpart is the translation.
+printf 'the front door, moved on\n' > "$fixture/README.md"
+printf 'la porte d entree, encore\n' > "$fixture/doc/README.fr.md"
+commit 'feat(core): describe the set once more
+
+Docs: doc/README.fr.md'
+assert_equals 'the French README half is named alone' "$REJECTED" "$(check "$(head_of)")"
+
 # --- a footer that names what the commit removed -------------------------------------------
 rm "$fixture/README.md"
 commit 'feat(core): retire the marker
