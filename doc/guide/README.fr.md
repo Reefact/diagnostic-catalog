@@ -104,7 +104,7 @@ règles `DCAT` de cette bibliothèque, cataloguées par son propre générateur,
 train que les analyseurs qu'elles reflètent. Ce n'est pas une maquette — c'est le produit appliqué à
 lui-même, et la CI échoue s'il cesse un jour de décrire les analyseurs livrés à côté de lui.
 
-Les neuf catalogues d'éditeurs sous `src/` sont la même mécanique à l'échelle — de 62 à 465
+Les dix catalogues d'éditeurs sous `src/` sont la même mécanique à l'échelle — de 13 à 465
 règles — reflétant les analyseurs d'autres gens.
 
 ## Je contribue à ce dépôt
@@ -117,7 +117,7 @@ assemblé, et aucune n'est nécessaire pour *se servir* de tout ceci.
   diagramme.
 * [**Dans le générateur**](generator-internals.fr.md) — le chemin qu'une exécution `dcat` emprunte, et
   ce que chaque étape refuse de faire. Un diagramme.
-* [**Les trains de release**](release-trains.fr.md) — les onze lignes, comment un projet en rejoint
+* [**Les trains de release**](release-trains.fr.md) — les douze lignes, comment un projet en rejoint
   une, et la règle inter-trains qui s'ensuit. Un diagramme.
 * [**La stratégie de test**](testing-strategy.fr.md) — ce que chacun des sept projets de test asserte,
   lesquels tournent sur le CLR .NET Framework, et la suite que `dotnet test` ne peut pas atteindre.

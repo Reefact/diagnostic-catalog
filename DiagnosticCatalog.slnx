@@ -15,6 +15,7 @@
     <Project Path="src/DiagnosticCatalog.Self/DiagnosticCatalog.Self.csproj" />
     <Project Path="src/DiagnosticCatalog.Sonar/DiagnosticCatalog.Sonar.csproj" />
     <Project Path="src/DiagnosticCatalog.StyleCop/DiagnosticCatalog.StyleCop.csproj" />
+    <Project Path="src/DiagnosticCatalog.Syslib/DiagnosticCatalog.Syslib.csproj" />
     <Project Path="src/DiagnosticCatalog.Trimming/DiagnosticCatalog.Trimming.csproj" />
     <Project Path="src/DiagnosticCatalog.Xunit/DiagnosticCatalog.Xunit.csproj" />
     <Project Path="src/DiagnosticCatalog/DiagnosticCatalog.csproj" />

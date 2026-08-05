@@ -167,7 +167,7 @@ constant. This package covers the `CAxxxx` analyzer rules only, not `CSxxxx` or 
 
 ## See also
 
-Nine sibling catalogues are generated from this repository the same way, each read from one
+Ten sibling catalogues are generated from this repository the same way, each read from one
 analyzer's own descriptors:
 
 - [`DiagnosticCatalog.Sonar`](https://www.nuget.org/packages/DiagnosticCatalog.Sonar)
@@ -186,6 +186,8 @@ analyzer's own descriptors:
   — the trimming, Native AOT and single-file (`ILxxxx`) warnings.
 - [`DiagnosticCatalog.AspNetCore`](https://www.nuget.org/packages/DiagnosticCatalog.AspNetCore)
   — the ASP.NET Core and Blazor (`ASPxxxx`, `BLxxxx`) rules.
+- [`DiagnosticCatalog.Syslib`](https://www.nuget.org/packages/DiagnosticCatalog.Syslib)
+  — the .NET runtime source-generator (`SYSLIB1xxx`) diagnostics.
 - [`DiagnosticCatalog.Self`](https://www.nuget.org/packages/DiagnosticCatalog.Self)
   — this library's own `DCATxxxx` rules, for suppressing a diagnostic the catalogue analyzers
   themselves report.

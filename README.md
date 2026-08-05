@@ -73,8 +73,9 @@ Reference the one that matches an analyzer you already run:
 | **`DiagnosticCatalog.MSTest`** | [MSTest.Analyzers](https://github.com/microsoft/testfx), which every MSTest project already runs since `MSTest.TestFramework` depends on them | `MSTESTxxxx` |
 | **`DiagnosticCatalog.Trimming`** | The trimming, Native AOT and single-file warnings, which Blazor WebAssembly, MAUI and `PublishAot` turn on for every build | `ILxxxx` |
 | **`DiagnosticCatalog.AspNetCore`** | ASP.NET Core and Blazor, which every web project runs and none can uninstall since they ship inside the shared framework | `ASPxxxx`, `BLxxxx` |
+| **`DiagnosticCatalog.Syslib`** | The .NET runtime source generators — `LibraryImport`, the COM and regex generators, JSON source generation | `SYSLIB1xxx` |
 
-These nine are **generated**, never hand-written, and carry ids, categories, help links and
+These ten are **generated**, never hand-written, and carry ids, categories, help links and
 the rule's own title — the last as a documentation comment, so that hovering a constant says
 what the rule is about. Rule descriptions and message formats are the vendors' documentation
 and are deliberately left out
@@ -94,14 +95,14 @@ For declaring a catalogue of your own, and for checking the references to one:
 | **`DiagnosticCatalog`** | The `[DiagnosticRule]`, `[DiagnosticCategory]` and `[assembly: CatalogSource]` markers. This is what you reference to declare a catalogue **of your own** — for your analyzers, or for an internal ruleset. |
 | **`DiagnosticCatalog.Analyzers`** | The checking: diagnostics that read a rule declaration against the structural contract, and a suppression against the rule it names, with the code fixes that turn a literal into a catalogue reference. A build-time dependency — these assemblies never reach your runtime. |
 | **`DiagnosticCatalog.Self`** | The `DCATxxxx` rules those analyzers report, catalogued the same way — so that suppressing one of *this* library's own diagnostics is a checked reference rather than the magic string everything here exists to remove. |
-| **`DiagnosticCatalog.Cli`**, the `dcat` tool | The generator, as a .NET tool. Point it at an analyzer package or at assemblies on disk and it writes a catalogue the same way this repository writes the ten above. |
+| **`DiagnosticCatalog.Cli`**, the `dcat` tool | The generator, as a .NET tool. Point it at an analyzer package or at assemblies on disk and it writes a catalogue the same way this repository writes the eleven above. |
 
 `DiagnosticCatalog.Self` comes off the same generator, pointed at this repository's own
 analyzers. It is the shortest answer to "does this actually work": the rules the library
 reports are catalogued by the library, through the pipeline it asks everyone else to use.
 
 Not everything here is on nuget.org yet: `.CodeStyle`, `.Xunit`, `.NUnit`, `.MSTest`,
-`.Trimming` and `.AspNetCore` among the catalogues, and `.Analyzers`, `.Self` and `.Cli`
+`.Trimming`, `.AspNetCore` and `.Syslib` among the catalogues, and `.Analyzers`, `.Self` and `.Cli`
 among the tools. See **Project status** below.
 
 ## ⚙️ How a catalogue is built and kept current
@@ -183,7 +184,7 @@ nuget.org, no release is created. A dry run that faked those would prove nothing
 The foundation shipped first, on its own, because it had to: a catalogue cannot depend on
 it through a package reference until a version of it exists
 ([ADR-0007](doc/adr/0007-depend-across-trains-through-published-packages.en.md)). That release
-is what unblocked the nine vendor catalogues, which now ride their own trains.
+is what unblocked the ten vendor catalogues, which now ride their own trains.
 
 | | Status |
 | --- | --- |
@@ -304,6 +305,7 @@ Per-package guides:
 [`.MSTest`](src/DiagnosticCatalog.MSTest/README.md) ·
 [`.Trimming`](src/DiagnosticCatalog.Trimming/README.md) ·
 [`.AspNetCore`](src/DiagnosticCatalog.AspNetCore/README.md) ·
+[`.Syslib`](src/DiagnosticCatalog.Syslib/README.md) ·
 [`.Cli`](src/DiagnosticCatalog.Cli/README.md)
 
 ## 🎯 When it is a good fit
