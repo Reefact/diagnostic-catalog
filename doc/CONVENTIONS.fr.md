@@ -269,6 +269,13 @@ projet de test :
   résout contre le `DiagnosticCatalog.Sonar` compilé, et le conteneur n'est jamais mis au pluriel.
   Celle-ci existe parce qu'elle avait déjà manqué : seize exemples répartis sur trois documents
   écrivaient le conteneur `SonarRules`, et aucun d'eux ne compilait.
+* **Chaque règle qu'un exemple déclare atteint sa catégorie par une constante déclarée**, selon §8.5
+  de la spécification, aussi bien dans un bloc Markdown que dans la documentation XML embarquée dans
+  les packages. Celle-ci aussi avait déjà manqué : l'`<example>` de `DiagnosticRuleAttribute` et
+  vingt-deux exemples de la spécification écrivaient `Category` comme un littéral, ce que signale
+  précisément `DCAT0011`. Un document qui déclare son conteneur de catégories dans un bloc antérieur
+  n'a pas à le répéter — la vérification lit un exemple à la fois et ne demande que ce qu'est
+  l'initialiseur.
 
 Toutes comparent un document à la vérité compilée plutôt qu'à un autre document. C'est le même
 raisonnement qu'[ADR-0009](adr/0009-generate-catalog-content-from-analyzer-descriptors.fr.md) : les
