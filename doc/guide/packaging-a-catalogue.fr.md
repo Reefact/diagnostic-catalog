@@ -130,7 +130,9 @@ Deux choses que le README d'un catalogue doit porter et que rien d'autre ne dira
   quiconque évalue le paquet, et une page de paquet n'a aucun voisin à côté d'elle. Dans ce dépôt, le
   générateur l'écrit entre des marqueurs `<!-- mirror:begin -->`, et `DocumentedMirrorTests` fait
   échouer un document dont le bandeau ne correspond pas à l'attribut `CatalogSource` que le générateur
-  a écrit — un bandeau que rien ne peut atteindre n'énonce rien.
+  a écrit — un bandeau que rien ne peut atteindre n'énonce rien. `dcat` écrit dans le README que votre
+  dossier de catalogue détient réellement : `README.md` si c'est votre convention, `README.en.md` et
+  `README.fr.md` si vous maintenez une paire. Une orthographe que vous ne gardez pas n'est pas signalée.
 * **Les autres catalogues que vous publiez, par identifiant de paquet.** Un lecteur arrivé d'une
   recherche voit ce catalogue et rien d'autre.
 
