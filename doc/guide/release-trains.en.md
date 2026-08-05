@@ -3,7 +3,7 @@
 🌍 **Languages:**  
 🇬🇧 English (this file) | 🇫🇷 [Français](./release-trains.fr.md)
 
-For anyone adding a project, cutting a release, or wondering why a commit needs a scope. Fourteen trains,
+For anyone adding a project, cutting a release, or wondering why a commit needs a scope. Fifteen trains,
 one declaration, and one rule that follows from both.
 
 ## Why not one version
@@ -12,7 +12,7 @@ A catalogue follows its vendor's pace. SonarSource ships often; the foundation i
 stable. Tie them to one number and every Sonar refresh moves the foundation's version — which tells
 every consumer of the foundation that something changed when nothing did.
 
-So the repository publishes on **fourteen independent lines**
+So the repository publishes on **fifteen independent lines**
 ([ADR-0002](../adr/0002-partition-releases-into-trains-by-commit-scope.en.md),
 [ADR-0015](../adr/0015-a-catalogues-version-runs-on-its-own-line.en.md)):
 
@@ -103,6 +103,9 @@ flowchart TB
     subgraph PA["publicapi"]
         PAC["DiagnosticCatalog.PublicApi"]
     end
+    subgraph BA["bannedapi"]
+        BAC["DiagnosticCatalog.BannedApi"]
+    end
     CF["DiagnosticCatalog.CodeFixes<br/><i>no train — bundled into the analyzers' package</i>"]
     GEN["eng/CatalogGen<br/><i>no train — bundled into dcat</i>"]
     A -. "packs" .-> CF
@@ -119,6 +122,7 @@ flowchart TB
     SYC -- "PackageReference" --> F
     ROC -- "PackageReference" --> F
     PAC -- "PackageReference" --> F
+    BAC -- "PackageReference" --> F
     SELF -- "PackageReference" --> F
 ```
 

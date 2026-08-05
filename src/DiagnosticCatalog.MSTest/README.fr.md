@@ -161,7 +161,7 @@ référencer une constante. Ce paquet ne couvre que les règles d'analyse `MSTES
 
 ## Voir aussi
 
-Douze catalogues frères sont générés depuis ce dépôt de la même façon, chacun lu depuis les descripteurs
+Treize catalogues frères sont générés depuis ce dépôt de la même façon, chacun lu depuis les descripteurs
 d'un seul analyseur :
 
 - [`DiagnosticCatalog.Sonar`](https://www.nuget.org/packages/DiagnosticCatalog.Sonar)
@@ -186,6 +186,8 @@ d'un seul analyseur :
   — les règles d'écriture d'analyseurs Roslyn (`RS1xxx`, `RS2xxx`).
 - [`DiagnosticCatalog.PublicApi`](https://www.nuget.org/packages/DiagnosticCatalog.PublicApi)
   — les règles de suivi d'API publique (`RS00xx`).
+- [`DiagnosticCatalog.BannedApi`](https://www.nuget.org/packages/DiagnosticCatalog.BannedApi)
+  — les règles d'API bannies (`RS0030`, `RS0031`, `RS0035`).
 - [`DiagnosticCatalog.Self`](https://www.nuget.org/packages/DiagnosticCatalog.Self)
   — les règles `DCATxxxx` de cette bibliothèque, pour supprimer un diagnostic que les analyseurs de
   catalogue signalent eux-mêmes.

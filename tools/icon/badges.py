@@ -30,6 +30,7 @@ BADGES = {
     "DiagnosticCatalog.Syslib": "SYS",
     "DiagnosticCatalog.Roslyn": "RS",
     "DiagnosticCatalog.PublicApi": "API",
+    "DiagnosticCatalog.BannedApi": "BAN",
 }
 
 

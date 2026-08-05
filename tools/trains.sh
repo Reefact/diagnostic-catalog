@@ -63,6 +63,7 @@ aspnetcore|aspnetcore-v|aspnetcore|the ASP.NET Core and Blazor rule catalog
 syslib|syslib-v|syslib|the .NET runtime source-generator rule catalog
 roslyn|roslyn-v|roslyn|the Roslyn analyzer-authoring rule catalog
 publicapi|publicapi-v|publicapi|the public-API tracking rule catalog
+bannedapi|bannedapi-v|bannedapi|the banned-API rule catalog
 ROWS
 }
 
