@@ -40,6 +40,7 @@ MAX_INK = 93.0
 # The badge each catalogue wears. Three letters at most, abbreviating a longer rule prefix
 # (ADR-0033); the prefix itself is what the catalogue's generated source calls its rules.
 BADGES = {
+    "DiagnosticCatalog.AspNetCore": "ASP",
     "DiagnosticCatalog.Sonar": "S",
     "DiagnosticCatalog.NetAnalyzers": "CA",
     "DiagnosticCatalog.CodeStyle": "IDE",
