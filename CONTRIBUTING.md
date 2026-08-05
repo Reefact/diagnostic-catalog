@@ -123,6 +123,27 @@ A catalogue is generated from an analyzer's own descriptors, never hand-written.
 Adding one is six steps, and the last three are the ones nothing else would
 remind you of — because nothing compiles a README, and nothing reads an icon.
 
+**Before any of them, ask nuget.org whether the analyzer ships in a package.** Ask
+even when it plainly does not — especially then. An analyzer that reaches a project
+through the SDK rather than a `PackageReference` is still, nearly always, distributed
+as a package, because that is how the SDK itself acquires it: the trimming and AOT
+analyzers ride in `Microsoft.NET.ILLink.Tasks`, and the ASP.NET Core ones in the
+`Microsoft.AspNetCore.App.Ref` targeting pack. Both are public; both were written off
+here as needing a manifest shape that does not exist, and neither needed anything
+(#123). The request that settles it costs one line:
+
+```
+curl -s https://api.nuget.org/v3-flatcontainer/<lowercased-package-id>/index.json
+```
+
+It matters because a package source is not merely easier — it is the only one that
+names a release **the consumer can also name**. `[assembly: CatalogSource]` exists so
+a reader can go and look at what was mirrored, and "whatever was installed on the
+machine that generated this" is not something anyone can look at. Only once that
+request comes back empty is a source on disk the right answer, and the manifest
+already describes four of those (`nupkg`, `projects`, `solution`, `assemblies`) —
+[`eng/catalogs.schema.json`](eng/catalogs.schema.json) says what each accepts.
+
 1. **Declare it in the manifest.** One entry in
    [`eng/catalogs.json`](eng/catalogs.json): the upstream package, the namespace,
    the container type, the output path. Both the generator and the nightly
