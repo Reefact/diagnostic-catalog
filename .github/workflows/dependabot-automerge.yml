@@ -19,6 +19,33 @@ name: dependabot-automerge
 # nothing: removing the branch-protection rule later would leave the switch on and
 # the hazard back. The guarantee lives in the required checks, and nowhere else.
 #
+# ARMING PROCEDURE — two repository-level facts must hold, and neither implies the other:
+#   1. `main` protected with the CI checks REQUIRED. This is what makes an armed merge
+#      safe, and it is the whole subject of ADR-0005.
+#   2. Settings -> General -> Pull Requests -> `Allow auto-merge` ENABLED. This is what
+#      makes an armed merge possible at all: with it off, GitHub refuses
+#      `enablePullRequestAutoMerge` outright and the arming step below fails.
+# ADR-0005's follow-up actions name only the first, because the second is not a safety
+# property and the decision is about safety. It is recorded here instead — that ADR points
+# at this file for the procedure, and a prerequisite written down nowhere is one that gets
+# discovered by a red check on someone else's pull request.
+#
+# WHAT THIS LANE CANNOT COVER, whatever the settings say: a pull request that changes a file
+# under .github/workflows/. GitHub refuses `enablePullRequestAutoMerge` from a GitHub App
+# token on such a pull request unless the token carries the `workflows` permission, and
+# GITHUB_TOKEN cannot carry it — that permission is deliberately absent from the vocabulary a
+# `permissions:` block accepts, so that no workflow can rewrite workflows. Only a PAT or an
+# App installation token has it, and holding one in a repository secret would put a durable
+# credential able to rewrite CI within reach of a job that runs on every Dependabot pull
+# request. That is a worse trade than merging those by hand, and merging them by hand is what
+# the refusal exists to obtain: a workflow diff is the one worth a human's eyes.
+#
+# The consequence is not marginal. `.github/dependabot.yml` runs two ecosystems, and every
+# `github-actions` update changes .github/workflows/ by definition, so this lane serves the
+# `nuget` half and no more. The step below therefore SKIPS what it cannot arm instead of
+# failing on it: nobody could ever make that failure go green, and a check that can only be
+# red is a check nobody reads.
+#
 # Why the job keys on the pull request's AUTHOR and not on `github.actor`. Auto-merge,
 # once enabled, SURVIVES later pushes to the head branch. `github.actor` names whoever
 # triggered the run, so a push by someone else made the job skip — leaving the
@@ -100,17 +127,98 @@ jobs:
             echo "state=foreign" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Ask whether this pull request changes a workflow
+        id: scope
+        # Answers the limit stated in this file's header: a pull request touching
+        # .github/workflows/ cannot be armed by this job's token, so the arming step below
+        # declines to try rather than failing on something no setting can fix.
+        #
+        # Asked of the CHANGED FILES and not of `package-ecosystem`, because the two are not the
+        # same question. The `github-actions` ecosystem also updates composite actions under
+        # .github/actions/, which are not workflow files and arm perfectly well; keying on the
+        # ecosystem would withhold the lane from those for no reason.
+        #
+        # Fail closed: an unreadable answer counts as a workflow change, which only ever
+        # withholds auto-merge — the direction that is always safe (see the disable step below).
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: |
+          set -euo pipefail
+          # Counted by jq inside gh rather than grepped out of a listing: `grep -q` closes the
+          # pipe on its first match, which under `pipefail` reports the whole pipeline as failed
+          # exactly when it matched — the one case that must not read as "no workflow touched".
+          if changed="$(gh pr view "$PR_URL" --json files \
+            --jq '[.files[].path | select(startswith(".github/workflows/"))] | length' 2>&1)"; then
+            echo "${changed} changed file(s) under .github/workflows/"
+          else
+            printf '%s\n' "$changed"
+            echo 'Could not read the changed files; counting this as a workflow change.'
+            changed=1
+          fi
+          if [ "$changed" -gt 0 ]; then
+            echo 'changes-a-workflow=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'changes-a-workflow=false' >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Note that a workflow change is merged by hand
+        # Not a failure, and deliberately not a step summary either: this is the ordinary
+        # outcome for every `github-actions` update, and an alarm raised on the ordinary
+        # outcome is noise. The log is where a reader who wonders why nothing was armed looks.
+        if: steps.scope.outputs.changes-a-workflow == 'true'
+        run: |
+          echo 'This pull request changes a file under .github/workflows/.'
+          echo 'GITHUB_TOKEN cannot arm auto-merge on such a pull request, and no repository'
+          echo 'setting changes that — see the header of .github/workflows/dependabot-automerge.yml.'
+          echo 'Nothing is wrong here; the pull request is merged by hand once its checks are green.'
+
       - name: Enable auto-merge for patch and minor updates
         # Major updates fall through this condition, so they never get auto-merge
         # and stay open for a human to review.
         if: >-
           steps.tip.outputs.state == 'dependabot-signed' &&
+          steps.scope.outputs.changes-a-workflow == 'false' &&
           (steps.meta.outputs.update-type == 'version-update:semver-patch' ||
            steps.meta.outputs.update-type == 'version-update:semver-minor')
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_URL: ${{ github.event.pull_request.html_url }}
-        run: gh pr merge --auto --merge "$PR_URL"
+        # Still fails when it cannot arm — the lane is dead until someone acts, and a warning
+        # on a pull request nobody is reading is not someone acting. What it stops doing is
+        # failing on a bare GraphQL string that names no switch: `Allow auto-merge` off is not
+        # a fault of the pull request under test, it is prerequisite 2 of the procedure in this
+        # file's header, and it will paint EVERY patch and minor update red until it is set.
+        # Any other error is left exactly as it comes out, because it means something else.
+        run: |
+          set -euo pipefail
+          if out="$(gh pr merge --auto --merge "$PR_URL" 2>&1)"; then
+            printf '%s\n' "$out"
+            exit 0
+          fi
+          printf '%s\n' "$out"
+          case "$out" in
+            *'Auto merge is not allowed for this repository'*)
+              echo "::error title=Auto-merge is switched off for this repository::Enable Settings -> General -> Pull Requests -> Allow auto-merge, then re-run this job."
+              # The backticks below are Markdown for the step summary, not command substitution, and
+              # the single quotes are what keeps them literal. Same waiver, same reason, as the drift
+              # summary in sonar-profile.yml.
+              # shellcheck disable=SC2016
+              {
+                echo '### Auto-merge is switched off for this repository'
+                echo
+                echo 'This pull request is fine. The repository is not configured to accept an armed'
+                echo 'merge, so there is nothing this workflow can do from here.'
+                echo
+                echo 'Enable **Settings → General → Pull Requests → Allow auto-merge**, then re-run'
+                echo 'this job. It is prerequisite 2 of the arming procedure at the top of'
+                echo '`.github/workflows/dependabot-automerge.yml`; prerequisite 1 — `main` protected'
+                echo 'with its CI checks required — is already in place and is what keeps the merge'
+                echo 'safe (ADR-0005).'
+              } >> "$GITHUB_STEP_SUMMARY"
+              ;;
+          esac
+          exit 1
 
       - name: Withdraw auto-merge from a foreign head
         # The step that closes the gap: auto-merge armed on Dependabot's own commit stays
