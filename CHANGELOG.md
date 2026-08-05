@@ -23,6 +23,7 @@ project:
 * [`trimming`](src/DiagnosticCatalog.Trimming/CHANGELOG.md)
 * [`aspnetcore`](src/DiagnosticCatalog.AspNetCore/CHANGELOG.md)
 * [`syslib`](src/DiagnosticCatalog.Syslib/CHANGELOG.md)
+* [`roslyn`](src/DiagnosticCatalog.Roslyn/CHANGELOG.md)
 
 ## [Unreleased]
 

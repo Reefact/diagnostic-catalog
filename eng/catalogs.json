@@ -118,6 +118,25 @@
     },
     {
       "$comment": [
+        "The Roslyn analyzer-authoring rules. Microsoft.CodeAnalysis.Analyzers reaches a project",
+        "TRANSITIVELY through Microsoft.CodeAnalysis.CSharp, so anyone writing an analyzer runs them",
+        "without having asked — the same shape as xUnit's and MSTest's.",
+        "",
+        "Only THIS package is read, not Microsoft.CodeAnalysis.PublicApiAnalyzers or",
+        "BannedApiAnalyzers, though all three carry the RS prefix. Their ids partition cleanly",
+        "(RS00xx there, RS10xx and RS20xx here), but the badge would not: ADR-0032 puts the rule",
+        "prefix on it and ADR-0033 caps it at three letters, so two catalogues of RS rules would want",
+        "the same two letters and PackageIconTests asserts that no two icons match. Reading several",
+        "packages into ONE catalogue has no manifest shape either — `package` is a single string,",
+        "unlike `projects` and `assemblies`. Cataloguing RS00xx therefore needs a decision first."
+      ],
+      "package": "Microsoft.CodeAnalysis.Analyzers",
+      "namespace": "DiagnosticCatalog.Roslyn",
+      "container": "RoslynRule",
+      "output": "../src/DiagnosticCatalog.Roslyn/RoslynRules.g.cs"
+    },
+    {
+      "$comment": [
         "The xUnit.net analyzers. They reach a project TRANSITIVELY — xunit depends on",
         "xunit.analyzers — so a test project has them without anybody choosing them, which is why",
         "their rules are suppressed in source rather than configured away in .editorconfig."
