@@ -279,13 +279,13 @@ public sealed class AddRuleMemberCodeFixProvider : CodeFixProvider
             // example in this repository and in the specification is written with.
             return addition
                 .WithLeadingTrivia(Indent(type.CloseBraceToken.LeadingTrivia).Add(SyntaxFactory.Whitespace(Level)))
-                .WithTrailingTrivia(NewLine(type.OpenBraceToken, root));
+                .WithTrailingTrivia(LineEndings.Of(type.OpenBraceToken, root));
         }
 
         return addition
             .WithLeadingTrivia(Indent(anchor.GetLeadingTrivia()))
             .WithTrailingTrivia(OnItsOwnLine(anchor)
-                ? NewLine(anchor.GetFirstToken().GetPreviousToken(), root)
+                ? LineEndings.Of(anchor.GetFirstToken().GetPreviousToken(), root)
                 : SyntaxFactory.Space);
     }
 
@@ -323,34 +323,6 @@ public sealed class AddRuleMemberCodeFixProvider : CodeFixProvider
             .Any(trivia => trivia.IsKind(SyntaxKind.EndOfLineTrivia))
         || member.GetLeadingTrivia().Any(trivia => trivia.IsKind(SyntaxKind.EndOfLineTrivia));
 
-    /// <summary>The line ending in use where the member is going.</summary>
-    /// <remarks>
-    /// Read from the document rather than taken from <c>SyntaxFactory.CarriageReturnLineFeed</c> or from
-    /// the environment: a fix that wrote CRLF into an LF file, or the reverse, would show up in somebody's
-    /// diff as a change to a line it never touched.
-    /// <para>
-    /// From the line the insertion point sits on, and only then from anywhere in the file. A file with
-    /// mixed endings is not a hypothetical — a generated header pasted onto hand-written source is enough —
-    /// and there the first ending in the document is nobody's line ending in particular.
-    /// </para>
-    /// </remarks>
-    private static SyntaxTrivia NewLine(SyntaxToken preceding, SyntaxNode root)
-    {
-        SyntaxTrivia[] local = preceding.TrailingTrivia
-            .Where(trivia => trivia.IsKind(SyntaxKind.EndOfLineTrivia))
-            .Take(1)
-            .ToArray();
-
-        if (local.Length > 0) { return local[0]; }
-
-        SyntaxTrivia[] anywhere = root.DescendantTrivia()
-            .Where(trivia => trivia.IsKind(SyntaxKind.EndOfLineTrivia))
-            .Take(1)
-            .ToArray();
-
-        // No line ending anywhere means a single-line file, which has no layout to preserve.
-        return anywhere.Length > 0 ? anywhere[0] : SyntaxFactory.LineFeed;
-    }
 
     private static FieldDeclarationSyntax Declaration(TypeDeclarationSyntax type, string member)
     {

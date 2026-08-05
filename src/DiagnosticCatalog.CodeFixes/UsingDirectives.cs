@@ -66,10 +66,22 @@ internal static class UsingDirectives
     /// sorted, so that regenerating the same fix produces the same file.
     /// </para>
     /// </remarks>
-    internal static CompilationUnitSyntax Add(CompilationUnitSyntax unit, IReadOnlyList<string> namespaces) =>
-        unit.AddUsings([.. namespaces.Select(@namespace => SyntaxFactory
+    internal static CompilationUnitSyntax Add(CompilationUnitSyntax unit, IReadOnlyList<string> namespaces)
+    {
+        // The file's own ending, read from the last import the author wrote and only then from
+        // anywhere in the file. See LineEndings for what the two constants got wrong instead — one
+        // of them wrote CRLF into every file, the other wrote whatever the machine running the fix
+        // uses, and neither looked at the document.
+        SyntaxTrivia newline = LineEndings.Of(LastImport(unit), unit);
+
+        return unit.AddUsings([.. namespaces.Select(@namespace => SyntaxFactory
             .UsingDirective(SyntaxFactory.ParseName(@namespace))
-            .WithTrailingTrivia(SyntaxFactory.ElasticCarriageReturnLineFeed))]);
+            .WithTrailingTrivia(newline))]);
+    }
+
+    /// <summary>The token the new import follows, or none when the file imports nothing yet.</summary>
+    private static SyntaxToken LastImport(CompilationUnitSyntax unit) =>
+        unit.Usings.Count > 0 ? unit.Usings[unit.Usings.Count - 1].GetLastToken() : default;
 
     /// <summary>The declaration's full name, since a nested block declares only its own segment.</summary>
     private static string FullName(BaseNamespaceDeclarationSyntax declaration)
