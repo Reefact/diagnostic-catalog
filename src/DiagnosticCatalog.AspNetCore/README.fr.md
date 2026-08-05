@@ -45,7 +45,8 @@ using DiagnosticCatalog.AspNetCore;
 ```
 
 Le jour où une règle passe dans une autre catégorie, la seconde version la suit et la première
-continue de compiler pendant qu'elle cesse discrètement de correspondre.
+reste à nommer une catégorie que la règle ne porte plus — en silence, et aussi longtemps que la
+ligne survit.
 
 ## Celle qu'on ne veut surtout pas rater
 

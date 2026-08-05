@@ -625,8 +625,8 @@ laquelle une règle atteint sa catégorie — §8.5, signalé par `DCAT0011`
 Un conteneur généré est `internal` ([ADR-0026](adr/0026-reach-a-category-only-through-the-rule-that-carries-it.fr.md)),
 donc aucun correctif ne peut proposer `SonarCategory.MajorCodeSmell` à un
 consommateur : nommer une catégorie hors de sa règle survit à la recatégorisation
-de cette règle par le fournisseur, et la suppression cesse alors de correspondre
-en silence.
+de cette règle par le fournisseur, et la suppression affirme alors une catégorie
+que la règle ne porte plus — ce que, d'après la §3.2, rien ne signalera jamais.
 
 Comme les deux autres attributs, il ne doit jamais être rendu `[Conditional]`
 (§3.4).
