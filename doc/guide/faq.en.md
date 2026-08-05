@@ -31,30 +31,48 @@ before an upgrade — gets an answer that is quietly short.
 
 Because there is nothing to reference, and nothing in it to reference.
 
-**Nothing to reference.** Each of these packages ships its assemblies under `analyzers/dotnet/cs/`,
-with no `lib/` and no `ref/` folder, and declares
-`<developmentDependency>true</developmentDependency>`. NuGet hands such an assembly to the compiler
-as an analyzer plugin; it never enters the consumer's reference set. There is no `using` to write,
-whatever the assembly holds.
+**Nothing to reference.** Eight of these packages ship their assemblies under `analyzers/`, with no
+`lib/` and no `ref/` folder, and declare `<developmentDependency>true</developmentDependency>`.
+NuGet hands such an assembly to the compiler as an analyzer plugin; it never enters the consumer's
+reference set. There is no `using` to write, whatever the assembly holds.
 
-**Nothing in it to reference.** Measured over the metadata of every assembly in the five packages
-the catalogues mirror, satellite resources aside:
+The other three arrive through the SDK rather than through a `PackageReference`, and two of them —
+the ASP.NET Core and .NET runtime targeting packs — do carry a `ref/` folder every project compiles
+against. Their analyzers are not in it: they sit beside it under `analyzers/dotnet/cs/`, handed over
+as plugins like all the rest. Reading both packs whole, every reference assembly included, turns up
+no rule-id constant outside that folder — the half you can reference is the half with nothing on it.
+
+**Nothing in it to reference.** Measured over the metadata of every analyzer assembly in the eleven
+packages the catalogues mirror, satellite resources aside:
 
 | Package | Public types | `public const` | Rule-id or category constants |
 | --- | ---: | ---: | ---: |
 | `SonarAnalyzer.CSharp` 10.31.0.145097 | 1801 | 861 | 0 |
 | `StyleCop.Analyzers.Unstable` 1.2.0.556 | 6 | 12 | 0 |
-| `Microsoft.CodeAnalysis.NetAnalyzers` 10.0.302 | 740 | 128 | 7 |
+| `Microsoft.CodeAnalysis.NetAnalyzers` 10.0.302 | 740 | 128 | 9 |
 | `Microsoft.CodeAnalysis.CSharp.CodeStyle` 5.6.0 | 105 | 28 | 0 |
 | `xunit.analyzers` 1.27.0 | 178 | 219 | 0 |
+| `NUnit.Analyzers` 4.14.0 | 103 | 1 | 0 |
+| `MSTest.Analyzers` 4.3.3 | 182 | 0 | 0 |
+| `Microsoft.CodeAnalysis.Analyzers` 5.6.0 | 309 | 90 | 0 |
+| `Microsoft.NET.ILLink.Tasks` 10.0.10 | 80 | 262 | 0 |
+| `Microsoft.AspNetCore.App.Ref` 10.0.10 | 96 | 435 | 0 |
+| `Microsoft.NETCore.App.Ref` 10.0.10 | 260 | 369 | 37 |
 
 StyleCop is the clearest: 1314 types across its two assemblies, six of them public, and not one of
-those an analyzer. `xunit.analyzers` is the sharpest: 219 public constants, more than any of the
-others, and not one of them a rule id. NetAnalyzers is the exception that makes the point — seven
-`RuleId` constants (`CA1008`, `CA1052`, `CA1069`, `CA1708`, `CA1715`, `CA1821`, `CA2214`) against
-the 318 rules its catalogue holds. That is a leak, not a contract.
+those an analyzer. MSTest is the flattest: 182 public types with not a single public constant among
+them. `xunit.analyzers` is the sharpest: more public constants than it has public types — 219
+against 178 — and not one of them a rule id.
 
-**And a category is nowhere a constant at all** — zero, across all five. A category exists only on
+Two packages leak, and neither leaks a contract. NetAnalyzers declares nine rule ids as public
+constants — seven named `RuleId` (`CA1008`, `CA1052`, `CA1069`, `CA1708`, `CA1715`, `CA1821`,
+`CA2214`) and two more on the P/Invoke analyzer (`CA1401`, `CA2101`) — against the 318 rules its
+catalogue holds. The runtime pack leaks the other way round: its source generators declare 37 such
+constants, 31 distinct `SYSLIB` ids, against the 13 rules its catalogue holds. More ids than the
+catalogue carries, and still nothing to take: every one of them sits in a generator assembly the
+compiler loads as a plugin, which is the paragraph above.
+
+**And a category is nowhere a constant at all** — zero, across all eleven. A category exists only on
 the `DiagnosticDescriptor` instances an analyzer builds at run time, out of localisable resources.
 An attribute argument must be a compile-time constant, so even reflecting over
 `SupportedDiagnostics` yields a `string` that cannot occupy the position.

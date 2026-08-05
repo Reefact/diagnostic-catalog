@@ -46,8 +46,8 @@ using DiagnosticCatalog.MSTest;
     Justification = "The overload this rule suggests does not exist for this comparer.")]
 ```
 
-The day a rule moves to another category, the second version follows it and the first keeps
-compiling while it quietly stops matching.
+The day a rule moves to another category, the second version follows it and the first is left
+naming a category the rule no longer carries — silently, and for as long as the line survives.
 
 ## Installation
 

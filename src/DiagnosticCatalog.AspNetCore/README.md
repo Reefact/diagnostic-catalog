@@ -40,8 +40,8 @@ using DiagnosticCatalog.AspNetCore;
     Justification = "The parameter is read by the model binder, not by the handler.")]
 ```
 
-The day a rule moves to another category, the second version follows it and the first keeps
-compiling while it quietly stops matching.
+The day a rule moves to another category, the second version follows it and the first is left
+naming a category the rule no longer carries — silently, and for as long as the line survives.
 
 ## The one you do not want to get wrong
 
