@@ -54,4 +54,26 @@ python3 tools/icon/render-icon.py ZZ "$outside/rendered.png" >/dev/null 2>&1 || 
 assert_equals 'an icon straight out of the renderer satisfies the checker' \
   'matches' "$(verdict "$outside/rendered.png")"
 
+# A catalogue that ships an icon nothing declares. Its mark is right — it is a copy of a real
+# icon — so the comparison passes it, which is exactly how the ASP.NET Core icon reached main
+# hand-drawn. Only the roster catches it, so the fixture is a whole tree rather than one file.
+tree="$(mktemp -d)"
+trap 'rm -rf "$outside" "$tree"' EXIT
+mkdir -p "$tree/assets"
+cp assets/icon-template.svg "$tree/assets/"
+for icon in src/DiagnosticCatalog.*/icon.png; do
+  project="$(basename "$(dirname "$icon")")"
+  mkdir -p "$tree/src/$project"
+  cp "$icon" "$tree/src/$project/"
+done
+
+assert_equals 'a tree whose catalogues are all declared passes' \
+  'matches' "$(verdict --root "$tree")"
+
+mkdir -p "$tree/src/DiagnosticCatalog.Undeclared"
+cp src/DiagnosticCatalog.StyleCop/icon.png "$tree/src/DiagnosticCatalog.Undeclared/"
+
+assert_equals 'a catalogue absent from the badge table is refused, mark or no mark' \
+  'rejected' "$(verdict --root "$tree")"
+
 finish
