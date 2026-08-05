@@ -13,7 +13,7 @@ très stable. Liez-les à un seul numéro et chaque rafraîchissement Sonar fait
 fondation — ce qui annonce à tous ses consommateurs que quelque chose a changé alors que rien n'a
 bougé.
 
-Le dépôt publie donc sur **six lignes indépendantes**
+Le dépôt publie donc sur **sept lignes indépendantes**
 ([ADR-0002](../adr/0002-partition-releases-into-trains-by-commit-scope.fr.md),
 [ADR-0015](../adr/0015-a-catalogues-version-runs-on-its-own-line.fr.md)) :
 
@@ -25,6 +25,7 @@ Le dépôt publie donc sur **six lignes indépendantes**
 | `netanalyzers` | `netanalyzers-v` | `netanalyzers` | Le catalogue de règles des analyseurs .NET de Microsoft |
 | `stylecop` | `stylecop-v` | `stylecop` | Le catalogue de règles StyleCop |
 | `codestyle` | `codestyle-v` | `codestyle` | Le catalogue de règles de style IDE de Roslyn |
+| `xunit` | `xunit-v` | `xunit` | Le catalogue de règles des analyseurs xUnit.net |
 
 Ce tableau vit une seule fois, dans [`tools/trains.sh`](../../tools/trains.sh). Les scripts
 d'empaquetage et de notes de version le **sourcent** : ce qu'une release publie et ce que ses notes
@@ -76,6 +77,9 @@ flowchart TB
     subgraph I["codestyle"]
         CS["DiagnosticCatalog.CodeStyle"]
     end
+    subgraph X["xunit"]
+        XU["DiagnosticCatalog.Xunit"]
+    end
     CF["DiagnosticCatalog.CodeFixes<br/><i>aucun train — embarqué dans le paquet des analyseurs</i>"]
     GEN["eng/CatalogGen<br/><i>aucun train — embarqué dans dcat</i>"]
     A -. "empaquette" .-> CF
@@ -84,6 +88,7 @@ flowchart TB
     NA -- "PackageReference" --> F
     SC -- "PackageReference" --> F
     CS -- "PackageReference" --> F
+    XU -- "PackageReference" --> F
     SELF -- "PackageReference" --> F
 ```
 

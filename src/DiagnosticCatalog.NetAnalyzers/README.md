@@ -167,7 +167,7 @@ constant. This package covers the `CAxxxx` analyzer rules only, not `CSxxxx` or 
 
 ## See also
 
-Four sibling catalogues are generated from this repository the same way, each read from one
+Five sibling catalogues are generated from this repository the same way, each read from one
 analyzer's own descriptors:
 
 - [`DiagnosticCatalog.Sonar`](https://www.nuget.org/packages/DiagnosticCatalog.Sonar)
@@ -176,6 +176,8 @@ analyzer's own descriptors:
   — the StyleCop.Analyzers (`SAxxxx`) rules.
 - [`DiagnosticCatalog.CodeStyle`](https://www.nuget.org/packages/DiagnosticCatalog.CodeStyle)
   — the Roslyn IDE code-style (`IDExxxx`) rules.
+- [`DiagnosticCatalog.Xunit`](https://www.nuget.org/packages/DiagnosticCatalog.Xunit)
+  — the xunit.analyzers (`xUnitxxxx`) rules.
 - [`DiagnosticCatalog.Self`](https://www.nuget.org/packages/DiagnosticCatalog.Self)
   — this library's own `DCATxxxx` rules, for suppressing a diagnostic the catalogue analyzers
   themselves report.

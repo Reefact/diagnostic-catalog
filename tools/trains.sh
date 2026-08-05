@@ -55,6 +55,7 @@ sonar|sonar-v|sonar|the SonarQube rule catalog
 netanalyzers|netanalyzers-v|netanalyzers|the Microsoft .NET analyzer rule catalog
 stylecop|stylecop-v|stylecop|the StyleCop rule catalog
 codestyle|codestyle-v|codestyle|the Roslyn IDE code-style rule catalog
+xunit|xunit-v|xunit|the xUnit.net analyzer rule catalog
 ROWS
 }
 

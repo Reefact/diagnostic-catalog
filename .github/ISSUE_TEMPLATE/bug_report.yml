@@ -21,6 +21,7 @@ body:
         - DiagnosticCatalog.NetAnalyzers
         - DiagnosticCatalog.StyleCop
         - DiagnosticCatalog.CodeStyle
+        - DiagnosticCatalog.Xunit
         - DiagnosticCatalog.Self
         - DiagnosticCatalog.Cli (the dcat tool)
         - Not sure

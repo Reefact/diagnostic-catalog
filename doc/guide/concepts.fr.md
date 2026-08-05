@@ -84,10 +84,12 @@ flowchart TB
         N["DiagnosticCatalog.NetAnalyzers"]
         T["DiagnosticCatalog.StyleCop"]
         CS["DiagnosticCatalog.CodeStyle"]
+        XU["DiagnosticCatalog.Xunit"]
         S --> F
         N --> F
         T --> F
         CS --> F
+        XU --> F
     end
     subgraph SOON["Construits ici, pas encore publiés"]
         A["DiagnosticCatalog.Analyzers<br/><i>les diagnostics DCAT + correctifs</i>"]
@@ -105,7 +107,7 @@ flowchart TB
 `[DiagnosticCategory]`, `[assembly: CatalogSource]`. Vous le référencez pour déclarer un catalogue à
 vous. Un catalogue que vous consommez le référence pour vous.
 
-**Les quatre catalogues d'éditeurs** sont des constantes. En référencer un vous donne des références
+**Les cinq catalogues d'éditeurs** sont des constantes. En référencer un vous donne des références
 vérifiées à la compilation vers les règles de cet analyseur — ce qui est toute la garantie, et elle
 vient du compilateur C# plutôt que de quoi que ce soit que cette bibliothèque exécute.
 
@@ -118,7 +120,7 @@ suivante.
 diagnostics de cette bibliothèque soit aussi une référence vérifiée.
 
 **`dcat`** est le générateur en outil .NET. Il lit les assemblages d'un analyseur et écrit un
-catalogue — de la même façon que les quatre catalogues d'éditeurs de ce dépôt sont écrits.
+catalogue — de la même façon que les cinq catalogues d'éditeurs de ce dépôt sont écrits.
 
 ## Ce que vous obtenez aujourd'hui, exactement
 

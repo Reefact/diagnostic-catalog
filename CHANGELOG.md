@@ -17,6 +17,7 @@ project:
 * [`netanalyzers`](src/DiagnosticCatalog.NetAnalyzers/CHANGELOG.md)
 * [`stylecop`](src/DiagnosticCatalog.StyleCop/CHANGELOG.md)
 * [`codestyle`](src/DiagnosticCatalog.CodeStyle/CHANGELOG.md)
+* [`xunit`](src/DiagnosticCatalog.Xunit/CHANGELOG.md)
 
 ## [Unreleased]
 
