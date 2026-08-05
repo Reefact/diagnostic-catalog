@@ -27,8 +27,10 @@ namespace DiagnosticCatalog.AspNetCore;
 /// write <c>SomeRule.Sxxxx.Category</c>, never the category constant directly. The two
 /// spellings fold to the same string today and stop agreeing the day the vendor moves the
 /// rule to another category -- the rule member follows, a category named on its own does
-/// not, and the suppression silently stops matching. Keeping this class out of the public
-/// surface makes that decoupling unwritable rather than merely discouraged.
+/// not, and the suppression is left asserting a category the rule no longer carries.
+/// Nothing reports that: Roslyn ignores the category when it matches a suppression, so the
+/// mistake has no symptom at all. Keeping this class out of the public surface makes that
+/// decoupling unwritable rather than merely discouraged.
 /// The public <c>Category</c> constant on each rule is initialised from here and folds to
 /// the literal at compile time, so a consumer loses nothing.
 /// </remarks>
