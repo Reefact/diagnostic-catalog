@@ -1,43 +1,45 @@
-# DiagnosticCatalog.Xunit
+# DiagnosticCatalog.NUnit
 
-The **xunit.analyzers** rules as strongly referenced constants, so that
+The **NUnit.Analyzers** rules as strongly referenced constants, so that
 `SuppressMessageAttribute` takes compile-checked references instead of magic strings.
 
 <!-- mirror:begin -->
-> ## 🪞 Mirrors `xunit.analyzers 1.27.0`
+> ## 🪞 Mirrors `NUnit.Analyzers 4.14.0`
 >
-> **90 rules, 3 categories**, every identifier and category read
+> **99 rules, 3 categories**, every identifier and category read
 > from that release's own analyzers. Regenerated 2026-08-05.
 <!-- mirror:end -->
 
-> Unofficial. Not affiliated with, endorsed by, or supported by the xUnit.net project.
+> Unofficial. Not affiliated with, endorsed by, or supported by the NUnit project.
 
 ## Why
 
-Every xUnit test project already runs these analyzers, and almost nobody installed them on
-purpose: `xunit` depends on `xunit.analyzers`, so they arrive with the test framework. That
-is what makes their rules the ones people actually suppress **in source** — a test that
-deliberately asserts on a literal, a theory whose data cannot be inlined, an assertion the
-analyzer would rather see written another way. These are local exceptions with a reason,
-which is a suppression's job rather than an `.editorconfig` entry's.
+Almost every NUnit test project runs these analyzers without anybody having decided to:
+`dotnet new nunit` writes `NUnit.Analyzers` into the project file it generates, beside
+`NUnit` itself. They are not a transitive dependency — `NUnit` declares none — they simply
+arrive with the template and stay.
+
+That is what makes their rules the ones people suppress **in source**. A rule you switched
+on gets tuned in `.editorconfig`; a rule that came with the template gets an exception at
+the one place it is wrong, with a `Justification` beside the test that earns it.
 
 ```csharp
-[SuppressMessage("Assertions", "xUnit2013:Do not use equality check to check for collection size", ...)]
+[SuppressMessage("Assertion", "NUnit2007:The actual value should not be a constant", ...)]
 ```
 
 Three strings, and nothing checks any of them. Get the id wrong and the suppression silently
 does nothing — the warning simply stays. Get the category wrong and **nothing happens at
 all**, ever: the .NET platform never reads that argument, so no error, no warning and no
-failing test will tell you. Would you have known that `xUnit2013` is `"Assertions"` while
-`xUnit1013` is `"Usage"` and `xUnit3000` is `"Extensibility"`?
+failing test will tell you. Would you have known that NUnit's category is `"Assertion"`
+singular, where xUnit's is `"Assertions"` plural?
 
 ```csharp
-using DiagnosticCatalog.Xunit;
+using DiagnosticCatalog.NUnit;
 
 [SuppressMessage(
-    XunitRule.xUnit2013.Category,
-    XunitRule.xUnit2013.Id,
-    Justification = "The count is the subject of this test.")]
+    NUnitRule.NUnit2007.Category,
+    NUnitRule.NUnit2007.Id,
+    Justification = "The constant is the subject of this test.")]
 ```
 
 The day a rule moves to another category, the second version follows it and the first keeps
@@ -46,7 +48,7 @@ compiling while it quietly stops matching.
 ## Installation
 
 ```xml
-<PackageReference Include="DiagnosticCatalog.Xunit" Version="1.0.0" />
+<PackageReference Include="DiagnosticCatalog.NUnit" Version="1.0.0" />
 ```
 
 This package only supplies the constants. The checks that validate rule declarations and
@@ -54,47 +56,41 @@ their use sites ship separately in `DiagnosticCatalog.Analyzers`.
 
 ## What is in the package
 
-90 rules across 3 categories, and it is the tidiest of the catalogues here: every rule
-carries the title its descriptor declares, and **every one of the 90 carries a help link**
-into xunit.net's own rule pages.
+99 rules across 3 categories, and **every one of the 99 carries both the title its descriptor
+declares and a help link** into NUnit's own rule pages — a completeness only the xUnit
+catalogue here matches.
 
 | Category | Rules | What they are about |
 | --- | --- | --- |
-| `Usage` | 54 | How tests, theories and their data are declared — the `xUnit1xxx` range |
-| `Assertions` | 32 | Assertions that would read better written another way — `xUnit2xxx` |
-| `Extensibility` | 4 | Extending the framework itself — `xUnit3xxx` |
+| `Assertion` | 59 | Assertions, and the classic-model constraints that replace them — the `NUnit2xxx` range |
+| `Structure` | 38 | How tests, fixtures and their parameters are declared — `NUnit1xxx` |
+| `Style` | 2 | How an assertion is written rather than whether it is right — `NUnit3xxx` |
 
 ```csharp
 [DiagnosticRule]
-public static class xUnit2013
+public static class NUnit2007
 {
-    public const string Id = nameof(xUnit2013);
-    public const string Category = XunitCategory.Assertions;
-    public const string HelpLinkUri = "https://xunit.net/xunit.analyzers/rules/xUnit2013";
+    public const string Id = nameof(NUnit2007);
+    public const string Category = NUnitCategory.Assertion;
+    public const string HelpLinkUri = "https://github.com/nunit/nunit.analyzers/tree/master/documentation/NUnit2007.md";
 }
 ```
 
-The identifiers keep the vendor's own casing, `xUnit2013` and not `XUnit2013`, because a
-catalogue's member name is the identifier a suppression carries — renaming it to suit C#
-convention would make the constant and the string it stands for disagree.
+## The category is `Assertion`, not `Assertions`
 
-## A note on how you already have these analyzers
-
-You almost certainly do not need to install `xunit.analyzers`: `xunit` depends on it, so a
-test project has the rules whether or not anybody asked. This catalogue names them; where
-they come from is your test project's business.
-
-That transitive arrival is also why this catalogue exists. A rule you chose to switch on gets
-tuned in `.editorconfig`; a rule that arrives with the framework gets suppressed at the one
-place it is wrong, with a `Justification` beside the test that earns it.
+If you also run xUnit somewhere, this is the trap worth naming. xUnit files its assertion
+rules under `"Assertions"` and NUnit files its own under `"Assertion"` — one letter apart,
+on two analyzers a solution may well run side by side. Nothing in the platform reads that
+argument, so getting it wrong costs no error and no warning, ever. Reaching it through
+`NUnitRule.NUnit2007.Category` removes the question.
 
 ## Categories declared once
 
-`XunitCategory` holds each category once, and the rules reference it — so a category's
+`NUnitCategory` holds each category once, and the rules reference it — so a category's
 spelling exists in exactly one place. It is **internal by design**: a suppression reaches a
-category through the rule that carries it, `XunitRule.xUnit2013.Category`, and never through
+category through the rule that carries it, `NUnitRule.NUnit2007.Category`, and never through
 the category constant on its own. The two fold to the same string today and stop agreeing the
-day xUnit moves the rule
+day NUnit moves the rule
 ([ADR-0026](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/adr/0026-reach-a-category-only-through-the-rule-that-carries-it.en.md)).
 
 ## How it is produced
@@ -106,9 +102,9 @@ drifted.
 
 ```
 dotnet run --project src/DiagnosticCatalog.Cli -- generate \
-    --package xunit.analyzers --package-version latest \
-    --namespace DiagnosticCatalog.Xunit --container XunitRule \
-    --output src/DiagnosticCatalog.Xunit/XunitRules.g.cs
+    --package NUnit.Analyzers --package-version latest \
+    --namespace DiagnosticCatalog.NUnit --container NUnitRule \
+    --output src/DiagnosticCatalog.NUnit/NUnitRules.g.cs
 ```
 
 ## How it stays current
@@ -127,11 +123,11 @@ breaks their recompilation.
 
 ## How it reaches nuget.org
 
-This catalogue rides the `xunit` [release train](https://github.com/Reefact/diagnostic-catalog/blob/main/CONTRIBUTING.md)
-and versions independently of the foundation, so it can follow xunit.analyzers' releases
+This catalogue rides the `nunit` [release train](https://github.com/Reefact/diagnostic-catalog/blob/main/CONTRIBUTING.md)
+and versions independently of the foundation, so it can follow NUnit.Analyzers' releases
 without dragging anything else along.
 
-Publishing is not part of the nightly. A maintainer pushes an `xunit-vX.Y.Z` tag, and the
+Publishing is not part of the nightly. A maintainer pushes an `nunit-vX.Y.Z` tag, and the
 release workflow packs the package, embeds an SPDX SBOM, and publishes through NuGet
 [Trusted Publishing](https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing)
 with signed build provenance — no long-lived API key exists anywhere to leak.
@@ -140,7 +136,7 @@ with signed build provenance — no long-lived API key exists anywhere to leak.
 
 `[SuppressMessage]` cannot suppress **compiler** warnings — `CS0219` and friends need
 `#pragma warning disable`, which takes bare identifiers and so can never reference a
-constant. This package covers the `xUnitxxxx` analyzer rules only.
+constant. This package covers the `NUnitxxxx` analyzer rules only.
 
 ## See also
 
@@ -155,8 +151,8 @@ analyzer's own descriptors:
   — the StyleCop.Analyzers (`SAxxxx`) rules.
 - [`DiagnosticCatalog.CodeStyle`](https://www.nuget.org/packages/DiagnosticCatalog.CodeStyle)
   — the Roslyn IDE code-style (`IDExxxx`) rules.
-- [`DiagnosticCatalog.NUnit`](https://www.nuget.org/packages/DiagnosticCatalog.NUnit)
-  — the NUnit.Analyzers (`NUnitxxxx`) rules.
+- [`DiagnosticCatalog.Xunit`](https://www.nuget.org/packages/DiagnosticCatalog.Xunit)
+  — the xunit.analyzers (`xUnitxxxx`) rules.
 - [`DiagnosticCatalog.Self`](https://www.nuget.org/packages/DiagnosticCatalog.Self)
   — this library's own `DCATxxxx` rules, for suppressing a diagnostic the catalogue analyzers
   themselves report.
@@ -192,4 +188,4 @@ is the normative version of all of it.
 ## License
 
 Apache-2.0. The rule identifiers, categories, titles and help links are read from a
-third-party analyzer, which is itself Apache-2.0 licensed.
+third-party analyzer, which is itself MIT-licensed.

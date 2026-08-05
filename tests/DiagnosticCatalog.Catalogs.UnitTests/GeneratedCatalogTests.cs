@@ -25,6 +25,7 @@ public sealed class GeneratedCatalogTests
         "DiagnosticCatalog.StyleCop",
         "DiagnosticCatalog.CodeStyle",
         "DiagnosticCatalog.Xunit",
+        "DiagnosticCatalog.NUnit",
     ];
 
     private static Assembly Load(string name) =>

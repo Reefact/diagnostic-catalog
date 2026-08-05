@@ -25,6 +25,7 @@ public sealed class GeneratedCatalogSourceTests
         "StyleCopRules.g.cs",
         "CodeStyleRules.g.cs",
         "XunitRules.g.cs",
+        "NUnitRules.g.cs",
     ];
 
     /// <summary>

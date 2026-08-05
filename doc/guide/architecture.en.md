@@ -20,6 +20,7 @@ flowchart TB
         T["DiagnosticCatalog.StyleCop"]
         CS["DiagnosticCatalog.CodeStyle"]
         XU["DiagnosticCatalog.Xunit"]
+        NU["DiagnosticCatalog.NUnit"]
         CLI["DiagnosticCatalog.Cli<br/><i>ships as dcat</i>"]
         A -. "bundles" .-> CF
         S --> F
@@ -27,6 +28,7 @@ flowchart TB
         T --> F
         CS --> F
         XU --> F
+        NU --> F
         SELF --> F
     end
     subgraph ENG["eng/ — build-time only"]

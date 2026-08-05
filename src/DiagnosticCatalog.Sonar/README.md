@@ -210,7 +210,7 @@ constant. This package covers Sonar's `Sxxxx` analyzer rules only.
 
 ## See also
 
-Five sibling catalogues are generated from this repository the same way, each read from one
+Six sibling catalogues are generated from this repository the same way, each read from one
 analyzer's own descriptors:
 
 - [`DiagnosticCatalog.NetAnalyzers`](https://www.nuget.org/packages/DiagnosticCatalog.NetAnalyzers)
@@ -221,6 +221,8 @@ analyzer's own descriptors:
   — the Roslyn IDE code-style (`IDExxxx`) rules.
 - [`DiagnosticCatalog.Xunit`](https://www.nuget.org/packages/DiagnosticCatalog.Xunit)
   — the xunit.analyzers (`xUnitxxxx`) rules.
+- [`DiagnosticCatalog.NUnit`](https://www.nuget.org/packages/DiagnosticCatalog.NUnit)
+  — the NUnit.Analyzers (`NUnitxxxx`) rules.
 - [`DiagnosticCatalog.Self`](https://www.nuget.org/packages/DiagnosticCatalog.Self)
   — this library's own `DCATxxxx` rules, for suppressing a diagnostic the catalogue analyzers
   themselves report.

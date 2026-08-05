@@ -9,6 +9,7 @@
     <Project Path="src/DiagnosticCatalog.CodeFixes/DiagnosticCatalog.CodeFixes.csproj" />
     <Project Path="src/DiagnosticCatalog.CodeStyle/DiagnosticCatalog.CodeStyle.csproj" />
     <Project Path="src/DiagnosticCatalog.NetAnalyzers/DiagnosticCatalog.NetAnalyzers.csproj" />
+    <Project Path="src/DiagnosticCatalog.NUnit/DiagnosticCatalog.NUnit.csproj" />
     <Project Path="src/DiagnosticCatalog.Self/DiagnosticCatalog.Self.csproj" />
     <Project Path="src/DiagnosticCatalog.Sonar/DiagnosticCatalog.Sonar.csproj" />
     <Project Path="src/DiagnosticCatalog.StyleCop/DiagnosticCatalog.StyleCop.csproj" />

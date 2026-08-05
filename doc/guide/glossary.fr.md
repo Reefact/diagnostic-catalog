@@ -109,7 +109,7 @@ rendre silencieusement invisible.
 
 ## Miroir
 
-Un catalogue décrivant l'analyseur de quelqu'un d'autre. Les trois catalogues d'éditeurs d'ici sont des
+Un catalogue décrivant l'analyseur de quelqu'un d'autre. Les six catalogues d'éditeurs d'ici sont des
 miroirs.
 
 Un miroir ne peut que copier ce que sa source déclare **aujourd'hui**. Il ne peut pas rendre une

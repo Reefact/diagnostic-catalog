@@ -22,6 +22,7 @@ body:
         - DiagnosticCatalog.StyleCop
         - DiagnosticCatalog.CodeStyle
         - DiagnosticCatalog.Xunit
+        - DiagnosticCatalog.NUnit
         - DiagnosticCatalog.Self
         - DiagnosticCatalog.Cli (the dcat tool)
         - Not sure
