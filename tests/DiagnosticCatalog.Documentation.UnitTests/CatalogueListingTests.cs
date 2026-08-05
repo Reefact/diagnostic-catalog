@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text.Json;
 using System.Text.RegularExpressions;
 using Xunit;
 
@@ -53,12 +51,7 @@ public sealed class CatalogueListingTests
     /// </summary>
     private const int FewestCataloguesWorthChecking = 4;
 
-    /// <summary>
-    /// A vendor catalogue: the package it mirrors, and the assembly a consumer references to use it.
-    /// </summary>
-    private sealed record Catalogue(string Package, string Namespace);
-
-    private static readonly Lazy<IReadOnlyList<Catalogue>> Generated = new(ReadManifest);
+    private static IReadOnlyList<Catalogue> Generated => CatalogueManifest.Vendor;
 
     /// <summary>
     /// How each half writes the size of its catalogue table. Anchored on the sentence rather than on
@@ -82,7 +75,7 @@ public sealed class CatalogueListingTests
         MarkdownDocument readme = Repository.Require(path);
         IReadOnlyList<string> listed = PackagesListed(readme);
 
-        List<Catalogue> missing = Generated.Value
+        List<Catalogue> missing = Generated
             .Where(catalogue => !listed.Contains(catalogue.Namespace, StringComparer.Ordinal))
             .ToList();
 
@@ -115,7 +108,7 @@ public sealed class CatalogueListingTests
         int stated = ProseFigures.Read(word, path, nameof(CatalogueListingTests));
 
         int listed = PackagesListed(readme)
-            .Count(package => Generated.Value.Any(catalogue =>
+            .Count(package => Generated.Any(catalogue =>
                 string.Equals(catalogue.Namespace, package, StringComparison.Ordinal)));
 
         Assert.True(
@@ -134,7 +127,7 @@ public sealed class CatalogueListingTests
     [Fact]
     public void The_readme_lists_catalogues_this_can_check()
     {
-        IReadOnlyList<Catalogue> generated = Generated.Value;
+        IReadOnlyList<Catalogue> generated = Generated;
 
         Assert.True(
             generated.Count >= FewestCataloguesWorthChecking,
@@ -172,39 +165,5 @@ public sealed class CatalogueListingTests
         }
 
         return packages;
-    }
-
-    /// <summary>
-    /// The vendor catalogues, read from the manifest that generates them. Parsed as JSON rather than
-    /// scanned with a regex, unlike <see cref="CatalogueProvenanceTests"/>: this needs two keys read
-    /// off the SAME entry, and a pattern that pairs them across an array is a parser written badly
-    /// rather than a pattern avoided.
-    /// </summary>
-    private static List<Catalogue> ReadManifest()
-    {
-        List<Catalogue> catalogues = [];
-
-        string path = Path.Combine(Repository.Root, "eng", "catalogs.json");
-        if (!File.Exists(path)) return catalogues;
-
-        using JsonDocument manifest = JsonDocument.Parse(
-            File.ReadAllText(path),
-            new JsonDocumentOptions { CommentHandling = JsonCommentHandling.Skip });
-
-        if (!manifest.RootElement.TryGetProperty("catalogs", out JsonElement entries)) return catalogues;
-
-        foreach (JsonElement entry in entries.EnumerateArray())
-        {
-            // An entry generated from `projects` is this repository's own rules, which the README
-            // documents as a tool rather than as a catalogue to reference.
-            if (!entry.TryGetProperty("package", out JsonElement package)) continue;
-            if (!entry.TryGetProperty("namespace", out JsonElement catalogueNamespace)) continue;
-
-            catalogues.Add(new Catalogue(
-                package.GetString() ?? string.Empty,
-                catalogueNamespace.GetString() ?? string.Empty));
-        }
-
-        return catalogues;
     }
 }
