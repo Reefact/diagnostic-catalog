@@ -3,8 +3,9 @@
 🌍 **Langues :**  
 🇬🇧 [English](./0036-exclude-from-coverage-what-no-report-describes.en.md) | 🇫🇷 Français (ce fichier)
 
-**Status:** Proposed
+**Status:** Accepted
 **Proposed:** 2026-08-05
+**Accepted:** 2026-08-05
 **Decision Makers:** Reefact
 
 ## Contexte
