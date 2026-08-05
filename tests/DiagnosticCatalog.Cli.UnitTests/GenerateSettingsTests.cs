@@ -217,4 +217,89 @@ public sealed class GenerateSettingsTests
 
         Assert.False(settings.Validate().Successful);
     }
+
+    // --- a manifest carries every source AND every destination -------------------------------
+    //
+    // The manifest branch of Validate returned as soon as it had checked the source switches, so
+    // everything else a manifest already states was accepted and then read from nowhere. The switch
+    // that costs something is --source: a run meant for a private feed resolved against nuget.org
+    // and said nothing about it.
+
+    [Fact]
+    public void A_feed_named_alongside_a_manifest_is_refused_rather_than_ignored()
+    {
+        GenerateSettings settings = new() { Manifest = "catalogs.json", Source = "my-internal-feed" };
+
+        ValidationResult result = settings.Validate();
+
+        Assert.False(result.Successful);
+        Assert.Contains("--source", result.Message);
+    }
+
+    [Fact]
+    public void A_destination_named_alongside_a_manifest_is_refused_rather_than_ignored()
+    {
+        GenerateSettings settings = new()
+        {
+            Manifest = "catalogs.json",
+            Namespace = "N",
+            Container = "C",
+            Output = "o.g.cs",
+        };
+
+        ValidationResult result = settings.Validate();
+
+        Assert.False(result.Successful);
+        Assert.Contains("--namespace", result.Message);
+        Assert.Contains("--container", result.Message);
+        Assert.Contains("--output", result.Message);
+    }
+
+    [Fact]
+    public void Describing_the_source_alongside_a_manifest_is_refused_rather_than_ignored()
+    {
+        GenerateSettings settings = new()
+        {
+            Manifest = "catalogs.json",
+            SourceName = "Vendor",
+            SourceVersion = "9.9.9",
+            Configuration = "Debug",
+        };
+
+        ValidationResult result = settings.Validate();
+
+        Assert.False(result.Successful);
+        Assert.Contains("--source-name", result.Message);
+        Assert.Contains("--source-version", result.Message);
+        Assert.Contains("--configuration", result.Message);
+    }
+
+    [Fact]
+    public void A_package_version_named_alongside_a_manifest_is_refused_rather_than_ignored()
+    {
+        GenerateSettings settings = new() { Manifest = "catalogs.json", PackageVersion = "1.2.3" };
+
+        ValidationResult result = settings.Validate();
+
+        Assert.False(result.Successful);
+        Assert.Contains("--package-version", result.Message);
+    }
+
+    [Fact]
+    public void A_manifest_carrying_the_defaults_is_still_accepted()
+    {
+        // The witness. --package-version and --language cannot be told apart from their defaults,
+        // so refusing them by presence would refuse every manifest run there is. Only a value the
+        // caller can only have typed is refused.
+        GenerateSettings settings = new()
+        {
+            Manifest = "catalogs.json",
+            PackageVersion = "latest",
+            Language = "cs",
+            Date = "2026-01-01",
+            Summary = "summary.md",
+        };
+
+        Assert.True(settings.Validate().Successful);
+    }
 }
