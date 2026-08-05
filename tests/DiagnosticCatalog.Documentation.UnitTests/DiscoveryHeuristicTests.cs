@@ -10,7 +10,8 @@ namespace DiagnosticCatalog.Documentation.UnitTests;
 /// <summary>
 /// The figures that carry the case for <c>ProducesDiagnosticRules</c> — how many projects each
 /// rejected discovery heuristic would select in this repository, and how many of those really
-/// produce analyzers — are recounted from the tree and held to what the pages state.
+/// produce analyzers — are recounted from the tree and held to what the pages state, wherever a page
+/// states them.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -21,10 +22,13 @@ namespace DiagnosticCatalog.Documentation.UnitTests;
 /// existing — and a stale figure reads exactly like a measured one.
 /// </para>
 /// <para>
-/// They had already drifted once, silently and in opposite directions on the two pages, which is
-/// what this test exists to stop. Nothing else can: the counts are prose, they change when a project
-/// is added rather than when either page is edited, and no reviewer of an unrelated pull request has
-/// a reason to recount them.
+/// <b>The pages are found, not listed.</b> An earlier version of this test named three of them, and
+/// four others repeated the same claim without being read: the recount landed on the three that were
+/// enumerated and left the guide contradicting itself, which is the exact failure the test was
+/// written to prevent, one level up. A hand-kept list of pages is itself a figure nothing recounts.
+/// So the claim is swept for across every document, in both languages and in both shapes the
+/// documentation writes it — a table row carrying digits, and a sentence spelling its numbers as
+/// words — and the page that repeats it next is checked without anybody remembering to add it.
 /// </para>
 /// <para>
 /// <b>The heuristics are defined here, in code, and that is deliberate.</b> A count is only as
@@ -48,58 +52,31 @@ namespace DiagnosticCatalog.Documentation.UnitTests;
 /// </remarks>
 public sealed class DiscoveryHeuristicTests
 {
-    private static readonly TimeSpan MatchTimeout = TimeSpan.FromSeconds(10);
+    /// <summary>
+    /// The decision record whose figures are dated evidence rather than a claim about the tree as it
+    /// is now. Matched as a path prefix so that both halves of the pair are excluded together.
+    /// </summary>
+    private const string DatedRecord = "doc/adr/0023-";
 
     /// <summary>
-    /// The pages carrying the figures as a table. Both languages share the shape, and the cell that
-    /// names the heuristic is a backticked type or package name, so one reader serves both.
+    /// The fewest pages expected to state the claim. Set below what the tree carries so that merging
+    /// two pages does not fail it, and far enough above zero that patterns which stopped matching
+    /// cannot pass for a documentation set that argues the case nowhere.
     /// </summary>
-    private const string Tour = "doc/guide/dcat.{0}.md";
-
-    /// <summary>
-    /// The package README, which makes the same claim in a sentence because nuget.org renders it to
-    /// a reader who arrived for the tool rather than for the reasoning.
-    /// </summary>
-    private const string PackageReadme = "src/DiagnosticCatalog.Cli/README.md";
-
-    /// <summary>
-    /// The small vocabulary the README spells its numbers in. Anything outside it fails loudly rather
-    /// than being read as zero: a sentence rewritten past this map is a sentence this test can no
-    /// longer check, which is worth a failure and not a silent pass.
-    /// </summary>
-    private static readonly Dictionary<string, int> Numbers = new(StringComparer.Ordinal)
-    {
-        ["one"] = 1,
-        ["two"] = 2,
-        ["three"] = 3,
-        ["four"] = 4,
-        ["five"] = 5,
-        ["six"] = 6,
-        ["seven"] = 7,
-        ["eight"] = 8,
-        ["nine"] = 9,
-        ["ten"] = 10,
-        ["eleven"] = 11,
-        ["twelve"] = 12,
-    };
+    private const int FewestPagesWorthChecking = 4;
 
     private static readonly Lazy<IReadOnlyList<ProjectFile>> AllProjects = new(LoadProjects);
 
-    public static TheoryData<string> Languages() => new("en", "fr");
-
     /// <summary>
-    /// Projects a reference-based heuristic would select: those declaring a
-    /// <c>PackageReference</c> to any <c>Microsoft.CodeAnalysis*</c> package.
+    /// The two heuristics the pages rank, each with the token its sentences and table rows are
+    /// anchored on. The token is a package name or a type name, which is what translation leaves
+    /// alone — so one reader serves the English page and the French one.
     /// </summary>
-    private static List<ProjectFile> ReferencingRoslyn =>
-        AllProjects.Value.Where(project => project.ReferencesRoslyn).ToList();
-
-    /// <summary>
-    /// Projects a type-based heuristic would select: those declaring a type deriving from
-    /// <c>DiagnosticAnalyzer</c>.
-    /// </summary>
-    private static List<ProjectFile> DeclaringAnalyzer =>
-        AllProjects.Value.Where(project => project.DeclaresAnalyzer).ToList();
+    private static readonly Heuristic[] Heuristics =
+    [
+        new("Microsoft.CodeAnalysis", project => project.ReferencesRoslyn),
+        new("DiagnosticAnalyzer", project => project.DeclaresAnalyzer),
+    ];
 
     /// <summary>
     /// The projects that really produce catalogued analyzers, measured by the declaration the pages
@@ -110,77 +87,72 @@ public sealed class DiscoveryHeuristicTests
     private static List<ProjectFile> Producing =>
         AllProjects.Value.Where(project => project.ProducesDiagnosticRules).ToList();
 
+    public static TheoryData<string> PagesStatingAFigure()
+    {
+        TheoryData<string> paths = [];
+        foreach (MarkdownDocument document in Repository.Documents)
+        {
+            if (ClaimsIn(document).Count > 0)
+            {
+                paths.Add(document.Path);
+            }
+        }
+
+        return paths;
+    }
+
     [Theory]
-    [MemberData(nameof(Languages))]
-    public void The_tour_states_the_measured_figures(string language)
+    [MemberData(nameof(PagesStatingAFigure))]
+    public void Every_stated_figure_is_the_measured_one(string path)
     {
-        MarkdownDocument tour = Repository.Require(string.Format(Tour, language));
+        MarkdownDocument document = Repository.Require(path);
 
-        AssertRow(tour, "Microsoft.CodeAnalysis", ReferencingRoslyn);
-        AssertRow(tour, "DiagnosticAnalyzer", DeclaringAnalyzer);
+        foreach (Claim claim in ClaimsIn(document))
+        {
+            List<ProjectFile> measured = AllProjects.Value.Where(claim.About.Selects).ToList();
+
+            Assert.True(
+                claim.Matched == measured.Count,
+                $"{path} states {claim.Matched} for the projects `{claim.About.Token}` selects, and " +
+                $"the tree holds {measured.Count}: {Names(measured)}.\nWritten as \"{claim.Quoted}\". " +
+                "The figure is evidence for ADR-0023's decision, so it is the page that follows the " +
+                "repository — recount, do not relax the assertion.");
+
+            if (claim.Correct is not int correct) continue;
+
+            Assert.True(
+                correct == Producing.Count,
+                $"{path} says {correct} of the projects `{claim.About.Token}` selects really produce " +
+                $"analyzers, and {Producing.Count} declare ProducesDiagnosticRules: {Names(Producing)}.\n" +
+                $"Written as \"{claim.Quoted}\".");
+        }
     }
 
     /// <summary>
-    /// The same claim in the package README, which states it as a sentence and spells its numbers as
-    /// words. It also says how many of the matched projects are fixtures, which is the complement of
-    /// the figure above and drifts on its own if nothing ties the two together.
+    /// Guards the sweep against an empty world. A project layout this reader stopped understanding
+    /// would leave every count at zero; patterns that stopped matching the way a page words the claim
+    /// would leave every page unswept. Both read exactly like success.
     /// </summary>
     [Fact]
-    public void The_package_readme_states_the_measured_figures()
-    {
-        MarkdownDocument readme = Repository.Require(PackageReadme);
-
-        Match referencing = Require(
-            readme,
-            "`Microsoft\\.CodeAnalysis`\\*\\s+matches\\s+(?<matched>[a-z]+)\\s+projects\\s+of\\s+" +
-            "which\\s+(?<correct>[a-z]+)\\s+is\\s+an\\s+analyzer",
-            "the sentence counting the projects that reference Roslyn");
-
-        AssertCount(readme, "projects referencing Roslyn", Word(readme, referencing, "matched"), ReferencingRoslyn);
-        AssertCount(readme, "of those, real analyzers", Word(readme, referencing, "correct"), Producing);
-
-        Match declaring = Require(
-            readme,
-            "`DiagnosticAnalyzer`\\*\\s+matches\\s+(?<matched>[a-z]+),\\s+and\\s+(?<fixtures>[a-z]+)\\s+" +
-            "of\\s+those\\s+are\\s+fixtures",
-            "the sentence counting the projects that declare a DiagnosticAnalyzer");
-
-        int matched = Word(readme, declaring, "matched");
-        int fixtures = Word(readme, declaring, "fixtures");
-
-        AssertCount(readme, "projects declaring a DiagnosticAnalyzer", matched, DeclaringAnalyzer);
-
-        Assert.True(
-            matched - fixtures == Producing.Count,
-            $"{readme.Path} says {matched} projects declare a DiagnosticAnalyzer and that {fixtures} " +
-            $"of those are fixtures, which leaves {matched - fixtures} real — but " +
-            $"{Producing.Count} project(s) declare ProducesDiagnosticRules: " +
-            $"{Names(Producing)}. The two halves of the sentence have to add up.");
-    }
-
-    /// <summary>
-    /// Guards every assertion above against an empty world. A project layout this reader stopped
-    /// understanding would leave each count at zero, and a page claiming zero is not a page anybody
-    /// would write — but a page claiming nine against a measurement of zero fails for the wrong
-    /// reason, and the message would send the reader to the prose instead of to this file.
-    /// </summary>
-    [Fact]
-    public void The_measurement_finds_a_tree_to_measure()
+    public void The_measurement_finds_a_tree_and_pages_to_measure()
     {
         Assert.True(
             AllProjects.Value.Count >= 20,
             $"Only {AllProjects.Value.Count} project files were found under {Repository.Root}. The " +
-            "heuristics below would then be counted against a tree that was never read.");
+            "heuristics would then be counted against a tree that was never read.");
 
         Assert.True(
             Producing.Count == 1,
-            $"{Producing.Count} project(s) declare ProducesDiagnosticRules ({Names(Producing)}). Both " +
-            "tables state a single 'actually an analyzer' figure per row, so a second producing " +
-            "project is not a failing count — it is a change the pages have to describe rather than " +
-            "tally. Rewrite the tables, then teach this test the new shape.");
+            $"{Producing.Count} project(s) declare ProducesDiagnosticRules ({Names(Producing)}). The " +
+            "pages state a single 'actually an analyzer' figure, so a second producing project is not " +
+            "a failing count — it is a change the pages have to describe rather than tally. Rewrite " +
+            "them, then teach this test the new shape.");
+
+        List<ProjectFile> referencing = AllProjects.Value.Where(Heuristics[0].Selects).ToList();
+        List<ProjectFile> declaring = AllProjects.Value.Where(Heuristics[1].Selects).ToList();
 
         Assert.True(
-            ReferencingRoslyn.Count > DeclaringAnalyzer.Count,
+            referencing.Count > declaring.Count,
             "The reference heuristic no longer over-selects more than the type heuristic. That is not " +
             "a broken test: it is the argument of ADR-0023 changing shape, and the pages that rank " +
             "the two need rereading before this test is adjusted.");
@@ -190,69 +162,99 @@ public sealed class DiscoveryHeuristicTests
             Assert.True(
                 producing.ReferencesRoslyn && producing.DeclaresAnalyzer,
                 $"{producing.Path} declares ProducesDiagnosticRules but is selected by neither " +
-                "heuristic, so the 'actually an analyzer' column would count a project that is in " +
+                "heuristic, so the 'actually an analyzer' figure would count a project that is in " +
                 "no matched set.");
         }
+
+        int pages = Repository.Documents.Count(document => ClaimsIn(document).Count > 0);
+
+        Assert.True(
+            pages >= FewestPagesWorthChecking,
+            $"Only {pages} page(s) were found stating a discovery figure, which is below the " +
+            $"{FewestPagesWorthChecking} this expects. Either the pages stopped making the argument, " +
+            "or they now word it in a shape the patterns here do not read — and in that second case " +
+            "every figure is silently unchecked, which is what this sweep replaced a hand-kept list " +
+            "of pages to avoid.");
     }
 
     /// <summary>
-    /// Reads one row of a figures table: the row whose first cell backticks
-    /// <paramref name="token"/>, followed by the matched count and the correct count.
+    /// Every figure a document states about either heuristic, in the shapes the documentation writes:
+    /// a table row carrying digits, and a sentence spelling its numbers as words in either language.
     /// </summary>
     /// <remarks>
-    /// Anchored on the backticked token rather than on the surrounding words, which is what lets the
-    /// English and the French table share one reader. The prose around it is translated; the name of
-    /// a package and the name of a type are not.
+    /// The two never collide — a table cell holds digits and the prose patterns require letters — so a
+    /// page carrying both a table and a sentence is read once for each rather than twice for one.
     /// </remarks>
-    private static void AssertRow(MarkdownDocument document, string token, IReadOnlyList<ProjectFile> measured)
+    private static List<Claim> ClaimsIn(MarkdownDocument document)
     {
-        Match row = Require(
-            document,
-            $"^\\|[^|]*`{Regex.Escape(token)}`[^|]*\\|\\s*(?<matched>\\d+)\\s*\\|\\s*(?<correct>\\d+)",
-            $"a table row measuring `{token}`");
+        List<Claim> claims = [];
 
-        AssertCount(document, $"projects matched by `{token}`", int.Parse(row.Groups["matched"].Value), measured);
-        AssertCount(document, $"of those, real analyzers (`{token}` row)", int.Parse(row.Groups["correct"].Value), Producing);
+        if (document.Path.StartsWith(DatedRecord, StringComparison.Ordinal)) return claims;
+
+        foreach (Heuristic heuristic in Heuristics)
+        {
+            string token = Regex.Escape(heuristic.Token);
+
+            foreach (Match row in ProseFigures.Sweep(
+                         document,
+                         $"^\\|[^|]*`{token}`[^|]*\\|\\s*(?<matched>\\d+)\\s*\\|\\s*(?<correct>\\d+)"))
+            {
+                claims.Add(new Claim(
+                    heuristic,
+                    int.Parse(row.Groups["matched"].Value),
+                    int.Parse(row.Groups["correct"].Value),
+                    Quote(row)));
+            }
+
+            foreach (string pattern in SentenceShapes(token))
+            {
+                foreach (Match sentence in ProseFigures.Sweep(document, pattern))
+                {
+                    // A page may make the argument without counting — the CLI changelog says the type
+                    // heuristic "matches fixtures", which is the same claim told qualitatively. That is
+                    // prose about the repository, not a figure, and there is nothing here to recount.
+                    if (!ProseFigures.Knows(sentence.Groups["matched"].Value)) continue;
+
+                    claims.Add(new Claim(
+                        heuristic,
+                        ProseFigures.Read(sentence.Groups["matched"].Value, document.Path, nameof(DiscoveryHeuristicTests)),
+                        ReadCorrect(sentence, document.Path),
+                        Quote(sentence)));
+                }
+            }
+        }
+
+        return claims;
     }
 
-    private static void AssertCount(
-        MarkdownDocument document,
-        string what,
-        int stated,
-        IReadOnlyList<ProjectFile> measured)
+    /// <summary>
+    /// How each language words the claim. The count of matched projects is required; the count that
+    /// really are analyzers is optional, because a page may follow it with what is wrong with the
+    /// others instead of how many were right.
+    /// </summary>
+    private static IEnumerable<string> SentenceShapes(string token)
     {
-        Assert.True(
-            stated == measured.Count,
-            $"{document.Path} states {stated} for '{what}', and the tree holds {measured.Count}: " +
-            $"{Names(measured)}. The figure is evidence for ADR-0023's decision, so it is the page " +
-            "that follows the repository — recount, do not relax the assertion.");
+        yield return
+            $"`{token}`[^|]{{0,80}}?matches\\s+(?<matched>[A-Za-z]+)(?:\\s+projects?)?" +
+            "(?:\\s+of\\s+which\\s+(?<correct>[A-Za-z]+)\\s+is\\s+an\\s+analyzer)?";
+
+        yield return
+            $"`{token}`[^|]{{0,90}}?correspond\\s+à\\s+(?<matched>[A-Za-zà]+)(?:\\s+projets?)?" +
+            "(?:\\s+dont\\s+(?<correct>[A-Za-zé]+)\\s+est\\s+un\\s+analyseur)?";
     }
 
-    private static Match Require(MarkdownDocument document, string pattern, string what)
+    private static int? ReadCorrect(Match sentence, string path)
     {
-        Match match = Regex.Match(document.Prose, pattern, RegexOptions.Multiline, MatchTimeout);
+        Group correct = sentence.Groups["correct"];
 
-        Assert.True(
-            match.Success,
-            $"{document.Path} no longer carries {what} in a shape this test can read. The figures are " +
-            "checked against the repository, so a rewrite that this reader cannot follow silently " +
-            "stops checking them — which is the failure it exists to prevent. Update the pattern in " +
-            $"{nameof(DiscoveryHeuristicTests)} to match the new wording.");
-
-        return match;
+        return correct.Success && ProseFigures.Knows(correct.Value)
+            ? ProseFigures.Read(correct.Value, path, nameof(DiscoveryHeuristicTests))
+            : null;
     }
 
-    private static int Word(MarkdownDocument document, Match match, string group)
-    {
-        string word = match.Groups[group].Value;
-
-        Assert.True(
-            Numbers.ContainsKey(word),
-            $"{document.Path} spells a count as '{word}', which is outside the small vocabulary this " +
-            "test reads. Add it to the map, or spell the number as the rest of the sentence does.");
-
-        return Numbers[word];
-    }
+    /// <summary>The matched text on one line, so a failure message stays readable.</summary>
+    private static string Quote(Match match) =>
+        Regex.Replace(match.Value.Replace('\n', ' '), "\\s+", " ", RegexOptions.None, ProseFigures.MatchTimeout).Trim();
 
     private static string Names(IReadOnlyList<ProjectFile> projects) =>
         projects.Count == 0 ? "none" : string.Join(", ", projects.Select(project => project.Path));
@@ -285,13 +287,13 @@ public sealed class DiscoveryHeuristicTests
                     text,
                     "<PackageReference\\s+Include=\"Microsoft\\.CodeAnalysis",
                     RegexOptions.None,
-                    MatchTimeout),
+                    ProseFigures.MatchTimeout),
                 DeclaresAnalyzer: AnyAnalyzerUnder(Path.GetDirectoryName(file)!),
                 ProducesDiagnosticRules: Regex.IsMatch(
                     text,
                     "<ProducesDiagnosticRules>\\s*true\\s*</ProducesDiagnosticRules>",
                     RegexOptions.IgnoreCase,
-                    MatchTimeout)));
+                    ProseFigures.MatchTimeout)));
         }
 
         return projects.OrderBy(project => project.Path, StringComparer.Ordinal).ToList();
@@ -315,7 +317,7 @@ public sealed class DiscoveryHeuristicTests
                     File.ReadAllText(source),
                     ":\\s*DiagnosticAnalyzer\\b",
                     RegexOptions.None,
-                    MatchTimeout))
+                    ProseFigures.MatchTimeout))
             {
                 return true;
             }
@@ -323,6 +325,16 @@ public sealed class DiscoveryHeuristicTests
 
         return false;
     }
+
+    /// <summary>One heuristic the pages rank: the token they name it by, and what it selects.</summary>
+    private sealed record Heuristic(string Token, Func<ProjectFile, bool> Selects);
+
+    /// <summary>
+    /// One figure a page states: which heuristic it is about, how many projects it claims are
+    /// matched, how many of those it claims are really analyzers when it says so, and the words it
+    /// used — which is what a failure quotes back so the reader can find the sentence.
+    /// </summary>
+    private sealed record Claim(Heuristic About, int Matched, int? Correct, string Quoted);
 
     /// <summary>
     /// One project, what each heuristic makes of it, and whether it opts into the catalogue — which
