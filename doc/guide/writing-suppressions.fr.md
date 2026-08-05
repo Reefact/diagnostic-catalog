@@ -76,7 +76,8 @@ un pour [StyleCop](https://www.nuget.org/packages/DiagnosticCatalog.StyleCop) (`
 pour [les règles IDE de Roslyn](https://www.nuget.org/packages/DiagnosticCatalog.CodeStyle) (`IDExxxx`)
 et un pour [celles de xUnit](https://www.nuget.org/packages/DiagnosticCatalog.Xunit) (`xUnitxxxx`)
 et un pour [celles de NUnit](https://www.nuget.org/packages/DiagnosticCatalog.NUnit) (`NUnitxxxx`)
-et un pour [celles de MSTest](https://www.nuget.org/packages/DiagnosticCatalog.MSTest) (`MSTESTxxxx`).
+et un pour [celles de MSTest](https://www.nuget.org/packages/DiagnosticCatalog.MSTest) (`MSTESTxxxx`)
+et un pour [les avertissements de trimming et AOT](https://www.nuget.org/packages/DiagnosticCatalog.Trimming) (`ILxxxx`).
 
 C'est la seule ligne dont vous avez besoin pour la garantie elle-même. Une règle mal orthographiée
 est désormais une erreur de compilation, parce que `SonarRule.S1144.Id` est un membre que le

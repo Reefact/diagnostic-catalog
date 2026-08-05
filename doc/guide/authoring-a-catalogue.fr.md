@@ -208,7 +208,7 @@ arguments d'attribut doivent être des constantes de compilation et aucun type d
 Un catalogue de première partie maintenu à côté de son propre analyseur n'a besoin de rien de tout
 cela — les deux partent d'un dépôt à une version.
 
-Si vous reflétez à l'échelle, ce dépôt génère sept catalogues de cette façon et publie le
+Si vous reflétez à l'échelle, ce dépôt génère huit catalogues de cette façon et publie le
 générateur comme outil. Les catalogues Sonar, analyseurs .NET et StyleCop sous `src/` sont ce à quoi
 la sortie ressemble avec 465, 318 et 193 règles ; la méthode est au §14 de
 [la spécification](../specification.fr.md).
