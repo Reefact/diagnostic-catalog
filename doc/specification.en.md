@@ -603,7 +603,8 @@ class a rule reaches its category through — §8.5, reported as `DCAT0011`
 A generated container is `internal` ([ADR-0026](adr/0026-reach-a-category-only-through-the-rule-that-carries-it.en.md)),
 so no fix may offer `SonarCategory.MajorCodeSmell` to a consumer: naming a
 category apart from its rule survives the vendor recategorising that rule, and
-the suppression then stops matching in silence.
+the suppression is then left asserting a category the rule no longer carries —
+which, by §3.2, nothing will ever report.
 
 Like the other two attributes, it must never be made `[Conditional]` (§3.4).
 
