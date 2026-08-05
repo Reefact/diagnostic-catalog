@@ -155,16 +155,20 @@ remind you of — because nothing compiles a README, and nothing reads an icon.
    vendor's name — StyleCop's reads `SA` and not `SC`,
    because `SA1000` is what a reader types inside `[SuppressMessage(...)]`, and
    at the 128px a nuget.org listing renders, that badge is the whole of what
-   distinguishes one catalogue from the next. Start from
-   [`assets/icon-template.svg`](assets/icon-template.svg), which carries the
-   family mark and leaves the badge text as the one thing to edit. Check the
-   export before committing it — `tools/icon/check-icon-template.py <path>`
-   compares it against the template and says where it differs; CI runs the same
-   script over every committed icon as *Check the catalogue icons*.
+   distinguishes one catalogue from the next. **Three letters at most**: a
+   longer prefix is abbreviated — `xUnit` becomes `XU`, `MSTEST` becomes `MST` —
+   because the type shrinks to fit and a six-letter badge lands at under 5px on
+   that listing, which reads as nothing at all
+   ([ADR-0033](doc/adr/0033-cap-the-badge-at-three-letters.en.md)). You do not
+   draw it: add the badge to the table in `tools/icon/render-icon.py` and run
+   `tools/icon/render-icon.py --all`, which redraws every catalogue from
+   [`assets/icon-template.svg`](assets/icon-template.svg) — same mark, same
+   gradient, same face, at the size the plate allows. `check-icon-template.py`
+   then compares what landed against the template, and CI runs it over every
+   committed icon as *Check the catalogue icons*.
    `PackageIconTests` fails a catalogue with no icon of its own, one whose icon
    is another catalogue's, and one still wearing the repository's unbadged
-   mark — but neither check reads the letters, so those are on you and on review
-   ([ADR-0032](doc/adr/0032-badge-a-catalogues-icon-with-its-rule-prefix.en.md)).
+   mark — but neither check reads the letters, so those are on you and on review.
 
 ## Documentation
 

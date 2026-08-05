@@ -47,4 +47,11 @@ cp src/DiagnosticCatalog.StyleCop/icon.png "$outside/candidate.png"
 assert_equals 'a candidate outside the repository is reported on, not crashed over' \
   'matches' "$(verdict "$outside/candidate.png")"
 
+# The round trip, which is what makes the pair worth having: what render-icon.py draws is what
+# check-icon-template.py accepts. Either alone could be self-consistently wrong.
+python3 tools/icon/render-icon.py ZZ "$outside/rendered.png" >/dev/null 2>&1 || true
+
+assert_equals 'an icon straight out of the renderer satisfies the checker' \
+  'matches' "$(verdict "$outside/rendered.png")"
+
 finish
