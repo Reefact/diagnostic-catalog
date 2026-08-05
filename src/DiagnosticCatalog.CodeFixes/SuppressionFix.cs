@@ -95,7 +95,13 @@ internal static class SuppressionFix
         Dictionary<AttributeSyntax, SuppressionFixRequest> planned = [];
         List<string> imports = [];
 
-        foreach (SuppressionFixRequest request in requests)
+        // Ordered by where each occurrence SITS, not by the order it arrived in. The engine hands
+        // them over as the analyzer reported them, and an analyzer running concurrently — which
+        // these do, EnableConcurrentExecution is on — reports in completion order. Measured: the
+        // same file fixed twice produced its imports in opposite orders across runs. Both compile
+        // and both are correct, which is what makes it worth pinning rather than shrugging at: the
+        // bytes differ for no reason a reader of the diff could see.
+        foreach (SuppressionFixRequest request in requests.OrderBy(r => r.Diagnostic.Location.SourceSpan.Start))
         {
             if (root.FindNode(request.Diagnostic.Location.SourceSpan) is not AttributeSyntax attribute
                 || attribute.ArgumentList is null)

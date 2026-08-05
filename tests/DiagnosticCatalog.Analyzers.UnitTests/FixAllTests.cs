@@ -96,6 +96,38 @@ public sealed class FixAllTests
     }
 
     [Fact]
+    public async Task The_imports_land_in_document_order_whatever_order_the_occurrences_arrive_in()
+    {
+        // The occurrences arrive in whatever order the analyzer reported them, which nothing
+        // promises to be the order they sit in. Appending each import as its occurrence is met lets
+        // that order reach the document, so the same file fixed twice can differ in its bytes for
+        // no reason a reader could see. Handed the occurrences last-first, the result must not move.
+        string fixedSource = await FixAllHarness.ApplyAsync(
+            UseSite,
+            new UseCatalogReferenceCodeFixProvider(),
+            TwoNamespacedCatalogs + """
+                [SuppressMessage("Major Code Smell", "S1144", Justification = "reflection")]
+                public sealed class First { }
+
+                [SuppressMessage("Documentation Rules", "SA1600", Justification = "internal")]
+                public sealed class Second { }
+                """,
+            "DiagnosticCatalog.UseCatalogReference",
+            lastOccurrenceFirst: true);
+
+        int sonar = fixedSource.IndexOf("using Vendor.Sonar;", StringComparison.Ordinal);
+        int styleCop = fixedSource.IndexOf("using Vendor.StyleCop;", StringComparison.Ordinal);
+
+        Assert.True(sonar >= 0 && styleCop >= 0, "both imports must be present:\n" + fixedSource);
+
+        // S1144's suppression is the first in the file, so its import is the first appended.
+        Assert.True(
+            sonar < styleCop,
+            "the imports must follow the occurrences' order in the document, not the order they were reported:\n"
+            + fixedSource);
+    }
+
+    [Fact]
     public async Task Both_constants_are_declared_when_a_rule_declares_neither()
     {
         // DCAT0003 and DCAT0004 are reported together on a rule with an empty body, and both actions
