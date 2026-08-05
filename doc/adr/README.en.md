@@ -225,4 +225,4 @@ Optional supporting material:
 | [ADR-0027](0027-ship-the-use-site-diagnostics-as-errors.en.md) | Ship the use-site diagnostics as errors | Accepted |
 | [ADR-0028](0028-require-every-rule-to-reach-its-category-through-a-declared-constant.en.md) | Require every rule to reach its category through a declared constant | Accepted |
 | [ADR-0029](0029-pair-the-project-readme-across-the-doc-boundary.en.md) | Pair the project README across the `doc/` boundary | Accepted |
-| [ADR-0030](0030-keep-the-usage-suite-out-of-the-sonar-analysis.en.md) | Keep the usage suite out of the Sonar analysis | Proposed |
+| [ADR-0030](0030-keep-the-usage-suite-out-of-the-sonar-analysis.en.md) | Keep the usage suite out of the Sonar analysis | Accepted |

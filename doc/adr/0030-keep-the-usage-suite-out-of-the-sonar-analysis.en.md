@@ -3,8 +3,9 @@
 🌍 **Languages:**  
 🇬🇧 English (this file) | 🇫🇷 [Français](./0030-keep-the-usage-suite-out-of-the-sonar-analysis.fr.md)
 
-**Status:** Proposed
+**Status:** Accepted
 **Proposed:** 2026-08-04
+**Accepted:** 2026-08-05
 **Decision Makers:** Reefact
 
 ## Context
