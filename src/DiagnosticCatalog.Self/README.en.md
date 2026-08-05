@@ -62,7 +62,7 @@ with a message that names nothing useful.
 
 ## See also
 
-Eleven sibling catalogues are generated from this repository the same way, each read from one
+Twelve sibling catalogues are generated from this repository the same way, each read from one
 analyzer's own descriptors — the difference being that theirs belong to somebody else:
 
 - [`DiagnosticCatalog.Sonar`](https://www.nuget.org/packages/DiagnosticCatalog.Sonar)
@@ -87,6 +87,8 @@ analyzer's own descriptors — the difference being that theirs belong to somebo
   — the .NET runtime source-generator (`SYSLIB1xxx`) diagnostics.
 - [`DiagnosticCatalog.Roslyn`](https://www.nuget.org/packages/DiagnosticCatalog.Roslyn)
   — the Roslyn analyzer-authoring (`RS1xxx`, `RS2xxx`) rules.
+- [`DiagnosticCatalog.PublicApi`](https://www.nuget.org/packages/DiagnosticCatalog.PublicApi)
+  — the public-API tracking (`RS00xx`) rules.
 
 **Want a catalogue of your own?** That is what
 [the catalogue author's guide](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/authoring-a-catalogue.en.md) is for, and this package is its

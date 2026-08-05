@@ -137,6 +137,31 @@
     },
     {
       "$comment": [
+        "The public-API tracking rules. This is the first catalogue here that mirrors an analyzer",
+        "NOBODY RECEIVES BY ACCIDENT: Microsoft.CodeAnalysis.PublicApiAnalyzers is an explicit",
+        "PackageReference, chosen by a library that decided to track its surface in",
+        "PublicAPI.Shipped.txt and PublicAPI.Unshipped.txt. Every other entry in this file mirrors",
+        "an analyzer that arrives transitively or inside the SDK.",
+        "",
+        "It earns its place on what happens after that choice rather than before it. RS0016 fires",
+        "once per member missing from the declared surface, so adopting the analyzer on an existing",
+        "library means meeting hundreds of them at once; the ones a team cannot resolve that day get",
+        "suppressed in source, which is exactly the position this library exists for.",
+        "",
+        "SEPARATE from DiagnosticCatalog.Roslyn rather than merged into it. The ids do not collide",
+        "-- RS00xx here, RS10xx and RS20xx there -- and merging has no manifest shape anyway, since",
+        "`package` is a single string unlike `projects` and `assemblies`. What blocked this entry",
+        "until now was the badge: ADR-0032 puts the rule prefix on it and ADR-0033 caps it at three",
+        "letters, so both catalogues wanted `RS`, and PackageIconTests asserts no two icons match.",
+        "Settled by giving this one `API`."
+      ],
+      "package": "Microsoft.CodeAnalysis.PublicApiAnalyzers",
+      "namespace": "DiagnosticCatalog.PublicApi",
+      "container": "PublicApiRule",
+      "output": "../src/DiagnosticCatalog.PublicApi/PublicApiRules.g.cs"
+    },
+    {
+      "$comment": [
         "The xUnit.net analyzers. They reach a project TRANSITIVELY — xunit depends on",
         "xunit.analyzers — so a test project has them without anybody choosing them, which is why",
         "their rules are suppressed in source rather than configured away in .editorconfig."

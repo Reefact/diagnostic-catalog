@@ -37,6 +37,7 @@ public sealed class DocumentedMirrorTests
             { "DiagnosticCatalog.AspNetCore", "AspNetCoreRules.g.cs" },
             { "DiagnosticCatalog.Syslib", "SyslibRules.g.cs" },
             { "DiagnosticCatalog.Roslyn", "RoslynRules.g.cs" },
+            { "DiagnosticCatalog.PublicApi", "PublicApiRules.g.cs" },
         };
 
     [Theory]

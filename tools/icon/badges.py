@@ -29,6 +29,7 @@ BADGES = {
     "DiagnosticCatalog.MSTest": "MST",
     "DiagnosticCatalog.Syslib": "SYS",
     "DiagnosticCatalog.Roslyn": "RS",
+    "DiagnosticCatalog.PublicApi": "API",
 }
 
 

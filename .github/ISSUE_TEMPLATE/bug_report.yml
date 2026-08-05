@@ -28,6 +28,7 @@ body:
         - DiagnosticCatalog.AspNetCore
         - DiagnosticCatalog.Syslib
         - DiagnosticCatalog.Roslyn
+        - DiagnosticCatalog.PublicApi
         - DiagnosticCatalog.Self
         - DiagnosticCatalog.Cli (the dcat tool)
         - Not sure

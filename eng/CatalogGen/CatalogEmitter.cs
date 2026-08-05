@@ -100,14 +100,21 @@ internal static class CatalogEmitter
         // reported: a repository that keeps a single README has not lost a translation, and a
         // repository that keeps a pair has not lost the single file. What IS worth saying is a
         // catalogue with no README at all, and that is said once, below.
+        // Singular when the catalogue declares one category. DiagnosticCatalog.PublicApi is the
+        // first that does, and this banner is rendered on nuget.org: "1 categories" is a wart on a
+        // package page, not an internal string. Rules are never fewer than one, so only the
+        // category noun needs the agreement.
+        string categoryNoun = categoryCount == 1 ? "category" : "categories";
+        string categoryNounFr = categoryCount == 1 ? "catégorie" : "catégories";
+
         WriteReadmeBlocks(dir,
             $"> ## 🪞 Mirrors {mirrored}\n" +
             ">\n" +
-            $"> **{liveCount} rules, {categoryCount} categories**, every identifier and category read\n" +
+            $"> **{liveCount} rules, {categoryCount} {categoryNoun}**, every identifier and category read\n" +
             $"> from that release's own analyzers. Regenerated {date}.",
             $"> ## 🪞 Reflète {mirrored}\n" +
             ">\n" +
-            $"> **{liveCount} règles, {categoryCount} catégories**, chaque identifiant et chaque\n" +
+            $"> **{liveCount} règles, {categoryCount} {categoryNounFr}**, chaque identifiant et chaque\n" +
             $"> catégorie lus dans les analyseurs de cette version. Régénéré le {date}.");
 
         // In the changelog the banner sits under Unreleased, so a release promotes it into that

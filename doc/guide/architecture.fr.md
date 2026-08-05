@@ -3,7 +3,7 @@
 🌍 **Langues :**  
 🇬🇧 [English](./architecture.en.md) | 🇫🇷 Français (ce fichier)
 
-Pour quiconque contribue, relit, ou se demande pourquoi il y a vingt-sept projets pour ce qui
+Pour quiconque contribue, relit, ou se demande pourquoi il y a vingt-neuf projets pour ce qui
 ressemble à une seule idée. Chaque séparation ici est imposée par quelque chose ; cette page dit par quoi.
 
 ## La carte

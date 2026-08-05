@@ -187,7 +187,7 @@ fuiter.
 
 ## Voir aussi
 
-Onze catalogues frères sont générés depuis ce dépôt de la même façon, chacun lu depuis les
+Douze catalogues frères sont générés depuis ce dépôt de la même façon, chacun lu depuis les
 descripteurs d'un seul analyseur :
 
 - [`DiagnosticCatalog.Sonar`](https://www.nuget.org/packages/DiagnosticCatalog.Sonar)
@@ -210,6 +210,8 @@ descripteurs d'un seul analyseur :
   — les règles ASP.NET Core et Blazor (`ASPxxxx`, `BLxxxx`).
 - [`DiagnosticCatalog.Syslib`](https://www.nuget.org/packages/DiagnosticCatalog.Syslib)
   — les diagnostics des générateurs de source du runtime .NET (`SYSLIB1xxx`).
+- [`DiagnosticCatalog.PublicApi`](https://www.nuget.org/packages/DiagnosticCatalog.PublicApi)
+  — les règles de suivi d'API publique (`RS00xx`).
 - [`DiagnosticCatalog.Self`](https://www.nuget.org/packages/DiagnosticCatalog.Self)
   — les règles `DCATxxxx` de cette bibliothèque, pour supprimer un diagnostic que les analyseurs de
   catalogue signalent eux-mêmes.
