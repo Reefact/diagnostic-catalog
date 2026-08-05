@@ -68,13 +68,14 @@ has exactly one published source of truth, read from the analyzer's own
 | **`DiagnosticCatalog.Xunit`** | The [xunit.analyzers](https://github.com/xunit/xunit.analyzers) (`xUnitxxxx`) rules — which every xUnit test project already runs, since `xunit` depends on them — same treatment. |
 | **`DiagnosticCatalog.NUnit`** | The [NUnit.Analyzers](https://github.com/nunit/nunit.analyzers) (`NUnitxxxx`) rules — which `dotnet new nunit` writes into the project file it generates — same treatment. |
 | **`DiagnosticCatalog.MSTest`** | The [MSTest.Analyzers](https://github.com/microsoft/testfx) (`MSTESTxxxx`) rules — which every MSTest project already runs, since `MSTest.TestFramework` depends on them — same treatment. |
+| **`DiagnosticCatalog.Trimming`** | The trimming, Native AOT and single-file (`ILxxxx`) warnings — which Blazor WebAssembly, MAUI and `PublishAot` turn on for every build — same treatment. |
 | **`DiagnosticCatalog.Analyzers`** | The checking. Diagnostics that read a rule declaration against the structural contract and a suppression against the rule it names — a category and an id taken from two different rules, a suppression left half migrated — and the code fixes that turn a literal into a catalogue reference, complete a half-migrated one from the rule it already names, or repair a hand-written rule declaration where the code already says how. A build-time dependency: these assemblies never reach your runtime. |
 | **`DiagnosticCatalog.Self`** | The `DCATxxxx` rules the analyzers above report, catalogued the same way — so that suppressing one of *this* library's own diagnostics is a checked reference rather than the magic string everything here exists to remove. |
-| **`DiagnosticCatalog.Cli`**, the `dcat` tool | The generator, as a .NET tool. Point it at an analyzer package or at assemblies on disk and it writes a catalogue the same way this repository writes the eight above. |
+| **`DiagnosticCatalog.Cli`**, the `dcat` tool | The generator, as a .NET tool. Point it at an analyzer package or at assemblies on disk and it writes a catalogue the same way this repository writes the nine above. |
 
 The last three are built here but have no version on nuget.org yet; see **Project status** below.
 
-The seven vendor catalogues are **generated**, never hand-written, and carry ids,
+The eight vendor catalogues are **generated**, never hand-written, and carry ids,
 categories, help links and the rule's own title — the last as a documentation comment, so
 that hovering a constant says what the rule is about. Rule descriptions and message
 formats are the vendors' documentation and are deliberately left out
@@ -168,7 +169,7 @@ nuget.org, no release is created. A dry run that faked those would prove nothing
 The foundation shipped first, on its own, because it had to: a catalogue cannot depend on
 it through a package reference until a version of it exists
 ([ADR-0007](doc/adr/0007-depend-across-trains-through-published-packages.en.md)). That release
-is what unblocked the seven vendor catalogues, which now ride their own trains.
+is what unblocked the eight vendor catalogues, which now ride their own trains.
 
 | | Status |
 | --- | --- |
@@ -286,6 +287,7 @@ Per-package guides:
 [`.Xunit`](src/DiagnosticCatalog.Xunit/README.md) ·
 [`.NUnit`](src/DiagnosticCatalog.NUnit/README.md) ·
 [`.MSTest`](src/DiagnosticCatalog.MSTest/README.md) ·
+[`.Trimming`](src/DiagnosticCatalog.Trimming/README.md) ·
 [`.Cli`](src/DiagnosticCatalog.Cli/README.md)
 
 ## 🎯 When it is a good fit

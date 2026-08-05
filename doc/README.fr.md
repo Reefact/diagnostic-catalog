@@ -70,14 +70,15 @@ lui-même plutôt que retapée de mémoire.
 | **`DiagnosticCatalog.Xunit`** | Les règles [xunit.analyzers](https://github.com/xunit/xunit.analyzers) (`xUnitxxxx`) — que tout projet de test xUnit exécute déjà, puisque `xunit` en dépend — même traitement. |
 | **`DiagnosticCatalog.NUnit`** | Les règles [NUnit.Analyzers](https://github.com/nunit/nunit.analyzers) (`NUnitxxxx`) — que `dotnet new nunit` inscrit dans le fichier projet qu'il génère — même traitement. |
 | **`DiagnosticCatalog.MSTest`** | Les règles [MSTest.Analyzers](https://github.com/microsoft/testfx) (`MSTESTxxxx`) — que tout projet MSTest exécute déjà, puisque `MSTest.TestFramework` en dépend — même traitement. |
+| **`DiagnosticCatalog.Trimming`** | Les avertissements de trimming, Native AOT et fichier unique (`ILxxxx`) — que Blazor WebAssembly, MAUI et `PublishAot` activent à chaque build — même traitement. |
 | **`DiagnosticCatalog.Analyzers`** | La vérification. Des diagnostics qui confrontent une déclaration de règle au contrat structurel et une suppression à la règle qu'elle nomme — une catégorie et un identifiant pris dans deux règles différentes, une suppression migrée à moitié — et les correctifs qui transforment un littéral en référence de catalogue, complètent une migration inachevée depuis la règle déjà nommée, ou réparent une déclaration écrite à la main là où le code dit déjà comment. Une dépendance de compilation : ces assemblages n'atteignent jamais votre exécution. |
 | **`DiagnosticCatalog.Self`** | Les règles `DCATxxxx` que les analyseurs ci-dessus signalent, cataloguées de la même façon — de sorte que supprimer un diagnostic de *cette* bibliothèque soit une référence vérifiée plutôt que la chaîne magique que tout ceci existe pour supprimer. |
-| **`DiagnosticCatalog.Cli`**, l'outil `dcat` | Le générateur, en outil .NET. Pointez-le vers un paquet d'analyseurs ou vers des assemblages sur disque et il écrit un catalogue comme ce dépôt écrit les huit ci-dessus. |
+| **`DiagnosticCatalog.Cli`**, l'outil `dcat` | Le générateur, en outil .NET. Pointez-le vers un paquet d'analyseurs ou vers des assemblages sur disque et il écrit un catalogue comme ce dépôt écrit les neuf ci-dessus. |
 
 Les trois derniers sont construits ici mais n'ont encore aucune version sur nuget.org ; voir
 **État du projet** plus bas.
 
-Les sept catalogues d'éditeurs sont **générés**, jamais écrits à la main, et portent les
+Les huit catalogues d'éditeurs sont **générés**, jamais écrits à la main, et portent les
 identifiants, les catégories, les liens d'aide et le titre de la règle — ce dernier en
 commentaire de documentation, pour que survoler une constante dise de quoi la règle parle. Les
 descriptions de règles et les formats de message sont la documentation des éditeurs et sont
@@ -174,7 +175,7 @@ tout cela ne prouverait rien.
 La fondation a été livrée en premier, seule, parce qu'il le fallait : un catalogue ne peut en
 dépendre par référence de paquet tant qu'une version n'en existe pas
 ([ADR-0007](adr/0007-depend-across-trains-through-published-packages.fr.md)). C'est cette
-release qui a débloqué les sept catalogues d'éditeurs, qui roulent désormais sur leurs propres
+release qui a débloqué les huit catalogues d'éditeurs, qui roulent désormais sur leurs propres
 trains.
 
 | | État |
@@ -294,6 +295,7 @@ Guides par paquet :
 [`.Xunit`](../src/DiagnosticCatalog.Xunit/README.md) ·
 [`.NUnit`](../src/DiagnosticCatalog.NUnit/README.md) ·
 [`.MSTest`](../src/DiagnosticCatalog.MSTest/README.md) ·
+[`.Trimming`](../src/DiagnosticCatalog.Trimming/README.md) ·
 [`.Cli`](../src/DiagnosticCatalog.Cli/README.md)
 
 ## 🎯 Quand c'est un bon choix

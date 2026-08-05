@@ -49,7 +49,7 @@ a new `DCAT` id cannot ship without the catalogue that publishes it.
 
 This catalogue rides the `lib` train, with the analyzers it mirrors, and that is deliberate: the two
 are generated from one source in one repository and must never describe different rule sets. The
-other seven catalogues version independently because an outside vendor sets their pace
+other eight catalogues version independently because an outside vendor sets their pace
 ([ADR-0015](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/adr/0015-a-catalogues-version-runs-on-its-own-line.en.md)); nobody outside sets
 this one's.
 
@@ -59,7 +59,7 @@ with a message that names nothing useful.
 
 ## See also
 
-Seven sibling catalogues are generated from this repository the same way, each read from one
+Eight sibling catalogues are generated from this repository the same way, each read from one
 analyzer's own descriptors — the difference being that theirs belong to somebody else:
 
 - [`DiagnosticCatalog.Sonar`](https://www.nuget.org/packages/DiagnosticCatalog.Sonar)
@@ -76,6 +76,8 @@ analyzer's own descriptors — the difference being that theirs belong to somebo
   — the NUnit.Analyzers (`NUnitxxxx`) rules.
 - [`DiagnosticCatalog.MSTest`](https://www.nuget.org/packages/DiagnosticCatalog.MSTest)
   — the MSTest.Analyzers (`MSTESTxxxx`) rules.
+- [`DiagnosticCatalog.Trimming`](https://www.nuget.org/packages/DiagnosticCatalog.Trimming)
+  — the trimming, Native AOT and single-file (`ILxxxx`) warnings.
 
 **Want a catalogue of your own?** That is what
 [the catalogue author's guide](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/authoring-a-catalogue.en.md) is for, and this package is its

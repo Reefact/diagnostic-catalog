@@ -58,6 +58,7 @@ codestyle|codestyle-v|codestyle|the Roslyn IDE code-style rule catalog
 xunit|xunit-v|xunit|the xUnit.net analyzer rule catalog
 nunit|nunit-v|nunit|the NUnit analyzer rule catalog
 mstest|mstest-v|mstest|the MSTest analyzer rule catalog
+trimming|trimming-v|trimming|the trimming, Native AOT and single-file rule catalog
 ROWS
 }
 

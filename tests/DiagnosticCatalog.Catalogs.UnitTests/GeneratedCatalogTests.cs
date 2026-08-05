@@ -27,6 +27,7 @@ public sealed class GeneratedCatalogTests
         "DiagnosticCatalog.Xunit",
         "DiagnosticCatalog.NUnit",
         "DiagnosticCatalog.MSTest",
+        "DiagnosticCatalog.Trimming",
     ];
 
     private static Assembly Load(string name) =>

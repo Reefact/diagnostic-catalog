@@ -65,6 +65,21 @@
     },
     {
       "$comment": [
+        "The trimming, Native AOT and single-file warnings. The analyzer lives inside the SDK's own",
+        "Microsoft.NET.ILLink.Tasks package, which is public on nuget.org — so this entry is the",
+        "ordinary package shape despite the rules arriving through the SDK rather than a reference.",
+        "",
+        "Blazor WebAssembly turns them on for every build without asking: its SDK props set",
+        "PublishTrimmed, and Microsoft.NET.Sdk.Analyzers.targets reads that to set EnableTrimAnalyzer.",
+        "The same holds for MAUI, for PublishAot, and for any library declaring IsTrimmable."
+      ],
+      "package": "Microsoft.NET.ILLink.Tasks",
+      "namespace": "DiagnosticCatalog.Trimming",
+      "container": "TrimRule",
+      "output": "../src/DiagnosticCatalog.Trimming/TrimRules.g.cs"
+    },
+    {
+      "$comment": [
         "The xUnit.net analyzers. They reach a project TRANSITIVELY — xunit depends on",
         "xunit.analyzers — so a test project has them without anybody choosing them, which is why",
         "their rules are suppressed in source rather than configured away in .editorconfig."

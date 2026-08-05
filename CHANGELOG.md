@@ -20,6 +20,7 @@ project:
 * [`xunit`](src/DiagnosticCatalog.Xunit/CHANGELOG.md)
 * [`nunit`](src/DiagnosticCatalog.NUnit/CHANGELOG.md)
 * [`mstest`](src/DiagnosticCatalog.MSTest/CHANGELOG.md)
+* [`trimming`](src/DiagnosticCatalog.Trimming/CHANGELOG.md)
 
 ## [Unreleased]
 

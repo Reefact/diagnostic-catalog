@@ -24,6 +24,7 @@ body:
         - DiagnosticCatalog.Xunit
         - DiagnosticCatalog.NUnit
         - DiagnosticCatalog.MSTest
+        - DiagnosticCatalog.Trimming
         - DiagnosticCatalog.Self
         - DiagnosticCatalog.Cli (the dcat tool)
         - Not sure

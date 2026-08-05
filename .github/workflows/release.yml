@@ -16,6 +16,7 @@ on:
       - 'xunit-v*.*.*'
       - 'nunit-v*.*.*'
       - 'mstest-v*.*.*'
+      - 'trimming-v*.*.*'
   workflow_dispatch:
     inputs:
       train:
@@ -31,6 +32,7 @@ on:
           - xunit
           - nunit
           - mstest
+          - trimming
         required: true
       version:
         description: 'Package version, without any prefix (e.g. 1.2.3; a dry run can use any SemVer, e.g. 0.0.0-dry.1)'

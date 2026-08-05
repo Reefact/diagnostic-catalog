@@ -28,9 +28,9 @@
 set -u
 
 TYPES='feat|fix|build|chore|ci|docs|perf|refactor|revert|style|test'
-SCOPES='analyzers|cataloggen|cli|codestyle|core|mstest|netanalyzers|nunit|sonar|stylecop|xunit'
+SCOPES='analyzers|cataloggen|cli|codestyle|core|mstest|netanalyzers|nunit|sonar|stylecop|trimming|xunit'
 TYPES_HUMAN='feat, fix, build, chore, ci, docs, perf, refactor, revert, style, test'
-SCOPES_HUMAN='analyzers, cataloggen, cli, codestyle, core, mstest, netanalyzers, nunit, sonar, stylecop, xunit'
+SCOPES_HUMAN='analyzers, cataloggen, cli, codestyle, core, mstest, netanalyzers, nunit, sonar, stylecop, trimming, xunit'
 MAX=72
 
 # --- options ------------------------------------------------------------------
