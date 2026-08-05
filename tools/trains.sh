@@ -59,6 +59,7 @@ xunit|xunit-v|xunit|the xUnit.net analyzer rule catalog
 nunit|nunit-v|nunit|the NUnit analyzer rule catalog
 mstest|mstest-v|mstest|the MSTest analyzer rule catalog
 trimming|trimming-v|trimming|the trimming, Native AOT and single-file rule catalog
+aspnetcore|aspnetcore-v|aspnetcore|the ASP.NET Core and Blazor rule catalog
 ROWS
 }
 

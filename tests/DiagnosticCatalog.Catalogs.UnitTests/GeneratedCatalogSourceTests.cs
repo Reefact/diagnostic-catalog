@@ -28,6 +28,7 @@ public sealed class GeneratedCatalogSourceTests
         "NUnitRules.g.cs",
         "MSTestRules.g.cs",
         "TrimRules.g.cs",
+        "AspNetCoreRules.g.cs",
     ];
 
     /// <summary>
