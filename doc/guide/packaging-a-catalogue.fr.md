@@ -142,7 +142,7 @@ dernière à laquelle on pense en le construisant — et à cette taille, elle t
 caractères.
 
 Les catalogues d'ici dépensent ces caractères sur le **préfixe des règles que le catalogue
-reflète**, jamais sur le nom de l'éditeur : `S`, `CA`, `IDE`, `SA`. Le badge de StyleCop porte `SA`
+reflète**, jamais sur le nom de l'éditeur. Le badge de StyleCop porte `SA`
 plutôt que `SC` parce que `SA1000` est ce qu'un lecteur tape dans `[SuppressMessage(...)]` et que
 `SC` n'est tapé par personne ; l'icône répond donc à « ce paquet contient-il ma règle ? » sans qu'on
 ouvre la page. La marque elle-même est
