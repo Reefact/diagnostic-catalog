@@ -96,7 +96,14 @@ internal sealed class ExplainCommand : Command<ExplainSettings>
         // The point of the catalogue, spelled out: this is the line the reader came for, and it is
         // the one that is worth copying rather than retyping from memory.
         Console.WriteLine();
-        string qualified = rule.Container.Length > 0 ? $"{rule.Container}.{rule.Id}" : rule.Id;
+        // The TYPE's name, not the identifier. They are the same string for almost every rule, which
+        // is why writing the identifier here read as correct — but §8.2's blessed exception, an
+        // identifier C# will not accept as a type name, leaves the two apart, and there this line
+        // named something that does not exist. "MeridianRule.MRD-0100.Category" is not C#, and it is
+        // the one line this command exists to produce.
+        string qualified = rule.Container.Length > 0
+            ? $"{rule.Container}.{rule.TypeName}"
+            : rule.TypeName;
         Console.WriteLine("[SuppressMessage(");
         Console.WriteLine($"    {qualified}.Category,");
         Console.WriteLine($"    {qualified}.Id,");
