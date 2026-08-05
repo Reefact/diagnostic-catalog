@@ -66,9 +66,10 @@ lui-même plutôt que retapée de mémoire.
 | **`DiagnosticCatalog.Sonar`** | Les règles [SonarAnalyzer.CSharp](https://github.com/SonarSource/sonar-dotnet), identifiants et catégories lus depuis les descripteurs des analyseurs eux-mêmes. |
 | **`DiagnosticCatalog.NetAnalyzers`** | Les règles d'analyse de code .NET (`CAxxxx`), même traitement. |
 | **`DiagnosticCatalog.StyleCop`** | Les règles [StyleCop.Analyzers](https://github.com/DotNetAnalyzers/StyleCopAnalyzers) (`SAxxxx`), même traitement. |
+| **`DiagnosticCatalog.CodeStyle`** | Les règles de style IDE de Roslyn (`IDExxxx`) — celles que `.editorconfig` configure et qu'`EnforceCodeStyleInBuild` active — même traitement. |
 | **`DiagnosticCatalog.Analyzers`** | La vérification. Des diagnostics qui confrontent une déclaration de règle au contrat structurel et une suppression à la règle qu'elle nomme — une catégorie et un identifiant pris dans deux règles différentes, une suppression migrée à moitié — et les correctifs qui transforment un littéral en référence de catalogue, complètent une migration inachevée depuis la règle déjà nommée, ou réparent une déclaration écrite à la main là où le code dit déjà comment. Une dépendance de compilation : ces assemblages n'atteignent jamais votre exécution. |
 | **`DiagnosticCatalog.Self`** | Les règles `DCATxxxx` que les analyseurs ci-dessus signalent, cataloguées de la même façon — de sorte que supprimer un diagnostic de *cette* bibliothèque soit une référence vérifiée plutôt que la chaîne magique que tout ceci existe pour supprimer. |
-| **`DiagnosticCatalog.Cli`**, l'outil `dcat` | Le générateur, en outil .NET. Pointez-le vers un paquet d'analyseurs ou vers des assemblages sur disque et il écrit un catalogue comme ce dépôt écrit les quatre ci-dessus. |
+| **`DiagnosticCatalog.Cli`**, l'outil `dcat` | Le générateur, en outil .NET. Pointez-le vers un paquet d'analyseurs ou vers des assemblages sur disque et il écrit un catalogue comme ce dépôt écrit les cinq ci-dessus. |
 
 Les trois derniers sont construits ici mais n'ont encore aucune version sur nuget.org ; voir
 **État du projet** plus bas.
@@ -124,7 +125,7 @@ sequenceDiagram
 ```
 
 **Lire les descripteurs, pas la documentation.** `eng/CatalogGen` charge le paquet d'analyseurs
-amont, construit chaque `DiagnosticAnalyzer` qu'il contient, et lit les instances de
+amont, construit les analyseurs qu'il marque `[DiagnosticAnalyzer]`, et lit les instances de
 `DiagnosticDescriptor` qu'ils déclarent réellement. Les métadonnées de règles publiées en JSON
 ou en prose s'écartent de ce que l'analyseur fait vraiment, et puisque rien dans la plateforme
 ne valide une catégorie, une valeur copiée depuis une documentation périmée ne produirait aucun
@@ -286,6 +287,7 @@ Guides par paquet :
 [`.Sonar`](../src/DiagnosticCatalog.Sonar/README.md) ·
 [`.NetAnalyzers`](../src/DiagnosticCatalog.NetAnalyzers/README.md) ·
 [`.StyleCop`](../src/DiagnosticCatalog.StyleCop/README.md) ·
+[`.CodeStyle`](../src/DiagnosticCatalog.CodeStyle/README.md) ·
 [`.Cli`](../src/DiagnosticCatalog.Cli/README.md)
 
 ## 🎯 Quand c'est un bon choix

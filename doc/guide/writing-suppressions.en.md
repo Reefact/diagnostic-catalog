@@ -65,7 +65,8 @@ whose warnings you suppress:
 
 There is one for [SonarAnalyzer](https://www.nuget.org/packages/DiagnosticCatalog.Sonar), one for
 [the .NET analyzers](https://www.nuget.org/packages/DiagnosticCatalog.NetAnalyzers) (`CAxxxx`) and
-one for [StyleCop](https://www.nuget.org/packages/DiagnosticCatalog.StyleCop) (`SAxxxx`).
+one for [StyleCop](https://www.nuget.org/packages/DiagnosticCatalog.StyleCop) (`SAxxxx`) and one
+for [the Roslyn IDE rules](https://www.nuget.org/packages/DiagnosticCatalog.CodeStyle) (`IDExxxx`).
 
 That is the only line you need for the guarantee itself. A misspelled rule is now a compile error,
 because `SonarRule.S1144.Id` is a member the compiler resolves — no analyzer is involved in that.

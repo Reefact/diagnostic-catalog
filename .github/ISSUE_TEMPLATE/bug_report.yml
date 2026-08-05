@@ -20,6 +20,7 @@ body:
         - DiagnosticCatalog.Sonar
         - DiagnosticCatalog.NetAnalyzers
         - DiagnosticCatalog.StyleCop
+        - DiagnosticCatalog.CodeStyle
         - DiagnosticCatalog.Self
         - DiagnosticCatalog.Cli (the dcat tool)
         - Not sure

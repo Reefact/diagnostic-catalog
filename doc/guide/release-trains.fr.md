@@ -24,6 +24,7 @@ Le dépôt publie donc sur **cinq lignes indépendantes**
 | `sonar` | `sonar-v` | `sonar` | Le catalogue de règles SonarQube |
 | `netanalyzers` | `netanalyzers-v` | `netanalyzers` | Le catalogue de règles des analyseurs .NET de Microsoft |
 | `stylecop` | `stylecop-v` | `stylecop` | Le catalogue de règles StyleCop |
+| `codestyle` | `codestyle-v` | `codestyle` | Le catalogue de règles de style IDE de Roslyn |
 
 Ce tableau vit une seule fois, dans [`tools/trains.sh`](../../tools/trains.sh). Les scripts
 d'empaquetage et de notes de version le **sourcent** : ce qu'une release publie et ce que ses notes
@@ -72,6 +73,9 @@ flowchart TB
     subgraph T["stylecop"]
         SC["DiagnosticCatalog.StyleCop"]
     end
+    subgraph I["codestyle"]
+        CS["DiagnosticCatalog.CodeStyle"]
+    end
     CF["DiagnosticCatalog.CodeFixes<br/><i>aucun train — embarqué dans le paquet des analyseurs</i>"]
     GEN["eng/CatalogGen<br/><i>aucun train — embarqué dans dcat</i>"]
     A -. "empaquette" .-> CF
@@ -79,6 +83,7 @@ flowchart TB
     SO -- "PackageReference" --> F
     NA -- "PackageReference" --> F
     SC -- "PackageReference" --> F
+    CS -- "PackageReference" --> F
     SELF -- "PackageReference" --> F
 ```
 

@@ -59,7 +59,7 @@ with a message that names nothing useful.
 
 ## See also
 
-Three sibling catalogues are generated from this repository the same way, each read from one
+Four sibling catalogues are generated from this repository the same way, each read from one
 analyzer's own descriptors — the difference being that theirs belong to somebody else:
 
 - [`DiagnosticCatalog.Sonar`](https://www.nuget.org/packages/DiagnosticCatalog.Sonar)
@@ -68,6 +68,8 @@ analyzer's own descriptors — the difference being that theirs belong to somebo
   — the .NET code analysis (`CAxxxx`) rules.
 - [`DiagnosticCatalog.StyleCop`](https://www.nuget.org/packages/DiagnosticCatalog.StyleCop)
   — the StyleCop.Analyzers (`SAxxxx`) rules.
+- [`DiagnosticCatalog.CodeStyle`](https://www.nuget.org/packages/DiagnosticCatalog.CodeStyle)
+  — the Roslyn IDE code-style (`IDExxxx`) rules.
 
 **Want a catalogue of your own?** That is what
 [the catalogue author's guide](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/authoring-a-catalogue.en.md) is for, and this package is its

@@ -128,7 +128,7 @@ this analyzer actually uses.
 ## How it is produced
 
 Not transcribed from documentation, and not from rule-metadata JSON. The generator loads
-`SonarAnalyzer.CSharp`, constructs every `DiagnosticAnalyzer` it contains, and reads the
+`SonarAnalyzer.CSharp`, constructs the analyzers it marks with `[DiagnosticAnalyzer]`, and reads the
 `DiagnosticDescriptor` instances they actually declare. That is the only source that
 cannot be wrong — and because the platform never validates a category, a value copied
 from documentation that had drifted would produce no symptom anywhere.
@@ -210,13 +210,15 @@ constant. This package covers Sonar's `Sxxxx` analyzer rules only.
 
 ## See also
 
-Three sibling catalogues are generated from this repository the same way, each read from one
+Four sibling catalogues are generated from this repository the same way, each read from one
 analyzer's own descriptors:
 
 - [`DiagnosticCatalog.NetAnalyzers`](https://www.nuget.org/packages/DiagnosticCatalog.NetAnalyzers)
   — the .NET code analysis (`CAxxxx`) rules.
 - [`DiagnosticCatalog.StyleCop`](https://www.nuget.org/packages/DiagnosticCatalog.StyleCop)
   — the StyleCop.Analyzers (`SAxxxx`) rules.
+- [`DiagnosticCatalog.CodeStyle`](https://www.nuget.org/packages/DiagnosticCatalog.CodeStyle)
+  — the Roslyn IDE code-style (`IDExxxx`) rules.
 - [`DiagnosticCatalog.Self`](https://www.nuget.org/packages/DiagnosticCatalog.Self)
   — this library's own `DCATxxxx` rules, for suppressing a diagnostic the catalogue analyzers
   themselves report.

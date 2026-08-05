@@ -23,6 +23,7 @@ public sealed class GeneratedCatalogSourceTests
         "SonarRules.g.cs",
         "NetAnalyzersRules.g.cs",
         "StyleCopRules.g.cs",
+        "CodeStyleRules.g.cs",
     ];
 
     /// <summary>

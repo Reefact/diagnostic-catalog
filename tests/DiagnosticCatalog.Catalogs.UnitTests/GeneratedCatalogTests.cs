@@ -23,6 +23,7 @@ public sealed class GeneratedCatalogTests
         "DiagnosticCatalog.Sonar",
         "DiagnosticCatalog.NetAnalyzers",
         "DiagnosticCatalog.StyleCop",
+        "DiagnosticCatalog.CodeStyle",
     ];
 
     private static Assembly Load(string name) =>
