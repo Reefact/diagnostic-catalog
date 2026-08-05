@@ -27,6 +27,45 @@ A mistake with no symptom is not a small mistake; it is one that cannot be found
 degrades, and the first person to trust it — grepping for every `"Major Code Smell"` suppression
 before an upgrade — gets an answer that is quietly short.
 
+## Why not take the constants from the analyzer packages themselves?
+
+Because there is nothing to reference, and nothing in it to reference.
+
+**Nothing to reference.** Each of these packages ships its assemblies under `analyzers/dotnet/cs/`,
+with no `lib/` and no `ref/` folder, and declares
+`<developmentDependency>true</developmentDependency>`. NuGet hands such an assembly to the compiler
+as an analyzer plugin; it never enters the consumer's reference set. There is no `using` to write,
+whatever the assembly holds.
+
+**Nothing in it to reference.** Measured over the metadata of every assembly in the five packages
+the catalogues mirror, satellite resources aside:
+
+| Package | Public types | `public const` | Rule-id or category constants |
+| --- | ---: | ---: | ---: |
+| `SonarAnalyzer.CSharp` 10.31.0.145097 | 1801 | 861 | 0 |
+| `StyleCop.Analyzers.Unstable` 1.2.0.556 | 6 | 12 | 0 |
+| `Microsoft.CodeAnalysis.NetAnalyzers` 10.0.302 | 740 | 128 | 7 |
+| `Microsoft.CodeAnalysis.CSharp.CodeStyle` 5.6.0 | 105 | 28 | 0 |
+| `xunit.analyzers` 1.27.0 | 178 | 219 | 0 |
+
+StyleCop is the clearest: 1314 types across its two assemblies, six of them public, and not one of
+those an analyzer. `xunit.analyzers` is the sharpest: 219 public constants, more than any of the
+others, and not one of them a rule id. NetAnalyzers is the exception that makes the point — seven
+`RuleId` constants (`CA1008`, `CA1052`, `CA1069`, `CA1708`, `CA1715`, `CA1821`, `CA2214`) against
+the 318 rules its catalogue holds. That is a leak, not a contract.
+
+**And a category is nowhere a constant at all** — zero, across all five. A category exists only on
+the `DiagnosticDescriptor` instances an analyzer builds at run time, out of localisable resources.
+An attribute argument must be a compile-time constant, so even reflecting over
+`SupportedDiagnostics` yields a `string` that cannot occupy the position.
+
+Which is why generation happens where it does: constructing the analyzers and reading their
+descriptors ([ADR-0009](../adr/0009-generate-catalog-content-from-analyzer-descriptors.en.md)) is
+the only way to obtain a category at all, and it has to happen before the consumer compiles.
+
+None of this is a law. A vendor could publish a package of constants beside its analyzer tomorrow.
+None has.
+
 ## Can I just write my own constants file?
 
 Yes, and for thirty suppressions over five rules you probably should.
