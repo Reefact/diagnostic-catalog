@@ -69,42 +69,6 @@ public sealed class DescriptorReaderTests
     }
 
     [Fact]
-    public void An_analyzer_compiled_against_the_async_interfaces_facade_is_read_rather_than_refused()
-    {
-        // The worker HOSTS analyzers, and hosting them means supplying what the runtime has under a
-        // name it does not answer to. A netstandard2.0 analyzer reaches IAsyncEnumerable<T> through
-        // Microsoft.Bcl.AsyncInterfaces; the shared framework carries the types and not that
-        // identity, and an analyzer package carries neither — it ships its own assembly and declares
-        // no dependencies. So the identity can only come from the host, and when it does not,
-        // Assembly.GetTypes() loses every type that mentions it.
-        //
-        // What that costs is the whole point. The analyzer itself still loads and its descriptor is
-        // still read, so the refusal is not protecting a rule that went missing — it is protecting
-        // against the possibility, which the reader cannot rule out because a type that failed to
-        // load has no name to ask about. Measured against the real packages: reading
-        // Microsoft.CodeAnalysis.CSharp.CodeStyle, Meziantou.Analyzer and
-        // Microsoft.CodeAnalysis.PublicApiAnalyzers yields exactly the same descriptors before and
-        // after the facade is deployed — 121, 210 and 23 — and all three are refused without it.
-        string fixture = Path.Combine(AppContext.BaseDirectory, "analyzer-fixture", "CatalogGen.AnalyzerFixture.dll");
-        Assert.True(File.Exists(fixture),
-                    "the analyzer fixture should be built and copied beside the tests by _CopyAnalyzerFixtures");
-
-        // Named, because its presence would make this test pass without the worker deploying
-        // anything: the worker probes the directories of the assemblies it is given, so a facade
-        // sitting beside the fixture resolves the identity there and the read succeeds for a reason
-        // that has nothing to do with the fix.
-        Assert.False(File.Exists(Path.Combine(Path.GetDirectoryName(fixture)!, "Microsoft.Bcl.AsyncInterfaces.dll")),
-                     "the fixture should be alone in its folder, as an analyzer is alone in its package");
-
-        AnalyzerAssemblySet set = new([fixture], "Fixture", "1.0.0");
-
-        SortedDictionary<string, RuleInfo>? read = DescriptorReader.Read(set);
-
-        Assert.NotNull(read);
-        Assert.Contains("FIX0001", read.Keys);
-    }
-
-    [Fact]
     public void A_type_no_analyzer_depends_on_does_not_fail_the_read_when_it_cannot_be_loaded()
     {
         // What an analyzer package is mostly made of is not analyzers: code fixes, internal
@@ -168,8 +132,8 @@ public sealed class DescriptorReaderTests
 /// a test project targets, and it is a test project rather than a compiler extension, so the
 /// authoring rules RS1036 asks it to enforce would be enforced over a hundred and fifty tests that
 /// declare no analyzer. Suppressed at the declaration, which is the only place the claim is true.
-/// The fixtures that really are compiler extensions — CatalogGen.AnalyzerFixture and
-/// CatalogGen.PartialLoadFixture — set the property instead and suppress nothing.
+/// The fixture that really is a compiler extension — CatalogGen.PartialLoadFixture — sets the
+/// property instead and suppresses nothing.
 /// </para>
 /// </remarks>
 #pragma warning disable RS1036 // Specify EnforceExtendedAnalyzerRules

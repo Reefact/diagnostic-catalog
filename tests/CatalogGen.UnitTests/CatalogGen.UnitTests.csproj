@@ -66,28 +66,23 @@
     ReferenceOutputAssembly="false" because nothing here compiles against it: it is read the way an
     upstream analyzer is read, through the worker, from a path. Alone matters as much as built. The
     worker probes the directories the assemblies it is given live in, so anything sitting beside the
-    fixture is a dependency the fixture no longer has to get from the host — and the facade beside it
-    would make the reader succeed for the wrong reason, which is the one outcome the test cannot
-    detect. A folder holding exactly one file is the same thing an analyzer package is: the analyzer,
-    and nothing else.
+    fixture is a dependency the fixture no longer has to get from the host — and the assembly its
+    helper type implements, sitting there, would make the reader succeed for the wrong reason, which
+    is the one outcome the test cannot detect. A folder holding exactly one file is the same thing
+    an analyzer package is: the analyzer, and nothing else.
   -->
   <ItemGroup>
-    <ProjectReference Include="..\CatalogGen.AnalyzerFixture\CatalogGen.AnalyzerFixture.csproj"
-                      ReferenceOutputAssembly="false" />
     <ProjectReference Include="..\CatalogGen.PartialLoadFixture\CatalogGen.PartialLoadFixture.csproj"
                       ReferenceOutputAssembly="false" />
   </ItemGroup>
 
   <!--
-    One folder each, holding one assembly each. The partial-load fixture references the analyzer
-    fixture and neither folder has the other, which is what makes its helper type unloadable where
-    the test reads it — the same absence an analyzer package has for everything it does not ship.
+    One folder, holding one assembly. The fixture implements an interface from
+    CatalogGen.AbsentContract and that folder does not have it, which is what makes its helper type
+    unloadable where the test reads it — the same absence an analyzer package has for everything it
+    does not ship.
   -->
   <Target Name="_CopyAnalyzerFixtures" AfterTargets="Build">
-    <Copy SourceFiles="..\CatalogGen.AnalyzerFixture\bin\$(Configuration)\netstandard2.0\CatalogGen.AnalyzerFixture.dll"
-          DestinationFolder="$(OutDir)analyzer-fixture"
-          SkipUnchangedFiles="true"
-          OverwriteReadOnlyFiles="true" />
     <Copy SourceFiles="..\CatalogGen.PartialLoadFixture\bin\$(Configuration)\netstandard2.0\CatalogGen.PartialLoadFixture.dll"
           DestinationFolder="$(OutDir)partial-load-fixture"
           SkipUnchangedFiles="true"

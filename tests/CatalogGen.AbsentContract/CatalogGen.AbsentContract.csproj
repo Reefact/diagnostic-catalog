@@ -9,7 +9,7 @@
     process was never going to load, in an assembly that is otherwise perfectly readable.
 
     It references NOTHING, and that is the point rather than minimalism for its own sake. Borrowing
-    the interface from CatalogGen.AnalyzerFixture instead made MSBuild unify
+    the interface from a fixture that carried its own references instead made MSBuild unify
     System.Threading.Tasks.Extensions across the two and warn (MSB3277) — a real version conflict,
     which CI turns into an error, reported against a fixture that has no opinion about async at all.
     An assembly with no references cannot conflict with anything.
