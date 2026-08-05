@@ -21,6 +21,7 @@ flowchart TB
         CS["DiagnosticCatalog.CodeStyle"]
         XU["DiagnosticCatalog.Xunit"]
         NU["DiagnosticCatalog.NUnit"]
+        MS["DiagnosticCatalog.MSTest"]
         CLI["DiagnosticCatalog.Cli<br/><i>livré sous le nom dcat</i>"]
         A -. "embarque" .-> CF
         S --> F
@@ -29,6 +30,7 @@ flowchart TB
         CS --> F
         XU --> F
         NU --> F
+        MS --> F
         SELF --> F
     end
     subgraph ENG["eng/ — outillage de compilation"]

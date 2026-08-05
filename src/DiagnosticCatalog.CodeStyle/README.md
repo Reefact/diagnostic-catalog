@@ -173,7 +173,7 @@ local and deserves a `Justification` next to the code.
 
 ## See also
 
-Six sibling catalogues are generated from this repository the same way, each read from one
+Seven sibling catalogues are generated from this repository the same way, each read from one
 analyzer's own descriptors:
 
 - [`DiagnosticCatalog.Sonar`](https://www.nuget.org/packages/DiagnosticCatalog.Sonar)
@@ -186,6 +186,8 @@ analyzer's own descriptors:
   — the xunit.analyzers (`xUnitxxxx`) rules.
 - [`DiagnosticCatalog.NUnit`](https://www.nuget.org/packages/DiagnosticCatalog.NUnit)
   — the NUnit.Analyzers (`NUnitxxxx`) rules.
+- [`DiagnosticCatalog.MSTest`](https://www.nuget.org/packages/DiagnosticCatalog.MSTest)
+  — the MSTest.Analyzers (`MSTESTxxxx`) rules.
 - [`DiagnosticCatalog.Self`](https://www.nuget.org/packages/DiagnosticCatalog.Self)
   — this library's own `DCATxxxx` rules, for suppressing a diagnostic the catalogue analyzers
   themselves report.

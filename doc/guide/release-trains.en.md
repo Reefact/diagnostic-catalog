@@ -3,7 +3,7 @@
 🌍 **Languages:**  
 🇬🇧 English (this file) | 🇫🇷 [Français](./release-trains.fr.md)
 
-For anyone adding a project, cutting a release, or wondering why a commit needs a scope. Eight trains,
+For anyone adding a project, cutting a release, or wondering why a commit needs a scope. Nine trains,
 one declaration, and one rule that follows from both.
 
 ## Why not one version
@@ -12,7 +12,7 @@ A catalogue follows its vendor's pace. SonarSource ships often; the foundation i
 stable. Tie them to one number and every Sonar refresh moves the foundation's version — which tells
 every consumer of the foundation that something changed when nothing did.
 
-So the repository publishes on **eight independent lines**
+So the repository publishes on **nine independent lines**
 ([ADR-0002](../adr/0002-partition-releases-into-trains-by-commit-scope.en.md),
 [ADR-0015](../adr/0015-a-catalogues-version-runs-on-its-own-line.en.md)):
 
@@ -26,6 +26,7 @@ So the repository publishes on **eight independent lines**
 | `codestyle` | `codestyle-v` | `codestyle` | The Roslyn IDE code-style rule catalogue |
 | `xunit` | `xunit-v` | `xunit` | The xUnit.net analyzer rule catalogue |
 | `nunit` | `nunit-v` | `nunit` | The NUnit analyzer rule catalogue |
+| `mstest` | `mstest-v` | `mstest` | The MSTest analyzer rule catalogue |
 
 That table lives once, in [`tools/trains.sh`](../../tools/trains.sh). The packaging and release-notes
 scripts **source** it, so what a release publishes and what its notes describe cannot drift apart.
@@ -80,6 +81,9 @@ flowchart TB
     subgraph NU["nunit"]
         NUC["DiagnosticCatalog.NUnit"]
     end
+    subgraph MS["mstest"]
+        MST["DiagnosticCatalog.MSTest"]
+    end
     CF["DiagnosticCatalog.CodeFixes<br/><i>no train — bundled into the analyzers' package</i>"]
     GEN["eng/CatalogGen<br/><i>no train — bundled into dcat</i>"]
     A -. "packs" .-> CF
@@ -90,6 +94,7 @@ flowchart TB
     CS -- "PackageReference" --> F
     XU -- "PackageReference" --> F
     NUC -- "PackageReference" --> F
+    MST -- "PackageReference" --> F
     SELF -- "PackageReference" --> F
 ```
 

@@ -54,6 +54,17 @@
     },
     {
       "$comment": [
+        "The MSTest analyzers. Transitive, like xUnit's and unlike NUnit's: MSTest.TestFramework",
+        "depends on MSTest.Analyzers, so the MSTest meta-package and MSTest.TestAdapter both drag",
+        "them in. A test project has them without anybody choosing them."
+      ],
+      "package": "MSTest.Analyzers",
+      "namespace": "DiagnosticCatalog.MSTest",
+      "container": "MSTestRule",
+      "output": "../src/DiagnosticCatalog.MSTest/MSTestRules.g.cs"
+    },
+    {
+      "$comment": [
         "The xUnit.net analyzers. They reach a project TRANSITIVELY — xunit depends on",
         "xunit.analyzers — so a test project has them without anybody choosing them, which is why",
         "their rules are suppressed in source rather than configured away in .editorconfig."

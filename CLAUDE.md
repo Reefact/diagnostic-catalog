@@ -107,6 +107,7 @@ versions and publishes independently:
 | `codestyle` | `codestyle` | Follows Roslyn's releases. |
 | `xunit` | `xunit` | Follows xunit.analyzers' releases. |
 | `nunit` | `nunit` | Follows NUnit.Analyzers' releases. |
+| `mstest` | `mstest` | Follows MSTest.Analyzers' releases. |
 
 This is why `commit-lint` **requires a scope on `feat` and `fix`**: an unscoped
 one matches no train and is silently dropped from the release notes and the
@@ -196,7 +197,7 @@ essentials, inlined so they hold even if `AGENTS.md` is not read:
 * PR titles, descriptions, commits, and branch names must be written in English.
 * Write every commit message per [`CONTRIBUTING.md`](CONTRIBUTING.md):
   Conventional Commits, a closed type list, the scopes
-  `analyzers, cataloggen, cli, codestyle, core, netanalyzers, nunit, sonar, stylecop, xunit`, an imperative
+  `analyzers, cataloggen, cli, codestyle, core, mstest, netanalyzers, nunit, sonar, stylecop, xunit`, an imperative
   header within 72 characters, a `Docs:` footer on every `feat` (see *Documenting
   a feature*), and `Refs: #NN` in a footer when a GitHub issue exists
   (issue-closing keywords belong in the PR description, not the commit).
