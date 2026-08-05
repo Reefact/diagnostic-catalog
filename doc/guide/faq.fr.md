@@ -33,30 +33,49 @@ incomplète.
 
 Parce qu'il n'y a rien à référencer, et rien dedans à référencer.
 
-**Rien à référencer.** Chacun de ces paquets livre ses assemblages sous `analyzers/dotnet/cs/`, sans
-dossier `lib/` ni `ref/`, et déclare `<developmentDependency>true</developmentDependency>`. NuGet
-remet un tel assemblage au compilateur comme greffon d'analyse ; il n'entre jamais dans l'ensemble
-des références du consommateur. Il n'y a pas de `using` à écrire, quoi que porte l'assemblage.
+**Rien à référencer.** Sept de ces paquets livrent leurs assemblages sous `analyzers/`, sans dossier
+`lib/` ni `ref/`, et déclarent `<developmentDependency>true</developmentDependency>`. NuGet remet un
+tel assemblage au compilateur comme greffon d'analyse ; il n'entre jamais dans l'ensemble des
+références du consommateur. Il n'y a pas de `using` à écrire, quoi que porte l'assemblage.
 
-**Rien dedans à référencer.** Mesuré sur les métadonnées de tous les assemblages des cinq paquets
-que reflètent les catalogues, ressources satellites mises à part :
+Les trois autres arrivent par le SDK plutôt que par un `PackageReference`, et deux d'entre eux — les
+packs de ciblage d'ASP.NET Core et du runtime .NET — portent bel et bien un dossier `ref/` contre
+lequel tout projet compile. Leurs analyseurs n'y sont pas : ils siègent à côté, sous
+`analyzers/dotnet/cs/`, remis comme greffons ainsi que tous les autres. À lire ces deux packs en
+entier, assemblages de référence compris, aucune constante d'identifiant de règle n'apparaît hors de
+ce dossier — la moitié que l'on peut référencer est celle où il n'y a rien.
+
+**Rien dedans à référencer.** Mesuré sur les métadonnées de tous les assemblages d'analyse des dix
+paquets que reflètent les catalogues, ressources satellites mises à part :
 
 | Paquet | Types publics | `public const` | Constantes d'identifiant ou de catégorie |
 | --- | ---: | ---: | ---: |
 | `SonarAnalyzer.CSharp` 10.31.0.145097 | 1801 | 861 | 0 |
 | `StyleCop.Analyzers.Unstable` 1.2.0.556 | 6 | 12 | 0 |
-| `Microsoft.CodeAnalysis.NetAnalyzers` 10.0.302 | 740 | 128 | 7 |
+| `Microsoft.CodeAnalysis.NetAnalyzers` 10.0.302 | 740 | 128 | 9 |
 | `Microsoft.CodeAnalysis.CSharp.CodeStyle` 5.6.0 | 105 | 28 | 0 |
 | `xunit.analyzers` 1.27.0 | 178 | 219 | 0 |
+| `NUnit.Analyzers` 4.14.0 | 103 | 1 | 0 |
+| `MSTest.Analyzers` 4.3.3 | 182 | 0 | 0 |
+| `Microsoft.NET.ILLink.Tasks` 10.0.10 | 80 | 262 | 0 |
+| `Microsoft.AspNetCore.App.Ref` 10.0.10 | 96 | 435 | 0 |
+| `Microsoft.NETCore.App.Ref` 10.0.10 | 260 | 369 | 37 |
 
 StyleCop est le cas le plus net : 1314 types répartis sur ses deux assemblages, six publics, et
-aucun de ceux-là n'est un analyseur. `xunit.analyzers` est le plus tranchant : 219 constantes
-publiques, plus qu'aucun autre, et pas une seule n'est un identifiant de règle. NetAnalyzers est
-l'exception qui fait la démonstration — sept constantes `RuleId` (`CA1008`, `CA1052`, `CA1069`,
-`CA1708`, `CA1715`, `CA1821`, `CA2214`) face aux 318 règles que tient son catalogue. C'est une
-fuite, pas un contrat.
+aucun de ceux-là n'est un analyseur. MSTest est le plus plat : 182 types publics sans une seule
+constante publique parmi eux. `xunit.analyzers` est le plus tranchant : plus de constantes publiques
+que de types publics — 219 contre 178 — et pas une seule n'est un identifiant de règle.
 
-**Et une catégorie n'est nulle part une constante** — zéro, dans les cinq. Une catégorie n'existe
+Deux paquets fuient, et aucun ne fuit un contrat. NetAnalyzers déclare neuf identifiants de règle en
+constantes publiques — sept nommées `RuleId` (`CA1008`, `CA1052`, `CA1069`, `CA1708`, `CA1715`,
+`CA1821`, `CA2214`) et deux autres sur l'analyseur P/Invoke (`CA1401`, `CA2101`) — face aux 318
+règles que tient son catalogue. Le pack du runtime fuit dans l'autre sens : ses générateurs de source
+déclarent 37 constantes de ce genre, 31 identifiants `SYSLIB` distincts, face aux 13 règles que tient
+son catalogue. Plus d'identifiants que n'en porte le catalogue, et toujours rien à prendre : chacune
+siège dans un assemblage de générateur que le compilateur charge comme greffon, ce qui est le
+paragraphe ci-dessus.
+
+**Et une catégorie n'est nulle part une constante** — zéro, dans les dix. Une catégorie n'existe
 que sur les instances de `DiagnosticDescriptor` qu'un analyseur construit à l'exécution, à partir de
 ressources localisables. Un argument d'attribut doit être une constante de compilation : même en
 passant par `SupportedDiagnostics` par réflexion, on obtient une `string` qui ne peut pas occuper la
