@@ -124,7 +124,7 @@ Mesuré sur **ce** dépôt :
 
 | Heuristique | Projets correspondants | Réellement un analyseur |
 | --- | --- | --- |
-| référence `Microsoft.CodeAnalysis` | 9 | 1 |
+| référence `Microsoft.CodeAnalysis` | 8 | 1 |
 | déclare une sous-classe de `DiagnosticAnalyzer` | 3 | 1 — les deux autres sont des montages, l'un écrit pour *échouer* à la construction, l'autre dans un assemblage écrit pour ne pas charger en entier |
 
 Lire le mauvais ensemble n'est pas un désagrément ici. Un projet manqué, ce sont ses règles absentes
