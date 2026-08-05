@@ -182,8 +182,8 @@ public sealed class CatalogSourceTests
 
         // Unspecified, stated rather than defaulted into: DateTimeStyles.None is what makes the
         // parse yield it, and a catalogue stamps a calendar DATE — the day the generator ran — not
-        // an instant anybody could place on a timeline. Naming the kind here says that on purpose;
-        // leaving it off would say the same thing by accident.
+        // an instant anybody could place on a timeline. Naming the kind here says that on purpose.
+        // Leaving it off would say the same thing by accident.
         Assert.Equal(new DateTime(2026, 7, 30, 0, 0, 0, DateTimeKind.Unspecified), date);
         Assert.Equal(DateTimeKind.Unspecified, date.Kind);
     }
