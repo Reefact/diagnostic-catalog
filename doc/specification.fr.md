@@ -317,7 +317,8 @@ DiagnosticCatalog/
 │   ├── DiagnosticCatalog.StyleCop/         → catalogue généré (§14)
 │   ├── DiagnosticCatalog.CodeStyle/        → catalogue généré (§14)
 │   ├── DiagnosticCatalog.Xunit/            → catalogue généré (§14)
-│   └── DiagnosticCatalog.NUnit/            → catalogue généré (§14)
+│   ├── DiagnosticCatalog.NUnit/            → catalogue généré (§14)
+│   └── DiagnosticCatalog.MSTest/           → catalogue généré (§14)
 ├── eng/
 │   └── CatalogGen/                         → générateur, jamais livré (§14.1)
 ├── tests/
@@ -1444,7 +1445,7 @@ comparer une valeur et en rechercher une ne sont pas le même besoin.
 ## 14. Utilisation par un catalogue tiers
 
 Un package spécialisé peut référencer `DiagnosticCatalog` et déclarer les règles
-d'un analyzer qu'il ne possède pas. Six sont implémentés, tous générés par le
+d'un analyzer qu'il ne possède pas. Sept sont implémentés, tous générés par le
 même outil depuis les descriptors de leur package amont :
 
 | Catalogue | Reflète | Règles | Catégories | Liens d'aide |
@@ -1455,6 +1456,7 @@ même outil depuis les descriptors de leur package amont :
 | `DiagnosticCatalog.CodeStyle` | `Microsoft.CodeAnalysis.CSharp.CodeStyle 5.6.0` | 120 | 3 | 117 sur 120 |
 | `DiagnosticCatalog.Xunit` | `xunit.analyzers 1.27.0` | 90 | 3 | 90 sur 90 |
 | `DiagnosticCatalog.NUnit` | `NUnit.Analyzers 4.14.0` | 99 | 3 | 99 sur 99 |
+| `DiagnosticCatalog.MSTest` | `MSTest.Analyzers 4.3.3` | 62 | 3 | 62 sur 62 |
 
 ```csharp
 using DiagnosticCatalog;
@@ -2103,7 +2105,7 @@ Un générateur pourrait transformer un manifeste en classes de constantes :
 ### 25.4 Autres catalogues générés
 
 Les catalogues générés ne sont plus une évolution future : la méthode, le
-générateur, six catalogues et leur synchronisation planifiée sont spécifiés aux
+générateur, sept catalogues et leur synchronisation planifiée sont spécifiés aux
 §14.1–§14.3 et implémentés. Restent d'autres éditeurs.
 
 **Une variante Visual Basic n'est pas une entrée de manifeste.** Une lecture

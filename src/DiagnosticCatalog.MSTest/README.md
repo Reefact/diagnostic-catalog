@@ -1,43 +1,49 @@
-# DiagnosticCatalog.Xunit
+# DiagnosticCatalog.MSTest
 
-The **xunit.analyzers** rules as strongly referenced constants, so that
+The **MSTest.Analyzers** rules as strongly referenced constants, so that
 `SuppressMessageAttribute` takes compile-checked references instead of magic strings.
 
 <!-- mirror:begin -->
-> ## 🪞 Mirrors `xunit.analyzers 1.27.0`
+> ## 🪞 Mirrors `MSTest.Analyzers 4.3.3`
 >
-> **90 rules, 3 categories**, every identifier and category read
+> **62 rules, 3 categories**, every identifier and category read
 > from that release's own analyzers. Regenerated 2026-08-05.
 <!-- mirror:end -->
 
-> Unofficial. Not affiliated with, endorsed by, or supported by the xUnit.net project.
+> Unofficial. Not affiliated with, endorsed by, or supported by Microsoft.
 
 ## Why
 
-Every xUnit test project already runs these analyzers, and almost nobody installed them on
-purpose: `xunit` depends on `xunit.analyzers`, so they arrive with the test framework. That
-is what makes their rules the ones people actually suppress **in source** — a test that
-deliberately asserts on a literal, a theory whose data cannot be inlined, an assertion the
-analyzer would rather see written another way. These are local exceptions with a reason,
-which is a suppression's job rather than an `.editorconfig` entry's.
+Every MSTest project runs these analyzers, and almost nobody installed them:
+`MSTest.TestFramework` depends on `MSTest.Analyzers`, so the `MSTest` meta-package and
+`MSTest.TestAdapter` both drag them in. They arrive with the test framework.
+
+That is what makes their rules the ones people suppress **in source**. A rule you switched on
+gets tuned in `.editorconfig`; a rule that arrived with the framework gets an exception at the
+one place it is wrong, with a `Justification` beside the test that earns it.
+
+MSTest sharpens this further than the other test frameworks do, because it ships rules that
+**contradict each other on purpose**: `MSTEST0019` prefers `TestInitialize` methods over
+constructors and `MSTEST0020` prefers constructors over `TestInitialize` methods; `MSTEST0021`
+prefers `Dispose` over `TestCleanup` and `MSTEST0022` prefers the reverse. You pick a side, and
+the other rule of the pair is one you will be answering for the life of the project.
 
 ```csharp
-[SuppressMessage("Assertions", "xUnit2013:Do not use equality check to check for collection size", ...)]
+[SuppressMessage("Usage", "MSTEST0037:Use proper 'Assert' methods", ...)]
 ```
 
 Three strings, and nothing checks any of them. Get the id wrong and the suppression silently
-does nothing — the warning simply stays. Get the category wrong and **nothing happens at
-all**, ever: the .NET platform never reads that argument, so no error, no warning and no
-failing test will tell you. Would you have known that `xUnit2013` is `"Assertions"` while
-`xUnit1013` is `"Usage"` and `xUnit3000` is `"Extensibility"`?
+does nothing — the warning simply stays. Get the category wrong and **nothing happens at all**,
+ever: the .NET platform never reads that argument, so no error, no warning and no failing test
+will tell you.
 
 ```csharp
-using DiagnosticCatalog.Xunit;
+using DiagnosticCatalog.MSTest;
 
 [SuppressMessage(
-    XunitRule.xUnit2013.Category,
-    XunitRule.xUnit2013.Id,
-    Justification = "The count is the subject of this test.")]
+    MSTestRule.MSTEST0037.Category,
+    MSTestRule.MSTEST0037.Id,
+    Justification = "The overload this rule suggests does not exist for this comparer.")]
 ```
 
 The day a rule moves to another category, the second version follows it and the first keeps
@@ -46,7 +52,7 @@ compiling while it quietly stops matching.
 ## Installation
 
 ```xml
-<PackageReference Include="DiagnosticCatalog.Xunit" Version="1.0.0" />
+<PackageReference Include="DiagnosticCatalog.MSTest" Version="1.0.0" />
 ```
 
 This package only supplies the constants. The checks that validate rule declarations and
@@ -54,47 +60,54 @@ their use sites ship separately in `DiagnosticCatalog.Analyzers`.
 
 ## What is in the package
 
-90 rules across 3 categories, and it is the tidiest of the catalogues here: every rule
-carries the title its descriptor declares, and **every one of the 90 carries a help link**
-into xunit.net's own rule pages.
+62 rules across 3 categories, and **every one of the 62 carries both the title its descriptor
+declares and a help link** into Microsoft Learn — a completeness only the xUnit and NUnit
+catalogues here match.
 
 | Category | Rules | What they are about |
 | --- | --- | --- |
-| `Usage` | 54 | How tests, theories and their data are declared — the `xUnit1xxx` range |
-| `Assertions` | 32 | Assertions that would read better written another way — `xUnit2xxx` |
-| `Extensibility` | 4 | Extending the framework itself — `xUnit3xxx` |
+| `Usage` | 46 | Using the framework correctly — assertions, attributes, data sources, async |
+| `Design` | 14 | How a test class is shaped: fixtures, lifecycle, what is public |
+| `Performance` | 2 | Parallelisation, and blocking calls in test code |
 
 ```csharp
 [DiagnosticRule]
-public static class xUnit2013
+public static class MSTEST0037
 {
-    public const string Id = nameof(xUnit2013);
-    public const string Category = XunitCategory.Assertions;
-    public const string HelpLinkUri = "https://xunit.net/xunit.analyzers/rules/xUnit2013";
+    public const string Id = nameof(MSTEST0037);
+    public const string Category = MSTestCategory.Usage;
+    public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/core/testing/mstest-analyzers/mstest0037";
 }
 ```
 
-The identifiers keep the vendor's own casing, `xUnit2013` and not `XUnit2013`, because a
-catalogue's member name is the identifier a suppression carries — renaming it to suit C#
-convention would make the constant and the string it stands for disagree.
+## Where MSTest files an assertion rule, and why you cannot guess it
 
-## A note on how you already have these analyzers
+If you run more than one test framework across a solution — a migration, a mixed monorepo — this
+is the trap worth naming. Take one concept, "this assertion is wrong", and ask each framework
+what category it belongs to:
 
-You almost certainly do not need to install `xunit.analyzers`: `xunit` depends on it, so a
-test project has the rules whether or not anybody asked. This catalogue names them; where
-they come from is your test project's business.
+| | The category for an assertion rule |
+| --- | --- |
+| xUnit | `Assertions` |
+| NUnit | `Assertion` |
+| **MSTest** | **`Usage` *or* `Design`, depending on the rule** |
 
-That transitive arrival is also why this catalogue exists. A rule you chose to switch on gets
-tuned in `.editorconfig`; a rule that arrives with the framework gets suppressed at the one
-place it is wrong, with a `Justification` beside the test that earns it.
+xUnit and NUnit differ by one letter. MSTest does not have an assertion category at all: it
+splits them by what kind of mistake they catch. `MSTEST0037` *Use proper 'Assert' methods* is
+`Usage`; `MSTEST0032` *Assertion condition is always true* is `Design`; `MSTEST0025` *Use
+'Assert.Fail' instead of an always-failing assert* is `Design` too.
+
+So even knowing the framework does not tell you the answer — you have to know the rule. And
+nothing in the platform reads that argument, so a wrong one costs no error and no warning,
+ever. Reaching it through `MSTestRule.MSTEST0037.Category` removes the question.
 
 ## Categories declared once
 
-`XunitCategory` holds each category once, and the rules reference it — so a category's
+`MSTestCategory` holds each category once, and the rules reference it — so a category's
 spelling exists in exactly one place. It is **internal by design**: a suppression reaches a
-category through the rule that carries it, `XunitRule.xUnit2013.Category`, and never through
+category through the rule that carries it, `MSTestRule.MSTEST0037.Category`, and never through
 the category constant on its own. The two fold to the same string today and stop agreeing the
-day xUnit moves the rule
+day MSTest moves the rule
 ([ADR-0026](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/adr/0026-reach-a-category-only-through-the-rule-that-carries-it.en.md)).
 
 ## How it is produced
@@ -106,9 +119,9 @@ drifted.
 
 ```
 dotnet run --project src/DiagnosticCatalog.Cli -- generate \
-    --package xunit.analyzers --package-version latest \
-    --namespace DiagnosticCatalog.Xunit --container XunitRule \
-    --output src/DiagnosticCatalog.Xunit/XunitRules.g.cs
+    --package MSTest.Analyzers --package-version latest \
+    --namespace DiagnosticCatalog.MSTest --container MSTestRule \
+    --output src/DiagnosticCatalog.MSTest/MSTestRules.g.cs
 ```
 
 ## How it stays current
@@ -127,11 +140,11 @@ breaks their recompilation.
 
 ## How it reaches nuget.org
 
-This catalogue rides the `xunit` [release train](https://github.com/Reefact/diagnostic-catalog/blob/main/CONTRIBUTING.md)
-and versions independently of the foundation, so it can follow xunit.analyzers' releases
+This catalogue rides the `mstest` [release train](https://github.com/Reefact/diagnostic-catalog/blob/main/CONTRIBUTING.md)
+and versions independently of the foundation, so it can follow MSTest.Analyzers' releases
 without dragging anything else along.
 
-Publishing is not part of the nightly. A maintainer pushes an `xunit-vX.Y.Z` tag, and the
+Publishing is not part of the nightly. A maintainer pushes an `mstest-vX.Y.Z` tag, and the
 release workflow packs the package, embeds an SPDX SBOM, and publishes through NuGet
 [Trusted Publishing](https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing)
 with signed build provenance — no long-lived API key exists anywhere to leak.
@@ -140,7 +153,7 @@ with signed build provenance — no long-lived API key exists anywhere to leak.
 
 `[SuppressMessage]` cannot suppress **compiler** warnings — `CS0219` and friends need
 `#pragma warning disable`, which takes bare identifiers and so can never reference a
-constant. This package covers the `xUnitxxxx` analyzer rules only.
+constant. This package covers the `MSTESTxxxx` analyzer rules only.
 
 ## See also
 
@@ -155,10 +168,10 @@ analyzer's own descriptors:
   — the StyleCop.Analyzers (`SAxxxx`) rules.
 - [`DiagnosticCatalog.CodeStyle`](https://www.nuget.org/packages/DiagnosticCatalog.CodeStyle)
   — the Roslyn IDE code-style (`IDExxxx`) rules.
+- [`DiagnosticCatalog.Xunit`](https://www.nuget.org/packages/DiagnosticCatalog.Xunit)
+  — the xunit.analyzers (`xUnitxxxx`) rules.
 - [`DiagnosticCatalog.NUnit`](https://www.nuget.org/packages/DiagnosticCatalog.NUnit)
   — the NUnit.Analyzers (`NUnitxxxx`) rules.
-- [`DiagnosticCatalog.MSTest`](https://www.nuget.org/packages/DiagnosticCatalog.MSTest)
-  — the MSTest.Analyzers (`MSTESTxxxx`) rules.
 - [`DiagnosticCatalog.Self`](https://www.nuget.org/packages/DiagnosticCatalog.Self)
   — this library's own `DCATxxxx` rules, for suppressing a diagnostic the catalogue analyzers
   themselves report.
@@ -194,4 +207,4 @@ is the normative version of all of it.
 ## License
 
 Apache-2.0. The rule identifiers, categories, titles and help links are read from a
-third-party analyzer, which is itself Apache-2.0 licensed.
+third-party analyzer, which is itself MIT-licensed.

@@ -36,8 +36,9 @@ un pour [les analyseurs .NET](https://www.nuget.org/packages/DiagnosticCatalog.N
 (`CAxxxx`), un pour [StyleCop](https://www.nuget.org/packages/DiagnosticCatalog.StyleCop)
 (`SAxxxx`), un pour [les règles IDE de Roslyn](https://www.nuget.org/packages/DiagnosticCatalog.CodeStyle)
 (`IDExxxx`), un pour [celles de xUnit](https://www.nuget.org/packages/DiagnosticCatalog.Xunit)
-(`xUnitxxxx`) et un pour [celles de NUnit](https://www.nuget.org/packages/DiagnosticCatalog.NUnit)
-(`NUnitxxxx`). Référencez-en plusieurs si vous exécutez plusieurs analyseurs.
+(`xUnitxxxx`), un pour [celles de NUnit](https://www.nuget.org/packages/DiagnosticCatalog.NUnit)
+(`NUnitxxxx`) et un pour [celles de MSTest](https://www.nuget.org/packages/DiagnosticCatalog.MSTest)
+(`MSTESTxxxx`). Référencez-en plusieurs si vous exécutez plusieurs analyseurs.
 
 ## 2. Réécrire une suppression
 

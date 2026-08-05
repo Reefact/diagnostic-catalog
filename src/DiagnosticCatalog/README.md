@@ -180,7 +180,7 @@ maintained alongside its own analyzer does not need this — the two ship at one
 
 ## See also
 
-Seven catalogues built on this package are already published, generated from the analyzers' own
+Eight catalogues built on this package are already published, generated from the analyzers' own
 descriptors rather than hand-written. If you run one of these, its rules do not need declaring:
 
 - [`DiagnosticCatalog.Sonar`](https://www.nuget.org/packages/DiagnosticCatalog.Sonar)
@@ -195,6 +195,8 @@ descriptors rather than hand-written. If you run one of these, its rules do not 
   — the xunit.analyzers (`xUnitxxxx`) rules.
 - [`DiagnosticCatalog.NUnit`](https://www.nuget.org/packages/DiagnosticCatalog.NUnit)
   — the NUnit.Analyzers (`NUnitxxxx`) rules.
+- [`DiagnosticCatalog.MSTest`](https://www.nuget.org/packages/DiagnosticCatalog.MSTest)
+  — the MSTest.Analyzers (`MSTESTxxxx`) rules.
 - [`DiagnosticCatalog.Self`](https://www.nuget.org/packages/DiagnosticCatalog.Self)
   — the `DCATxxxx` rules the catalogue analyzers report, catalogued the same way.
 

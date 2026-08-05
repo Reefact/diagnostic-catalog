@@ -102,7 +102,7 @@ what keeps an unresolvable attribute recognisable instead of silently invisible.
 
 ## Mirror
 
-A catalogue describing somebody else's analyzer. The six vendor catalogues here are mirrors.
+A catalogue describing somebody else's analyzer. The seven vendor catalogues here are mirrors.
 
 A mirror can only copy what its source declares **today**. It cannot make a category exact by
 construction the way a [first-party](first-party-analyzers.en.md) catalogue can — which is the one

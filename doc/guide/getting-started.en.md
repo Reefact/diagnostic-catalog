@@ -36,8 +36,9 @@ one for [the .NET analyzers](https://www.nuget.org/packages/DiagnosticCatalog.Ne
 (`CAxxxx`), one for [StyleCop](https://www.nuget.org/packages/DiagnosticCatalog.StyleCop)
 (`SAxxxx`), one for [the Roslyn IDE rules](https://www.nuget.org/packages/DiagnosticCatalog.CodeStyle)
 (`IDExxxx`), one for [xUnit's](https://www.nuget.org/packages/DiagnosticCatalog.Xunit)
-(`xUnitxxxx`) and one for [NUnit's](https://www.nuget.org/packages/DiagnosticCatalog.NUnit)
-(`NUnitxxxx`). Reference more than one if you run more than one.
+(`xUnitxxxx`), one for [NUnit's](https://www.nuget.org/packages/DiagnosticCatalog.NUnit)
+(`NUnitxxxx`) and one for [MSTest's](https://www.nuget.org/packages/DiagnosticCatalog.MSTest)
+(`MSTESTxxxx`). Reference more than one if you run more than one.
 
 ## 2. Rewrite one suppression
 
