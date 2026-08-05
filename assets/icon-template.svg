@@ -14,7 +14,8 @@
 
     That convention needs stating because nothing enforces it. PackageIconTests asserts that no
     two catalogues ship the SAME icon and that none ships the repository's unbadged one; it never
-    reads a badge, so the letters rest on this file and on review.
+    reads a badge, so the letters rest on this file and on review. The decision, and why the
+    enforcing check was declined, is doc/adr/0032-badge-a-catalogues-icon-with-its-rule-prefix.en.md.
 
     The geometry was recovered from those four icon.png files rather than authored, by fitting
     this shape to their anti-aliased coverage. Rasterised back, it matches all four identically:

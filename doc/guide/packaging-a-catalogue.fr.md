@@ -154,7 +154,8 @@ qu'il n'y paraît. `PackageIconTests` fait échouer un catalogue qui ne porte pa
 `icon.png`, celui dont l'icône est identique octet pour octet à celle d'un autre catalogue, et celui
 qui porte encore la marque sans badge du dépôt. Il ne lit jamais le badge : la distinction est la
 propriété qu'il peut affirmer, et ce que disent réellement les lettres repose sur ce gabarit et sur
-la revue.
+la revue. La décision, et la vérification qu'elle refuse délibérément, sont
+[ADR-0032](../adr/0032-badge-a-catalogues-icon-with-its-rule-prefix.fr.md).
 
 ## Ce que l'empaquetage vous donne ici
 
