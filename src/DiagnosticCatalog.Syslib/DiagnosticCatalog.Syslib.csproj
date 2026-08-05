@@ -22,7 +22,7 @@
     <Title>DiagnosticCatalog.Syslib</Title>
     <Description>The .NET runtime source-generator diagnostics (SYSLIB1xxx) as strongly referenced constants, so that SuppressMessageAttribute takes compile-checked references instead of magic strings. Ids, categories, titles and help links are read from the generators' own DiagnosticDescriptor instances. Covers LibraryImport, the COM interface generator, the regex generator and JSON source generation. Unofficial; not affiliated with or endorsed by Microsoft.</Description>
     <PackageTags>roslyn;analyzers;diagnostics;suppressmessage;syslib;source-generators;libraryimport;interop;code-analysis;catalog</PackageTags>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReadmeFile>README.en.md</PackageReadmeFile>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <Authors>Reefact</Authors>
     <Copyright>Copyright (c) Reefact</Copyright>
@@ -30,7 +30,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="README.md" Pack="true" PackagePath="/" />
+    <None Include="README.en.md" Pack="true" PackagePath="/" />
   </ItemGroup>
 
   <!--

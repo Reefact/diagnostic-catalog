@@ -110,6 +110,36 @@ commit 'feat(core): describe the set once more
 Docs: doc/README.fr.md'
 assert_equals 'the French README half is named alone' "$REJECTED" "$(check "$(head_of)")"
 
+# --- a package README is a pair as well -----------------------------------------------------
+# nuget.org renders one file per package and resolves no relative link, which fixes what the
+# SHIPPED half may look like — not whether a translation exists beside it (ADR-0034). Both
+# halves therefore land together exactly as under doc/, and here the suffix says which is
+# which, so the rule runs in both directions rather than one.
+mkdir -p "$fixture/src/DiagnosticCatalog.Sonar"
+printf 'the package page\n' > "$fixture/src/DiagnosticCatalog.Sonar/README.en.md"
+printf 'la page du paquet\n' > "$fixture/src/DiagnosticCatalog.Sonar/README.fr.md"
+commit 'feat(sonar): say which release the catalogue mirrors
+
+Docs: src/DiagnosticCatalog.Sonar/README.en.md, src/DiagnosticCatalog.Sonar/README.fr.md'
+assert_equals 'a package README pair lands together' "$OK" "$(check "$(head_of)")"
+
+# --- and its English half may not be named alone either -------------------------------------
+printf 'the package page, again\n' > "$fixture/src/DiagnosticCatalog.Sonar/README.en.md"
+printf 'la page du paquet, encore\n' > "$fixture/src/DiagnosticCatalog.Sonar/README.fr.md"
+commit 'feat(sonar): restate the mirrored release
+
+Docs: src/DiagnosticCatalog.Sonar/README.en.md'
+assert_equals 'a package README half is named alone' "$REJECTED" "$(check "$(head_of)")"
+
+# --- a per-package changelog is not paired --------------------------------------------------
+# It is a log of released versions rather than a page anybody reads to understand the library,
+# and it ships in no package, so it stayed English-only when the READMEs did not.
+printf 'the package log\n' > "$fixture/src/DiagnosticCatalog.Sonar/CHANGELOG.md"
+commit 'feat(sonar): record the mirrored release in the log
+
+Docs: src/DiagnosticCatalog.Sonar/CHANGELOG.md'
+assert_equals 'a per-package changelog names no translation' "$OK" "$(check "$(head_of)")"
+
 # --- a footer that names what the commit removed -------------------------------------------
 rm "$fixture/README.md"
 commit 'feat(core): retire the marker

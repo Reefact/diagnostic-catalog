@@ -1,5 +1,8 @@
 # DiagnosticCatalog.AspNetCore
 
+🌍 **Languages:**  
+🇬🇧 English (this file) | 🇫🇷 [Français](https://github.com/Reefact/diagnostic-catalog/blob/main/src/DiagnosticCatalog.AspNetCore/README.fr.md)
+
 The **ASP.NET Core and Blazor** analyzer rules (`ASPxxxx`, `BLxxxx`) as strongly referenced
 constants, so that `SuppressMessageAttribute` takes compile-checked references instead of magic
 strings.

@@ -120,9 +120,12 @@ paquet, aussi correct soit-il dans le dépôt. Pointez vers l'extérieur en adre
 
 Ce dépôt en avait cinq, en ligne sur des pages publiées, jusqu'à ce qu'un test se mette à les refuser.
 
-**Il n'offre aucun sélecteur de langue.** Un fichier par paquet, dans une langue. C'est pourquoi
-`doc/` est bilingue ici et pas les READMEs de paquet
-([ADR-0022](../adr/0022-maintain-every-document-under-doc-in-english-and-french.fr.md)).
+**Il n'offre aucun sélecteur de langue.** Un fichier par paquet, dans une langue — ce qui décide
+quelle moitié d'un README bilingue un paquet emporte, pas si l'autre moitié existe. Les pages d'ici
+sont maintenues sous les noms `README.en.md` et `README.fr.md`, `<PackageReadmeFile>` nomme
+l'anglaise, et la bannière qui offre la française est une adresse complète comme chaque autre lien
+qu'elles écrivent
+([ADR-0034](../adr/0034-pair-every-package-readme-in-english-and-french.fr.md)).
 
 Deux choses que le README d'un catalogue doit porter et que rien d'autre ne dira au lecteur :
 

@@ -29,7 +29,7 @@
     <Title>DiagnosticCatalog.Self</Title>
     <Description>The DiagnosticCatalog analyzers' own DCAT rules as strongly referenced constants, so that a project suppressing one of them takes a compile-checked reference instead of a magic string. Generated from those analyzers' DiagnosticDescriptor instances by this repository's own generator.</Description>
     <PackageTags>roslyn;analyzers;diagnostics;suppressmessage;code-analysis;catalog;dcat</PackageTags>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReadmeFile>README.en.md</PackageReadmeFile>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <Authors>Reefact</Authors>
     <Copyright>Copyright (c) Reefact</Copyright>
@@ -37,7 +37,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="README.md" Pack="true" PackagePath="/" />
+    <None Include="README.en.md" Pack="true" PackagePath="/" />
   </ItemGroup>
 
   <!--

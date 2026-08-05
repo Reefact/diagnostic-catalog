@@ -71,7 +71,7 @@
     <Title>DiagnosticCatalog.Analyzers</Title>
     <Description>Roslyn analyzers that check diagnostic rule declarations and the suppressions that reference them: a suppression whose category and id come from different rules, a rule that does not satisfy the structural contract, and string literals that a catalogue reference would replace.</Description>
     <PackageTags>roslyn;analyzers;diagnostics;suppressmessage;code-analysis;static-analysis;catalog</PackageTags>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReadmeFile>README.en.md</PackageReadmeFile>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <Authors>Reefact</Authors>
     <Copyright>Copyright (c) Reefact</Copyright>
@@ -114,7 +114,7 @@
          separate package: a consumer installs analyzers and gets the fixes for them. -->
     <None Include="$(CodeFixesOutputPath)DiagnosticCatalog.CodeFixes.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
     <None Include="$(CodeFixesOutputPath)DiagnosticCatalog.CodeFixes.pdb" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-    <None Include="README.md" Pack="true" PackagePath="/" />
+    <None Include="README.en.md" Pack="true" PackagePath="/" />
     <!-- Shipped at the package root per §16.1: it is the released list of diagnostics, and a consumer
          deciding whether to upgrade reads it without unpacking the analyzer. -->
     <None Include="AnalyzerReleases.Shipped.md" Pack="true" PackagePath="/" />

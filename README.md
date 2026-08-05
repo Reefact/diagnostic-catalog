@@ -293,20 +293,20 @@ them — and each carries previous/next navigation, so the guide can also be rea
 through.
 
 Per-package guides:
-[`DiagnosticCatalog`](src/DiagnosticCatalog/README.md) ·
-[`.Analyzers`](src/DiagnosticCatalog.Analyzers/README.md) ·
-[`.Self`](src/DiagnosticCatalog.Self/README.md) ·
-[`.Sonar`](src/DiagnosticCatalog.Sonar/README.md) ·
-[`.NetAnalyzers`](src/DiagnosticCatalog.NetAnalyzers/README.md) ·
-[`.StyleCop`](src/DiagnosticCatalog.StyleCop/README.md) ·
-[`.CodeStyle`](src/DiagnosticCatalog.CodeStyle/README.md) ·
-[`.Xunit`](src/DiagnosticCatalog.Xunit/README.md) ·
-[`.NUnit`](src/DiagnosticCatalog.NUnit/README.md) ·
-[`.MSTest`](src/DiagnosticCatalog.MSTest/README.md) ·
-[`.Trimming`](src/DiagnosticCatalog.Trimming/README.md) ·
-[`.AspNetCore`](src/DiagnosticCatalog.AspNetCore/README.md) ·
-[`.Syslib`](src/DiagnosticCatalog.Syslib/README.md) ·
-[`.Cli`](src/DiagnosticCatalog.Cli/README.md)
+[`DiagnosticCatalog`](src/DiagnosticCatalog/README.en.md) ·
+[`.Analyzers`](src/DiagnosticCatalog.Analyzers/README.en.md) ·
+[`.Self`](src/DiagnosticCatalog.Self/README.en.md) ·
+[`.Sonar`](src/DiagnosticCatalog.Sonar/README.en.md) ·
+[`.NetAnalyzers`](src/DiagnosticCatalog.NetAnalyzers/README.en.md) ·
+[`.StyleCop`](src/DiagnosticCatalog.StyleCop/README.en.md) ·
+[`.CodeStyle`](src/DiagnosticCatalog.CodeStyle/README.en.md) ·
+[`.Xunit`](src/DiagnosticCatalog.Xunit/README.en.md) ·
+[`.NUnit`](src/DiagnosticCatalog.NUnit/README.en.md) ·
+[`.MSTest`](src/DiagnosticCatalog.MSTest/README.en.md) ·
+[`.Trimming`](src/DiagnosticCatalog.Trimming/README.en.md) ·
+[`.AspNetCore`](src/DiagnosticCatalog.AspNetCore/README.en.md) ·
+[`.Syslib`](src/DiagnosticCatalog.Syslib/README.en.md) ·
+[`.Cli`](src/DiagnosticCatalog.Cli/README.en.md)
 
 ## 🎯 When it is a good fit
 
@@ -381,9 +381,12 @@ This page is part of that rule. GitHub composes the repository's landing page fr
 `README.md` at the root and from nothing else, so the English half cannot sit under `doc/`; its
 French half is `doc/README.fr.md` — the banner at the top of this page — and the two are checked as
 a pair like any other
-([ADR-0029](doc/adr/0029-pair-the-project-readme-across-the-doc-boundary.en.md)). What stays
-outside the rule is the package READMEs under [`src/`](src): nuget.org renders one file per
-package, offers no language switch and resolves no relative link.
+([ADR-0029](doc/adr/0029-pair-the-project-readme-across-the-doc-boundary.en.md)). The package
+READMEs under [`src/`](src) are in the rule as well, with the renderer deciding which half a
+package carries rather than whether a translation exists: nuget.org shows one file per package and
+resolves no relative link, so `<PackageReadmeFile>` names the English half and every address those
+pages write — the banner offering the French one included — is a full address
+([ADR-0034](doc/adr/0034-pair-every-package-readme-in-english-and-french.en.md)).
 
 Outside `doc/`:
 

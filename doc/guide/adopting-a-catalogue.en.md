@@ -163,7 +163,7 @@ There is no mechanism behind this, only experience of what leaves a codebase in 
    two-argument rewrites is read by spot-checking, not by reading.
 3. **Raise `DCAT0006` to `error` for each project as it lands**, in a scoped `.editorconfig` section.
 4. **Last, the file that suppresses `DCAT` diagnostics themselves**, if you have one. That is what
-   [`DiagnosticCatalog.Self`](../../src/DiagnosticCatalog.Self/README.md) is for.
+   [`DiagnosticCatalog.Self`](../../src/DiagnosticCatalog.Self/README.en.md) is for.
 
 Keep the conversion in its own pull requests, separate from behaviour changes. A rewrite of every
 suppression in a project is exactly the diff a real change should not be hiding in.

@@ -115,9 +115,11 @@ absolute addresses:
 
 This repository had five of those, live on published pages, until a test started refusing them.
 
-**It offers no language switch.** One file per package, in one language. That is why `doc/` here is
-bilingual and the package READMEs are not
-([ADR-0022](../adr/0022-maintain-every-document-under-doc-in-english-and-french.en.md)).
+**It offers no language switch.** One file per package, in one language — which decides which half
+of a bilingual README a package carries, not whether the other half exists. The pages here are
+maintained as `README.en.md` and `README.fr.md`, `<PackageReadmeFile>` names the English one, and
+the banner offering the French one is a full address like every other link they write
+([ADR-0034](../adr/0034-pair-every-package-readme-in-english-and-french.en.md)).
 
 Two things a catalogue's README should carry that nothing else will tell a reader:
 

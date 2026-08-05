@@ -151,9 +151,10 @@ for entry in $value; do
     continue
   fi
 
-  # doc/ is bilingual and the two halves land together (ADR-0022). BilingualPairTests
-  # already fails a pair missing a half; nothing but this notices a page updated in
-  # one language and left stale in the other, because both files still exist.
+  # doc/ is bilingual and the two halves land together (ADR-0022), and so is a package
+  # README (ADR-0034). BilingualPairTests already fails a pair missing a half; nothing
+  # but this notices a page updated in one language and left stale in the other, because
+  # both files still exist.
   #
   # The project README is the one pair whose halves do not sit beside each other:
   # GitHub composes the landing page from a README.md at the root and from nothing
@@ -169,9 +170,9 @@ for entry in $value; do
   # does for CONTRIBUTING.md or SECURITY.md, and test-docs-footer.sh holds it to that.
   case "$path" in
     doc/README.fr.md) sibling='README.md' ;;
-    doc/*.en.md) sibling="${path%.en.md}.fr.md" ;;
-    doc/*.fr.md) sibling="${path%.fr.md}.en.md" ;;
-    *) sibling='' ;; # the package READMEs and the root documents are English-only
+    doc/*.en.md|src/*/README.en.md) sibling="${path%.en.md}.fr.md" ;;
+    doc/*.fr.md|src/*/README.fr.md) sibling="${path%.fr.md}.en.md" ;;
+    *) sibling='' ;; # the per-package changelogs and the root documents are English-only
   esac
 
   if [ -n "$sibling" ] && ! named "$sibling"; then
