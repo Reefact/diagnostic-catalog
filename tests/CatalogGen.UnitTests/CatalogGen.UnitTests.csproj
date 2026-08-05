@@ -60,6 +60,29 @@
     <ProjectReference Include="..\..\eng\CatalogGen\CatalogGen.csproj" />
   </ItemGroup>
 
+  <!--
+    The analyzer fixture, built and then placed ALONE in a subdirectory of the test output.
+
+    ReferenceOutputAssembly="false" because nothing here compiles against it: it is read the way an
+    upstream analyzer is read, through the worker, from a path. Alone matters as much as built. The
+    worker probes the directories the assemblies it is given live in, so anything sitting beside the
+    fixture is a dependency the fixture no longer has to get from the host — and the facade beside it
+    would make the reader succeed for the wrong reason, which is the one outcome the test cannot
+    detect. A folder holding exactly one file is the same thing an analyzer package is: the analyzer,
+    and nothing else.
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\CatalogGen.AnalyzerFixture\CatalogGen.AnalyzerFixture.csproj"
+                      ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+  <Target Name="_CopyAnalyzerFixture" AfterTargets="Build">
+    <Copy SourceFiles="..\CatalogGen.AnalyzerFixture\bin\$(Configuration)\netstandard2.0\CatalogGen.AnalyzerFixture.dll"
+          DestinationFolder="$(OutDir)analyzer-fixture"
+          SkipUnchangedFiles="true"
+          OverwriteReadOnlyFiles="true" />
+  </Target>
+
   <!-- DescriptorReader spawns the worker, so the tests that exercise it need one beside them. -->
   <Import Project="..\..\build\BundleDescriptorWorker.props" />
 

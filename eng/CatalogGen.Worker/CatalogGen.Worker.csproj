@@ -40,6 +40,40 @@
   </ItemGroup>
 
   <!--
+    NOT a dependency of this process's own code, which uses no async stream and would compile
+    without it. It is deployed because this process is an analyzer HOST, and a host is expected to
+    carry identities its guests do not bring.
+
+    An analyzer package ships its own assembly and nothing else — Microsoft.CodeAnalysis.PublicApiAnalyzers
+    declares no <dependencies> at all — because in a real build the compiler is already holding what
+    it needs. A shipped analyzer is compiled against netstandard2.0, where IAsyncEnumerable<T> and
+    IAsyncDisposable live in Microsoft.Bcl.AsyncInterfaces rather than in the runtime, so its
+    reference table names that assembly. The runtime this worker runs on HAS both types; what it
+    does not have is that name, and this is the one netstandard-era compat facade the shared
+    framework does not ship (System.Threading.Tasks.Extensions and
+    System.Runtime.CompilerServices.Unsafe are both in it, which is why neither ever surfaced).
+    Deploying the package resolves the name onto types that were there all along.
+
+    The reason this worker meets the problem at all, where the compiler does not, is that it
+    materialises EVERY type in the assembly: it selects analyzers by base type, so it calls
+    Assembly.GetTypes() rather than reading metadata for the types the [DiagnosticAnalyzer] attribute
+    names. That reaches the code fixes and the internal helpers too — types the compiler never loads
+    and this process never needs. Nothing here is lost by loading them, but a type that fails to load
+    has no name to ask about, so the run cannot tell a code fix from an analyzer and refuses the
+    whole read (ADR-0024). Selecting types the way the compiler selects them would be the deeper
+    answer and a change of contract; supplying the identity is the correct answer either way, since a
+    host that cannot resolve what its guests reference is a host that refuses valid packages.
+
+    Measured on the packages it unblocks: Microsoft.CodeAnalysis.CSharp.CodeStyle (121 rules),
+    Meziantou.Analyzer (210) and Microsoft.CodeAnalysis.PublicApiAnalyzers (23) are all refused
+    without it and read completely with it, and their descriptor counts are identical either way —
+    the types that were being dropped never declared a rule.
+  -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" />
+  </ItemGroup>
+
+  <!--
     LINKED SOURCE, not a project reference, and the distinction is load-bearing.
 
     The worker is launched with `dotnet exec` against a target's own deps.json whenever the assemblies
