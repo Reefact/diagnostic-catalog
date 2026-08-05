@@ -227,4 +227,5 @@ Optional supporting material:
 | [ADR-0029](0029-pair-the-project-readme-across-the-doc-boundary.en.md) | Pair the project README across the `doc/` boundary | Accepted |
 | [ADR-0030](0030-keep-the-usage-suite-out-of-the-sonar-analysis.en.md) | Keep the usage suite out of the Sonar analysis | Accepted |
 | [ADR-0031](0031-find-analyzers-the-way-the-compiler-finds-them.en.md) | Find analyzers the way the compiler finds them | Accepted |
-| [ADR-0032](0032-badge-a-catalogues-icon-with-its-rule-prefix.en.md) | Badge a catalogue's icon with its rule prefix, never the vendor's name | Accepted |
+| [ADR-0032](0032-badge-a-catalogues-icon-with-its-rule-prefix.en.md) | Badge a catalogue's icon with its rule prefix, never the vendor's name | Superseded by [ADR-0033](0033-cap-the-badge-at-three-letters.en.md) |
+| [ADR-0033](0033-cap-the-badge-at-three-letters.en.md) | Cap the icon badge at three letters, abbreviating a longer prefix | Accepted |
