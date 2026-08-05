@@ -132,12 +132,21 @@ public sealed class SuppressionUsageAnalyzer : DiagnosticAnalyzer
             agrees ? FixProperties.ForCompletion(ruleType, slot) : ImmutableDictionary<string, string?>.Empty,
             ruleType.Name,
             literal.Value,
-            !referenceInPlace
-                ? "the reference fills the other argument's slot, so completing from it would name one "
-                  + "member twice"
-                : agrees
-                    ? "complete it from that rule"
-                    : "that value names something else, so completing it would change what is suppressed"));
+            Advise(referenceInPlace, agrees)));
+    }
+
+    /// <summary>What the DCAT0007 message says can be done about the pair.</summary>
+    private static string Advise(bool referenceInPlace, bool agrees)
+    {
+        if (!referenceInPlace)
+        {
+            return "the reference fills the other argument's slot, so completing from it would name "
+                   + "one member twice";
+        }
+
+        return agrees
+            ? "complete it from that rule"
+            : "that value names something else, so completing it would change what is suppressed";
     }
 
     private static void ReportReplaceableLiterals(
