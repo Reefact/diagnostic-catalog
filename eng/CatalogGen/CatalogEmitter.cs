@@ -113,6 +113,7 @@ internal static class CatalogEmitter
         string text = File.ReadAllText(path);
         int start = text.IndexOf(MirrorBegin, StringComparison.Ordinal);
         int end = text.IndexOf(MirrorEnd, StringComparison.Ordinal);
+        string newline = LineEndingOf(text);
         if (start < 0 || end < start)
         {
             // A note rather than a warning, and it says only what is true anywhere. The markers are
@@ -129,11 +130,34 @@ internal static class CatalogEmitter
             return;
         }
 
-        string updated = text[..(start + MirrorBegin.Length)] + "\n" + body + "\n" + text[end..];
+        // Spelled with the document's own line ending rather than with "\n". The banner is written
+        // into somebody else's file, in place, and the rest of that file keeps whatever endings it
+        // had — so a hard "\n" leaves a handful of lone LF lines in the middle of a CRLF document.
+        // That is a diff on lines nobody edited, in the file a consumer opens first, and it repeats
+        // on every checkout that converts them back.
+        string block = (newline + body + newline).ReplaceLineEndings(newline);
+
+        string updated = text[..(start + MirrorBegin.Length)] + block + text[end..];
         if (string.Equals(updated, text, StringComparison.Ordinal)) return;
 
         File.WriteAllText(path, updated, new UTF8Encoding(false));
         Console.WriteLine($"  updated the mirrored release stated in {Path.GetFileName(path)}");
+    }
+
+    /// <summary>The line ending the document already uses, read from its first one.</summary>
+    /// <remarks>
+    /// From the FIRST ending rather than from whether one appears anywhere: a document with mixed
+    /// endings — a generated header pasted onto hand-written prose — would otherwise be rewritten
+    /// wholesale in whichever kind happened to occur. A document with no ending at all has no layout
+    /// to preserve, and LF is what this tool writes everywhere else.
+    /// </remarks>
+    private static string LineEndingOf(string text)
+    {
+        int newline = text.IndexOf('\n');
+
+        if (newline < 0) return "\n";
+
+        return newline > 0 && text[newline - 1] == '\r' ? "\r\n" : "\n";
     }
 
     // §23.1: a constant is never deleted. Consumers inline const values at their own
