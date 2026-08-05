@@ -161,6 +161,31 @@ jobs:
       #
       # This narrows the dialect, not the scrutiny: every other finding on these files still
       # counts, and the C# analysis is untouched.
+      #
+      # One Python rule is switched off for the icon tooling, and only there. S8707 reports a
+      # path traversal wherever a command-line argument reaches the file system, and it fires on
+      # the three places tools/icon reads or writes a file: template.read_png, template.write_png
+      # and truetype.Font. The taint it follows is real and the conclusion does not hold here,
+      # for two reasons that are worth writing down rather than re-deriving:
+      #
+      #   The path is the caller's OWN argument. Path traversal is a finding about a trust
+      #   boundary — input from somewhere less privileged reaching a file system that is more so.
+      #   These scripts are run from a checkout by whoever already has a shell in it, and they
+      #   read a PNG or write one to a path that person just typed. `render-icon.py XX /etc/foo`
+      #   reaches nothing its caller could not reach with `cp`. There is no boundary to cross.
+      #
+      #   The fix the rule asks for is a behaviour this repository deliberately does not have.
+      #   Validating the constructed path means confining it to a base directory, and the
+      #   documented use of check-icon-template.py is checking a candidate export BEFORE it is
+      #   committed — a file that by definition sits wherever the person who drew it saved it,
+      #   outside the tree. tools/tests/test-check-icon-template.sh asserts exactly that ("a
+      #   candidate outside the repository is reported on, not crashed over"), so confining the
+      #   path turns the shell test suite red and removes the case the script exists to serve.
+      #
+      # Narrow on purpose: one rule, one directory, and a directory that decides nothing about a
+      # release — every other Python rule on these files still counts, S8707 still counts
+      # everywhere else, and if the icon tooling ever grows a caller that is not a human at a
+      # prompt, this is the line to delete first.
       - name: Begin the analysis
         if: steps.guard.outputs.present == 'true'
         env:
@@ -173,13 +198,15 @@ jobs:
           /d:sonar.host.url="https://sonarcloud.io"
           /d:sonar.cs.opencover.reportsPaths="artifacts/coverage/**/coverage.opencover.xml"
           /d:sonar.exclusions="**/*.g.cs,**/DiagnosticCatalog.Usage/**"
-          /d:sonar.issue.ignore.multicriteria="bashism1,bashism2,bashism3"
+          /d:sonar.issue.ignore.multicriteria="bashism1,bashism2,bashism3,icontool1"
           /d:sonar.issue.ignore.multicriteria.bashism1.ruleKey="shelldre:S7679"
           /d:sonar.issue.ignore.multicriteria.bashism1.resourceKey="**/*.sh"
           /d:sonar.issue.ignore.multicriteria.bashism2.ruleKey="shelldre:S7682"
           /d:sonar.issue.ignore.multicriteria.bashism2.resourceKey="**/*.sh"
           /d:sonar.issue.ignore.multicriteria.bashism3.ruleKey="shelldre:S7688"
           /d:sonar.issue.ignore.multicriteria.bashism3.resourceKey="**/*.sh"
+          /d:sonar.issue.ignore.multicriteria.icontool1.ruleKey="pythonsecurity:S8707"
+          /d:sonar.issue.ignore.multicriteria.icontool1.resourceKey="**/tools/icon/*.py"
 
       # No solution is named, here or anywhere else: `dotnet` resolves the single solution at the
       # repository root, so this keeps working as projects are added and the day the solution is

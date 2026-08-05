@@ -17,25 +17,30 @@ root="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$root"
 
 # `matches` / `rejected` rather than a status code, so a failing assertion prints which way
-# round it went instead of leaving 0 and 1 to be decoded.
+# round it went instead of leaving 0 and 1 to be decoded. Named once, and compared against by
+# name below: the two words are this file's whole vocabulary, and an assertion that expected a
+# misspelt one would pass for the wrong reason.
+matches='matches'
+rejected='rejected'
+
 verdict() {
   if python3 tools/icon/check-icon-template.py "$@" >/dev/null 2>&1; then
-    printf 'matches\n'
+    printf '%s\n' "$matches"
   else
-    printf 'rejected\n'
+    printf '%s\n' "$rejected"
   fi
 }
 
 assert_equals 'the shipped catalogue icons are drawn by the template' \
-  'matches' "$(verdict)"
+  "$matches" "$(verdict)"
 
 assert_equals "the repository's unbadged mark is not one of them" \
-  'rejected' "$(verdict icon.png)"
+  "$rejected" "$(verdict icon.png)"
 
 # A file it cannot decode must fail rather than be skipped: a check that skips what it
 # cannot read reports success over the very thing it did not look at.
 assert_equals 'a file that is not a PNG is refused, not skipped' \
-  'rejected' "$(verdict CONTRIBUTING.md)"
+  "$rejected" "$(verdict CONTRIBUTING.md)"
 
 # The documented use is checking an export BEFORE committing it, and an export sits wherever
 # the person who drew it saved it. Reporting on a path outside the repository is the case
@@ -45,14 +50,14 @@ trap 'rm -rf "$outside"' EXIT
 cp src/DiagnosticCatalog.StyleCop/icon.png "$outside/candidate.png"
 
 assert_equals 'a candidate outside the repository is reported on, not crashed over' \
-  'matches' "$(verdict "$outside/candidate.png")"
+  "$matches" "$(verdict "$outside/candidate.png")"
 
 # The round trip, which is what makes the pair worth having: what render-icon.py draws is what
 # check-icon-template.py accepts. Either alone could be self-consistently wrong.
 python3 tools/icon/render-icon.py ZZ "$outside/rendered.png" >/dev/null 2>&1 || true
 
 assert_equals 'an icon straight out of the renderer satisfies the checker' \
-  'matches' "$(verdict "$outside/rendered.png")"
+  "$matches" "$(verdict "$outside/rendered.png")"
 
 # A catalogue that ships an icon nothing declares. Its mark is right — it is a copy of a real
 # icon — so the comparison passes it, which is exactly how the ASP.NET Core icon reached main
@@ -68,12 +73,12 @@ for icon in src/DiagnosticCatalog.*/icon.png; do
 done
 
 assert_equals 'a tree whose catalogues are all declared passes' \
-  'matches' "$(verdict --root "$tree")"
+  "$matches" "$(verdict --root "$tree")"
 
 mkdir -p "$tree/src/DiagnosticCatalog.Undeclared"
 cp src/DiagnosticCatalog.StyleCop/icon.png "$tree/src/DiagnosticCatalog.Undeclared/"
 
 assert_equals 'a catalogue absent from the badge table is refused, mark or no mark' \
-  'rejected' "$(verdict --root "$tree")"
+  "$rejected" "$(verdict --root "$tree")"
 
 finish
