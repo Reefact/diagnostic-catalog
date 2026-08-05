@@ -138,7 +138,7 @@ classes precisely so the two groups can differ:
 | Analyzer | Diagnostics | Runs on generated code |
 | --- | --- | --- |
 | `SuppressionUsageAnalyzer` | `DCAT0001`, `DCAT0006`, `DCAT0007`, `DCAT0009` | **no** |
-| `DiagnosticRuleDefinitionAnalyzer` | `DCAT0002`, `DCAT0003`, `DCAT0004` | **yes** |
+| `DiagnosticRuleDefinitionAnalyzer` | `DCAT0002`–`DCAT0005`, `DCAT0011`–`DCAT0013` | **yes** |
 
 Use-site diagnostics stay out of generated files because a suppression in one is not the author's to
 fix, and reporting them would flood every one. Definition diagnostics run *into* them on purpose: a

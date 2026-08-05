@@ -63,7 +63,7 @@ The common case, and the one that needs no knowledge of anything else here.
 
 ## I need a reference, not a tutorial
 
-* [**The rule contract**](rule-contract.en.md) — the four requirements, how the marker is matched, and
+* [**The rule contract**](rule-contract.en.md) — the five requirements, how the marker is matched, and
   every syntactic form a use site may take.
 * [**Troubleshooting**](troubleshooting.en.md) — symptoms first: nothing is reported, `CS0117`,
   `CS0618`, `DCAT0006` on every file at once. One diagram.

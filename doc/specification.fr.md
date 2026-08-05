@@ -969,8 +969,11 @@ si un identifiant a été écrit en `nameof` (§11.12).
 
 ### 11.1 `DCAT0001` — membres issus de règles différentes
 
-Signalé lorsque `Category` et `Id` résolvent vers des champs déclarés sur deux
-types `[DiagnosticRule]` différents.
+Signalé lorsque les deux arguments ne nomment pas la `Category` d'une règle et
+l'`Id` de cette même règle. Deux fautes en relèvent.
+
+Les arguments résolvent vers des champs déclarés sur deux types
+`[DiagnosticRule]` différents :
 
 ```csharp
 [SuppressMessage(
@@ -978,6 +981,25 @@ types `[DiagnosticRule]` différents.
     SomeRules.RULE002.Id,
     Justification = "...")]
 ```
+
+Ou un membre occupe un emplacement qui n'est pas le sien. Un type de règle porte
+plus que la paire — un catalogue généré émet `HelpLinkUri` à côté d'elle — donc
+la complétion les propose tous dans une même liste, et les types déclarants
+coïncident dans le premier cas ci-dessous :
+
+```csharp
+[SuppressMessage(SomeRules.RULE001.Id, SomeRules.RULE001.Category)]
+[SuppressMessage(SomeRules.RULE001.Category, SomeRules.RULE001.HelpLinkUri)]
+```
+
+Les deux compilent, les deux résolvent, et aucun ne supprime quoi que ce soit :
+Roslyn apparie une suppression sur le seul identifiant (§3.3), et l'emplacement
+de l'identifiant ne nomme aucun diagnostic dans l'un comme dans l'autre.
+
+Un membre mal placé est signalé **sans correctif**. Les deux alignements de
+§12.1 réécrivent un emplacement vers la règle de l'autre, ce qui laisserait le
+mauvais membre dans l'autre ; et déterminer si c'est le membre ou la règle qui
+est erroné n'est pas à la portée d'un outil (ADR-0018).
 
 ### 11.2 `DCAT0002` — type de règle invalide
 
@@ -1088,13 +1110,13 @@ Règles de correspondance :
 Le code fix abandonne le suffixe lisible. C'est un compromis assumé et
 documenté : la constante `Title` de la règle ou sa documentation XML le remplace.
 
-**La sévérité par défaut est `Warning`, et non `Info`.** Référencer un package
-de catalogue est en soi la déclaration d'intention : un projet qui a pris la
+**La sévérité par défaut est `Error`, et non `Info`** (ADR-0027). Référencer un
+package de catalogue est en soi la déclaration d'intention : un projet qui a pris la
 dépendance a décidé que ses suppressions étaient des références de catalogue, et
 une suggestion qu'aucune sortie de build n'affiche ne porte pas cette décision.
 Le coût est assumé et doit figurer dans les notes de version — adopter un
-catalogue transforme d'un coup chaque suppression littérale existante en
-avertissement, et fait carrément échouer le build sous `TreatWarningsAsErrors`.
+catalogue fait échouer le build d'un coup sur chaque suppression littérale
+existante.
 Un projet qui migre progressivement l'abaisse dans `.editorconfig` (§17), ce qui
 est de toute façon la manière prévue pour régler ce diagnostic.
 
@@ -1386,7 +1408,11 @@ internal sealed record DiagnosticRuleSymbol(
 Cette représentation appartient uniquement à l'implémentation de l'analyzer et ne
 fait pas partie de l'API publique.
 
-* La clé **fonctionnelle** d'une règle est `Category + Id`.
+* La clé **fonctionnelle** d'une règle est `Category + Id`, l'`Id` étant
+  tronqué au premier deux-points exactement comme l'est un `checkId` écrit
+  (§3.3). Les deux côtés de la comparaison sont normalisés, ou aucun : ne
+  normaliser que la requête rend une règle déclarant un identifiant suffixé
+  introuvable par toute suppression.
 * La clé **structurelle** d'une référence est le symbole Roslyn du type
   `[DiagnosticRule]`.
 
@@ -1756,7 +1782,7 @@ classe `DiagnosticAnalyzer`. L'implémentation doit se scinder en deux :
 
 | Classe d'analyzer | Diagnostics | Flags code généré |
 | --- | --- | --- |
-| `DiagnosticRuleDefinitionAnalyzer` | `DCAT0002`–`DCAT0005`, `DCAT0011`–`DCAT0013` | `Analyze` |
+| `DiagnosticRuleDefinitionAnalyzer` | `DCAT0002`–`DCAT0005`, `DCAT0011`–`DCAT0013` | `Analyze \| ReportDiagnostics` |
 | `SuppressionUsageAnalyzer` | `DCAT0001`, `DCAT0006`–`DCAT0010` | `None` |
 
 Les définitions de règles produites par un outil externe doivent en outre être

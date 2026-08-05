@@ -14,7 +14,7 @@ l'incorpore, chaque build passe, chaque suppression continue de fonctionner — 
 désormais une catégorie que l'éditeur n'emploie pas.
 
 Rien ne le signale. Ni un compilateur, ni un analyseur, ni un test chez vous ou chez eux. Les
-vérifications de compilation (`DCAT0001`–`DCAT0009`) attestent qu'un catalogue est bien formé et
+vérifications de compilation (les diagnostics `DCAT`) attestent qu'un catalogue est bien formé et
 correctement employé ; aucune ne peut attester qu'il est encore **vrai**, parce que cela demande le
 paquet de l'éditeur et qu'un compilateur n'a pas à en télécharger un.
 
