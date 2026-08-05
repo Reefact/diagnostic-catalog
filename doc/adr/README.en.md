@@ -231,4 +231,4 @@ Optional supporting material:
 | [ADR-0033](0033-cap-the-badge-at-three-letters.en.md) | Cap the icon badge at three letters, abbreviating a longer prefix | Superseded by [ADR-0035](0035-badge-a-shared-prefix-catalogue-with-its-subject.en.md) |
 | [ADR-0034](0034-pair-every-package-readme-in-english-and-french.en.md) | Pair every package README in English and French | Accepted |
 | [ADR-0035](0035-badge-a-shared-prefix-catalogue-with-its-subject.en.md) | Badge a catalogue whose rule prefix is already in service with its subject instead | Accepted |
-| [ADR-0036](0036-exclude-from-coverage-what-no-report-describes.en.md) | Exclude from coverage what no coverage report describes | Proposed |
+| [ADR-0036](0036-exclude-from-coverage-what-no-report-describes.en.md) | Exclude from coverage what no coverage report describes | Accepted |
