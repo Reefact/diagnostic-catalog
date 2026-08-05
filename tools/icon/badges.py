@@ -9,6 +9,12 @@ Three letters at most, abbreviating the rule prefix when the prefix is longer (A
 prefix itself is not written down here: it is what the catalogue's own generated source calls
 its rules, and a second copy of it would be one more thing to keep true.
 
+When that prefix is already worn by another row, the badge names the subject of the package the
+catalogue mirrors instead, and the prefix stays with the catalogue already publishing it
+(ADR-0035). Three catalogues mirror RS rules: Roslyn holds RS, and PublicApi and BannedApi read
+API and BAN. Those two are the only rows here that are neither a prefix nor an abbreviation of
+one, and nothing below checks that — the badge a row declares is verified by review.
+
 A catalogue absent from this table is a check failure, not a default. That is the point of the
 table: DiagnosticCatalog.AspNetCore arrived while the renderer was being merged, its icon was
 drawn by hand, its mark happened to be right, and nothing said so.

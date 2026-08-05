@@ -102,11 +102,10 @@ Three Microsoft packages issue `RS` rules, and all three are catalogued:
 The ids partition cleanly, so no rule is ambiguous about where it lives. Three catalogues rather
 than one because a catalogue mirrors one package: the manifest takes a single package id, and
 `[assembly: CatalogSource]` records a single source and version. Their badges — `BAN`, `API`, `RS` —
-are what tells the three icons apart, since a badge carries the rule prefix
-([ADR-0032](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/adr/0032-badge-a-catalogues-icon-with-its-rule-prefix.en.md))
-capped at three letters
-([ADR-0033](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/adr/0033-cap-the-badge-at-three-letters.en.md))
-and all three would otherwise want `RS`.
+are what tells the three icons apart. A badge carries the rule prefix, capped at three letters, and
+all three would otherwise want `RS`; when the prefix is already in service the badge names the
+catalogue's subject instead, and the prefix stays with the catalogue publishing it
+([ADR-0035](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/adr/0035-badge-a-shared-prefix-catalogue-with-its-subject.en.md)).
 
 **This catalogue and `DiagnosticCatalog.PublicApi` declare the same category string**, `ApiDesign`,
 from two different packages. They are separate constants on separate containers, which is what

@@ -228,5 +228,6 @@ Optional supporting material:
 | [ADR-0030](0030-keep-the-usage-suite-out-of-the-sonar-analysis.en.md) | Keep the usage suite out of the Sonar analysis | Accepted |
 | [ADR-0031](0031-find-analyzers-the-way-the-compiler-finds-them.en.md) | Find analyzers the way the compiler finds them | Accepted |
 | [ADR-0032](0032-badge-a-catalogues-icon-with-its-rule-prefix.en.md) | Badge a catalogue's icon with its rule prefix, never the vendor's name | Superseded by [ADR-0033](0033-cap-the-badge-at-three-letters.en.md) |
-| [ADR-0033](0033-cap-the-badge-at-three-letters.en.md) | Cap the icon badge at three letters, abbreviating a longer prefix | Accepted |
+| [ADR-0033](0033-cap-the-badge-at-three-letters.en.md) | Cap the icon badge at three letters, abbreviating a longer prefix | Superseded by [ADR-0035](0035-badge-a-shared-prefix-catalogue-with-its-subject.en.md) |
 | [ADR-0034](0034-pair-every-package-readme-in-english-and-french.en.md) | Pair every package README in English and French | Accepted |
+| [ADR-0035](0035-badge-a-shared-prefix-catalogue-with-its-subject.en.md) | Badge a catalogue whose rule prefix is already in service with its subject instead | Accepted |
