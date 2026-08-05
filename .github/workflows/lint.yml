@@ -114,3 +114,30 @@ jobs:
         # POSIX, so running the suite under bash would let a bashism pass here and fail on a
         # contributor's machine or in a leaner container.
         run: sh tools/tests/run.sh
+
+  # A catalogue's icon is a committed binary that nothing compiles and nothing renders in review.
+  # assets/icon-template.svg claims to draw the mark all of them wear, and two edits break that
+  # claim silently: changing the template, or drawing a new catalogue's icon by hand instead of
+  # exporting it. PackageIconTests cannot see either — it asserts that no two catalogues ship the
+  # SAME icon and never asks what any of them looks like (ADR-0032).
+  #
+  # Its own job rather than a step in the suite above, so that a drifting icon reports as a
+  # drifting icon. The shell suite exercises the same script over its negative cases, which is a
+  # different question: whether the check can go red at all.
+  catalogue-icons:
+    name: Check the catalogue icons
+    runs-on: ubuntu-latest
+    # Inflates seven PNGs and rasterises one path; seconds, and the cap only guards a hang.
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Compare every catalogue icon with the template
+        # Python rather than the POSIX sh the rest of tools/ is written in: this inflates a PNG
+        # and rasterises a path, which sh cannot do, and it decides nothing about a release —
+        # the constraint ADR-0013 records applies to the scripts that do. The standard library is
+        # the whole dependency, so there is nothing to install on the runner.
+        run: python3 tools/icon/check-icon-template.py
