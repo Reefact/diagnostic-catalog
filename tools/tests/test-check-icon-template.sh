@@ -37,4 +37,14 @@ assert_equals "the repository's unbadged mark is not one of them" \
 assert_equals 'a file that is not a PNG is refused, not skipped' \
   'rejected' "$(verdict CONTRIBUTING.md)"
 
+# The documented use is checking an export BEFORE committing it, and an export sits wherever
+# the person who drew it saved it. Reporting on a path outside the repository is the case
+# that reached a traceback rather than a verdict.
+outside="$(mktemp -d)"
+trap 'rm -rf "$outside"' EXIT
+cp src/DiagnosticCatalog.StyleCop/icon.png "$outside/candidate.png"
+
+assert_equals 'a candidate outside the repository is reported on, not crashed over' \
+  'matches' "$(verdict "$outside/candidate.png")"
+
 finish
