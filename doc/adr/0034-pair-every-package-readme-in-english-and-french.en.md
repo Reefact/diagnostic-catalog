@@ -3,8 +3,9 @@
 🌍 **Languages:**  
 🇬🇧 English (this file) | 🇫🇷 [Français](./0034-pair-every-package-readme-in-english-and-french.fr.md)
 
-**Status:** Proposed
+**Status:** Accepted
 **Proposed:** 2026-08-05
+**Accepted:** 2026-08-05
 **Decision Makers:** Reefact
 
 ## Context
