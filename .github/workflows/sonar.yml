@@ -186,6 +186,32 @@ jobs:
       # release — every other Python rule on these files still counts, S8707 still counts
       # everywhere else, and if the icon tooling ever grows a caller that is not a human at a
       # prompt, this is the line to delete first.
+      #
+      # Python is excluded from COVERAGE, and from coverage only. Exactly one coverage report
+      # reaches this analysis — the OpenCover one `dotnet test` writes, named on the line above —
+      # and it describes C#. The scanner nonetheless counts every Python line as coverable, so all
+      # of them report uncovered. Measured on main at the 2026-08-05T23:37 analysis:
+      #
+      #   whole project   3014 lines to cover   747 uncovered   76.3 %
+      #   tools/icon       532                  532              0.0 %
+      #   src             1334                   45             90.6 %
+      #   eng             1144                  166             82.4 %
+      #
+      # 532 of the 747 uncovered lines are Python — 71 % of the shortfall — while both trees of
+      # C# already clear the 80 % the gate asks for. The gate was therefore red on a number that
+      # reports a MISSING REPORT rather than missing tests: these scripts are exercised, by
+      # tools/tests/test-check-icon-template.sh, on every pull request, and nothing measures it.
+      # 0.0 % is the absence of a measurement, not the result of one.
+      #
+      # `sonar.coverage.exclusions`, not `sonar.exclusions` — the opposite of the choice ADR-0030
+      # made for the usage suite, and for the opposite reason. There both dimensions misread the
+      # code. Here only coverage does: the issues Sonar reports on this Python are correct and
+      # were acted on, ten of them, rather than hidden. Keep reporting them.
+      #
+      # Language-scoped rather than directory-scoped because the reason is the report's language.
+      # The day a Python coverage report is produced — coverage.py feeding
+      # sonar.python.coverage.reportPaths — this line stops being true and must go, or it will
+      # suppress the very measurement it is standing in for. ADR-0036 records the decision.
       - name: Begin the analysis
         if: steps.guard.outputs.present == 'true'
         env:
@@ -198,6 +224,7 @@ jobs:
           /d:sonar.host.url="https://sonarcloud.io"
           /d:sonar.cs.opencover.reportsPaths="artifacts/coverage/**/coverage.opencover.xml"
           /d:sonar.exclusions="**/*.g.cs,**/DiagnosticCatalog.Usage/**"
+          /d:sonar.coverage.exclusions="**/*.py"
           /d:sonar.issue.ignore.multicriteria="bashism1,bashism2,bashism3,icontool1"
           /d:sonar.issue.ignore.multicriteria.bashism1.ruleKey="shelldre:S7679"
           /d:sonar.issue.ignore.multicriteria.bashism1.resourceKey="**/*.sh"
