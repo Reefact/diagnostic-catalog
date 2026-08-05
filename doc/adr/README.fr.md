@@ -231,3 +231,4 @@ Matériel de support, optionnel :
 | [ADR-0033](0033-cap-the-badge-at-three-letters.fr.md) | Plafonner le badge à trois lettres, en abrégeant un préfixe plus long | Superseded by [ADR-0035](0035-badge-a-shared-prefix-catalogue-with-its-subject.fr.md) |
 | [ADR-0034](0034-pair-every-package-readme-in-english-and-french.fr.md) | Apparier chaque README de paquet en anglais et en français | Accepted |
 | [ADR-0035](0035-badge-a-shared-prefix-catalogue-with-its-subject.fr.md) | Badger avec son sujet un catalogue dont le préfixe de règle est déjà en service | Accepted |
+| [ADR-0036](0036-exclude-from-coverage-what-no-report-describes.fr.md) | Exclure de la couverture ce qu'aucun rapport de couverture ne décrit | Proposed |
