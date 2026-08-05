@@ -343,8 +343,10 @@ internal static class CatalogEmitter
         sb.AppendLine("/// write <c>SomeRule.Sxxxx.Category</c>, never the category constant directly. The two");
         sb.AppendLine("/// spellings fold to the same string today and stop agreeing the day the vendor moves the");
         sb.AppendLine("/// rule to another category -- the rule member follows, a category named on its own does");
-        sb.AppendLine("/// not, and the suppression silently stops matching. Keeping this class out of the public");
-        sb.AppendLine("/// surface makes that decoupling unwritable rather than merely discouraged.");
+        sb.AppendLine("/// not, and the suppression is left asserting a category the rule no longer carries.");
+        sb.AppendLine("/// Nothing reports that: Roslyn ignores the category when it matches a suppression, so the");
+        sb.AppendLine("/// mistake has no symptom at all. Keeping this class out of the public surface makes that");
+        sb.AppendLine("/// decoupling unwritable rather than merely discouraged.");
         sb.AppendLine("/// The public <c>Category</c> constant on each rule is initialised from here and folds to");
         sb.AppendLine("/// the literal at compile time, so a consumer loses nothing.");
         sb.AppendLine("/// </remarks>");

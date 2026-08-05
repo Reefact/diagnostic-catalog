@@ -37,8 +37,8 @@ own, and it is breaking: see below.
   public — so naming `StyleCopCategory.StyleCopCSharpSpecialRules` directly no longer compiles. The two
   spellings fold to the same string today and stop agreeing the day StyleCop moves the
   rule: the rule member follows it, a category named on its own does not, and the
-  suppression keeps compiling while it silently stops matching. The repair is one line,
-  and the compiler points at it
+  suppression is left asserting a category the rule no longer carries — which nothing
+  reports, ever. The repair is one line, and the compiler points at it
   ([ADR-0026](../../doc/adr/0026-reach-a-category-only-through-the-rule-that-carries-it.en.md)).
 * The README now names the other catalogues and the foundation, so a reader landing
   on this package's page from a search learns the set it belongs to. nuget.org renders
