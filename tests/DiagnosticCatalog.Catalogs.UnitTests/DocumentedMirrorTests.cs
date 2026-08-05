@@ -30,6 +30,7 @@ public sealed class DocumentedMirrorTests
             { "DiagnosticCatalog.NetAnalyzers", "NetAnalyzersRules.g.cs" },
             { "DiagnosticCatalog.StyleCop", "StyleCopRules.g.cs" },
             { "DiagnosticCatalog.CodeStyle", "CodeStyleRules.g.cs" },
+            { "DiagnosticCatalog.Xunit", "XunitRules.g.cs" },
         };
 
     [Theory]

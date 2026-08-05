@@ -24,9 +24,10 @@ or tool can tell you. And you would not guess it — `S1144`'s category is
 [SuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.Id, Justification = "...")]
 ```
 
-Sonar, the .NET CA rules, StyleCop and the Roslyn IDE rules are already packaged as
+Sonar, the .NET CA rules, StyleCop, the Roslyn IDE rules and xUnit's are already packaged as
 `DiagnosticCatalog.Sonar`, `DiagnosticCatalog.NetAnalyzers`, `DiagnosticCatalog.StyleCop`
-and `DiagnosticCatalog.CodeStyle`. This package is what you need to declare a catalogue of your own.
+`DiagnosticCatalog.CodeStyle` and `DiagnosticCatalog.Xunit`. This package is what you need to
+declare a catalogue of your own.
 
 ## Installation
 
@@ -179,7 +180,7 @@ maintained alongside its own analyzer does not need this — the two ship at one
 
 ## See also
 
-Five catalogues built on this package are already published, generated from the analyzers' own
+Six catalogues built on this package are already published, generated from the analyzers' own
 descriptors rather than hand-written. If you run one of these, its rules do not need declaring:
 
 - [`DiagnosticCatalog.Sonar`](https://www.nuget.org/packages/DiagnosticCatalog.Sonar)
@@ -190,6 +191,8 @@ descriptors rather than hand-written. If you run one of these, its rules do not 
   — the StyleCop.Analyzers (`SAxxxx`) rules.
 - [`DiagnosticCatalog.CodeStyle`](https://www.nuget.org/packages/DiagnosticCatalog.CodeStyle)
   — the Roslyn IDE code-style (`IDExxxx`) rules.
+- [`DiagnosticCatalog.Xunit`](https://www.nuget.org/packages/DiagnosticCatalog.Xunit)
+  — the xunit.analyzers (`xUnitxxxx`) rules.
 - [`DiagnosticCatalog.Self`](https://www.nuget.org/packages/DiagnosticCatalog.Self)
   — the `DCATxxxx` rules the catalogue analyzers report, catalogued the same way.
 

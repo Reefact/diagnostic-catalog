@@ -101,6 +101,7 @@
     <ProjectReference Include="..\..\src\DiagnosticCatalog.NetAnalyzers\DiagnosticCatalog.NetAnalyzers.csproj" />
     <ProjectReference Include="..\..\src\DiagnosticCatalog.StyleCop\DiagnosticCatalog.StyleCop.csproj" />
     <ProjectReference Include="..\..\src\DiagnosticCatalog.CodeStyle\DiagnosticCatalog.CodeStyle.csproj" />
+    <ProjectReference Include="..\..\src\DiagnosticCatalog.Xunit\DiagnosticCatalog.Xunit.csproj" />
   </ItemGroup>
 
 </Project>

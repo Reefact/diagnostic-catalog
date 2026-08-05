@@ -73,7 +73,8 @@ Un catalogue est un paquet de constantes pour les règles d'un analyseur. Prenez
 Il y en a un pour [SonarAnalyzer](https://www.nuget.org/packages/DiagnosticCatalog.Sonar), un pour
 [les analyseurs .NET](https://www.nuget.org/packages/DiagnosticCatalog.NetAnalyzers) (`CAxxxx`) et
 un pour [StyleCop](https://www.nuget.org/packages/DiagnosticCatalog.StyleCop) (`SAxxxx`) et un
-pour [les règles IDE de Roslyn](https://www.nuget.org/packages/DiagnosticCatalog.CodeStyle) (`IDExxxx`).
+pour [les règles IDE de Roslyn](https://www.nuget.org/packages/DiagnosticCatalog.CodeStyle) (`IDExxxx`)
+et un pour [celles de xUnit](https://www.nuget.org/packages/DiagnosticCatalog.Xunit) (`xUnitxxxx`).
 
 C'est la seule ligne dont vous avez besoin pour la garantie elle-même. Une règle mal orthographiée
 est désormais une erreur de compilation, parce que `SonarRule.S1144.Id` est un membre que le
