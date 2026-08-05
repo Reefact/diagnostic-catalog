@@ -60,8 +60,10 @@ their use sites ship separately in `DiagnosticCatalog.Analyzers`.
 | `CodeQuality` | `IDE0064`, `IDE0076`, `IDE0077` |
 | `Compiler` | `IDE0043` |
 
-Every rule carries the title its descriptor declares, and 117 of the 120 carry a help
-link into Microsoft's style-rule reference:
+119 of the 120 carry the title their descriptor declares; `RemoveUnnecessaryImportsFixable`
+declares none, so it documents itself with its identifier and category instead. 117 carry a
+help link, 116 of them into Microsoft's style-rule reference and one — `EnableGenerateDocumentationFile`
+— into the Roslyn issue that tracks it:
 
 ```csharp
 [DiagnosticRule]

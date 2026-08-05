@@ -13,7 +13,7 @@ très stable. Liez-les à un seul numéro et chaque rafraîchissement Sonar fait
 fondation — ce qui annonce à tous ses consommateurs que quelque chose a changé alors que rien n'a
 bougé.
 
-Le dépôt publie donc sur **cinq lignes indépendantes**
+Le dépôt publie donc sur **six lignes indépendantes**
 ([ADR-0002](../adr/0002-partition-releases-into-trains-by-commit-scope.fr.md),
 [ADR-0015](../adr/0015-a-catalogues-version-runs-on-its-own-line.fr.md)) :
 
