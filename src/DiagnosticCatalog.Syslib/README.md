@@ -1,13 +1,12 @@
-# DiagnosticCatalog.AspNetCore
+# DiagnosticCatalog.Syslib
 
-The **ASP.NET Core and Blazor** analyzer rules (`ASPxxxx`, `BLxxxx`) as strongly referenced
-constants, so that `SuppressMessageAttribute` takes compile-checked references instead of magic
-strings.
+The **.NET runtime source-generator diagnostics** (`SYSLIB1xxx`) as strongly referenced constants,
+so that `SuppressMessageAttribute` takes compile-checked references instead of magic strings.
 
 <!-- mirror:begin -->
-> ## 🪞 Mirrors `Microsoft.AspNetCore.App.Ref 10.0.10`
+> ## 🪞 Mirrors `Microsoft.NETCore.App.Ref 10.0.10`
 >
-> **35 rules, 3 categories**, every identifier and category read
+> **13 rules, 4 categories**, every identifier and category read
 > from that release's own analyzers. Regenerated 2026-08-05.
 <!-- mirror:end -->
 
@@ -15,49 +14,41 @@ strings.
 
 ## Why
 
-Every ASP.NET Core project runs these analyzers, and **nobody installed them** — not because people
-do not bother, but because there is nothing to install. They arrive inside the shared framework, and
-the web SDK references that framework. No `PackageReference` names them, and none can be removed.
+Thirteen rules is the smallest catalogue here, and one of them is the reason it exists.
 
-That is what makes their rules the ones people suppress **in source**. A rule you switched on gets
-tuned in `.editorconfig`; a rule that came with the framework gets an exception at the one place it
-is wrong, with a `Justification` beside the code that earns it.
+`SYSLIB1090`'s category is **`ComInterfaceGenerator`**.
+
+Not `Interoperability`, which is what its four closest neighbours use. Not `Usage`, not `Design` —
+the name of the generator assembly that happens to declare it. Every other category in every
+catalogue in this family is a concept a person could arrive at: `Usage`, `Security`, `Performance`,
+`Trimming`, `Assertion`. This one is an implementation detail that leaked into a published contract,
+carried by exactly one rule.
 
 ```csharp
-[SuppressMessage("Usage", "ASP0018:Unused route parameter", ...)]
+[SuppressMessage("Interoperability", "SYSLIB1090:...", ...)]   // wrong, and nothing says so
 ```
 
-Three strings, and nothing checks any of them. Get the id wrong and the suppression silently does
-nothing — the warning simply stays. Get the category wrong and **nothing happens at all**, ever: the
-.NET platform never reads that argument, so no error, no warning and no failing test will tell you.
+Get the id wrong and the suppression silently does nothing — the warning simply stays. Get the
+category wrong and **nothing happens at all**, ever: the .NET platform never reads that argument, so
+no error, no warning and no failing test will tell you.
 
 ```csharp
-using DiagnosticCatalog.AspNetCore;
+using DiagnosticCatalog.Syslib;
 
 [SuppressMessage(
-    AspNetCoreRule.ASP0018.Category,
-    AspNetCoreRule.ASP0018.Id,
-    Justification = "The parameter is read by the model binder, not by the handler.")]
+    SyslibRule.SYSLIB1090.Category,
+    SyslibRule.SYSLIB1090.Id,
+    Justification = "The interface is only ever marshalled by the legacy path.")]
 ```
 
-The day a rule moves to another category, the second version follows it and the first keeps
-compiling while it quietly stops matching.
-
-## The one you do not want to get wrong
-
-`ASP0026` is the only `Security` rule in the set, and it reports this:
-
-> **`[Authorize]` overridden by `[AllowAnonymous]` from farther away.**
-
-An `[AllowAnonymous]` on a base class or an outer scope silently wins over an `[Authorize]` written
-closer to the endpoint — the opposite of what almost everyone reads the code to mean. If a project
-ever suppresses that one, the suppression is load-bearing in the strongest sense, and the argument
-naming its category is `"Security"` — a value nothing in the platform will ever check.
+The day that category is corrected upstream — and it looks like the sort of thing that gets
+corrected — the second version follows it and the first keeps compiling while it quietly stops
+matching.
 
 ## Installation
 
 ```xml
-<PackageReference Include="DiagnosticCatalog.AspNetCore" Version="1.0.0" />
+<PackageReference Include="DiagnosticCatalog.Syslib" Version="1.0.0" />
 ```
 
 This package only supplies the constants. The checks that validate rule declarations and their use
@@ -65,35 +56,43 @@ sites ship separately in `DiagnosticCatalog.Analyzers`.
 
 ## What is in the package
 
-35 rules across 3 categories, 26 of the 35 carrying the help link their descriptor declares.
+13 rules across 4 categories, and **all 13 carry the help link their descriptor declares**.
 
 | Category | Rules | What they are about |
 | --- | --- | --- |
-| `Usage` | 32 | Minimal APIs, routing, `WebApplicationBuilder` migration, header access, Blazor render trees |
-| `Encapsulation` | 2 | Blazor component parameters that must be public, and settable (`BL0001`, `BL0004`) |
-| `Security` | 1 | `ASP0026`, above |
-
-**Two prefixes, one package.** `ASPxxxx` is ASP.NET Core proper — 26 rules, mostly minimal APIs and
-routing. `BLxxxx` is Blazor components — 9 rules about parameters, render trees and persisted state.
-They ship together in the framework, so they are catalogued together; the icon badge reads `ASP`
-because a badge carries the majority prefix
-([ADR-0032](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/adr/0032-badge-a-catalogues-icon-with-its-rule-prefix.en.md)).
+| `Usage` | 6 | Marshaller shape and validity for `LibraryImport` — `SYSLIB1055`–`SYSLIB1061` |
+| `Interoperability` | 5 | Converting to `LibraryImport` and to the generated COM interface, and COM hosting |
+| `Performance` | 1 | `SYSLIB1045`, *Convert to `GeneratedRegexAttribute`* |
+| `ComInterfaceGenerator` | 1 | `SYSLIB1090`, above |
 
 ```csharp
 [DiagnosticRule]
-public static class ASP0026
+public static class SYSLIB1045
 {
-    public const string Id = nameof(ASP0026);
-    public const string Category = AspNetCoreCategory.Security;
-    public const string HelpLinkUri = "https://learn.microsoft.com/aspnet/core/diagnostics/asp0026";
+    public const string Id = nameof(SYSLIB1045);
+    public const string Category = SyslibCategory.Performance;
+    public const string HelpLinkUri = "https://learn.microsoft.com/dotnet/fundamentals/syslib-diagnostics/syslib1045";
 }
 ```
 
+## Which SYSLIB rules these are
+
+The `SYSLIB` prefix covers two unrelated things, and only one of them is here.
+
+* **`SYSLIB1xxx` — source-generator diagnostics.** What this package holds. They come from real
+  analyzers with real `DiagnosticDescriptor` instances, and `[SuppressMessage]` silences them.
+* **`SYSLIB0xxx` — obsoletion warnings.** `SYSLIB0001` and its siblings are raised by the compiler
+  from `[Obsolete]` on the API itself. No analyzer declares them, so no descriptor exists to read
+  and none appears here.
+
+The ids are not contiguous for the same reason a vendor's ids are never contiguous — the runtime
+allocates them across generators, and only the ones that survived to a shipped release are declared.
+
 ## Categories declared once
 
-`AspNetCoreCategory` holds each category once, and the rules reference it — so a category's spelling
+`SyslibCategory` holds each category once, and the rules reference it — so a category's spelling
 exists in exactly one place. It is **internal by design**: a suppression reaches a category through
-the rule that carries it, `AspNetCoreRule.ASP0026.Category`, and never through the category constant
+the rule that carries it, `SyslibRule.SYSLIB1090.Category`, and never through the category constant
 on its own. The two fold to the same string today and stop agreeing the day a rule moves
 ([ADR-0026](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/adr/0026-reach-a-category-only-through-the-rule-that-carries-it.en.md)).
 
@@ -103,17 +102,21 @@ Not transcribed from documentation. The generator reads the analyzer assemblies'
 types they mark with `[DiagnosticAnalyzer]`, constructs those, and reads the `DiagnosticDescriptor`
 instances they actually declare — the only source that cannot have drifted.
 
-The analyzers ship inside **`Microsoft.AspNetCore.App.Ref`**, the ASP.NET Core targeting pack, which
-is an ordinary package on nuget.org — that is how the SDK itself acquires it. So the mirrored release
-is a package version, one a consumer can look up and install, rather than whatever happened to be on
-the machine that generated the file.
+The generators ship inside **`Microsoft.NETCore.App.Ref`**, the .NET runtime targeting pack, which is
+an ordinary package on nuget.org — that is how the SDK itself acquires it. So the mirrored release is
+a package version a consumer can look up, rather than whatever happened to be installed on the
+machine that generated the file.
 
 ```
 dotnet run --project src/DiagnosticCatalog.Cli -- generate \
-    --package Microsoft.AspNetCore.App.Ref --package-version latest \
-    --namespace DiagnosticCatalog.AspNetCore --container AspNetCoreRule \
-    --output src/DiagnosticCatalog.AspNetCore/AspNetCoreRules.g.cs
+    --package Microsoft.NETCore.App.Ref --package-version latest \
+    --namespace DiagnosticCatalog.Syslib --container SyslibRule \
+    --output src/DiagnosticCatalog.Syslib/SyslibRules.g.cs
 ```
+
+Six generator assemblies are read and ten of their types declare a rule. The whole pack is read
+rather than a hand-picked subset, so a generator that gains its first rule is caught by the nightly
+instead of waiting for somebody to notice.
 
 ## How it stays current
 
@@ -133,26 +136,27 @@ at their own compile time, so deleting one breaks their recompilation.
 The rules a project actually gets are governed by its **shared framework**, which its target
 framework selects — not by a package reference it controls. This catalogue mirrors a targeting-pack
 release, and the assembly records exactly which one in `[assembly: CatalogSource]`. If your app
-targets an older ASP.NET Core than the version recorded there, rules added since will be present in
-the catalogue and absent from your build; referencing one still compiles, and the suppression simply
+targets an older runtime than the version recorded there, rules added since will be present in the
+catalogue and absent from your build; referencing one still compiles, and the suppression simply
 never matches anything.
 
 ## How it reaches nuget.org
 
-This catalogue rides the `aspnetcore` [release train](https://github.com/Reefact/diagnostic-catalog/blob/main/CONTRIBUTING.md)
-and versions independently of the foundation, so it can follow ASP.NET Core's releases without
+This catalogue rides the `syslib` [release train](https://github.com/Reefact/diagnostic-catalog/blob/main/CONTRIBUTING.md)
+and versions independently of the foundation, so it can follow the runtime's releases without
 dragging anything else along.
 
-Publishing is not part of the nightly. A maintainer pushes an `aspnetcore-vX.Y.Z` tag, and the
-release workflow packs the package, embeds an SPDX SBOM, and publishes through NuGet
+Publishing is not part of the nightly. A maintainer pushes a `syslib-vX.Y.Z` tag, and the release
+workflow packs the package, embeds an SPDX SBOM, and publishes through NuGet
 [Trusted Publishing](https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing) with
 signed build provenance — no long-lived API key exists anywhere to leak.
 
 ## Limits
 
 `[SuppressMessage]` cannot suppress **compiler** warnings — `CS0219` and friends need
-`#pragma warning disable`, which takes bare identifiers and so can never reference a constant. This
-package covers the `ASPxxxx` and `BLxxxx` analyzer rules only.
+`#pragma warning disable`, which takes bare identifiers and so can never reference a constant. That
+is also why the `SYSLIB0xxx` obsoletions are out of reach: they are compiler warnings raised from
+`[Obsolete]`, not analyzer diagnostics. This package covers the `SYSLIB1xxx` analyzer rules only.
 
 ## See also
 
@@ -175,8 +179,8 @@ analyzer's own descriptors:
   — the MSTest.Analyzers (`MSTESTxxxx`) rules.
 - [`DiagnosticCatalog.Trimming`](https://www.nuget.org/packages/DiagnosticCatalog.Trimming)
   — the trimming, Native AOT and single-file (`ILxxxx`) warnings.
-- [`DiagnosticCatalog.Syslib`](https://www.nuget.org/packages/DiagnosticCatalog.Syslib)
-  — the .NET runtime source-generator (`SYSLIB1xxx`) diagnostics.
+- [`DiagnosticCatalog.AspNetCore`](https://www.nuget.org/packages/DiagnosticCatalog.AspNetCore)
+  — the ASP.NET Core and Blazor (`ASPxxxx`, `BLxxxx`) rules.
 - [`DiagnosticCatalog.Self`](https://www.nuget.org/packages/DiagnosticCatalog.Self)
   — this library's own `DCATxxxx` rules, for suppressing a diagnostic the catalogue analyzers
   themselves report.

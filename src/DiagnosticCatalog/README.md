@@ -180,7 +180,7 @@ maintained alongside its own analyzer does not need this — the two ship at one
 
 ## See also
 
-Ten catalogues built on this package are already published, generated from the analyzers' own
+Eleven catalogues built on this package are already published, generated from the analyzers' own
 descriptors rather than hand-written. If you run one of these, its rules do not need declaring:
 
 - [`DiagnosticCatalog.Sonar`](https://www.nuget.org/packages/DiagnosticCatalog.Sonar)
@@ -201,6 +201,8 @@ descriptors rather than hand-written. If you run one of these, its rules do not 
   — the trimming, Native AOT and single-file (`ILxxxx`) warnings.
 - [`DiagnosticCatalog.AspNetCore`](https://www.nuget.org/packages/DiagnosticCatalog.AspNetCore)
   — the ASP.NET Core and Blazor (`ASPxxxx`, `BLxxxx`) rules.
+- [`DiagnosticCatalog.Syslib`](https://www.nuget.org/packages/DiagnosticCatalog.Syslib)
+  — the .NET runtime source-generator (`SYSLIB1xxx`) diagnostics.
 - [`DiagnosticCatalog.Self`](https://www.nuget.org/packages/DiagnosticCatalog.Self)
   — the `DCATxxxx` rules the catalogue analyzers report, catalogued the same way.
 
