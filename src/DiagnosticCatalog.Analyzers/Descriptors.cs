@@ -21,7 +21,9 @@ internal static class Descriptors
     internal static readonly DiagnosticDescriptor MembersFromDifferentRules = new(
         id: DiagnosticIds.MembersFromDifferentRules,
         title: "Category and Id must reference the same diagnostic rule",
-        messageFormat: "The category comes from '{0}' and the id from '{1}': a suppression must reference one rule",
+        messageFormat:
+            "The category slot references '{0}' and the identifier slot '{1}': a suppression must name "
+            + "one rule's Category and that same rule's Id",
         category: Category,
         defaultSeverity: DiagnosticSeverity.Error,
         isEnabledByDefault: true,
@@ -29,7 +31,13 @@ internal static class Descriptors
             "The two arguments are compared by the rule that DECLARES them, not by their values. Two "
             + "rules sharing a category today produce a suppression that works and is still reported, "
             + "because the pairing is a copy-paste error: the day the vendor recategorises one of them, "
-            + "the suppression carries the wrong category and nothing in the platform will say so.");
+            + "the suppression carries the wrong category and nothing in the platform will say so. The "
+            + "member is checked as well as the rule: a rule type carries more than the pair, so one "
+            + "rule's own members can land in each other's slots, or the identifier slot can hold "
+            + "something that is neither — and because Roslyn matches on the identifier alone, such a "
+            + "suppression resolves, compiles and silences nothing. A misplaced member is reported "
+            + "without a fix: whether the wrong member or the wrong rule was written is not something a "
+            + "tool can know.");
 
     internal static readonly DiagnosticDescriptor ReplaceableStringLiterals = new(
         id: DiagnosticIds.ReplaceableStringLiterals,

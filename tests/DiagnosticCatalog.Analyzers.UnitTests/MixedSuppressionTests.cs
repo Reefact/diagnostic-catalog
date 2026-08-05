@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
@@ -189,6 +190,57 @@ public sealed class MixedSuppressionTests
         // warning back in — a decision for the author, not for a lightbulb.
         CodeFixHarness.OffersNothingAsync(Analyzer, Provider, Usings + Rules + """
             [SuppressMessage(SonarRules.S1144.Category, "S9999", Justification = "j")]
+            public sealed class Target { }
+            """);
+
+    [Fact]
+    public async Task A_literal_matching_a_suffixed_declared_identifier_is_completed()
+    {
+        // The other end of the same asymmetry as DCAT0006's: here `declared` is the raw declared Id
+        // and `written` is normalised, so a literal that is byte-identical to what the rule declares
+        // compares unequal. The fix was withheld and the message said the value "names something
+        // else" — about an exact match.
+        string fixedSource = await CodeFixHarness.ApplyAsync(Analyzer, Provider, Usings + SuffixedRules + """
+            [SuppressMessage(TrimRules.IL2026.Category, "IL2026:Members annotated with RequiresUnreferencedCode", Justification = "j")]
+            public sealed class Target { }
+            """);
+
+        Assert.Contains("TrimRules.IL2026.Id", fixedSource, StringComparison.Ordinal);
+    }
+
+    /// <summary>A rule whose declared Id carries a friendly-name suffix (§8.2 blesses the form).</summary>
+    private const string SuffixedRules = """
+        public static class TrimRules
+        {
+            [DiagnosticRule]
+            public static class IL2026
+            {
+                public const string Id = "IL2026:Members annotated with RequiresUnreferencedCode";
+                public const string Category = "Trimming";
+            }
+        }
+
+        """;
+
+    [Fact]
+    public Task A_reference_in_the_wrong_slot_is_still_reported() =>
+        // The category slot holds S1144's Id. Half-migrated, so still DCAT0007's — but the migrated
+        // half is itself wrong, which is the part the completion must notice.
+        AnalyzerHarness.ReportsAsync(Analyzer, Usings + Rules + """
+            [SuppressMessage(SonarRules.S1144.Id, "S1144", Justification = "j")]
+            public sealed class Target { }
+            """, "DCAT0007");
+
+    [Fact]
+    public Task A_reference_in_the_wrong_slot_gets_no_fix() =>
+        // Completing from the other slot here writes SonarRules.S1144.Id into BOTH arguments: the
+        // literal agrees with the declared Id, so the completion reads as deterministic while the
+        // reference it completes from is in the category's place. The result compiles, resolves,
+        // suppresses nothing, and — both halves now being rule members of one rule in the wrong
+        // slots — is exactly the shape DCAT0001 was widened to report. The fix must not manufacture
+        // the defect the analyzer next door exists to catch.
+        CodeFixHarness.OffersNothingAsync(Analyzer, Provider, Usings + Rules + """
+            [SuppressMessage(SonarRules.S1144.Id, "S1144", Justification = "j")]
             public sealed class Target { }
             """);
 
