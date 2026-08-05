@@ -355,7 +355,13 @@ def main(argv):
     print(f"template  {TEMPLATE.relative_to(ROOT)}  {stops[0]} -> {stops[-1]}")
     failures = 0
     for icon in icons:
-        name = icon.relative_to(ROOT) if icon.is_absolute() else icon
+        # A candidate export sits wherever whoever drew it saved it, which is routinely
+        # outside the repository — so shorten the path when it is inside and leave it alone
+        # when it is not, rather than assuming.
+        try:
+            name = icon.resolve().relative_to(ROOT)
+        except ValueError:
+            name = icon
         try:
             png_width, png_height, rows = read_png(icon)
         except (OSError, ValueError, KeyError) as unreadable:
