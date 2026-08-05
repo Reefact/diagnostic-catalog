@@ -19,6 +19,17 @@ name: dependabot-automerge
 # nothing: removing the branch-protection rule later would leave the switch on and
 # the hazard back. The guarantee lives in the required checks, and nowhere else.
 #
+# ARMING PROCEDURE — two repository-level facts must hold, and neither implies the other:
+#   1. `main` protected with the CI checks REQUIRED. This is what makes an armed merge
+#      safe, and it is the whole subject of ADR-0005.
+#   2. Settings -> General -> Pull Requests -> `Allow auto-merge` ENABLED. This is what
+#      makes an armed merge possible at all: with it off, GitHub refuses
+#      `enablePullRequestAutoMerge` outright and the arming step below fails.
+# ADR-0005's follow-up actions name only the first, because the second is not a safety
+# property and the decision is about safety. It is recorded here instead — that ADR points
+# at this file for the procedure, and a prerequisite written down nowhere is one that gets
+# discovered by a red check on someone else's pull request.
+#
 # Why the job keys on the pull request's AUTHOR and not on `github.actor`. Auto-merge,
 # once enabled, SURVIVES later pushes to the head branch. `github.actor` names whoever
 # triggered the run, so a push by someone else made the job skip — leaving the
@@ -110,7 +121,41 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_URL: ${{ github.event.pull_request.html_url }}
-        run: gh pr merge --auto --merge "$PR_URL"
+        # Still fails when it cannot arm — the lane is dead until someone acts, and a warning
+        # on a pull request nobody is reading is not someone acting. What it stops doing is
+        # failing on a bare GraphQL string that names no switch: `Allow auto-merge` off is not
+        # a fault of the pull request under test, it is prerequisite 2 of the procedure in this
+        # file's header, and it will paint EVERY patch and minor update red until it is set.
+        # Any other error is left exactly as it comes out, because it means something else.
+        run: |
+          set -euo pipefail
+          if out="$(gh pr merge --auto --merge "$PR_URL" 2>&1)"; then
+            printf '%s\n' "$out"
+            exit 0
+          fi
+          printf '%s\n' "$out"
+          case "$out" in
+            *'Auto merge is not allowed for this repository'*)
+              echo "::error title=Auto-merge is switched off for this repository::Enable Settings -> General -> Pull Requests -> Allow auto-merge, then re-run this job."
+              # The backticks below are Markdown for the step summary, not command substitution, and
+              # the single quotes are what keeps them literal. Same waiver, same reason, as the drift
+              # summary in sonar-profile.yml.
+              # shellcheck disable=SC2016
+              {
+                echo '### Auto-merge is switched off for this repository'
+                echo
+                echo 'This pull request is fine. The repository is not configured to accept an armed'
+                echo 'merge, so there is nothing this workflow can do from here.'
+                echo
+                echo 'Enable **Settings → General → Pull Requests → Allow auto-merge**, then re-run'
+                echo 'this job. It is prerequisite 2 of the arming procedure at the top of'
+                echo '`.github/workflows/dependabot-automerge.yml`; prerequisite 1 — `main` protected'
+                echo 'with its CI checks required — is already in place and is what keeps the merge'
+                echo 'safe (ADR-0005).'
+              } >> "$GITHUB_STEP_SUMMARY"
+              ;;
+          esac
+          exit 1
 
       - name: Withdraw auto-merge from a foreign head
         # The step that closes the gap: auto-merge armed on Dependabot's own commit stays
