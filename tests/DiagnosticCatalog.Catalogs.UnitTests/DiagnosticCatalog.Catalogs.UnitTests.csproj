@@ -106,6 +106,7 @@
     <ProjectReference Include="..\..\src\DiagnosticCatalog.MSTest\DiagnosticCatalog.MSTest.csproj" />
     <ProjectReference Include="..\..\src\DiagnosticCatalog.Trimming\DiagnosticCatalog.Trimming.csproj" />
     <ProjectReference Include="..\..\src\DiagnosticCatalog.AspNetCore\DiagnosticCatalog.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\src\DiagnosticCatalog.Syslib\DiagnosticCatalog.Syslib.csproj" />
   </ItemGroup>
 
 </Project>

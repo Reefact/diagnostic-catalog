@@ -4,7 +4,7 @@
 🇬🇧 [English](./release-trains.en.md) | 🇫🇷 Français (ce fichier)
 
 Pour quiconque ajoute un projet, coupe une release, ou se demande pourquoi un commit exige un scope.
-Onze trains, une déclaration, et une règle qui découle des deux.
+Douze trains, une déclaration, et une règle qui découle des deux.
 
 ## Pourquoi pas une seule version
 
@@ -13,7 +13,7 @@ très stable. Liez-les à un seul numéro et chaque rafraîchissement Sonar fait
 fondation — ce qui annonce à tous ses consommateurs que quelque chose a changé alors que rien n'a
 bougé.
 
-Le dépôt publie donc sur **onze lignes indépendantes**
+Le dépôt publie donc sur **douze lignes indépendantes**
 ([ADR-0002](../adr/0002-partition-releases-into-trains-by-commit-scope.fr.md),
 [ADR-0015](../adr/0015-a-catalogues-version-runs-on-its-own-line.fr.md)) :
 
@@ -30,6 +30,7 @@ Le dépôt publie donc sur **onze lignes indépendantes**
 | `mstest` | `mstest-v` | `mstest` | Le catalogue de règles des analyseurs MSTest |
 | `trimming` | `trimming-v` | `trimming` | Le catalogue de règles de trimming, Native AOT et fichier unique |
 | `aspnetcore` | `aspnetcore-v` | `aspnetcore` | Le catalogue de règles ASP.NET Core et Blazor |
+| `syslib` | `syslib-v` | `syslib` | Le catalogue de règles des générateurs de source du runtime .NET |
 
 Ce tableau vit une seule fois, dans [`tools/trains.sh`](../../tools/trains.sh). Les scripts
 d'empaquetage et de notes de version le **sourcent** : ce qu'une release publie et ce que ses notes
@@ -96,6 +97,9 @@ flowchart TB
     subgraph AS["aspnetcore"]
         ASC["DiagnosticCatalog.AspNetCore"]
     end
+    subgraph SY["syslib"]
+        SYC["DiagnosticCatalog.Syslib"]
+    end
     CF["DiagnosticCatalog.CodeFixes<br/><i>aucun train — embarqué dans le paquet des analyseurs</i>"]
     GEN["eng/CatalogGen<br/><i>aucun train — embarqué dans dcat</i>"]
     A -. "empaquette" .-> CF
@@ -109,6 +113,7 @@ flowchart TB
     MST -- "PackageReference" --> F
     TRC -- "PackageReference" --> F
     ASC -- "PackageReference" --> F
+    SYC -- "PackageReference" --> F
     SELF -- "PackageReference" --> F
 ```
 

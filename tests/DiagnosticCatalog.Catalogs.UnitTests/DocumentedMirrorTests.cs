@@ -35,6 +35,7 @@ public sealed class DocumentedMirrorTests
             { "DiagnosticCatalog.MSTest", "MSTestRules.g.cs" },
             { "DiagnosticCatalog.Trimming", "TrimRules.g.cs" },
             { "DiagnosticCatalog.AspNetCore", "AspNetCoreRules.g.cs" },
+            { "DiagnosticCatalog.Syslib", "SyslibRules.g.cs" },
         };
 
     [Theory]

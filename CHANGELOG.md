@@ -22,6 +22,7 @@ project:
 * [`mstest`](src/DiagnosticCatalog.MSTest/CHANGELOG.md)
 * [`trimming`](src/DiagnosticCatalog.Trimming/CHANGELOG.md)
 * [`aspnetcore`](src/DiagnosticCatalog.AspNetCore/CHANGELOG.md)
+* [`syslib`](src/DiagnosticCatalog.Syslib/CHANGELOG.md)
 
 ## [Unreleased]
 

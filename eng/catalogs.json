@@ -99,6 +99,25 @@
     },
     {
       "$comment": [
+        "The .NET runtime's source-generator diagnostics. Microsoft.NETCore.App.Ref is the runtime",
+        "targeting pack, and like the ASP.NET Core one it is an ordinary package on nuget.org.",
+        "",
+        "Six generator assemblies contribute: LibraryImport, the COM interface generator and its",
+        "shared source generation, the JavaScript JSImport generator, System.Text.Json's generator",
+        "and the regex generator. Only ten of their types declare a rule, and the whole pack is read",
+        "rather than a chosen subset so that a generator gaining its first rule is picked up by the",
+        "nightly instead of waiting for somebody to notice.",
+        "",
+        "SYSLIB0xxx is absent on purpose: those are obsoletion warnings the compiler raises from",
+        "[Obsolete] on the API itself, not analyzer diagnostics, so no descriptor declares them."
+      ],
+      "package": "Microsoft.NETCore.App.Ref",
+      "namespace": "DiagnosticCatalog.Syslib",
+      "container": "SyslibRule",
+      "output": "../src/DiagnosticCatalog.Syslib/SyslibRules.g.cs"
+    },
+    {
+      "$comment": [
         "The xUnit.net analyzers. They reach a project TRANSITIVELY — xunit depends on",
         "xunit.analyzers — so a test project has them without anybody choosing them, which is why",
         "their rules are suppressed in source rather than configured away in .editorconfig."

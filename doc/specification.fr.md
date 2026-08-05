@@ -320,7 +320,8 @@ DiagnosticCatalog/
 │   ├── DiagnosticCatalog.NUnit/            → catalogue généré (§14)
 │   ├── DiagnosticCatalog.MSTest/           → catalogue généré (§14)
 │   ├── DiagnosticCatalog.Trimming/         → catalogue généré (§14)
-│   └── DiagnosticCatalog.AspNetCore/       → catalogue généré (§14)
+│   ├── DiagnosticCatalog.AspNetCore/       → catalogue généré (§14)
+│   └── DiagnosticCatalog.Syslib/           → catalogue généré (§14)
 ├── eng/
 │   └── CatalogGen/                         → générateur, jamais livré (§14.1)
 ├── tests/
@@ -1447,7 +1448,7 @@ comparer une valeur et en rechercher une ne sont pas le même besoin.
 ## 14. Utilisation par un catalogue tiers
 
 Un package spécialisé peut référencer `DiagnosticCatalog` et déclarer les règles
-d'un analyzer qu'il ne possède pas. Neuf sont implémentés, tous générés par le
+d'un analyzer qu'il ne possède pas. Dix sont implémentés, tous générés par le
 même outil depuis les descriptors de leur package amont :
 
 | Catalogue | Reflète | Règles | Catégories | Liens d'aide |
@@ -1461,6 +1462,7 @@ même outil depuis les descriptors de leur package amont :
 | `DiagnosticCatalog.MSTest` | `MSTest.Analyzers 4.3.3` | 62 | 3 | 62 sur 62 |
 | `DiagnosticCatalog.Trimming` | `Microsoft.NET.ILLink.Tasks 10.0.10` | 77 | 3 | 0 sur 77 |
 | `DiagnosticCatalog.AspNetCore` | `Microsoft.AspNetCore.App.Ref 10.0.10` | 35 | 3 | 26 sur 35 |
+| `DiagnosticCatalog.Syslib` | `Microsoft.NETCore.App.Ref 10.0.10` | 13 | 4 | 13 sur 13 |
 
 ```csharp
 using DiagnosticCatalog;
@@ -2109,7 +2111,7 @@ Un générateur pourrait transformer un manifeste en classes de constantes :
 ### 25.4 Autres catalogues générés
 
 Les catalogues générés ne sont plus une évolution future : la méthode, le
-générateur, neuf catalogues et leur synchronisation planifiée sont spécifiés aux
+générateur, dix catalogues et leur synchronisation planifiée sont spécifiés aux
 §14.1–§14.3 et implémentés. Restent d'autres éditeurs.
 
 **Une variante Visual Basic n'est pas une entrée de manifeste.** Une lecture
