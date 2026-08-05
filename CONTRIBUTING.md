@@ -477,11 +477,12 @@ When present it MUST be lowercase and MUST be one of:
 | `aspnetcore` | The **catalog of ASP.NET Core and Blazor (ASPxxxx, BLxxxx) rules** |
 | `syslib` | The **catalog of .NET runtime source-generator (SYSLIB1xxx) rules** |
 | `roslyn` | The **catalog of Roslyn analyzer-authoring (RS1xxx, RS2xxx) rules** |
+| `publicapi` | The **catalog of public-API tracking (RS00xx) rules** |
 | `cataloggen` | The **generation engine** (`eng/CatalogGen`) — acquiring analyzer assemblies, reading their descriptors, emitting a catalog |
 
 > `analyzers` and `netanalyzers` are close in spelling and far apart in meaning.
 > `analyzers` is *code this repository ships* — Roslyn analyzers that enforce our
-> own contract. `netanalyzers`, `sonar`, `stylecop`, `codestyle`, `xunit`, `nunit`, `mstest`, `trimming`, `aspnetcore`, `syslib` and `roslyn` are *catalogs describing
+> own contract. `netanalyzers`, `sonar`, `stylecop`, `codestyle`, `xunit`, `nunit`, `mstest`, `trimming`, `aspnetcore`, `syslib`, `roslyn` and `publicapi` are *catalogs describing
 > somebody else's rules*, which is the product. When in doubt: if the commit
 > changes a rule catalog, its scope is the vendor's name.
 
@@ -520,6 +521,7 @@ independently:
 | `aspnetcore` | `aspnetcore` | Follows ASP.NET Core's releases. |
 | `syslib` | `syslib` | Follows the .NET runtime's releases. |
 | `roslyn` | `roslyn` | Follows Microsoft.CodeAnalysis.Analyzers' releases. |
+| `publicapi` | `publicapi` | Follows Microsoft.CodeAnalysis.PublicApiAnalyzers' releases. |
 
 Two scopes ride the `cli` train, and the distinction between them is worth
 keeping. `cli` is the shell — the command tree, the arguments, the exit codes;

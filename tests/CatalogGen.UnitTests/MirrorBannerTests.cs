@@ -67,7 +67,10 @@ public sealed class MirrorBannerTests : IDisposable
         string french = ReadDoc("README.fr.md");
 
         Assert.Contains("règles", french, StringComparison.Ordinal);
-        Assert.Contains("catégories", french, StringComparison.Ordinal);
+
+        // The stem rather than the plural: the banner agrees the category noun with the count, and
+        // this fixture declares one. What is under test is the language, not the number.
+        Assert.Contains("catégorie", french, StringComparison.Ordinal);
         Assert.DoesNotContain("every identifier", french, StringComparison.Ordinal);
     }
 

@@ -1,5 +1,8 @@
 # DiagnosticCatalog.Roslyn
 
+🌍 **Languages:**  
+🇬🇧 English (this file) | 🇫🇷 [Français](https://github.com/Reefact/diagnostic-catalog/blob/main/src/DiagnosticCatalog.Roslyn/README.fr.md)
+
 The **Roslyn analyzer-authoring** rules (`RS1xxx`, `RS2xxx`) as strongly referenced constants, so
 that `SuppressMessageAttribute` takes compile-checked references instead of magic strings.
 
@@ -175,7 +178,7 @@ signed build provenance — no long-lived API key exists anywhere to leak.
 
 ## See also
 
-Eleven sibling catalogues are generated from this repository the same way, each read from one
+Twelve sibling catalogues are generated from this repository the same way, each read from one
 analyzer's own descriptors:
 
 - [`DiagnosticCatalog.Sonar`](https://www.nuget.org/packages/DiagnosticCatalog.Sonar)
@@ -198,6 +201,8 @@ analyzer's own descriptors:
   — the ASP.NET Core and Blazor (`ASPxxxx`, `BLxxxx`) rules.
 - [`DiagnosticCatalog.Syslib`](https://www.nuget.org/packages/DiagnosticCatalog.Syslib)
   — the .NET runtime source-generator (`SYSLIB1xxx`) diagnostics.
+- [`DiagnosticCatalog.PublicApi`](https://www.nuget.org/packages/DiagnosticCatalog.PublicApi)
+  — the public-API tracking (`RS00xx`) rules.
 - [`DiagnosticCatalog.Self`](https://www.nuget.org/packages/DiagnosticCatalog.Self)
   — this library's own `DCATxxxx` rules, for suppressing a diagnostic the catalogue analyzers
   themselves report.

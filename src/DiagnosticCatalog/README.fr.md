@@ -190,7 +190,7 @@ deux sont livrés à une seule version.
 
 ## Voir aussi
 
-Onze catalogues bâtis sur ce paquet sont déjà publiés, générés depuis les descripteurs mêmes des
+Treize catalogues bâtis sur ce paquet sont déjà publiés, générés depuis les descripteurs mêmes des
 analyseurs plutôt qu'écrits à la main. Si vous utilisez l'un d'eux, ses règles n'ont pas à être déclarées :
 
 - [`DiagnosticCatalog.Sonar`](https://www.nuget.org/packages/DiagnosticCatalog.Sonar)
@@ -213,6 +213,10 @@ analyseurs plutôt qu'écrits à la main. Si vous utilisez l'un d'eux, ses règl
   — les règles ASP.NET Core et Blazor (`ASPxxxx`, `BLxxxx`).
 - [`DiagnosticCatalog.Syslib`](https://www.nuget.org/packages/DiagnosticCatalog.Syslib)
   — les diagnostics des générateurs de source du runtime .NET (`SYSLIB1xxx`).
+- [`DiagnosticCatalog.Roslyn`](https://www.nuget.org/packages/DiagnosticCatalog.Roslyn)
+  — les règles d'écriture d'analyseurs Roslyn (`RS1xxx`, `RS2xxx`).
+- [`DiagnosticCatalog.PublicApi`](https://www.nuget.org/packages/DiagnosticCatalog.PublicApi)
+  — les règles de suivi d'API publique (`RS00xx`).
 - [`DiagnosticCatalog.Self`](https://www.nuget.org/packages/DiagnosticCatalog.Self)
   — les règles `DCATxxxx` que signalent les analyseurs de catalogue, cataloguées de la même façon.
 

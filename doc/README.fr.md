@@ -77,8 +77,9 @@ Référencez celui qui correspond à un analyseur que vous exécutez déjà :
 | **`DiagnosticCatalog.AspNetCore`** | ASP.NET Core et Blazor, que tout projet web exécute et qu'aucun ne peut désinstaller puisqu'elles vivent dans le framework partagé | `ASPxxxx`, `BLxxxx` |
 | **`DiagnosticCatalog.Syslib`** | Les générateurs de source du runtime .NET — `LibraryImport`, les générateurs COM et regex, la sérialisation JSON | `SYSLIB1xxx` |
 | **`DiagnosticCatalog.Roslyn`** | L'écriture d'analyseurs, qui arrive avec `Microsoft.CodeAnalysis.CSharp` pour quiconque écrit un analyseur ou un correctif | `RS1xxx`, `RS2xxx` |
+| **`DiagnosticCatalog.PublicApi`** | [PublicApiAnalyzers](https://github.com/dotnet/roslyn-analyzers), pour une bibliothèque qui suit sa surface dans `PublicAPI.Shipped.txt` | `RS00xx` |
 
-Ces onze-là sont **générés**, jamais écrits à la main, et portent les identifiants, les
+Ces douze-là sont **générés**, jamais écrits à la main, et portent les identifiants, les
 catégories, les liens d'aide et le titre de la règle — ce dernier en commentaire de
 documentation, pour que survoler une constante dise de quoi la règle parle. Les descriptions
 de règles et les formats de message sont la documentation des éditeurs et sont délibérément
@@ -99,7 +100,7 @@ Pour déclarer un catalogue à vous, et pour vérifier les références à un ca
 | **`DiagnosticCatalog`** | Les marqueurs `[DiagnosticRule]`, `[DiagnosticCategory]` et `[assembly: CatalogSource]`. C'est ce que vous référencez pour déclarer un catalogue **à vous** — pour vos analyseurs, ou pour un jeu de règles interne. |
 | **`DiagnosticCatalog.Analyzers`** | La vérification : des diagnostics qui confrontent une déclaration de règle au contrat structurel, et une suppression à la règle qu'elle nomme, avec les correctifs qui transforment un littéral en référence de catalogue. Une dépendance de compilation — ces assemblages n'atteignent jamais votre exécution. |
 | **`DiagnosticCatalog.Self`** | Les règles `DCATxxxx` que ces analyseurs signalent, cataloguées de la même façon — de sorte que supprimer un diagnostic de *cette* bibliothèque soit une référence vérifiée plutôt que la chaîne magique que tout ceci existe pour supprimer. |
-| **`DiagnosticCatalog.Cli`**, l'outil `dcat` | Le générateur, en outil .NET. Pointez-le vers un paquet d'analyseurs ou vers des assemblages sur disque et il écrit un catalogue comme ce dépôt écrit les douze ci-dessus. |
+| **`DiagnosticCatalog.Cli`**, l'outil `dcat` | Le générateur, en outil .NET. Pointez-le vers un paquet d'analyseurs ou vers des assemblages sur disque et il écrit un catalogue comme ce dépôt écrit les treize ci-dessus. |
 
 `DiagnosticCatalog.Self` sort du même générateur, pointé vers les analyseurs de ce dépôt. C'est
 la réponse la plus courte à « est-ce que ça marche vraiment » : les règles que la bibliothèque
@@ -107,7 +108,7 @@ signale sont cataloguées par la bibliothèque, à travers le pipeline qu'elle d
 monde d'utiliser.
 
 Tout n'est pas encore sur nuget.org : `.CodeStyle`, `.Xunit`, `.NUnit`, `.MSTest`,
-`.Trimming`, `.AspNetCore`, `.Syslib` et `.Roslyn` côté catalogues, `.Analyzers`, `.Self` et `.Cli` côté outils.
+`.Trimming`, `.AspNetCore`, `.Syslib`, `.Roslyn` et `.PublicApi` côté catalogues, `.Analyzers`, `.Self` et `.Cli` côté outils.
 Voir **État du projet** plus bas.
 
 ## ⚙️ Comment un catalogue est construit et tenu à jour
@@ -190,7 +191,7 @@ tout cela ne prouverait rien.
 La fondation a été livrée en premier, seule, parce qu'il le fallait : un catalogue ne peut en
 dépendre par référence de paquet tant qu'une version n'en existe pas
 ([ADR-0007](adr/0007-depend-across-trains-through-published-packages.fr.md)). C'est cette
-release qui a débloqué les onze catalogues d'éditeurs, qui roulent désormais sur leurs propres
+release qui a débloqué les douze catalogues d'éditeurs, qui roulent désormais sur leurs propres
 trains.
 
 | | État |
@@ -302,6 +303,7 @@ Guides par paquet :
 [`.AspNetCore`](../src/DiagnosticCatalog.AspNetCore/README.fr.md) ·
 [`.Syslib`](../src/DiagnosticCatalog.Syslib/README.fr.md) ·
 [`.Roslyn`](../src/DiagnosticCatalog.Roslyn/README.fr.md) ·
+[`.PublicApi`](../src/DiagnosticCatalog.PublicApi/README.fr.md) ·
 [`.Cli`](../src/DiagnosticCatalog.Cli/README.fr.md)
 
 ## 🎯 Quand c'est un bon choix

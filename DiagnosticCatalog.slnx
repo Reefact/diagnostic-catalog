@@ -12,6 +12,7 @@
     <Project Path="src/DiagnosticCatalog.MSTest/DiagnosticCatalog.MSTest.csproj" />
     <Project Path="src/DiagnosticCatalog.NetAnalyzers/DiagnosticCatalog.NetAnalyzers.csproj" />
     <Project Path="src/DiagnosticCatalog.NUnit/DiagnosticCatalog.NUnit.csproj" />
+    <Project Path="src/DiagnosticCatalog.PublicApi/DiagnosticCatalog.PublicApi.csproj" />
     <Project Path="src/DiagnosticCatalog.Roslyn/DiagnosticCatalog.Roslyn.csproj" />
     <Project Path="src/DiagnosticCatalog.Self/DiagnosticCatalog.Self.csproj" />
     <Project Path="src/DiagnosticCatalog.Sonar/DiagnosticCatalog.Sonar.csproj" />
