@@ -29,6 +29,46 @@ C'est le registre qui se dégrade, et la première personne à s'y fier — cher
 suppressions `"Major Code Smell"` avant une montée de version — obtient une réponse silencieusement
 incomplète.
 
+## Pourquoi ne pas prendre les constantes dans les paquets d'analyseurs eux-mêmes ?
+
+Parce qu'il n'y a rien à référencer, et rien dedans à référencer.
+
+**Rien à référencer.** Chacun de ces paquets livre ses assemblages sous `analyzers/dotnet/cs/`, sans
+dossier `lib/` ni `ref/`, et déclare `<developmentDependency>true</developmentDependency>`. NuGet
+remet un tel assemblage au compilateur comme greffon d'analyse ; il n'entre jamais dans l'ensemble
+des références du consommateur. Il n'y a pas de `using` à écrire, quoi que porte l'assemblage.
+
+**Rien dedans à référencer.** Mesuré sur les métadonnées de tous les assemblages des cinq paquets
+que reflètent les catalogues, ressources satellites mises à part :
+
+| Paquet | Types publics | `public const` | Constantes d'identifiant ou de catégorie |
+| --- | ---: | ---: | ---: |
+| `SonarAnalyzer.CSharp` 10.31.0.145097 | 1801 | 861 | 0 |
+| `StyleCop.Analyzers.Unstable` 1.2.0.556 | 6 | 12 | 0 |
+| `Microsoft.CodeAnalysis.NetAnalyzers` 10.0.302 | 740 | 128 | 7 |
+| `Microsoft.CodeAnalysis.CSharp.CodeStyle` 5.6.0 | 105 | 28 | 0 |
+| `xunit.analyzers` 1.27.0 | 178 | 219 | 0 |
+
+StyleCop est le cas le plus net : 1314 types répartis sur ses deux assemblages, six publics, et
+aucun de ceux-là n'est un analyseur. `xunit.analyzers` est le plus tranchant : 219 constantes
+publiques, plus qu'aucun autre, et pas une seule n'est un identifiant de règle. NetAnalyzers est
+l'exception qui fait la démonstration — sept constantes `RuleId` (`CA1008`, `CA1052`, `CA1069`,
+`CA1708`, `CA1715`, `CA1821`, `CA2214`) face aux 318 règles que tient son catalogue. C'est une
+fuite, pas un contrat.
+
+**Et une catégorie n'est nulle part une constante** — zéro, dans les cinq. Une catégorie n'existe
+que sur les instances de `DiagnosticDescriptor` qu'un analyseur construit à l'exécution, à partir de
+ressources localisables. Un argument d'attribut doit être une constante de compilation : même en
+passant par `SupportedDiagnostics` par réflexion, on obtient une `string` qui ne peut pas occuper la
+position.
+
+D'où le lieu où se fait la génération : construire les analyseurs et lire leurs descripteurs
+([ADR-0009](../adr/0009-generate-catalog-content-from-analyzer-descriptors.fr.md)) est le seul moyen
+d'obtenir une catégorie, et cela doit arriver avant que le consommateur ne compile.
+
+Rien de tout cela n'est une loi. Un éditeur pourrait publier demain un paquet de constantes à côté
+de son analyseur. Aucun ne l'a fait.
+
 ## Ne puis-je pas simplement écrire mon propre fichier de constantes ?
 
 Si, et pour trente suppressions sur cinq règles, vous devriez sans doute.
