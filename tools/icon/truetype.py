@@ -141,8 +141,9 @@ class Font:
                         poly.append(((1 - t) ** 2 * cur[0] + 2 * (1 - t) * t * px + t * t * end[0],
                                      (1 - t) ** 2 * cur[1] + 2 * (1 - t) * t * py + t * t * end[1]))
                     cur = end
-                    i += 1 if non else 1
-                    if non:
-                        i += 1
+                    # An on-curve neighbour IS the segment's endpoint and is consumed with it;
+                    # an off-curve one only supplied the implied midpoint above and is read
+                    # again on the next turn.
+                    i += 2 if non else 1
             out.append(poly)
         return out
