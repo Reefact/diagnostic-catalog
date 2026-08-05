@@ -24,6 +24,7 @@ flowchart TB
         S --> F
         N --> F
         T --> F
+        CS --> F
         SELF --> F
     end
     subgraph ENG["eng/ — outillage de compilation"]

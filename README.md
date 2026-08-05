@@ -71,7 +71,7 @@ has exactly one published source of truth, read from the analyzer's own
 
 The last three are built here but have no version on nuget.org yet; see **Project status** below.
 
-The three vendor catalogues are **generated**, never hand-written, and carry ids,
+The four vendor catalogues are **generated**, never hand-written, and carry ids,
 categories, help links and the rule's own title — the last as a documentation comment, so
 that hovering a constant says what the rule is about. Rule descriptions and message
 formats are the vendors' documentation and are deliberately left out
@@ -165,7 +165,7 @@ nuget.org, no release is created. A dry run that faked those would prove nothing
 The foundation shipped first, on its own, because it had to: a catalogue cannot depend on
 it through a package reference until a version of it exists
 ([ADR-0007](doc/adr/0007-depend-across-trains-through-published-packages.en.md)). That release
-is what unblocked the three vendor catalogues, which now ride their own trains.
+is what unblocked the four vendor catalogues, which now ride their own trains.
 
 | | Status |
 | --- | --- |

@@ -12,7 +12,7 @@ A catalogue follows its vendor's pace. SonarSource ships often; the foundation i
 stable. Tie them to one number and every Sonar refresh moves the foundation's version — which tells
 every consumer of the foundation that something changed when nothing did.
 
-So the repository publishes on **five independent lines**
+So the repository publishes on **six independent lines**
 ([ADR-0002](../adr/0002-partition-releases-into-trains-by-commit-scope.en.md),
 [ADR-0015](../adr/0015-a-catalogues-version-runs-on-its-own-line.en.md)):
 

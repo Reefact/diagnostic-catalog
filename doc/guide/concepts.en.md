@@ -83,8 +83,8 @@ flowchart TB
         CS["DiagnosticCatalog.CodeStyle"]
         S --> F
         N --> F
-        CS --> F
         T --> F
+        CS --> F
     end
     subgraph SOON["Built here, not published yet"]
         A["DiagnosticCatalog.Analyzers<br/><i>the DCAT diagnostics + fixes</i>"]
@@ -102,7 +102,7 @@ flowchart TB
 `[DiagnosticCategory]`, `[assembly: CatalogSource]`. You reference it to declare a catalogue of your
 own. A catalogue you consume references it for you.
 
-**The three vendor catalogues** are constants. Referencing one gives you compile-checked references
+**The four vendor catalogues** are constants. Referencing one gives you compile-checked references
 to that analyzer's rules — which is the whole guarantee, and it comes from the C# compiler rather
 than from anything this library runs.
 
@@ -114,7 +114,7 @@ is genuinely additional rather than foundational — see the next section.
 library's own diagnostics is a checked reference too.
 
 **`dcat`** is the generator as a .NET tool. It reads an analyzer's assemblies and writes a
-catalogue — the same way the three vendor catalogues in this repository are written.
+catalogue — the same way the four vendor catalogues in this repository are written.
 
 ## What you get today, exactly
 

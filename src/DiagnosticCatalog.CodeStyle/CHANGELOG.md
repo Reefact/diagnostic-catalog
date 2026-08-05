@@ -25,14 +25,19 @@ inferring it from the number below.
 
 * **120 rules** — the `IDExxxx` code-style diagnostics — each a static class exposing
   `Id`, `Category` and, on 117 of them, `HelpLinkUri` as compile-time constants, so
-  `SuppressMessageAttribute` takes checked references instead of magic strings.
+  `SuppressMessageAttribute` takes checked references instead of magic strings. Of those
+  117 links, 116 point at Microsoft's style-rule reference and one at the Roslyn issue
+  that tracks `EnableGenerateDocumentationFile`.
 * **3 categories**, declared once each on the internal `CodeStyleCategory` and reached only
   through the rule that carries them
   ([ADR-0026](../../doc/adr/0026-reach-a-category-only-through-the-rule-that-carries-it.en.md)):
   `Style` on 116 rules, `CodeQuality` on three, `Compiler` on one.
-* Every rule carries the title its `DiagnosticDescriptor` declares as its documentation
+* **119 rules carry the title** their `DiagnosticDescriptor` declares, as a documentation
   comment, so hovering a constant says what the rule is about
   ([ADR-0014](../../doc/adr/0014-ship-the-vendors-rule-title-as-a-catalogues-documentation.en.md)).
+  `RemoveUnnecessaryImportsFixable` declares no title upstream and falls back to its
+  identifier and category — the generator states what it read rather than inventing a
+  sentence for it.
 
 ### Notes
 

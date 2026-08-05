@@ -74,7 +74,7 @@ lui-même plutôt que retapée de mémoire.
 Les trois derniers sont construits ici mais n'ont encore aucune version sur nuget.org ; voir
 **État du projet** plus bas.
 
-Les trois catalogues d'éditeurs sont **générés**, jamais écrits à la main, et portent les
+Les quatre catalogues d'éditeurs sont **générés**, jamais écrits à la main, et portent les
 identifiants, les catégories, les liens d'aide et le titre de la règle — ce dernier en
 commentaire de documentation, pour que survoler une constante dise de quoi la règle parle. Les
 descriptions de règles et les formats de message sont la documentation des éditeurs et sont
@@ -171,7 +171,7 @@ tout cela ne prouverait rien.
 La fondation a été livrée en premier, seule, parce qu'il le fallait : un catalogue ne peut en
 dépendre par référence de paquet tant qu'une version n'en existe pas
 ([ADR-0007](adr/0007-depend-across-trains-through-published-packages.fr.md)). C'est cette
-release qui a débloqué les trois catalogues d'éditeurs, qui roulent désormais sur leurs propres
+release qui a débloqué les quatre catalogues d'éditeurs, qui roulent désormais sur leurs propres
 trains.
 
 | | État |
