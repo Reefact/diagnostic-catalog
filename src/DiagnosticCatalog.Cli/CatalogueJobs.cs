@@ -14,13 +14,18 @@ internal static class CatalogueJobs
 {
     /// Null when the manifest could not be read, which the caller reports as a failure. Everything
     /// else has already been refused by the settings' own validation.
+    /// <remarks>
+    /// A manifest declaring no catalogue is refused too, and not here: <see cref="CatalogRun.JobsFromManifest"/>
+    /// throws on an empty <c>"catalogs"</c> before this ever sees a list, and names the file while
+    /// doing it. This used to check the count again afterwards — a branch nothing could reach, and
+    /// whose message was the poorer of the two.
+    /// </remarks>
     internal static async Task<IReadOnlyList<Job>?> ReadAsync(
         CatalogueSettings settings, CancellationToken cancellation)
     {
-        IReadOnlyList<Job> jobs;
         try
         {
-            jobs = await FromAsync(settings, cancellation);
+            return await FromAsync(settings, cancellation);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException
                                       or System.Text.Json.JsonException or ManifestException)
@@ -37,17 +42,6 @@ internal static class CatalogueJobs
 
             return null;
         }
-
-        if (jobs.Count == 0)
-        {
-#pragma warning disable S6966 // Console diagnostics are synchronous by design — see CatalogRun.ExecuteAsync
-            Console.Error.WriteLine("error: the manifest declares no catalogue.");
-#pragma warning restore S6966
-
-            return null;
-        }
-
-        return jobs;
     }
 
     private static async Task<IReadOnlyList<Job>> FromAsync(
