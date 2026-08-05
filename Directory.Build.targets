@@ -54,8 +54,14 @@
     <PackageIcon>icon.png</PackageIcon>
     <!--
       A project may carry its own icon.png beside its .csproj, and the catalogues do: each shows the
-      family mark with its rule prefix — S, CA, SA — so a consumer scanning nuget.org can tell them
-      apart at the 128px the listing renders.
+      family mark with the prefix of the rules it mirrors, so a consumer scanning nuget.org can tell
+      them apart at the 128px the listing renders.
+
+      The prefixes are deliberately NOT listed here. An enumeration in a comment is a fact that
+      ages: this one read "S, CA, SA" when a fourth catalogue arrived, and a reader copying an icon
+      from a sibling had nothing to contradict them — the package shipped with another vendor's
+      badge and twelve CI checks passed over it. PackageIconTests now holds the rule instead, by
+      requiring every catalogue's icon to differ from every other's and from the fallback below.
 
       Falling back to the repository's own icon rather than requiring one keeps the property this
       file exists to protect: a catalogue project joining its train later ships with the family mark

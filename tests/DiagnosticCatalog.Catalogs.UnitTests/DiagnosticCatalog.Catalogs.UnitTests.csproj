@@ -75,6 +75,18 @@
   </ItemGroup>
 
   <!--
+    The package icons, so PackageIconTests can compare them. bin/ and obj/ are excluded for the
+    reason the generated sources are: a build output holds copies, and an icon compared against
+    its own copy is a catalogue that looks duplicated.
+  -->
+  <ItemGroup>
+    <Content Include="..\..\src\**\icon.png"
+             Exclude="..\..\src\**\bin\**\icon.png;..\..\src\**\obj\**\icon.png"
+             Link="catalogicons\%(RecursiveDir)icon.png" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\icon.png" Link="repoicon\icon.png" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <!--
     The foundation is NOT referenced here. Each catalogue now depends on the published package, so
     referencing the project as well puts two DiagnosticCatalog assemblies in front of the compiler —
     0.0.0.0 from the project, 0.1.0.0 from the package — and MSB3243 resolves the conflict
