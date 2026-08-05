@@ -203,7 +203,7 @@ public sealed class MixedSuppressionTests
         string fixedSource = await CodeFixHarness.ApplyAsync(Analyzer, Provider, Usings + SuffixedRules + """
             [SuppressMessage(TrimRules.IL2026.Category, "IL2026:Members annotated with RequiresUnreferencedCode", Justification = "j")]
             public sealed class Target { }
-            """).ConfigureAwait(false);
+            """);
 
         Assert.Contains("TrimRules.IL2026.Id", fixedSource, StringComparison.Ordinal);
     }
