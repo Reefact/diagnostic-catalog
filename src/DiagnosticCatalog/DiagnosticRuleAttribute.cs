@@ -64,16 +64,25 @@ namespace DiagnosticCatalog;
 ///
 /// namespace JustDummies.Analyzers.Suppressions;
 ///
+/// [DiagnosticCategory]
+/// public static class DummyCategory
+/// {
+///     public const string Usage = "Usage";
+/// }
+///
 /// public static class Dummies
 /// {
 ///     [DiagnosticRule]
 ///     public static class JD0007
 ///     {
 ///         public const string Id = nameof(JD0007);
-///         public const string Category = "Usage";
+///         public const string Category = DummyCategory.Usage;
 ///     }
 /// }
 /// </code>
+/// The category reaches a constant declared in a <c>[DiagnosticCategory]</c> class rather than a
+/// literal: a catalogue repeats very few categories across very many rules, and each transcription is
+/// a place for one of them to drift. <c>DCAT0011</c> reports the literal form.
 /// Consuming it:
 /// <code>
 /// using System.Diagnostics.CodeAnalysis;

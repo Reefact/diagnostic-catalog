@@ -152,7 +152,7 @@ dcat validate --manifest eng/catalogs.json
 contrat qui a dérivé. Cette distinction est toute la valeur de la commande dans un pipeline —
 [tenir un catalogue à jour](ci-integration.fr.md) dit quoi en faire.
 
-`DCAT0001`–`DCAT0009` vérifient qu'un catalogue est bien formé et correctement employé, à la
+Les diagnostics `DCAT` vérifient qu'un catalogue est bien formé et correctement employé, à la
 compilation, ce qui est le meilleur endroit pour cela. Aucun d'eux ne peut vérifier qu'il est encore
 *à jour* : cela demande le paquet de l'éditeur, et un compilateur n'a pas à en télécharger un.
 

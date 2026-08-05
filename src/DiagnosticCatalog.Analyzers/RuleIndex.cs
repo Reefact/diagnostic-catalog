@@ -12,8 +12,8 @@ namespace DiagnosticCatalog.Analyzers;
 /// </summary>
 /// <remarks>
 /// <para>
-/// Built once per compilation and consulted by the value-based diagnostics — DCAT0006 today, DCAT0007
-/// and DCAT0008 later. DCAT0001 and DCAT0009 never touch it: they resolve everything from the attribute
+/// Built once per compilation and consulted by the value-based diagnostics — DCAT0006 today, DCAT0008
+/// later. DCAT0001, DCAT0007 and DCAT0009 never touch it: they resolve everything from the attribute
 /// itself, which is why construction sits behind a <c>Lazy</c> at the call site (§13.1).
 /// </para>
 /// <para>

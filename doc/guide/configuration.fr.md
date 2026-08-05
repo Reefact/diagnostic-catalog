@@ -154,10 +154,11 @@ contraire :
 
 Un chiffre qui vaut d'être connu, parce qu'il décide si la réponse est « rien ».
 
-`DCAT0006` et `DCAT0007` ont besoin de savoir quelles règles existent, ce qui suppose de balayer les
-métadonnées de chaque assemblage référencé susceptible d'en porter. Cet index est construit
-**paresseusement**, au premier usage. `DCAT0001` et `DCAT0009` résolvent tout depuis l'attribut qu'ils
-ont sous les yeux et n'y touchent jamais.
+`DCAT0006` a besoin de savoir quelles règles existent, ce qui suppose de balayer les métadonnées de
+chaque assemblage référencé susceptible d'en porter. Cet index est construit **paresseusement**, au
+premier usage. `DCAT0001`, `DCAT0007` et `DCAT0009` résolvent tout depuis l'attribut qu'ils ont sous
+les yeux et n'y touchent jamais — pour `DCAT0007` la règle est nommée par l'argument déjà migré,
+ce qui est précisément ce qui rend sa correction pleinement déterministe.
 
 La conséquence : **un projet dont les suppressions sont déjà des références de catalogue ne paie
 jamais le balayage.** Le coût tombe pendant la migration, c'est-à-dire exactement quand il y a

@@ -147,7 +147,7 @@ classes précisément pour que les deux groupes puissent différer :
 | Analyseur | Diagnostics | Tourne sur le code généré |
 | --- | --- | --- |
 | `SuppressionUsageAnalyzer` | `DCAT0001`, `DCAT0006`, `DCAT0007`, `DCAT0009` | **non** |
-| `DiagnosticRuleDefinitionAnalyzer` | `DCAT0002`, `DCAT0003`, `DCAT0004` | **oui** |
+| `DiagnosticRuleDefinitionAnalyzer` | `DCAT0002`–`DCAT0005`, `DCAT0011`–`DCAT0013` | **oui** |
 
 Les diagnostics de site d'utilisation restent hors des fichiers générés parce qu'une suppression dans
 l'un d'eux n'est pas à l'auteur de la corriger, et que les signaler noierait chacun d'eux. Les

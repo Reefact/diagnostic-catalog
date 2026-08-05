@@ -66,7 +66,7 @@ Le cas courant, et celui qui ne demande de connaître rien d'autre ici.
 
 ## Il me faut une référence, pas un tutoriel
 
-* [**Le contrat de règle**](rule-contract.fr.md) — les quatre exigences, comment le marqueur est
+* [**Le contrat de règle**](rule-contract.fr.md) — les cinq exigences, comment le marqueur est
   apparié, et toutes les formes syntaxiques qu'un site d'utilisation peut prendre.
 * [**Dépannage**](troubleshooting.fr.md) — les symptômes d'abord : rien n'est signalé, `CS0117`,
   `CS0618`, `DCAT0006` sur tous les fichiers d'un coup. Un schéma.

@@ -60,6 +60,20 @@ Bon à savoir pendant que vous choisissez : Roslyn apparie une suppression sur *
 et ne consulte jamais la catégorie. Corriger la catégorie laisse donc ce qui est supprimé exactement
 en l'état, là où corriger l'identifiant le change.
 
+**L'autre faute sous cet identifiant : un membre au mauvais emplacement.** La même règle, les deux
+membres référencés, et toujours rien de supprimé :
+
+```csharp
+[SuppressMessage(SonarRule.S1144.Id, SonarRule.S1144.Category)]   // intervertis
+[SuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.HelpLinkUri)]
+```
+
+Un type de règle porte plus que la paire : la complétion propose donc tous ses membres dans une même
+liste. Les deux lignes compilent et résolvent ; d'après le paragraphe ci-dessus, c'est l'emplacement
+de l'identifiant qui décide de ce qui est supprimé, et aucune des deux n'y met un identifiant.
+**Aucun correctif n'est proposé ici** — savoir si vous avez écrit le mauvais membre ou la mauvaise
+règle n'est pas à la portée d'un outil.
+
 ### `DCAT0006`
 
 **Ces littéraux correspondent à une règle que votre projet voit.**
@@ -198,11 +212,12 @@ mot au pied de la lettre : la catégorie appartient à l'analyseur que cette rè
 correctif n'a aucun moyen de la connaître ; il échafaude donc le membre et vous laisse la valeur.
 
 > **Ce que coûte l'espace réservé.** `"TODO"` est une chaîne non vide : `DCAT0004` cesse donc d'être
-> signalé dès que vous appliquez le correctif. Vous avez échangé un avertissement qui nommait le
-> problème contre un marqueur que seul un lecteur remarquera — et une mauvaise catégorie est
-> invisible dans tous les builds, pour toujours, parce que Roslyn apparie une suppression sur son
-> identifiant seul. Appliquez-le quand vous êtes sur le point de le remplir, pas pour raccourcir la
-> liste.
+> signalé dès que vous appliquez le correctif. Ce qui le remplace est `DCAT0011` : l'espace réservé
+> est écrit comme un littéral, le build vous demande donc maintenant de déclarer la catégorie là où
+> votre catalogue déclare ses catégories. Le travail inachevé reste nommé — mais notez ce qu'aucune
+> des deux règles ne peut voir, parce que Roslyn apparie une suppression sur son identifiant seul :
+> une catégorie déclarée mais simplement *fausse* est invisible dans tous les builds, pour toujours.
+> Appliquez-le quand vous êtes sur le point de le remplir, pas pour raccourcir la liste.
 
 ### `DCAT0005`
 

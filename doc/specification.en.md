@@ -929,8 +929,11 @@ was written as `nameof` (§11.12).
 
 ### 11.1 `DCAT0001` — members from different rules
 
-Reported when `Category` and `Id` resolve to fields declared on two different
-`[DiagnosticRule]` types.
+Reported when the two arguments do not name one rule's `Category` and that same
+rule's `Id`. Two faults fall under it.
+
+The arguments resolve to fields declared on two different `[DiagnosticRule]`
+types:
 
 ```csharp
 [SuppressMessage(
@@ -938,6 +941,24 @@ Reported when `Category` and `Id` resolve to fields declared on two different
     SomeRules.RULE002.Id,
     Justification = "...")]
 ```
+
+Or a member fills a slot that is not its own. A rule type carries more than the
+pair — a generated catalogue emits `HelpLinkUri` beside it — so completion offers
+all of them in one list, and the declaring types match in the first case below:
+
+```csharp
+[SuppressMessage(SomeRules.RULE001.Id, SomeRules.RULE001.Category)]
+[SuppressMessage(SomeRules.RULE001.Category, SomeRules.RULE001.HelpLinkUri)]
+```
+
+Both compile, both resolve, and neither suppresses anything: Roslyn matches a
+suppression on the identifier alone (§3.3), and the identifier slot names no
+diagnostic in either.
+
+A misplaced member is reported **without a fix**. The two alignments of §12.1
+rewrite one slot to the other's rule, which would leave the wrong member sitting
+in the other; and whether the wrong member or the wrong rule was written is not
+something a tool can know (ADR-0018).
 
 ### 11.2 `DCAT0002` — invalid rule type
 
@@ -1038,13 +1059,12 @@ Matching rules:
 The code fix drops the friendly-name suffix. This is an accepted, documented
 trade-off: the rule's `Title` constant or its XML documentation replaces it.
 
-**Default severity is `Warning`, not `Info`.** Referencing a catalogue package
-is itself the statement of intent: a project that has taken the dependency has
-decided its suppressions are catalogue references, and a suggestion no build
-output shows does not carry that decision. The cost is deliberate and belongs
-in the release notes — adopting a catalogue turns every existing literal
-suppression into a warning at once, and fails the build outright under
-`TreatWarningsAsErrors`. A project migrating gradually lowers it in
+**Default severity is `Error`, not `Info`** (ADR-0027). Referencing a catalogue
+package is itself the statement of intent: a project that has taken the
+dependency has decided its suppressions are catalogue references, and a
+suggestion no build output shows does not carry that decision. The cost is
+deliberate and belongs in the release notes — adopting a catalogue fails the
+build on every existing literal suppression at once. A project migrating gradually lowers it in
 `.editorconfig` (§17), which is also how the diagnostic was always meant to be
 tuned.
 
@@ -1320,7 +1340,10 @@ internal sealed record DiagnosticRuleSymbol(
 This representation belongs to the analyzer implementation only and is not part
 of the public API.
 
-* The **functional** key of a rule is `Category + Id`.
+* The **functional** key of a rule is `Category + Id`, with the `Id` truncated
+  at the first colon exactly as a written `checkId` is (§3.3). Both ends of the
+  comparison are normalised or neither is: normalising only the query makes a
+  rule that declares a suffixed identifier unmatchable by any suppression.
 * The **structural** key of a reference is the Roslyn symbol of the
   `[DiagnosticRule]` type.
 
@@ -1677,7 +1700,7 @@ implementation must split into two:
 
 | Analyzer class | Diagnostics | Generated-code flags |
 | --- | --- | --- |
-| `DiagnosticRuleDefinitionAnalyzer` | `DCAT0002`–`DCAT0005`, `DCAT0011`–`DCAT0013` | `Analyze` |
+| `DiagnosticRuleDefinitionAnalyzer` | `DCAT0002`–`DCAT0005`, `DCAT0011`–`DCAT0013` | `Analyze \| ReportDiagnostics` |
 | `SuppressionUsageAnalyzer` | `DCAT0001`, `DCAT0006`–`DCAT0010` | `None` |
 
 Rule definitions produced by an external tool must additionally be validated

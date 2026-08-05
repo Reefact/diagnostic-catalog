@@ -58,6 +58,19 @@ Worth knowing while you choose: Roslyn matches a suppression on the **identifier
 consults the category. So correcting the category leaves what is suppressed exactly as it is, while
 correcting the identifier changes it.
 
+**The other fault under this id: a member in the wrong slot.** The same rule, both members
+referenced, and still nothing suppressed:
+
+```csharp
+[SuppressMessage(SonarRule.S1144.Id, SonarRule.S1144.Category)]   // swapped
+[SuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.HelpLinkUri)]
+```
+
+A rule type carries more than the pair, so completion offers every member of it in one list. Both
+lines compile and resolve; by the paragraph above, the identifier slot decides what is suppressed,
+and neither line puts an identifier there. **No fix is offered here** — whether you wrote the wrong
+member or the wrong rule is not something a tool can know.
+
 ### `DCAT0006`
 
 **These string literals match a rule your project can see.**
@@ -188,9 +201,11 @@ literally: the category belongs to the analyzer this rule mirrors and the fix ha
 it scaffolds the member and leaves the value to you.
 
 > **What the placeholder costs.** `"TODO"` is a non-blank string, so `DCAT0004` stops being reported as
-> soon as you apply the fix. You have traded a warning that named the problem for a marker only a reader
-> will notice — and a wrong category is invisible in every build, forever, because Roslyn matches a
-> suppression on its id alone. Apply it when you are about to fill it in, not to make the list shorter.
+> soon as you apply the fix. What replaces it is `DCAT0011`: the placeholder is written as a literal, so
+> the build now asks you to declare the category where your catalogue declares its categories. The
+> unfinished work stays named — but note what neither rule can see, because Roslyn matches a suppression
+> on its id alone: a category that is declared and simply *wrong* is invisible in every build, forever.
+> Apply it when you are about to fill it in, not to make the list shorter.
 
 ### `DCAT0005`
 

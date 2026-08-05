@@ -150,9 +150,11 @@ a real restore rather than read from NuGet's documentation, which says the oppos
 
 One number worth knowing, because it decides whether the answer is "nothing".
 
-`DCAT0006` and `DCAT0007` need to know which rules exist, which means sweeping the metadata of every
-referenced assembly that could hold one. That index is built **lazily**, on first use. `DCAT0001` and
-`DCAT0009` resolve everything from the attribute in front of them and never touch it.
+`DCAT0006` needs to know which rules exist, which means sweeping the metadata of every referenced
+assembly that could hold one. That index is built **lazily**, on first use. `DCAT0001`, `DCAT0007`
+and `DCAT0009` resolve everything from the attribute in front of them and never touch it — for
+`DCAT0007` the rule is named by the argument already migrated, which is what makes its correction
+the fully deterministic one.
 
 The consequence: **a project whose suppressions are already catalogue references never pays for the
 sweep at all.** The cost lands during migration, which is exactly when there is something to find,
