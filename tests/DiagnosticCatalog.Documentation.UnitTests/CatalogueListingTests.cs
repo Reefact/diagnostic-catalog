@@ -37,8 +37,6 @@ namespace DiagnosticCatalog.Documentation.UnitTests;
 /// </remarks>
 public sealed class CatalogueListingTests
 {
-    private static readonly TimeSpan MatchTimeout = TimeSpan.FromSeconds(10);
-
     /// <summary>
     /// The pair, spelled out because ADR-0029 displaces it: GitHub composes the landing page from a
     /// <c>README.md</c> at the root and from nothing else, so the halves do not sit beside each other
@@ -75,20 +73,6 @@ public sealed class CatalogueListingTests
             [ProjectReadmeTranslation] = "Ces\\s+(?<count>[A-Za-z]+)(?:-là)?\\s+sont\\s+\\*\\*générés\\*\\*",
         };
 
-    /// <summary>
-    /// The number words the two halves use, which overlap without disagreeing — <c>six</c> is six in
-    /// both languages. Small on purpose: a table that is a catalogue away from running out is a table
-    /// somebody will extend, where a general parser would be a second thing to maintain.
-    /// </summary>
-    private static readonly Dictionary<string, int> NumberWords =
-        new(StringComparer.OrdinalIgnoreCase)
-        {
-            ["two"] = 2, ["three"] = 3, ["four"] = 4, ["five"] = 5, ["six"] = 6,
-            ["seven"] = 7, ["eight"] = 8, ["nine"] = 9, ["ten"] = 10, ["eleven"] = 11, ["twelve"] = 12,
-            ["deux"] = 2, ["trois"] = 3, ["quatre"] = 4, ["cinq"] = 5,
-            ["sept"] = 7, ["huit"] = 8, ["neuf"] = 9, ["dix"] = 10, ["onze"] = 11, ["douze"] = 12,
-        };
-
     public static TheoryData<string> ReadmeHalves() => [ProjectReadme, ProjectReadmeTranslation];
 
     [Theory]
@@ -121,22 +105,14 @@ public sealed class CatalogueListingTests
     {
         MarkdownDocument readme = Repository.Require(path);
 
-        Match sentence = Regex.Match(readme.Prose, CountSentences[path], RegexOptions.None, MatchTimeout);
-
-        Assert.True(
-            sentence.Success,
-            $"{path} no longer states how many catalogues it lists, in the shape this reads.\n" +
-            "The sentence beside the catalogue table is the only place that number is written, and " +
-            "nothing else checks it. Either restore a countable statement, or update the pattern in " +
-            $"{nameof(CatalogueListingTests)}.{nameof(CountSentences)} to match how the page says it now.");
+        Match sentence = ProseFigures.Require(
+            readme,
+            CountSentences[path],
+            "the sentence saying how many catalogues it lists",
+            $"{nameof(CatalogueListingTests)}.{nameof(CountSentences)}");
 
         string word = sentence.Groups["count"].Value;
-
-        Assert.True(
-            NumberWords.TryGetValue(word, out int stated),
-            $"{path} counts its catalogues as \"{word}\", which is not a number word " +
-            $"{nameof(CatalogueListingTests)}.{nameof(NumberWords)} knows. Add it there if the table " +
-            "has outgrown the list.");
+        int stated = ProseFigures.Read(word, path, nameof(CatalogueListingTests));
 
         int listed = PackagesListed(readme)
             .Count(package => Generated.Value.Any(catalogue =>
@@ -188,11 +164,9 @@ public sealed class CatalogueListingTests
     {
         List<string> packages = [];
 
-        foreach (Match row in Regex.Matches(
-                     readme.Prose,
-                     "^\\|\\s*\\*\\*`(?<package>DiagnosticCatalog(?:\\.[A-Za-z]+)?)`\\*\\*",
-                     RegexOptions.Multiline,
-                     MatchTimeout))
+        foreach (Match row in ProseFigures.Sweep(
+                     readme,
+                     "^\\|\\s*\\*\\*`(?<package>DiagnosticCatalog(?:\\.[A-Za-z]+)?)`\\*\\*"))
         {
             packages.Add(row.Groups["package"].Value);
         }
