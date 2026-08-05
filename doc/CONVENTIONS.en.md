@@ -256,6 +256,12 @@ whole test project:
   the compiled `DiagnosticCatalog.Sonar`, and the container is never pluralised. This one exists
   because it had already been needed: sixteen samples across three documents spelled the container
   `SonarRules`, and every one of them was uncompilable.
+* **Every rule a sample declares reaches its category through a declared constant**, per §8.5 of the
+  specification, in a Markdown fence and in the XML documentation that ships inside the packages
+  alike. This one had also already been needed: the `<example>` on `DiagnosticRuleAttribute` and
+  twenty-two samples in the specification spelled `Category` as a literal, which is what `DCAT0011`
+  reports. A document that declares its category container in an earlier fence need not repeat it —
+  the check reads one sample at a time and asks only what the initialiser is.
 
 Every one of them compares a document against the compiled truth rather than against another
 document. That is the same reasoning as
