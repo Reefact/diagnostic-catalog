@@ -21,6 +21,7 @@ project:
 * [`nunit`](src/DiagnosticCatalog.NUnit/CHANGELOG.md)
 * [`mstest`](src/DiagnosticCatalog.MSTest/CHANGELOG.md)
 * [`trimming`](src/DiagnosticCatalog.Trimming/CHANGELOG.md)
+* [`aspnetcore`](src/DiagnosticCatalog.AspNetCore/CHANGELOG.md)
 
 ## [Unreleased]
 

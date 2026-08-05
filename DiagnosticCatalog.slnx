@@ -5,6 +5,7 @@
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/DiagnosticCatalog.Analyzers/DiagnosticCatalog.Analyzers.csproj" />
+    <Project Path="src/DiagnosticCatalog.AspNetCore/DiagnosticCatalog.AspNetCore.csproj" />
     <Project Path="src/DiagnosticCatalog.Cli/DiagnosticCatalog.Cli.csproj" />
     <Project Path="src/DiagnosticCatalog.CodeFixes/DiagnosticCatalog.CodeFixes.csproj" />
     <Project Path="src/DiagnosticCatalog.CodeStyle/DiagnosticCatalog.CodeStyle.csproj" />

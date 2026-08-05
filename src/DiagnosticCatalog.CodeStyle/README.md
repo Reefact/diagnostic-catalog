@@ -173,7 +173,7 @@ local and deserves a `Justification` next to the code.
 
 ## See also
 
-Eight sibling catalogues are generated from this repository the same way, each read from one
+Nine sibling catalogues are generated from this repository the same way, each read from one
 analyzer's own descriptors:
 
 - [`DiagnosticCatalog.Sonar`](https://www.nuget.org/packages/DiagnosticCatalog.Sonar)
@@ -190,6 +190,8 @@ analyzer's own descriptors:
   — the MSTest.Analyzers (`MSTESTxxxx`) rules.
 - [`DiagnosticCatalog.Trimming`](https://www.nuget.org/packages/DiagnosticCatalog.Trimming)
   — the trimming, Native AOT and single-file (`ILxxxx`) warnings.
+- [`DiagnosticCatalog.AspNetCore`](https://www.nuget.org/packages/DiagnosticCatalog.AspNetCore)
+  — the ASP.NET Core and Blazor (`ASPxxxx`, `BLxxxx`) rules.
 - [`DiagnosticCatalog.Self`](https://www.nuget.org/packages/DiagnosticCatalog.Self)
   — this library's own `DCATxxxx` rules, for suppressing a diagnostic the catalogue analyzers
   themselves report.
