@@ -24,6 +24,18 @@ namespace DiagnosticCatalog.Cli;
 /// </remarks>
 internal abstract class CatalogueSettings : CommandSettings
 {
+    /// <summary>The release <c>--package-version</c> resolves to when nobody names one.</summary>
+    /// <remarks>
+    /// A constant rather than three spellings, because the default is written three times — the
+    /// attribute the parser reads, the initialiser the property carries, and the comparison that
+    /// tells a typed value from an omitted one. Two of them drifting apart would make a manifest
+    /// run refuse itself.
+    /// </remarks>
+    private const string LatestStable = "latest";
+
+    /// <summary>The language <c>--language</c> resolves to when nobody names one.</summary>
+    private const string DefaultLanguage = "cs";
+
     [CommandOption("--manifest <PATH>")]
     [Description("Generate every catalogue declared in a manifest. Paths inside it are relative to the manifest.")]
     public string? Manifest { get; init; }
@@ -34,8 +46,8 @@ internal abstract class CatalogueSettings : CommandSettings
 
     [CommandOption("--package-version <VERSION>")]
     [Description("Which release of --package to read: an exact version, 'latest' (latest stable) or 'latest-any'.")]
-    [DefaultValue("latest")]
-    public string PackageVersion { get; init; } = "latest";
+    [DefaultValue(LatestStable)]
+    public string PackageVersion { get; init; } = LatestStable;
 
     [CommandOption("--source <NAME-OR-URL>")]
     [Description("Which configured feed to read --package from. Defaults to every enabled source in NuGet.config.")]
@@ -75,8 +87,8 @@ internal abstract class CatalogueSettings : CommandSettings
 
     [CommandOption("--language <LANG>")]
     [Description("Which language's analyzers to read out of a package. Only cs can be read today.")]
-    [DefaultValue("cs")]
-    public string Language { get; init; } = "cs";
+    [DefaultValue(DefaultLanguage)]
+    public string Language { get; init; } = DefaultLanguage;
 
     [CommandOption("--source-name <NAME>")]
     [Description("What to record as the source. Defaults to the package's id, the project's assembly name, or the first assembly's.")]
@@ -99,16 +111,57 @@ internal abstract class CatalogueSettings : CommandSettings
 
         if (Manifest is not null)
         {
-            // A manifest carries every source and destination itself, so anything naming one
+            // A manifest carries every source AND every destination itself, so anything naming one
             // alongside it is a command line that contradicts its own input.
-            return named.Count > 0
-                ? ValidationResult.Error($"--manifest already names its sources; drop {string.Join(" and ", named)}.")
+            //
+            // Both halves, and the second is the one that cost something: this branch used to
+            // return after checking the sources, so --source, --namespace, --container, --output,
+            // --configuration and the rest were accepted and then read from nowhere. A run meant
+            // for a private feed resolved against nuget.org and said nothing about it — the exact
+            // shape SwitchesMatchTheSource refuses further down, on the reasoning that a caller who
+            // passed one believes it took effect.
+            List<string> ignored = [.. named, .. SwitchesTheManifestCarries()];
+
+            return ignored.Count > 0
+                ? ValidationResult.Error(
+                    $"--manifest already carries its sources and destinations; drop {string.Join(" and ", ignored)}.")
                 : ValidationResult.Success();
         }
 
         ValidationResult source = OneSourceAndSomewhereToWriteIt(named);
 
         return source.Successful ? SwitchesMatchTheSource() : source;
+    }
+
+    /// <summary>
+    /// The switches a manifest already states, named as the caller wrote them.
+    /// </summary>
+    /// <remarks>
+    /// <c>--package-version</c> and <c>--language</c> are compared with their defaults rather than
+    /// tested for presence, and they have to be: they carry one, so a caller who omitted them and a
+    /// caller who typed the default are the same command line by the time this runs. Refusing them
+    /// by presence would refuse every manifest run there is. What is left is a value the caller can
+    /// only have typed.
+    /// <para>
+    /// <c>--summary</c> and <c>--date</c> are absent from this list on purpose. They say what the
+    /// RUN does — where its report goes, what date it stamps — rather than what a catalogue is, so
+    /// a manifest states neither and both are meaningful beside one.
+    /// </para>
+    /// </remarks>
+    private List<string> SwitchesTheManifestCarries()
+    {
+        List<string> carried = [];
+        if (PackageVersion != LatestStable) carried.Add("--package-version");
+        if (Source is not null) carried.Add("--source");
+        if (Namespace is not null) carried.Add("--namespace");
+        if (Container is not null) carried.Add("--container");
+        if (Output is not null) carried.Add("--output");
+        if (Language != DefaultLanguage) carried.Add("--language");
+        if (SourceName is not null) carried.Add("--source-name");
+        if (SourceVersion is not null) carried.Add("--source-version");
+        if (Configuration is not null) carried.Add("--configuration");
+
+        return carried;
     }
 
     /// <summary>The source switches this command line carries, named as the caller wrote them.</summary>
