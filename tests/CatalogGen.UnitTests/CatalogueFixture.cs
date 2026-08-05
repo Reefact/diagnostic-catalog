@@ -85,6 +85,30 @@ internal static class CatalogueFixture
         }
         """;
 
+    /// <summary>
+    /// A rule whose TYPE is not named after the identifier it declares.
+    /// </summary>
+    /// <remarks>
+    /// The §8.2 case the specification blesses and DCAT0005 reports rather than refuses: an
+    /// identifier carrying a character C# forbids in a type name, so the type is that identifier
+    /// legalised. Both spellings then exist and only one of them can be written at a use site — the
+    /// TYPE name — which is what makes this the shape a copyable reference has to get right.
+    /// </remarks>
+    internal const string RuleNamedApartFromItsId = """
+        namespace Vendor.Catalog
+        {
+            public static class AcmeRules
+            {
+                [DiagnosticCatalog.DiagnosticRule]
+                public static class ACME_0003
+                {
+                    public const string Id = "ACME-0003";
+                    public const string Category = "Naming";
+                }
+            }
+        }
+        """;
+
     /// <summary>An assembly that is perfectly valid and is not a catalogue.</summary>
     internal const string NotACatalogue = """
         namespace Vendor.Ordinary
