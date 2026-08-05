@@ -24,6 +24,7 @@ flowchart TB
         MS["DiagnosticCatalog.MSTest"]
         TR["DiagnosticCatalog.Trimming"]
         AS["DiagnosticCatalog.AspNetCore"]
+        SY["DiagnosticCatalog.Syslib"]
         CLI["DiagnosticCatalog.Cli<br/><i>livré sous le nom dcat</i>"]
         A -. "embarque" .-> CF
         S --> F
@@ -35,6 +36,7 @@ flowchart TB
         MS --> F
         TR --> F
         AS --> F
+        SY --> F
         SELF --> F
     end
     subgraph ENG["eng/ — outillage de compilation"]

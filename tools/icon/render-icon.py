@@ -48,6 +48,8 @@ BADGES = {
     "DiagnosticCatalog.Xunit": "XU",
     "DiagnosticCatalog.NUnit": "NU",
     "DiagnosticCatalog.MSTest": "MST",
+    "DiagnosticCatalog.AspNetCore": "ASP",
+    "DiagnosticCatalog.Syslib": "SYS",
 }
 
 

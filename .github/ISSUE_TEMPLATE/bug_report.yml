@@ -26,6 +26,7 @@ body:
         - DiagnosticCatalog.MSTest
         - DiagnosticCatalog.Trimming
         - DiagnosticCatalog.AspNetCore
+        - DiagnosticCatalog.Syslib
         - DiagnosticCatalog.Self
         - DiagnosticCatalog.Cli (the dcat tool)
         - Not sure

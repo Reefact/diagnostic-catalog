@@ -110,6 +110,7 @@ versions and publishes independently:
 | `mstest` | `mstest` | Follows MSTest.Analyzers' releases. |
 | `trimming` | `trimming` | Follows the .NET SDK's ILLink releases. |
 | `aspnetcore` | `aspnetcore` | Follows ASP.NET Core's releases. |
+| `syslib` | `syslib` | Follows the .NET runtime's releases. |
 
 This is why `commit-lint` **requires a scope on `feat` and `fix`**: an unscoped
 one matches no train and is silently dropped from the release notes and the
@@ -199,7 +200,7 @@ essentials, inlined so they hold even if `AGENTS.md` is not read:
 * PR titles, descriptions, commits, and branch names must be written in English.
 * Write every commit message per [`CONTRIBUTING.md`](CONTRIBUTING.md):
   Conventional Commits, a closed type list, the scopes
-  `analyzers, aspnetcore, cataloggen, cli, codestyle, core, mstest, netanalyzers, nunit, sonar, stylecop, trimming, xunit`, an imperative
+  `analyzers, aspnetcore, cataloggen, cli, codestyle, core, mstest, netanalyzers, nunit, sonar, stylecop, syslib, trimming, xunit`, an imperative
   header within 72 characters, a `Docs:` footer on every `feat` (see *Documenting
   a feature*), and `Refs: #NN` in a footer when a GitHub issue exists
   (issue-closing keywords belong in the PR description, not the commit).
