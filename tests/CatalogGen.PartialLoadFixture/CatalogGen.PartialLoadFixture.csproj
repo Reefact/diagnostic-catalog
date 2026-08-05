@@ -4,11 +4,13 @@
     An analyzer assembly the worker cannot load ENTIRELY, for the test that says a type nobody asked
     for must not fail the read.
 
-    CatalogGen.AnalyzerFixture next door reproduces an assembly whose unloadable type the host can
-    fix by carrying an identity. This one reproduces the case nothing can fix: a type whose interface
-    lives in an assembly that is simply not there. Upstream that is Microsoft.CodeAnalysis.Analyzers,
-    whose internal helpers implement a Roslyn interface that has since gained a member — same shape,
-    a type this process was never going to load, and no dependency of its own can answer it.
+    A separate project, and netstandard2.0, because neither is a detail: the failure depends on the
+    assembly's own references being unresolvable in the worker, and a type compiled into the net10.0
+    test assembly resolves everything it names by construction. The unloadable type is one whose
+    interface lives in an assembly that is simply not there. Upstream that is
+    Microsoft.CodeAnalysis.Analyzers, whose internal helpers implement a Roslyn interface that has
+    since gained a member — same shape, a type this process was never going to load, and no
+    dependency of its own can answer it.
 
     The absent assembly is CatalogGen.AbsentContract, referenced for one empty interface. Nothing
     here has to arrange for it to go missing: the copy target in CatalogGen.UnitTests moves this
