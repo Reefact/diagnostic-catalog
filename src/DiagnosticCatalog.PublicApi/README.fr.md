@@ -120,10 +120,11 @@ entre eux :
 Deux catalogues plutôt qu'un parce qu'un catalogue reflète un paquet : le manifeste prend un seul
 identifiant de paquet, et `[assembly: CatalogSource]` enregistre une seule source et une seule
 version. Ce qui les a tenus séparés un temps, c'est l'icône — un badge porte le préfixe de règle du
-catalogue ([ADR-0032](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/adr/0032-badge-a-catalogues-icon-with-its-rule-prefix.fr.md))
-plafonné à trois lettres
-([ADR-0033](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/adr/0033-cap-the-badge-at-three-letters.fr.md)),
-donc les deux voulaient `RS` et aucune icône n'aurait pu les départager. Celui-ci porte `API`.
+catalogue, plafonné à trois lettres, donc les deux voulaient `RS` et aucune icône n'aurait pu les
+départager. Un badge dont le préfixe est déjà en service nomme à la place le sujet du catalogue, et
+le préfixe reste à celui qui le publie
+([ADR-0035](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/adr/0035-badge-a-shared-prefix-catalogue-with-its-subject.fr.md)) :
+`RS` est à `DiagnosticCatalog.Roslyn`, et celui-ci porte `API`.
 
 ## Catégories déclarées une fois
 

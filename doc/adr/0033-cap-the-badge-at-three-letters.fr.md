@@ -3,7 +3,7 @@
 🌍 **Langues :**  
 🇬🇧 [English](./0033-cap-the-badge-at-three-letters.en.md) | 🇫🇷 Français (ce fichier)
 
-**Status:** Accepted
+**Status:** Superseded by [ADR-0035](0035-badge-a-shared-prefix-catalogue-with-its-subject.fr.md)
 **Proposed:** 2026-08-05
 **Accepted:** 2026-08-05
 **Decision Makers:** Reefact

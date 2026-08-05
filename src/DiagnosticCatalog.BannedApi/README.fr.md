@@ -106,12 +106,11 @@ Trois paquets Microsoft émettent des règles `RS`, et les trois sont catalogué
 Les identifiants se répartissent proprement, donc aucune règle n'est ambiguë quant à son catalogue.
 Trois catalogues plutôt qu'un parce qu'un catalogue reflète un paquet : le manifeste prend un seul
 identifiant de paquet, et `[assembly: CatalogSource]` enregistre une seule source et une seule
-version. Ce sont leurs badges — `BAN`, `API`, `RS` — qui départagent les trois icônes, puisqu'un badge
-porte le préfixe de règle
-([ADR-0032](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/adr/0032-badge-a-catalogues-icon-with-its-rule-prefix.fr.md))
-plafonné à trois lettres
-([ADR-0033](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/adr/0033-cap-the-badge-at-three-letters.fr.md))
-et que les trois voudraient sinon `RS`.
+version. Ce sont leurs badges — `BAN`, `API`, `RS` — qui départagent les trois icônes. Un badge porte le
+préfixe de règle, plafonné à trois lettres, et les trois voudraient sinon `RS` ; lorsque le préfixe
+est déjà en service, le badge nomme à la place le sujet du catalogue, et le préfixe reste à celui qui
+le publie
+([ADR-0035](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/adr/0035-badge-a-shared-prefix-catalogue-with-its-subject.fr.md)).
 
 **Ce catalogue et `DiagnosticCatalog.PublicApi` déclarent la même chaîne de catégorie**, `ApiDesign`,
 depuis deux paquets différents. Ce sont des constantes séparées sur des conteneurs séparés, et c'est

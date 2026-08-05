@@ -153,6 +153,15 @@ six-letter badge lands at under 5px in that listing while a three-letter one hol
 reasoning is [ADR-0033](../adr/0033-cap-the-badge-at-three-letters.en.md), which supersedes
 [ADR-0032](../adr/0032-badge-a-catalogues-icon-with-its-rule-prefix.en.md) on that point alone.
 
+**And the prefix may already be taken.** Three catalogues here mirror `RS` rules, so the rule above
+cannot give all three the same badge — the mark does not vary, so identical badges are identical
+files, which `PackageIconTests` refuses. When a prefix is already worn, the newcomer's badge names
+the subject of the package it mirrors instead, and the prefix stays with the catalogue already
+publishing it: `DiagnosticCatalog.Roslyn` keeps `RS`, while `DiagnosticCatalog.PublicApi` reads `API`
+and `DiagnosticCatalog.BannedApi` reads `BAN`. That is
+[ADR-0035](../adr/0035-badge-a-shared-prefix-catalogue-with-its-subject.en.md), which supersedes
+ADR-0033 on that point and leaves its three-letter cap standing.
+
 Worth knowing how far the check around this reaches, because it is narrower than it looks.
 `PackageIconTests` fails a catalogue that carries no `icon.png` of its own, one whose icon is
 byte-identical to another catalogue's, and one still wearing the repository's unbadged fallback. It

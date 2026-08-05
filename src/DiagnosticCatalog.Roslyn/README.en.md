@@ -107,12 +107,12 @@ Three Microsoft packages issue `RS` rules, and this catalogue holds one of them:
 | `Microsoft.CodeAnalysis.BannedApiAnalyzers` | `RS0030`, `RS0031`, `RS0035` | no |
 
 The ids partition cleanly, so there is no ambiguity about which rule lives where. The reason the
-other two are absent is the icon: a catalogue's badge carries its rule prefix
-([ADR-0032](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/adr/0032-badge-a-catalogues-icon-with-its-rule-prefix.en.md))
-capped at three letters
-([ADR-0033](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/adr/0033-cap-the-badge-at-three-letters.en.md)),
-so three catalogues of `RS` rules would want the same two letters and no icon could tell them apart.
-Merging them instead has no shape in the manifest, which takes one package per catalogue. That is a
+other two were absent for a while was the icon: three catalogues of `RS` rules would all have wanted
+the same two letters, and no icon could tell them apart. That is settled — a badge whose prefix is
+already in service names the catalogue's subject instead, and `RS` stays here
+([ADR-0035](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/adr/0035-badge-a-shared-prefix-catalogue-with-its-subject.en.md)).
+Merging them into one catalogue still has no shape in the manifest, which takes one package per
+catalogue. That is a
 decision somebody has to make before those 26 rules can be catalogued at all; this package does not
 pretend to have made it.
 

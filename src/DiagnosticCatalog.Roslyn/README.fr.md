@@ -110,13 +110,11 @@ Trois paquets Microsoft émettent des règles `RS`, et ce catalogue en détient 
 | `Microsoft.CodeAnalysis.BannedApiAnalyzers` | `RS0030`, `RS0031`, `RS0035` | non |
 
 Les identifiants se partitionnent proprement, il n'y a donc aucune ambiguïté sur l'endroit où vit
-quelle règle. La raison de l'absence des deux autres est l'icône : le badge d'un catalogue porte son
-préfixe de règles
-([ADR-0032](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/adr/0032-badge-a-catalogues-icon-with-its-rule-prefix.fr.md))
-plafonné à trois lettres
-([ADR-0033](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/adr/0033-cap-the-badge-at-three-letters.fr.md)),
-si bien que trois catalogues de règles `RS` voudraient les deux mêmes lettres et qu'aucune icône ne
-pourrait les distinguer. Les fusionner n'a en revanche aucune forme dans le manifeste, qui prend un
+quelle règle. Ce qui a tenu les deux autres à l'écart un temps, c'est l'icône : trois catalogues de règles `RS`
+auraient voulu les deux mêmes lettres, et aucune icône n'aurait pu les distinguer. C'est tranché — un
+badge dont le préfixe est déjà en service nomme à la place le sujet du catalogue, et `RS` reste ici
+([ADR-0035](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/adr/0035-badge-a-shared-prefix-catalogue-with-its-subject.fr.md)).
+Les fusionner n'a toujours aucune forme dans le manifeste, qui prend un
 paquet par catalogue. C'est une décision que quelqu'un doit prendre avant que ces 26 règles puissent
 être cataloguées ; ce paquet ne prétend pas l'avoir prise.
 
