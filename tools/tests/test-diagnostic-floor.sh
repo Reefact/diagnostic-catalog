@@ -16,6 +16,12 @@ root="$(cd "$(dirname "$0")/../.." && pwd)"
 
 check="$root/tools/analysis/check-diagnostic-floor.sh"
 
+# The fragment of the line the check prints when it announces a clean build. Named once because
+# four assertions turn on it and THREE of them require it to be absent: a check that reworded its
+# verdict would stop matching in all four places at once, and those three would go on passing for
+# the wrong reason — the "fail green" this file exists to make impossible.
+clean_verdict='at least a warning'
+
 fixture="$(mktemp -d)"
 trap 'rm -rf "$fixture"' EXIT
 
@@ -101,7 +107,7 @@ run_check "$fixture/clean"
 assert_equals "an error-level diagnostic passes" 0 "$status"
 assert_equals "and it says so" \
   "yes" \
-  "$(grep -q 'at least a warning' "$fixture/out.txt" && echo yes || echo no)"
+  "$(grep -q "$clean_verdict" "$fixture/out.txt" && echo yes || echo no)"
 
 printf '  an unreadable log fails the check rather than emptying it\n'
 
@@ -124,7 +130,7 @@ run_check "$fixture/truncated"
 assert_equals "an unparseable log fails the check" 1 "$status"
 assert_equals "the check never claims the build is clean" \
   "no" \
-  "$(grep -q 'at least a warning' "$fixture/out.txt" && echo yes || echo no)"
+  "$(grep -q "$clean_verdict" "$fixture/out.txt" && echo yes || echo no)"
 assert_equals "the failure names the log that could not be read" \
   "yes" \
   "$(grep -q 'a-cut-short.sarif' "$fixture/out.txt" && echo yes || echo no)"
@@ -150,7 +156,7 @@ run_check "$fixture/empty"
 assert_equals "an empty log fails the check" 1 "$status"
 assert_equals "the check never claims the build is clean" \
   "no" \
-  "$(grep -q 'at least a warning' "$fixture/out.txt" && echo yes || echo no)"
+  "$(grep -q "$clean_verdict" "$fixture/out.txt" && echo yes || echo no)"
 assert_equals "the failure names the log that was empty" \
   "yes" \
   "$(grep -q 'a-empty.sarif' "$fixture/out.txt" && echo yes || echo no)"
@@ -176,7 +182,7 @@ run_check "$fixture/unreadable"
 assert_equals "an unreadable log fails the check" 1 "$status"
 assert_equals "the check never claims the build is clean" \
   "no" \
-  "$(grep -q 'at least a warning' "$fixture/out.txt" && echo yes || echo no)"
+  "$(grep -q "$clean_verdict" "$fixture/out.txt" && echo yes || echo no)"
 assert_equals "the failure names the log it could not read" \
   "yes" \
   "$(grep -q 'b-unreadable.sarif' "$fixture/out.txt" && echo yes || echo no)"
