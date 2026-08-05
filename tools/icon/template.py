@@ -26,20 +26,16 @@ SUBSAMPLES = 4      # vertical only: the scanline pass is exact horizontally
 
 # --- PNG ------------------------------------------------------------------------------------
 
-def read_png(path):
-    """(width, height, rows of RGBA). Written out because there is no image dependency here."""
-    data = Path(path).read_bytes()
-    if data[:8] != b"\x89PNG\r\n\x1a\n":
-        raise ValueError(f"{path} is not a PNG")
-
-    idat, palette, transparency = b"", None, None
+def _sections(data):
+    """The four chunks a PNG is read from here: the IHDR fields, the joined IDAT, PLTE, tRNS."""
+    header, idat, palette, transparency = None, b"", None, None
     offset = 8
     while offset < len(data):
         (length,) = struct.unpack(">I", data[offset:offset + 4])
         kind = data[offset + 4:offset + 8]
         body = data[offset + 8:offset + 8 + length]
         if kind == b"IHDR":
-            width, height, depth, colour, _c, _f, interlace = struct.unpack(">IIBBBBB", body)
+            header = struct.unpack(">IIBBBBB", body)
         elif kind == b"IDAT":
             idat += body
         elif kind == b"PLTE":
@@ -47,65 +43,106 @@ def read_png(path):
         elif kind == b"tRNS":
             transparency = body
         offset += 12 + length
+    return header, idat, palette, transparency
 
+
+# Each filter undoes itself over one scanline, in place, given the row above. One function per
+# method rather than one branch per method inside the row loop: the loop then reads the method
+# once and dispatches, instead of re-deciding on every scanline what the whole file already said.
+
+
+def _undo_none(line, _previous, _channels):
+    return line
+
+
+def _undo_sub(line, _previous, channels):
+    for x in range(channels, len(line)):
+        line[x] = (line[x] + line[x - channels]) & 255
+    return line
+
+
+def _undo_up(line, previous, _channels):
+    for x in range(len(line)):
+        line[x] = (line[x] + previous[x]) & 255
+    return line
+
+
+def _undo_average(line, previous, channels):
+    for x in range(len(line)):
+        left = line[x - channels] if x >= channels else 0
+        line[x] = (line[x] + ((left + previous[x]) >> 1)) & 255
+    return line
+
+
+def _paeth(left, up, upleft):
+    """The filter-4 predictor: whichever neighbour the gradient estimate lands closest to."""
+    estimate = left + up - upleft
+    dl, du, dul = abs(estimate - left), abs(estimate - up), abs(estimate - upleft)
+    if dl <= du and dl <= dul:
+        return left
+    return up if du <= dul else upleft
+
+
+def _undo_paeth(line, previous, channels):
+    for x in range(len(line)):
+        left = line[x - channels] if x >= channels else 0
+        upleft = previous[x - channels] if x >= channels else 0
+        line[x] = (line[x] + _paeth(left, previous[x], upleft)) & 255
+    return line
+
+
+_UNFILTER = {0: _undo_none, 1: _undo_sub, 2: _undo_up, 3: _undo_average, 4: _undo_paeth}
+
+
+def _unfilter(raw, height, stride, channels, path):
+    """The decompressed scanlines with their per-row filter undone, as one flat buffer."""
+    out = bytearray(height * stride)
+    previous = bytearray(stride)
+    pos = 0
+    for y in range(height):
+        undo = _UNFILTER.get(raw[pos])
+        if undo is None:
+            raise ValueError(f"{path}: unknown filter {raw[pos]} on row {y}")
+        line = undo(bytearray(raw[pos + 1:pos + 1 + stride]), previous, channels)
+        pos += 1 + stride
+        out[y * stride:(y + 1) * stride] = line
+        previous = line
+    return out
+
+
+def _rgba(out, at, colour, palette, transparency):
+    """One pixel as RGBA, whichever of the five colour types the file stores it in."""
+    if colour == 6:
+        return tuple(out[at:at + 4])
+    if colour == 2:
+        return (out[at], out[at + 1], out[at + 2], 255)
+    if colour == 4:
+        return (out[at],) * 3 + (out[at + 1],)
+    if colour != 3:
+        return (out[at],) * 3 + (255,)
+    i = out[at]
+    alpha = transparency[i] if transparency and i < len(transparency) else 255
+    return (palette[i * 3], palette[i * 3 + 1], palette[i * 3 + 2], alpha)
+
+
+def read_png(path):
+    """(width, height, rows of RGBA). Written out because there is no image dependency here."""
+    data = Path(path).read_bytes()
+    if data[:8] != b"\x89PNG\r\n\x1a\n":
+        raise ValueError(f"{path} is not a PNG")
+
+    header, idat, palette, transparency = _sections(data)
+    width, height, depth, colour, _c, _f, interlace = header
     if depth != 8 or interlace:
         raise ValueError(f"{path}: only 8-bit non-interlaced PNGs are read here")
 
     channels = {0: 1, 2: 3, 3: 1, 4: 2, 6: 4}[colour]
     stride = width * channels
-    raw = zlib.decompress(idat)
+    out = _unfilter(zlib.decompress(idat), height, stride, channels, path)
 
-    out = bytearray(height * stride)
-    previous = bytearray(stride)
-    pos = 0
-    for y in range(height):
-        method = raw[pos]
-        pos += 1
-        line = bytearray(raw[pos:pos + stride])
-        pos += stride
-        if method == 1:
-            for x in range(channels, stride):
-                line[x] = (line[x] + line[x - channels]) & 255
-        elif method == 2:
-            for x in range(stride):
-                line[x] = (line[x] + previous[x]) & 255
-        elif method == 3:
-            for x in range(stride):
-                left = line[x - channels] if x >= channels else 0
-                line[x] = (line[x] + ((left + previous[x]) >> 1)) & 255
-        elif method == 4:
-            for x in range(stride):
-                left = line[x - channels] if x >= channels else 0
-                up = previous[x]
-                upleft = previous[x - channels] if x >= channels else 0
-                estimate = left + up - upleft
-                dl, du, dul = abs(estimate - left), abs(estimate - up), abs(estimate - upleft)
-                line[x] = (line[x] + (left if dl <= du and dl <= dul else
-                                      up if du <= dul else upleft)) & 255
-        elif method != 0:
-            raise ValueError(f"{path}: unknown filter {method} on row {y}")
-        out[y * stride:(y + 1) * stride] = line
-        previous = line
-
-    rows = []
-    for y in range(height):
-        row = []
-        for x in range(width):
-            at = y * stride + x * channels
-            if colour == 6:
-                row.append(tuple(out[at:at + 4]))
-            elif colour == 2:
-                row.append((out[at], out[at + 1], out[at + 2], 255))
-            elif colour == 3:
-                i = out[at]
-                a = transparency[i] if transparency and i < len(transparency) else 255
-                row.append((palette[i * 3], palette[i * 3 + 1], palette[i * 3 + 2], a))
-            elif colour == 4:
-                row.append((out[at],) * 3 + (out[at + 1],))
-            else:
-                row.append((out[at],) * 3 + (255,))
-        rows.append(row)
-    return width, height, rows
+    return width, height, [[_rgba(out, y * stride + x * channels, colour, palette, transparency)
+                            for x in range(width)]
+                           for y in range(height)]
 
 
 def write_png(path, width, height, rows):
@@ -228,6 +265,37 @@ class Template:
         return tuple(int(round(first[i] + (last[i] - first[i]) * t)) for i in range(3))
 
 
+def _segments(contour):
+    """The contour's non-horizontal edges, as (ylo, yhi, x1, y1, x2, y2)."""
+    segments = []
+    for i, (x1, y1) in enumerate(contour):
+        x2, y2 = contour[(i + 1) % len(contour)]
+        if y1 != y2:
+            segments.append((min(y1, y2), max(y1, y2), x1, y1, x2, y2))
+    return segments
+
+
+def _union(spans):
+    """Overlapping spans merged, which is what makes shapes add up to ink rather than cancel."""
+    spans.sort()
+    merged = [list(spans[0])]
+    for start, end in spans[1:]:
+        if start <= merged[-1][1]:
+            merged[-1][1] = max(merged[-1][1], end)
+        else:
+            merged.append([start, end])
+    return merged
+
+
+def _add_span(target, start, end, width):
+    """One span's horizontal coverage added to a pixel row — exact, hence the clamping."""
+    start, end = max(start, 0.0), min(end, float(width))
+    if end <= start:
+        return
+    for x in range(int(start), min(int(end), width - 1) + 1):
+        target[x] += (min(end, x + 1.0) - max(start, float(x))) / SUBSAMPLES
+
+
 def coverage(contours, width, height):
     """Scanline fill: exact horizontally, SUBSAMPLES rows per pixel vertically.
 
@@ -235,14 +303,7 @@ def coverage(contours, width, height):
     shapes add up to ink rather than cancel — a mark whose C moved over a bracket must not
     silently punch a hole through it.
     """
-    edges = []
-    for contour in contours:
-        segments = []
-        for i, (x1, y1) in enumerate(contour):
-            x2, y2 = contour[(i + 1) % len(contour)]
-            if y1 != y2:
-                segments.append((min(y1, y2), max(y1, y2), x1, y1, x2, y2))
-        edges.append(segments)
+    edges = [_segments(contour) for contour in contours]
 
     grid = [[0.0] * width for _ in range(height)]
     for row in range(height * SUBSAMPLES):
@@ -254,18 +315,7 @@ def coverage(contours, width, height):
             spans += [(crossings[i], crossings[i + 1]) for i in range(0, len(crossings) - 1, 2)]
         if not spans:
             continue
-        spans.sort()
-        merged = [list(spans[0])]
-        for start, end in spans[1:]:
-            if start <= merged[-1][1]:
-                merged[-1][1] = max(merged[-1][1], end)
-            else:
-                merged.append([start, end])
         target = grid[row // SUBSAMPLES]
-        for start, end in merged:
-            start, end = max(start, 0.0), min(end, float(width))
-            if end <= start:
-                continue
-            for x in range(int(start), min(int(end), width - 1) + 1):
-                target[x] += (min(end, x + 1.0) - max(start, float(x))) / SUBSAMPLES
+        for start, end in _union(spans):
+            _add_span(target, start, end, width)
     return grid
