@@ -1450,7 +1450,7 @@ comparer une valeur et en rechercher une ne sont pas le même besoin.
 ## 14. Utilisation par un catalogue tiers
 
 Un package spécialisé peut référencer `DiagnosticCatalog` et déclarer les règles
-d'un analyzer qu'il ne possède pas. Douze sont implémentés, tous générés par le
+d'un analyzer qu'il ne possède pas. Treize sont implémentés, tous générés par le
 même outil depuis les descriptors de leur package amont :
 
 | Catalogue | Reflète | Règles | Catégories | Liens d'aide |
@@ -1467,6 +1467,7 @@ même outil depuis les descriptors de leur package amont :
 | `DiagnosticCatalog.Syslib` | `Microsoft.NETCore.App.Ref 10.0.10` | 13 | 4 | 13 sur 13 |
 | `DiagnosticCatalog.Roslyn` | `Microsoft.CodeAnalysis.Analyzers 5.6.0` | 52 | 9 | 13 sur 52 |
 | `DiagnosticCatalog.PublicApi` | `Microsoft.CodeAnalysis.PublicApiAnalyzers 5.6.0` | 23 | 1 | 23 sur 23 |
+| `DiagnosticCatalog.BannedApi` | `Microsoft.CodeAnalysis.BannedApiAnalyzers 5.6.0` | 3 | 1 | 2 sur 3 |
 
 ```csharp
 using DiagnosticCatalog;
@@ -2115,7 +2116,7 @@ Un générateur pourrait transformer un manifeste en classes de constantes :
 ### 25.4 Autres catalogues générés
 
 Les catalogues générés ne sont plus une évolution future : la méthode, le
-générateur, douze catalogues et leur synchronisation planifiée sont spécifiés aux
+générateur, treize catalogues et leur synchronisation planifiée sont spécifiés aux
 §14.1–§14.3 et implémentés. Restent d'autres éditeurs.
 
 **Une variante Visual Basic n'est pas une entrée de manifeste.** Une lecture

@@ -162,6 +162,27 @@
     },
     {
       "$comment": [
+        "The banned-API rules. Opt-in like PublicApiAnalyzers, and the smallest catalogue here: the",
+        "package declares three rules, one per symbol kind it can ban.",
+        "",
+        "What it does is entirely driven by a BannedSymbols.txt the consumer writes, which is why the",
+        "rule count says nothing about how much a codebase sees. A team banning DateTime.Now or a",
+        "deprecated internal helper meets RS0030 on every remaining call site, and the ones that",
+        "cannot be migrated yet get suppressed in source with a justification.",
+        "",
+        "Completes the RS family: RS00xx public-API tracking is DiagnosticCatalog.PublicApi, RS10xx",
+        "and RS20xx analyzer authoring is DiagnosticCatalog.Roslyn, and RS0030/0031/0035 are here.",
+        "Three catalogues rather than one because `package` is a single string; the badge collision",
+        "ADR-0032/0033 leaves unresolved was settled by the maintainer, catalogue by catalogue -- RS,",
+        "API, and BAN."
+      ],
+      "package": "Microsoft.CodeAnalysis.BannedApiAnalyzers",
+      "namespace": "DiagnosticCatalog.BannedApi",
+      "container": "BannedApiRule",
+      "output": "../src/DiagnosticCatalog.BannedApi/BannedApiRules.g.cs"
+    },
+    {
+      "$comment": [
         "The xUnit.net analyzers. They reach a project TRANSITIVELY — xunit depends on",
         "xunit.analyzers — so a test project has them without anybody choosing them, which is why",
         "their rules are suppressed in source rather than configured away in .editorconfig."

@@ -74,6 +74,7 @@
     <ProjectReference Include="..\..\src\DiagnosticCatalog.Syslib\DiagnosticCatalog.Syslib.csproj" />
     <ProjectReference Include="..\..\src\DiagnosticCatalog.Roslyn\DiagnosticCatalog.Roslyn.csproj" />
     <ProjectReference Include="..\..\src\DiagnosticCatalog.PublicApi\DiagnosticCatalog.PublicApi.csproj" />
+    <ProjectReference Include="..\..\src\DiagnosticCatalog.BannedApi\DiagnosticCatalog.BannedApi.csproj" />
     <ProjectReference Include="..\..\src\DiagnosticCatalog.Self\DiagnosticCatalog.Self.csproj" />
   </ItemGroup>
 

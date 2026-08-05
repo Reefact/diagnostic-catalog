@@ -32,6 +32,7 @@ public sealed class GeneratedCatalogSourceTests
         "SyslibRules.g.cs",
         "RoslynRules.g.cs",
         "PublicApiRules.g.cs",
+        "BannedApiRules.g.cs",
     ];
 
     /// <summary>

@@ -1,0 +1,59 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net10.0</TargetFrameworks>
+    <AssemblyName>DiagnosticCatalog.BannedApi</AssemblyName>
+    <RootNamespace>DiagnosticCatalog.BannedApi</RootNamespace>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <!--
+    This catalogue ships on the 'bannedapi' train, which versions independently of the foundation so
+    it can follow Microsoft.CodeAnalysis.BannedApiAnalyzers' releases without dragging anything else
+    along. Declaring the train here is the whole membership (Directory.Build.targets); it is also
+    what makes the project packable, what gives it an embedded SBOM, and what puts the icon on the
+    package.
+
+    A train of its own rather than sharing 'roslyn' or 'publicapi'. All three packages ship from
+    dotnet/roslyn-analyzers and version in lockstep today, but they are three NuGet packages a
+    consumer installs separately, and sharing a train would tie a release of any one of them to the
+    other two's changelogs.
+  -->
+  <PropertyGroup>
+    <ReleaseTrain>bannedapi</ReleaseTrain>
+  </PropertyGroup>
+  <PropertyGroup Label="Package">
+    <PackageId>DiagnosticCatalog.BannedApi</PackageId>
+    <DevelopmentDependency>false</DevelopmentDependency>
+    <Title>DiagnosticCatalog.BannedApi</Title>
+    <Description>The banned-API rules (RS0030, RS0031, RS0035) as strongly referenced constants, so that SuppressMessageAttribute takes compile-checked references instead of magic strings. Ids, categories, titles and help links are read from Microsoft.CodeAnalysis.BannedApiAnalyzers' own DiagnosticDescriptor instances. For any codebase banning an API in BannedSymbols.txt. Unofficial; not affiliated with or endorsed by Microsoft.</Description>
+    <PackageTags>roslyn;analyzers;diagnostics;suppressmessage;bannedapi;banned-symbols;api-governance;code-analysis;catalog</PackageTags>
+    <PackageReadmeFile>README.en.md</PackageReadmeFile>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <Authors>Reefact</Authors>
+    <Copyright>Copyright (c) Reefact</Copyright>
+    <PackageProjectUrl>https://github.com/Reefact/diagnostic-catalog</PackageProjectUrl>
+  </PropertyGroup>
+
+  <!--
+    A PACKAGE reference, not a project one. The foundation rides the 'lib' train and this catalogue
+    rides its own, so packing against the project would stamp a dependency on a lib version that was
+    never published, and every consumer's restore would fail with NU1102 on an immutable artifact
+    (ADR-0007).
+
+    Version-less, so it resolves from Directory.Packages.props — where moving every catalogue onto a
+    new foundation is one deliberate edit rather than thirteen.
+
+    NOT PrivateAssets="all": the foundation must reach whoever consumes this catalogue. They need
+    [DiagnosticRule] resolvable to declare rules of their own, and present at run time for reflection
+    over a catalogue to work (specification §16.1).
+  -->
+  <ItemGroup>
+    <PackageReference Include="DiagnosticCatalog" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.en.md" Pack="true" PackagePath="/" />
+  </ItemGroup>
+
+</Project>

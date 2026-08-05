@@ -183,7 +183,7 @@ maintained alongside its own analyzer does not need this — the two ship at one
 
 ## See also
 
-Thirteen catalogues built on this package are already published, generated from the analyzers' own
+Fourteen catalogues built on this package are already published, generated from the analyzers' own
 descriptors rather than hand-written. If you run one of these, its rules do not need declaring:
 
 - [`DiagnosticCatalog.Sonar`](https://www.nuget.org/packages/DiagnosticCatalog.Sonar)
@@ -210,6 +210,8 @@ descriptors rather than hand-written. If you run one of these, its rules do not 
   — the Roslyn analyzer-authoring (`RS1xxx`, `RS2xxx`) rules.
 - [`DiagnosticCatalog.PublicApi`](https://www.nuget.org/packages/DiagnosticCatalog.PublicApi)
   — the public-API tracking (`RS00xx`) rules.
+- [`DiagnosticCatalog.BannedApi`](https://www.nuget.org/packages/DiagnosticCatalog.BannedApi)
+  — the banned-API (`RS0030`, `RS0031`, `RS0035`) rules.
 - [`DiagnosticCatalog.Self`](https://www.nuget.org/packages/DiagnosticCatalog.Self)
   — the `DCATxxxx` rules the catalogue analyzers report, catalogued the same way.
 

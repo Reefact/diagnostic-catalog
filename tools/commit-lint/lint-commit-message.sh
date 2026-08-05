@@ -28,9 +28,9 @@
 set -u
 
 TYPES='feat|fix|build|chore|ci|docs|perf|refactor|revert|style|test'
-SCOPES='analyzers|aspnetcore|cataloggen|cli|codestyle|core|mstest|netanalyzers|nunit|publicapi|roslyn|sonar|stylecop|syslib|trimming|xunit'
+SCOPES='analyzers|aspnetcore|bannedapi|cataloggen|cli|codestyle|core|mstest|netanalyzers|nunit|publicapi|roslyn|sonar|stylecop|syslib|trimming|xunit'
 TYPES_HUMAN='feat, fix, build, chore, ci, docs, perf, refactor, revert, style, test'
-SCOPES_HUMAN='analyzers, aspnetcore, cataloggen, cli, codestyle, core, mstest, netanalyzers, nunit, publicapi, roslyn, sonar, stylecop, syslib, trimming, xunit'
+SCOPES_HUMAN='analyzers, aspnetcore, bannedapi, cataloggen, cli, codestyle, core, mstest, netanalyzers, nunit, publicapi, roslyn, sonar, stylecop, syslib, trimming, xunit'
 MAX=72
 
 # --- options ------------------------------------------------------------------
