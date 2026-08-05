@@ -87,7 +87,7 @@ public sealed class DescriptorReaderTests
         // after the facade is deployed — 121, 210 and 23 — and all three are refused without it.
         string fixture = Path.Combine(AppContext.BaseDirectory, "analyzer-fixture", "CatalogGen.AnalyzerFixture.dll");
         Assert.True(File.Exists(fixture),
-                    "the analyzer fixture should be built and copied beside the tests by _CopyAnalyzerFixture");
+                    "the analyzer fixture should be built and copied beside the tests by _CopyAnalyzerFixtures");
 
         // Named, because its presence would make this test pass without the worker deploying
         // anything: the worker probes the directories of the assemblies it is given, so a facade
@@ -102,6 +102,39 @@ public sealed class DescriptorReaderTests
 
         Assert.NotNull(read);
         Assert.Contains("FIX0001", read.Keys);
+    }
+
+    [Fact]
+    public void A_type_no_analyzer_depends_on_does_not_fail_the_read_when_it_cannot_be_loaded()
+    {
+        // What an analyzer package is mostly made of is not analyzers: code fixes, internal
+        // helpers, types the compiler never loads because no attribute points at them. Their rules
+        // are not missing when they fail to load, because they declare none — so a read that lost
+        // one lost nothing, and refusing it refuses a catalogue that was complete.
+        //
+        // The compiler never has to make that judgement: it finds analyzers by reading metadata for
+        // the types [DiagnosticAnalyzer] names, and loads those. Selecting the same way is what
+        // makes the shortfall answerable here too — every analyzer the assembly declares is known
+        // by name before anything is loaded, so "did one go missing" stops being a question about
+        // types that have no name left to ask about.
+        string fixture = Path.Combine(AppContext.BaseDirectory, "partial-load-fixture",
+                                      "CatalogGen.PartialLoadFixture.dll");
+        Assert.True(File.Exists(fixture),
+                    "the partial-load fixture should be built and copied beside the tests by _CopyAnalyzerFixtures");
+
+        // The absence IS the fixture: CatalogGen.PartialLoadFixture implements an interface declared
+        // in CatalogGen.AbsentContract, so the helper type cannot be materialised anywhere that
+        // assembly is not. Asserted rather than assumed, because a stray copy beside it would leave
+        // this test asserting nothing.
+        Assert.False(File.Exists(Path.Combine(Path.GetDirectoryName(fixture)!, "CatalogGen.AbsentContract.dll")),
+                     "the partial-load fixture should be alone, so its helper type stays unloadable");
+
+        AnalyzerAssemblySet set = new([fixture], "Fixture", "1.0.0");
+
+        SortedDictionary<string, RuleInfo>? read = DescriptorReader.Read(set);
+
+        Assert.NotNull(read);
+        Assert.Contains("FIX0002", read.Keys);
     }
 
     [Fact]
@@ -121,19 +154,32 @@ public sealed class DescriptorReaderTests
 /// analyzer type it finds, so the only way to exercise a construction failure is to give it one.
 /// </summary>
 /// <remarks>
-/// Deliberately carries no <c>[DiagnosticAnalyzer]</c> attribute. The reader selects on the base
-/// type alone — every non-abstract <see cref="DiagnosticAnalyzer"/> it finds — so the attribute
-/// would add nothing here, while declaring it marks the whole test assembly as a compiler
-/// extension: RS1038 and RS1041 then fire on facts about this project that cannot be changed (it
-/// reaches Microsoft.CodeAnalysis.Workspaces through the generator, and targets net10.0), and CI's
-/// warning ratchet turns both into errors. Leaving it off costs one suppression instead of three.
+/// <para>
+/// It carries <c>[DiagnosticAnalyzer]</c> because it has to be FOUND before it can fail to be
+/// constructed: the reader selects the types the attribute names (ADR-0031), so without it this
+/// fixture would be passed over and the test above would assert a refusal that never happened.
+/// </para>
+/// <para>
+/// That reverses an earlier trade. While the reader selected on the base type alone the attribute
+/// added nothing here, and leaving it off avoided marking the whole test assembly as a compiler
+/// extension — which is what the three rules below then report, every one of them about a fact of
+/// this project that is not a defect and cannot be changed: it reaches
+/// Microsoft.CodeAnalysis.Workspaces through the generator, it targets net10.0 because that is what
+/// a test project targets, and it is a test project rather than a compiler extension, so the
+/// authoring rules RS1036 asks it to enforce would be enforced over a hundred and fifty tests that
+/// declare no analyzer. Suppressed at the declaration, which is the only place the claim is true.
+/// The fixtures that really are compiler extensions — CatalogGen.AnalyzerFixture and
+/// CatalogGen.PartialLoadFixture — set the property instead and suppress nothing.
+/// </para>
 /// </remarks>
-// RS1001 is the mirror image of that trade: it wants the attribute on a DiagnosticAnalyzer
-// subclass, which is right for an analyzer somebody ships and wrong for a fixture that exists to
-// fail construction. It is never registered with a compilation and never runs.
-#pragma warning disable RS1001 // Missing 'DiagnosticAnalyzerAttribute' attribute
+#pragma warning disable RS1036 // Specify EnforceExtendedAnalyzerRules
+#pragma warning disable RS1038 // Compiler extensions should be implemented in assemblies targeting netstandard2.0
+#pragma warning disable RS1041 // Compiler extensions should not target a specific compiler host
+[DiagnosticAnalyzer(LanguageNames.CSharp)]
 public sealed class UnconstructibleAnalyzer : DiagnosticAnalyzer
-#pragma warning restore RS1001
+#pragma warning restore RS1041
+#pragma warning restore RS1038
+#pragma warning restore RS1036
 {
     public UnconstructibleAnalyzer()
         => throw new InvalidOperationException("deliberately unconstructible, see DescriptorReaderTests");

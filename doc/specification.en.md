@@ -1434,10 +1434,13 @@ using DiagnosticCatalog.Sonar;
 
 ### 14.1 How a generated catalogue is produced
 
-The generator (`eng/CatalogGen`) loads the upstream analyzer assembly,
-constructs every `DiagnosticAnalyzer` it contains, and reads the
-`DiagnosticDescriptor` instances they declare. Descriptors are the only source
-that cannot have drifted.
+The generator (`eng/CatalogGen`) reads the upstream analyzer assembly's metadata
+for the types it marks with `[DiagnosticAnalyzer]`, loads and constructs those,
+and reads the `DiagnosticDescriptor` instances they declare. That is how the
+compiler finds analyzers, and reading them the same way is what keeps a
+catalogue to the rules a consumer's build can actually report
+([ADR-0031](adr/0031-find-analyzers-the-way-the-compiler-finds-them.en.md)).
+Descriptors are the only source that cannot have drifted.
 
 ```text
 dotnet run --project eng/CatalogGen -- \
