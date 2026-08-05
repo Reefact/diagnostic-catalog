@@ -396,16 +396,26 @@ l'attribut restant le signal d'adhésion explicite et recommandé.
 ### 7.3 Définition minimale
 
 Une règle valide est une classe statique marquée `[DiagnosticRule]` exposant deux
-constantes publiques :
+constantes publiques, la seconde atteignant une catégorie déclarée selon §8.5 :
 
 ```csharp
+[DiagnosticCategory]
+internal static class JdCategory
+{
+    public const string Usage = "Usage";
+}
+
 [DiagnosticRule]
 public static class JD0007
 {
     public const string Id = nameof(JD0007);
-    public const string Category = "Usage";
+    public const string Category = JdCategory.Usage;
 }
 ```
+
+Un catalogue déclare ce conteneur une fois, et tous les exemples ci-dessous
+renvoient à celui-ci plutôt que de répéter la déclaration — soit l'exigence de
+§8.5 appliquée à ce document.
 
 La forme canonique complète imbrique les règles dans une classe conteneur :
 
@@ -418,7 +428,7 @@ public static class JustDummiesRules
     public static class JD0007
     {
         public const string Id = nameof(JD0007);
-        public const string Category = "Usage";
+        public const string Category = JdCategory.Usage;
     }
 }
 ```
@@ -465,7 +475,7 @@ Une règle peut exposer des métadonnées supplémentaires :
 public static class JD0007
 {
     public const string Id = nameof(JD0007);
-    public const string Category = "Usage";
+    public const string Category = JdCategory.Usage;
 
     public const string Title =
         "Dummy factories should follow the expected convention";
@@ -673,7 +683,7 @@ du type et l'identifiant diffèrent nécessairement :
 public static class RULE_001
 {
     public const string Id = "RULE-001";
-    public const string Category = "Usage";
+    public const string Category = JdCategory.Usage;
 }
 ```
 
@@ -1012,7 +1022,7 @@ Les mêmes validations que pour `Id` s'appliquent.
 public static class RULE_0001
 {
     public const string Id = "RULE-0001";
-    public const string Category = "Usage";
+    public const string Category = JdCategory.Usage;
 }
 ```
 
@@ -1042,7 +1052,7 @@ qu'on en dise quelque chose :
 public static class RULE42
 {
     public const string Id = "RULE-0001";  // muet sous l'ancienne condition
-    public const string Category = "Usage";
+    public const string Category = JdCategory.Usage;
 }
 ```
 
@@ -1180,7 +1190,7 @@ n'est pas une invocation de `nameof`.
 public static class JD0007
 {
     public const string Id = "JD0007";  // signalé
-    public const string Category = "Usage";
+    public const string Category = JdCategory.Usage;
 }
 ```
 
@@ -1222,7 +1232,7 @@ déclenchement laissait muette.
 public static class RuleSeven
 {
     public const string Id = "JD0007";  // JD0007 était disponible comme nom de type
-    public const string Category = "Usage";
+    public const string Category = JdCategory.Usage;
 }
 ```
 
@@ -1419,10 +1429,12 @@ prix. Deux mitigations obligatoires :
 2. **Construire l'index paresseusement** dans
    `RegisterCompilationStartAction`, derrière un `Lazy<T>`, pour ne payer le coût
    que si un site d'utilisation a réellement besoin d'une recherche par valeur —
-   c'est-à-dire uniquement pour `DCAT0006` / `DCAT0007` / `DCAT0008`.
+   c'est-à-dire uniquement pour `DCAT0006` / `DCAT0008`.
 
-`DCAT0001` n'a besoin d'aucun index : il compare deux symboles résolus depuis
-l'attribut lui-même.
+`DCAT0001`, `DCAT0007` et `DCAT0009` n'ont besoin d'aucun index : chacun résout
+sa règle depuis l'attribut lui-même. `DCAT0007` compare bien une valeur, mais à
+la règle que son argument déjà migré nomme (§11.7), sans jamais en chercher une —
+comparer une valeur et en rechercher une ne sont pas le même besoin.
 
 ---
 
@@ -1609,7 +1621,7 @@ public static class Dummies
     public static class JD0007
     {
         public const string Id = nameof(JD0007);
-        public const string Category = "Usage";
+        public const string Category = JdCategory.Usage;
     }
 }
 ```
@@ -2126,13 +2138,20 @@ using DiagnosticCatalog;
 
 namespace ExampleAnalyzer.Suppressions;
 
+[DiagnosticCategory]
+internal static class ExampleCategory
+{
+    public const string Design = "Design";
+    public const string Usage = "Usage";
+}
+
 public static class Example
 {
     [DiagnosticRule]
     public static class EXAMPLE0001
     {
         public const string Id = nameof(EXAMPLE0001);
-        public const string Category = "Design";
+        public const string Category = ExampleCategory.Design;
         public const string Title = "Avoid example design";
         public const string HelpLinkUri = "https://example.org/rules/EXAMPLE0001";
     }
@@ -2141,7 +2160,7 @@ public static class Example
     public static class EXAMPLE0002
     {
         public const string Id = nameof(EXAMPLE0002);
-        public const string Category = "Usage";
+        public const string Category = ExampleCategory.Usage;
         public const string Title = "Avoid example usage";
         public const string HelpLinkUri = "https://example.org/rules/EXAMPLE0002";
     }

@@ -12,9 +12,11 @@ namespace DiagnosticCatalog.Analyzers;
 /// </summary>
 /// <remarks>
 /// <para>
-/// Built once per compilation and consulted by the value-based diagnostics — DCAT0006 today, DCAT0008
-/// later. DCAT0001, DCAT0007 and DCAT0009 never touch it: they resolve everything from the attribute
-/// itself, which is why construction sits behind a <c>Lazy</c> at the call site (§13.1).
+/// Built once per compilation and consulted by the diagnostics that look a rule UP by value — DCAT0006
+/// today, DCAT0008 later. DCAT0001, DCAT0007 and DCAT0009 never touch it: each resolves its rule from
+/// the attribute itself, which is why construction sits behind a <c>Lazy</c> at the call site (§13.1).
+/// DCAT0007 does compare a value, but against the rule its migrated argument already names (§11.7),
+/// which is the distinction §13.1 draws between comparing a value and looking one up.
 /// </para>
 /// <para>
 /// A referenced type that carries the marker but fails the structural contract is skipped rather than

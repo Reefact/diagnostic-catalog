@@ -382,16 +382,26 @@ with the attribute serving as the explicit, preferred opt-in signal.
 ### 7.3 Minimal definition
 
 A valid rule is a static class marked `[DiagnosticRule]` exposing two public
-constants:
+constants, the second of which reaches a category declared per §8.5:
 
 ```csharp
+[DiagnosticCategory]
+internal static class JdCategory
+{
+    public const string Usage = "Usage";
+}
+
 [DiagnosticRule]
 public static class JD0007
 {
     public const string Id = nameof(JD0007);
-    public const string Category = "Usage";
+    public const string Category = JdCategory.Usage;
 }
 ```
+
+A catalogue declares that container once, and every sample below refers to this
+one rather than repeating the declaration — which is §8.5's requirement applied
+to this document.
 
 The full canonical form nests rules inside a container class:
 
@@ -404,7 +414,7 @@ public static class JustDummiesRules
     public static class JD0007
     {
         public const string Id = nameof(JD0007);
-        public const string Category = "Usage";
+        public const string Category = JdCategory.Usage;
     }
 }
 ```
@@ -449,7 +459,7 @@ A rule may expose further metadata:
 public static class JD0007
 {
     public const string Id = nameof(JD0007);
-    public const string Category = "Usage";
+    public const string Category = JdCategory.Usage;
 
     public const string Title =
         "Dummy factories should follow the expected convention";
@@ -649,7 +659,7 @@ the id necessarily differ:
 public static class RULE_001
 {
     public const string Id = "RULE-001";
-    public const string Category = "Usage";
+    public const string Category = JdCategory.Usage;
 }
 ```
 
@@ -980,7 +990,7 @@ Same validations as `Id`.
 public static class RULE_0001
 {
     public const string Id = "RULE-0001";
-    public const string Category = "Usage";
+    public const string Category = JdCategory.Usage;
 }
 ```
 
@@ -1007,7 +1017,7 @@ said nothing at all about the declaration that most needs saying something about
 public static class RULE42
 {
     public const string Id = "RULE-0001";  // silent under the old condition
-    public const string Category = "Usage";
+    public const string Category = JdCategory.Usage;
 }
 ```
 
@@ -1134,7 +1144,7 @@ a `nameof` invocation.
 public static class JD0007
 {
     public const string Id = "JD0007";  // reported
-    public const string Category = "Usage";
+    public const string Category = JdCategory.Usage;
 }
 ```
 
@@ -1173,7 +1183,7 @@ condition left silent.
 public static class RuleSeven
 {
     public const string Id = "JD0007";  // JD0007 was available as a type name
-    public const string Category = "Usage";
+    public const string Category = JdCategory.Usage;
 }
 ```
 
@@ -1358,10 +1368,12 @@ and "index once per compilation" understates it. Two mandatory mitigations:
    else cannot contain a rule.
 2. **Build the index lazily** inside `RegisterCompilationStartAction`, behind a
    `Lazy<T>`, so the cost is paid only when a use site actually needs a
-   value-based lookup — that is, only for `DCAT0006` / `DCAT0007` / `DCAT0008`.
+   value-based lookup — that is, only for `DCAT0006` / `DCAT0008`.
 
-`DCAT0001` needs no index at all: it compares two symbols resolved from the
-attribute itself.
+`DCAT0001`, `DCAT0007` and `DCAT0009` need no index at all: each resolves its
+rule from the attribute itself. `DCAT0007` does compare a value, but against the
+rule its already-migrated argument names (§11.7), so it never looks one up —
+comparing a value and looking one up are not the same need.
 
 ---
 
@@ -1542,7 +1554,7 @@ public static class Dummies
     public static class JD0007
     {
         public const string Id = nameof(JD0007);
-        public const string Category = "Usage";
+        public const string Category = JdCategory.Usage;
     }
 }
 ```
@@ -2044,13 +2056,20 @@ using DiagnosticCatalog;
 
 namespace ExampleAnalyzer.Suppressions;
 
+[DiagnosticCategory]
+internal static class ExampleCategory
+{
+    public const string Design = "Design";
+    public const string Usage = "Usage";
+}
+
 public static class Example
 {
     [DiagnosticRule]
     public static class EXAMPLE0001
     {
         public const string Id = nameof(EXAMPLE0001);
-        public const string Category = "Design";
+        public const string Category = ExampleCategory.Design;
         public const string Title = "Avoid example design";
         public const string HelpLinkUri = "https://example.org/rules/EXAMPLE0001";
     }
@@ -2059,7 +2078,7 @@ public static class Example
     public static class EXAMPLE0002
     {
         public const string Id = nameof(EXAMPLE0002);
-        public const string Category = "Usage";
+        public const string Category = ExampleCategory.Usage;
         public const string Title = "Avoid example usage";
         public const string HelpLinkUri = "https://example.org/rules/EXAMPLE0002";
     }

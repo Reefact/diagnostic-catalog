@@ -59,6 +59,15 @@ of the same short name somewhere else is somebody else's, and is deliberately no
 `internal` is right: nothing outside your assembly needs to apply it, and a public copy would collide
 with the real one for any consumer who references both.
 
+**One thing the copy takes away.** A type's identity in .NET is its assembly *plus* its name, so your
+copy and the real one are two unrelated types that merely agree on a name — invisible until something
+reads your catalogue reflectively at run time and matches **by type**, because
+`GetCustomAttribute<DiagnosticRuleAttribute>()` binds the foundation's attribute, never yours, and
+returns `null` on every rule you ship. Matching on `GetType().FullName` finds them all instead, which
+is how the analyzers, `dcat` and this repository's own `GeneratedCatalogTests` read a catalogue. Worth
+a line in your README, because unlike `PrivateAssets="all"` above this one fails quietly: the tool
+reports a catalogue of zero rules, indistinguishable from an assembly that declares none.
+
 ## What propagates to your consumers
 
 If your catalogue references `DiagnosticCatalog.Analyzers`, the analyzers reach **your consumers**
