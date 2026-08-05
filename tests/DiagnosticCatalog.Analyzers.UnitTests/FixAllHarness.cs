@@ -35,11 +35,24 @@ namespace DiagnosticCatalog.Analyzers.UnitTests;
 internal static class FixAllHarness
 {
     /// <summary>Applies the fix carrying <paramref name="equivalenceKey"/> to every occurrence.</summary>
+    /// <param name="lastOccurrenceFirst">
+    /// Hands the engine the occurrences sorted by DESCENDING position — the last one in the document
+    /// first. Nothing promises the order they arrive in: the analyzer reports them as it finds them,
+    /// and these run concurrently, so the order varies between runs of the same input. Measured, it
+    /// did: eight runs of one file produced its imports in two different orders.
+    /// <para>
+    /// Sorted rather than reversed, and that is what makes a test out of it. Reversing an order that
+    /// is itself arbitrary is still arbitrary — a test written that way failed twice in eight runs
+    /// against the unfixed code and passed the other six. Descending is a known order, so a fix that
+    /// honours the document fails it every time and one that does not, never.
+    /// </para>
+    /// </param>
     internal static async Task<string> ApplyAsync(
         DiagnosticAnalyzer analyzer,
         CodeFixProvider provider,
         string source,
-        string equivalenceKey)
+        string equivalenceKey,
+        bool lastOccurrenceFirst = false)
     {
         (Document document, ImmutableArray<Diagnostic> reported) =
             await AnalyseAsync(analyzer, provider, source).ConfigureAwait(false);
@@ -60,7 +73,9 @@ internal static class FixAllHarness
             FixAllScope.Document,
             equivalenceKey,
             provider.FixableDiagnosticIds,
-            new Reported(reported),
+            new Reported(lastOccurrenceFirst
+                ? [.. reported.OrderByDescending(d => d.Location.SourceSpan.Start)]
+                : reported),
             CancellationToken.None);
 
         CodeAction? action = await fixAll.GetFixAsync(context).ConfigureAwait(false);
