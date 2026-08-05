@@ -14,7 +14,22 @@ internal static class CatalogParser
     internal static Previous? ReadPrevious(string path)
     {
         if (!File.Exists(path)) return null;
-        string text = File.ReadAllText(path);
+
+        // Normalised before anything below reads it, and this is a correctness requirement rather
+        // than tidiness. Every pattern here is anchored to the end of a line or spells \n outright,
+        // and .NET puts the Multiline `$` immediately BEFORE the \n — so on a CRLF file the
+        // character preceding the anchor is \r and none of them match. What comes back is not an
+        // empty result but a plausible one: the sourceVersion pattern is not anchored, so it still
+        // reads, and the caller receives a Previous naming the right release with zero rules and
+        // zero categories. The run then reports every rule as added, deletes every constant an
+        // earlier run had carried forward as [Obsolete], and frees every published category name.
+        //
+        // The emitter writes LF (RenderSource ends on ReplaceLineEndings), so a file this tool has
+        // just written is never the problem. The round trip through git is: core.autocrlf converts
+        // on checkout, which is the Git for Windows default and the windows-latest default. This
+        // repository escapes it through .gitattributes; `dcat` ships, and a consumer's repository
+        // has no such rule.
+        string text = File.ReadAllText(path).ReplaceLineEndings("\n");
 
         string sourceVersion = Regex.Match(text, @"sourceVersion:\s*""([^""]*)""",
                                            RegexOptions.None, RegexLimits.MatchTimeout).Groups[1].Value;
