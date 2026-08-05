@@ -80,6 +80,25 @@
     },
     {
       "$comment": [
+        "The ASP.NET Core and Blazor analyzers. Every Microsoft.NET.Sdk.Web project runs them and",
+        "nobody installs them: they arrive inside the shared framework, and the web SDK references",
+        "that framework rather than any analyzer package.",
+        "",
+        "Microsoft.AspNetCore.App.Ref is the TARGETING PACK, and it is a perfectly ordinary package on",
+        "nuget.org — that is how the SDK acquires it. So this entry needs no special shape; reading",
+        "the pack from a feed is what makes the mirrored release one a consumer can also name.",
+        "",
+        "The pack carries source generators beside the analyzers. They declare no rule of their own",
+        "here, so reading the whole pack yields exactly the rules the two analyzer assemblies do —",
+        "and naming the pack states what a consumer actually receives."
+      ],
+      "package": "Microsoft.AspNetCore.App.Ref",
+      "namespace": "DiagnosticCatalog.AspNetCore",
+      "container": "AspNetCoreRule",
+      "output": "../src/DiagnosticCatalog.AspNetCore/AspNetCoreRules.g.cs"
+    },
+    {
+      "$comment": [
         "The xUnit.net analyzers. They reach a project TRANSITIVELY — xunit depends on",
         "xunit.analyzers — so a test project has them without anybody choosing them, which is why",
         "their rules are suppressed in source rather than configured away in .editorconfig."

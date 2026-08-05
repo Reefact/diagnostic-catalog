@@ -17,6 +17,7 @@ on:
       - 'nunit-v*.*.*'
       - 'mstest-v*.*.*'
       - 'trimming-v*.*.*'
+      - 'aspnetcore-v*.*.*'
   workflow_dispatch:
     inputs:
       train:
@@ -33,6 +34,7 @@ on:
           - nunit
           - mstest
           - trimming
+          - aspnetcore
         required: true
       version:
         description: 'Package version, without any prefix (e.g. 1.2.3; a dry run can use any SemVer, e.g. 0.0.0-dry.1)'

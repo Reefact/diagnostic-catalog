@@ -23,6 +23,7 @@ flowchart TB
         NU["DiagnosticCatalog.NUnit"]
         MS["DiagnosticCatalog.MSTest"]
         TR["DiagnosticCatalog.Trimming"]
+        AS["DiagnosticCatalog.AspNetCore"]
         CLI["DiagnosticCatalog.Cli<br/><i>ships as dcat</i>"]
         A -. "bundles" .-> CF
         S --> F
@@ -33,6 +34,7 @@ flowchart TB
         NU --> F
         MS --> F
         TR --> F
+        AS --> F
         SELF --> F
     end
     subgraph ENG["eng/ — build-time only"]

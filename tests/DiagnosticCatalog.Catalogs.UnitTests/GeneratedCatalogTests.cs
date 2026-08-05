@@ -28,6 +28,7 @@ public sealed class GeneratedCatalogTests
         "DiagnosticCatalog.NUnit",
         "DiagnosticCatalog.MSTest",
         "DiagnosticCatalog.Trimming",
+        "DiagnosticCatalog.AspNetCore",
     ];
 
     private static Assembly Load(string name) =>
