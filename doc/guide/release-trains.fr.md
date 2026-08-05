@@ -4,7 +4,7 @@
 🇬🇧 [English](./release-trains.en.md) | 🇫🇷 Français (ce fichier)
 
 Pour quiconque ajoute un projet, coupe une release, ou se demande pourquoi un commit exige un scope.
-Quatorze trains, une déclaration, et une règle qui découle des deux.
+Quinze trains, une déclaration, et une règle qui découle des deux.
 
 ## Pourquoi pas une seule version
 
@@ -13,7 +13,7 @@ très stable. Liez-les à un seul numéro et chaque rafraîchissement Sonar fait
 fondation — ce qui annonce à tous ses consommateurs que quelque chose a changé alors que rien n'a
 bougé.
 
-Le dépôt publie donc sur **quatorze lignes indépendantes**
+Le dépôt publie donc sur **quinze lignes indépendantes**
 ([ADR-0002](../adr/0002-partition-releases-into-trains-by-commit-scope.fr.md),
 [ADR-0015](../adr/0015-a-catalogues-version-runs-on-its-own-line.fr.md)) :
 
@@ -107,6 +107,9 @@ flowchart TB
     subgraph PA["publicapi"]
         PAC["DiagnosticCatalog.PublicApi"]
     end
+    subgraph BA["bannedapi"]
+        BAC["DiagnosticCatalog.BannedApi"]
+    end
     CF["DiagnosticCatalog.CodeFixes<br/><i>aucun train — embarqué dans le paquet des analyseurs</i>"]
     GEN["eng/CatalogGen<br/><i>aucun train — embarqué dans dcat</i>"]
     A -. "empaquette" .-> CF
@@ -123,6 +126,7 @@ flowchart TB
     SYC -- "PackageReference" --> F
     ROC -- "PackageReference" --> F
     PAC -- "PackageReference" --> F
+    BAC -- "PackageReference" --> F
     SELF -- "PackageReference" --> F
 ```
 

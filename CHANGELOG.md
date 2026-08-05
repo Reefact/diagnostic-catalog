@@ -25,6 +25,7 @@ project:
 * [`syslib`](src/DiagnosticCatalog.Syslib/CHANGELOG.md)
 * [`roslyn`](src/DiagnosticCatalog.Roslyn/CHANGELOG.md)
 * [`publicapi`](src/DiagnosticCatalog.PublicApi/CHANGELOG.md)
+* [`bannedapi`](src/DiagnosticCatalog.BannedApi/CHANGELOG.md)
 
 ## [Unreleased]
 

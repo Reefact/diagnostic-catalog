@@ -3,7 +3,7 @@
 🌍 **Languages:**  
 🇬🇧 English (this file) | 🇫🇷 [Français](./architecture.fr.md)
 
-For anyone contributing, reviewing, or wondering why there are twenty-nine projects for what sounds
+For anyone contributing, reviewing, or wondering why there are thirty projects for what sounds
 like one idea. Every split here is forced by something; this page says by what.
 
 ## The map

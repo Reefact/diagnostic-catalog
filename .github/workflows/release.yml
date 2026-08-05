@@ -21,6 +21,7 @@ on:
       - 'syslib-v*.*.*'
       - 'roslyn-v*.*.*'
       - 'publicapi-v*.*.*'
+      - 'bannedapi-v*.*.*'
   workflow_dispatch:
     inputs:
       train:
@@ -41,6 +42,7 @@ on:
           - syslib
           - roslyn
           - publicapi
+          - bannedapi
         required: true
       version:
         description: 'Package version, without any prefix (e.g. 1.2.3; a dry run can use any SemVer, e.g. 0.0.0-dry.1)'

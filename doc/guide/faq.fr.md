@@ -33,7 +33,7 @@ incomplète.
 
 Parce qu'il n'y a rien à référencer, et rien dedans à référencer.
 
-**Rien à référencer.** Neuf de ces paquets livrent leurs assemblages sous `analyzers/`, sans dossier
+**Rien à référencer.** Dix de ces paquets livrent leurs assemblages sous `analyzers/`, sans dossier
 `lib/` ni `ref/`, et déclarent `<developmentDependency>true</developmentDependency>`. NuGet remet un
 tel assemblage au compilateur comme greffon d'analyse ; il n'entre jamais dans l'ensemble des
 références du consommateur. Il n'y a pas de `using` à écrire, quoi que porte l'assemblage.
@@ -45,7 +45,7 @@ lequel tout projet compile. Leurs analyseurs n'y sont pas : ils siègent à côt
 entier, assemblages de référence compris, aucune constante d'identifiant de règle n'apparaît hors de
 ce dossier — la moitié que l'on peut référencer est celle où il n'y a rien.
 
-**Rien dedans à référencer.** Mesuré sur les métadonnées de tous les assemblages d'analyse des douze
+**Rien dedans à référencer.** Mesuré sur les métadonnées de tous les assemblages d'analyse des treize
 paquets que reflètent les catalogues, ressources satellites mises à part :
 
 | Paquet | Types publics | `public const` | Constantes d'identifiant ou de catégorie |
@@ -59,6 +59,7 @@ paquets que reflètent les catalogues, ressources satellites mises à part :
 | `MSTest.Analyzers` 4.3.3 | 182 | 0 | 0 |
 | `Microsoft.CodeAnalysis.Analyzers` 5.6.0 | 309 | 90 | 0 |
 | `Microsoft.CodeAnalysis.PublicApiAnalyzers` 5.6.0 | 115 | 38 | 0 |
+| `Microsoft.CodeAnalysis.BannedApiAnalyzers` 5.6.0 | 238 | 80 | 0 |
 | `Microsoft.NET.ILLink.Tasks` 10.0.10 | 80 | 262 | 0 |
 | `Microsoft.AspNetCore.App.Ref` 10.0.10 | 96 | 435 | 0 |
 | `Microsoft.NETCore.App.Ref` 10.0.10 | 260 | 369 | 37 |
@@ -77,7 +78,7 @@ son catalogue. Plus d'identifiants que n'en porte le catalogue, et toujours rien
 siège dans un assemblage de générateur que le compilateur charge comme greffon, ce qui est le
 paragraphe ci-dessus.
 
-**Et une catégorie n'est nulle part une constante** — zéro, dans les douze. Une catégorie n'existe
+**Et une catégorie n'est nulle part une constante** — zéro, dans les treize. Une catégorie n'existe
 que sur les instances de `DiagnosticDescriptor` qu'un analyseur construit à l'exécution, à partir de
 ressources localisables. Un argument d'attribut doit être une constante de compilation : même en
 passant par `SupportedDiagnostics` par réflexion, on obtient une `string` qui ne peut pas occuper la

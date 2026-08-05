@@ -32,6 +32,7 @@ public sealed class GeneratedCatalogTests
         "DiagnosticCatalog.Syslib",
         "DiagnosticCatalog.Roslyn",
         "DiagnosticCatalog.PublicApi",
+        "DiagnosticCatalog.BannedApi",
     ];
 
     private static Assembly Load(string name) =>
