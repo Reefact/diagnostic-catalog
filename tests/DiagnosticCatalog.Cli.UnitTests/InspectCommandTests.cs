@@ -168,6 +168,26 @@ public sealed class InspectCommandTests : IDisposable
     }
 
     [Fact]
+    public async Task Explain_writes_a_reference_that_compiles_when_the_type_is_not_named_after_the_id()
+    {
+        // The §8.2 case: "ACME-0003" carries a character C# forbids in a type name, so the type is
+        // ACME_0003 and both spellings exist. Only the TYPE name can be written at a use site — a
+        // line naming the identifier there does not compile, which is the one thing the line this
+        // command exists to produce may not do.
+        (int exitCode, string output, _) =
+            await RunAsync("explain", Catalogue(CatalogueFixture.RuleNamedApartFromItsId), "ACME-0003");
+
+        Assert.Equal(ExitCodes.Success, exitCode);
+
+        // The identifier is still what the rule declares, and is still reported as such.
+        Assert.Contains("id        ACME-0003", output, StringComparison.Ordinal);
+
+        Assert.Contains("AcmeRules.ACME_0003.Category,", output, StringComparison.Ordinal);
+        Assert.Contains("AcmeRules.ACME_0003.Id,", output, StringComparison.Ordinal);
+        Assert.DoesNotContain("ACME-0003.Category", output, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public async Task Explain_reports_the_rule_s_own_facts()
     {
         (int _, string output, _) = await RunAsync("explain", Catalogue(), "ACME0002");

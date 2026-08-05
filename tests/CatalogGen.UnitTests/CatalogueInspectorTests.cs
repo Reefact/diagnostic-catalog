@@ -195,4 +195,22 @@ public sealed class CatalogueInspectorTests : IDisposable
             Directory.SetCurrentDirectory(original);
         }
     }
+
+    [Fact]
+    public void The_reader_reports_a_rule_s_type_name_apart_from_its_identifier()
+    {
+        // They are the same string for almost every rule, which is exactly why carrying only one of
+        // them went unnoticed: a use site must write the TYPE, and the identifier is what the rule
+        // declares. Where §8.2 forces them apart, a reader holding one cannot recover the other.
+        CatalogueContents? contents = CatalogueInspector.Read(
+            CatalogueFixture.Write(_work, "Named.Apart", CatalogueFixture.RuleNamedApartFromItsId));
+
+        Assert.NotNull(contents);
+
+        CataloguedRule rule = Assert.Single(contents.Rules);
+
+        Assert.Equal("ACME-0003", rule.Id);
+        Assert.Equal("ACME_0003", rule.TypeName);
+        Assert.Equal("AcmeRules", rule.Container);
+    }
 }

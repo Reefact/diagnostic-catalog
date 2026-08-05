@@ -10,8 +10,19 @@ namespace CatalogGen;
 /// <c>StyleCopRule.SA1000.Category</c>, never <c>SA1000.Category</c>. Carried because the whole
 /// value of explaining a rule is producing a line that can be copied rather than retyped.
 /// </param>
+/// <param name="TypeName">
+/// The rule TYPE's own name, which is what a use site writes — <c>ACME_0003</c>, never the
+/// <c>ACME-0003</c> it declares.
+/// <para>
+/// Carried apart from <see cref="Id"/> because the two are only usually the same string. §8.2
+/// recommends naming a rule type after its identifier and DCAT0005 reports the case where C# will
+/// not allow it: an identifier carrying a character forbidden in a type name leaves the type as
+/// that identifier legalised, and both spellings then exist. A reader holding only the identifier
+/// cannot recover the name, and a reference written from it does not compile.
+/// </para>
+/// </param>
 public sealed record CataloguedRule(
-    string Id, string Container, string Category, string HelpLinkUri, bool Retired);
+    string Id, string TypeName, string Container, string Category, string HelpLinkUri, bool Retired);
 
 /// <summary>
 /// What a compiled catalogue assembly declares.
@@ -91,6 +102,7 @@ public static class CatalogueInspector
         // reader to wonder why it is always empty.
         rules.Add(new CataloguedRule(
             Constant(type, "Id") ?? type.Name,
+            type.Name,
             type.DeclaringType?.Name ?? string.Empty,
             Constant(type, "Category") ?? string.Empty,
             Constant(type, "HelpLinkUri") ?? string.Empty,
