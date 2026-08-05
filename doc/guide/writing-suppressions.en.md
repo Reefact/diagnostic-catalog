@@ -68,7 +68,8 @@ There is one for [SonarAnalyzer](https://www.nuget.org/packages/DiagnosticCatalo
 one for [StyleCop](https://www.nuget.org/packages/DiagnosticCatalog.StyleCop) (`SAxxxx`) and one
 for [the Roslyn IDE rules](https://www.nuget.org/packages/DiagnosticCatalog.CodeStyle) (`IDExxxx`)
 and one for [xUnit's](https://www.nuget.org/packages/DiagnosticCatalog.Xunit) (`xUnitxxxx`) and one
-for [NUnit's](https://www.nuget.org/packages/DiagnosticCatalog.NUnit) (`NUnitxxxx`).
+for [NUnit's](https://www.nuget.org/packages/DiagnosticCatalog.NUnit) (`NUnitxxxx`) and one
+for [MSTest's](https://www.nuget.org/packages/DiagnosticCatalog.MSTest) (`MSTESTxxxx`).
 
 That is the only line you need for the guarantee itself. A misspelled rule is now a compile error,
 because `SonarRule.S1144.Id` is a member the compiler resolves — no analyzer is involved in that.
