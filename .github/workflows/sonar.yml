@@ -16,10 +16,31 @@ on:
       - main
   workflow_dispatch:
 
-# Cancel superseded runs on the same branch / PR.
+# Supersede on a pull request; queue on main.
+#
+# A pull request analysis describes its head commit, so a new push replaces the question it
+# was answering: cancelling the run in flight is right, and it frees the runner.
+#
+# A push to main is not the same thing. Every merge is a state this project was in, and the
+# analysis is the only record of it — the quality gate verdict for that commit exists nowhere
+# else. Cancelling meant the FIRST of two close merges never got one. Measured here: the run
+# for the merge of #95 was killed 83 seconds in by the merge of #96, and the exclusion #95
+# shipped went unconfirmed until the next run happened to cover it. No result was wrong,
+# because the later run analysed a main that already contained the earlier merge — but no
+# verdict was ever attributed to #95, and a regression bisected on the dashboard would have
+# pointed at the wrong merge.
+#
+# Queueing also settles the ordering that cancelling was quietly enforcing: serialised runs
+# upload in commit order, so the project state can never come to reflect an older commit than
+# the last one analysed. Keying the group by SHA instead would run them in parallel and lose
+# exactly that.
+#
+# This narrows the loss rather than abolishing it. GitHub keeps only ONE run waiting per
+# group, so in a burst of three the middle one is dropped while still queued. What it
+# guarantees is that a run already analysing is never killed.
 concurrency:
   group: sonar-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 # Least privilege: the analysis only reads the repository. Pull request decoration is delivered
 # by the SonarQube Cloud GitHub App, not by this workflow's token.
