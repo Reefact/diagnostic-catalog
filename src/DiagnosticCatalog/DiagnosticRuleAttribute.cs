@@ -40,10 +40,20 @@ namespace DiagnosticCatalog;
 ///   <item>
 ///     <description>
 ///     <c>public const string Category</c> — the category declared by the originating
-///     analyzer's <c>DiagnosticDescriptor</c>, non-empty.
+///     analyzer's <c>DiagnosticDescriptor</c>, non-empty, and reaching a constant declared
+///     in a class marked <see cref="DiagnosticCategoryAttribute"/>.
 ///     </description>
 ///   </item>
 /// </list>
+/// <para>
+/// The last of those is a requirement about the catalogue rather than about the rule. A
+/// rule spelling its category as a literal compiles, folds to the same string in metadata
+/// and suppresses exactly what it should; what it gives up is the single declaration per
+/// value, on a catalogue that repeats very few categories over very many rules. Reaching
+/// the value through a declared constant costs nothing — a <c>const</c> initialised from
+/// another <c>const</c> is still a compile-time constant — and <c>DCAT0011</c> reports a
+/// rule that does not.
+/// </para>
 /// <para>
 /// A rule may expose further optional constants — <c>Title</c>, <c>MessageFormat</c>,
 /// <c>Description</c>, <c>HelpLinkUri</c> — which are the remaining
@@ -64,13 +74,19 @@ namespace DiagnosticCatalog;
 ///
 /// namespace JustDummies.Analyzers.Suppressions;
 ///
+/// [DiagnosticCategory]
+/// internal static class DummiesCategory
+/// {
+///     public const string Usage = "Usage";
+/// }
+///
 /// public static class Dummies
 /// {
 ///     [DiagnosticRule]
 ///     public static class JD0007
 ///     {
 ///         public const string Id = nameof(JD0007);
-///         public const string Category = "Usage";
+///         public const string Category = DummiesCategory.Usage;
 ///     }
 /// }
 /// </code>
