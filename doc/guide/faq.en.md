@@ -107,8 +107,9 @@ Automation finds the change; a human accepts it.
 ## Why must `--solution` projects declare a property?
 
 Because guessing is not close enough. Measured on this repository: "references `Microsoft.CodeAnalysis`"
-matches six projects of which one is an analyzer; "declares a `DiagnosticAnalyzer` subclass" matches
-two of which one is a fixture written to *fail* construction.
+matches nine projects of which one is an analyzer; "declares a `DiagnosticAnalyzer` subclass" matches
+four of which one is a fixture written to *fail* construction, one needs a facade the host must carry,
+and one does not load whole.
 
 A project missed means its rules are absent, an absent rule is indistinguishable from a retired one,
 and they are published as `[Obsolete]` — telling that vendor's users something false.

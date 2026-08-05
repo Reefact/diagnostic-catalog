@@ -1,5 +1,7 @@
 using System.Globalization;
 using System.Reflection;
+using System.Reflection.Metadata;
+using System.Reflection.PortableExecutable;
 using System.Text.Json;
 using CatalogGen;
 using Microsoft.CodeAnalysis;
@@ -132,8 +134,33 @@ static Assembly? ResolveAgainstLoaded(ResolveEventArgs e, HashSet<string> resolv
 // Appends to dropped whatever this assembly could not yield, so the run can refuse a read that lost
 // something. An assembly that fails to load entirely is the worst case and the quietest: it
 // contributes no analyzer type at all, so no count anywhere is short.
+//
+// The analyzers are found the way the COMPILER finds them: by reading metadata for the types
+// [DiagnosticAnalyzer] names, and loading those (ADR-0031). The difference from asking the assembly
+// for every type it declares is not a matter of taste, and it is not about speed either.
+//
+// An analyzer package is mostly not analyzers. It carries code fixes, internal helpers, and types
+// compiled against a Roslyn or a facade that this process has no reason to hold — and materialising
+// a type means resolving its base type and its interfaces, so those fail. They failed as a group,
+// through one ReflectionTypeLoadException, and a type that failed to load has no name left to ask
+// about: the run could not tell whether what it lost was a code fix or an analyzer whose rule would
+// be published as retired, so it refused everything. That refusal was right on the evidence
+// available and wrong about the packages it turned away — Microsoft.CodeAnalysis.CSharp.CodeStyle,
+// Meziantou.Analyzer and Microsoft.CodeAnalysis.PublicApiAnalyzers each yielded their full set of
+// descriptors while being refused for helpers that declare none.
+//
+// Reading the attribute first makes the question answerable. Every analyzer the assembly declares is
+// known BY NAME before anything is loaded, so "did one go missing" is asked of a list rather than of
+// a hole. And it is the same list the compiler works from: an analyzer without the attribute is
+// never loaded by any host, reports no diagnostic in any build, and a catalogue that published it
+// would describe rules no consumer can ever receive.
 static IEnumerable<Type> AnalyzerTypesIn(string dll, List<string> dropped)
 {
+    // Null means the metadata itself could not be read, which is already recorded as a shortfall:
+    // an assembly nobody can enumerate may declare analyzers nobody will ever see.
+    List<string>? declared = DeclaredAnalyzerNames(dll, dropped);
+    if (declared is null || declared.Count == 0) return [];
+
     Assembly asm;
     // S3885 asks for Assembly.Load. It cannot do this: Load resolves an assembly by NAME through
     // the runtime's probing paths, and this path is a file the caller extracted moments ago into
@@ -154,18 +181,123 @@ static IEnumerable<Type> AnalyzerTypesIn(string dll, List<string> dropped)
         return [];
     }
 
-    Type[] types;
-    try { types = asm.GetTypes(); }
-    catch (ReflectionTypeLoadException ex)
+    // The attribute is matched on its name, as the compiler matches it, so a same-named attribute
+    // from somewhere else reaches this point. The base type is what settles it, and a type that is
+    // not a DiagnosticAnalyzer is not a shortfall — it declares no rule, so nothing is missing when
+    // it is passed over. Abstract likewise: nothing constructs one.
+    return declared.Select(name => LoadDeclaredAnalyzer(asm, name, dropped))
+                   .OfType<Type>()
+                   .Where(type => !type.IsAbstract && typeof(DiagnosticAnalyzer).IsAssignableFrom(type))
+                   .ToList();
+}
+
+// One named analyzer, loaded. Null when it could not be, which IS a shortfall and is recorded as
+// one: the attribute said this type is an analyzer, so whatever stopped it from loading stopped a
+// rule from arriving.
+static Type? LoadDeclaredAnalyzer(Assembly asm, string name, List<string> dropped)
+{
+    Type? type;
+    // Broad for the same reason the load above is, and throwOnError stays false because it does not
+    // cover the interesting failures anyway — a base type in an assembly that is not there surfaces
+    // as a FileNotFoundException either way.
+    try { type = asm.GetType(name, throwOnError: false); }
+    catch (Exception ex)
     {
-        // The types that did load are still worth reading; the ones that did not are the reason
-        // the run will refuse. An analyzer among them would otherwise vanish without a trace.
-        types = ex.Types.Where(t => t is not null).ToArray()!;
-        dropped.Add($"{Path.GetFileName(dll)}: {ex.LoaderExceptions.Length} type(s) could not be loaded " +
-                    $"({ex.LoaderExceptions.FirstOrDefault()?.Message ?? "no detail given"})");
+        dropped.Add($"{name}: declares [DiagnosticAnalyzer] but could not be loaded " +
+                    $"({ex.GetType().Name}: {ex.Message})");
+
+        return null;
     }
 
-    return types.Where(t => !t.IsAbstract && typeof(DiagnosticAnalyzer).IsAssignableFrom(t));
+    if (type is null)
+        dropped.Add($"{name}: declares [DiagnosticAnalyzer] but no such type could be loaded");
+
+    return type;
+}
+
+// The names of the types this assembly marks with [DiagnosticAnalyzer], read from metadata without
+// loading anything. Null when the metadata could not be read at all, which the caller treats as a
+// shortfall; an empty list when the assembly simply declares no analyzer, which is not one — half
+// the assemblies in an analyzer package are dependencies that were never going to declare any.
+static List<string>? DeclaredAnalyzerNames(string dll, List<string> dropped)
+{
+    try
+    {
+        using FileStream file = File.OpenRead(dll);
+        using PEReader pe = new(file);
+
+        // A resource-only or native file declares no type at all. Nothing is lost by saying so, and
+        // it is not the same event as metadata that is present and unreadable.
+        if (!pe.HasMetadata) return [];
+
+        MetadataReader metadata = pe.GetMetadataReader();
+
+        return metadata.TypeDefinitions
+                       .Select(metadata.GetTypeDefinition)
+                       .Where(type => MarksAnAnalyzer(metadata, type))
+                       .Select(type => ReflectionName(metadata, type))
+                       .ToList();
+    }
+    catch (Exception ex)
+    {
+        dropped.Add($"{Path.GetFileName(dll)}: its metadata could not be read " +
+                    $"({ex.GetType().Name}: {ex.Message})");
+
+        return null;
+    }
+}
+
+// True when the type carries [DiagnosticAnalyzer]. Matched on the attribute's simple name, which is
+// what the compiler matches on: the attribute reaches this assembly as a TypeReference into whatever
+// Microsoft.CodeAnalysis it was compiled against, and pinning the namespace would make the match
+// depend on which of those it was. The caller confirms the base type afterwards, so a coincidence
+// costs a type that is skipped rather than a rule that is invented.
+static bool MarksAnAnalyzer(MetadataReader metadata, TypeDefinition type)
+    => type.GetCustomAttributes()
+           .Select(metadata.GetCustomAttribute)
+           .Any(attribute => AttributeName(metadata, attribute) == "DiagnosticAnalyzerAttribute");
+
+// The simple name of an attribute's own type. An attribute declared in another assembly — which
+// [DiagnosticAnalyzer] always is — arrives as a MemberReference to a TypeReference; the
+// MethodDefinition case is the same attribute declared in the assembly being read, and costs one
+// branch rather than an assumption about who compiled what.
+static string? AttributeName(MetadataReader metadata, CustomAttribute attribute)
+{
+    switch (attribute.Constructor.Kind)
+    {
+        case HandleKind.MemberReference:
+            MemberReference reference =
+                metadata.GetMemberReference((MemberReferenceHandle)attribute.Constructor);
+
+            return reference.Parent.Kind == HandleKind.TypeReference
+                       ? metadata.GetString(
+                           metadata.GetTypeReference((TypeReferenceHandle)reference.Parent).Name)
+                       : null;
+
+        case HandleKind.MethodDefinition:
+            MethodDefinition definition =
+                metadata.GetMethodDefinition((MethodDefinitionHandle)attribute.Constructor);
+
+            return metadata.GetString(metadata.GetTypeDefinition(definition.GetDeclaringType()).Name);
+
+        default:
+            return null;
+    }
+}
+
+// The name Assembly.GetType answers to, which is not the name metadata stores. A nested type is
+// reached through its declaring type with a '+', and carries no namespace of its own — the
+// outermost one holds it. Analyzers are routinely nested inside the service that owns them, so this
+// is the ordinary case rather than a corner of it.
+static string ReflectionName(MetadataReader metadata, TypeDefinition type)
+{
+    string name = metadata.GetString(type.Name);
+    if (type.IsNested)
+        return ReflectionName(metadata, metadata.GetTypeDefinition(type.GetDeclaringType())) + "+" + name;
+
+    string @namespace = metadata.GetString(type.Namespace);
+
+    return string.IsNullOrEmpty(@namespace) ? name : @namespace + "." + name;
 }
 
 // True when the type was constructed, whether or not it declared any descriptor. An analyzer that

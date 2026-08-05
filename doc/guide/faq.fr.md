@@ -114,8 +114,9 @@ L'automatisation trouve le changement ; un humain l'accepte.
 ## Pourquoi les projets de `--solution` doivent-ils déclarer une propriété ?
 
 Parce que deviner n'est pas assez juste. Mesuré sur ce dépôt : « référence `Microsoft.CodeAnalysis` »
-correspond à six projets dont un est un analyseur ; « déclare une sous-classe de `DiagnosticAnalyzer` »
-correspond à deux dont un est un montage écrit pour *échouer* à la construction.
+correspond à neuf projets dont un est un analyseur ; « déclare une sous-classe de `DiagnosticAnalyzer` »
+correspond à quatre dont un est un montage écrit pour *échouer* à la construction, un exige une façade
+que l'hôte doit porter, et un ne charge pas en entier.
 
 Un projet manqué, ce sont ses règles absentes ; une règle absente est indiscernable d'une règle
 retirée ; et elles sont publiées en `[Obsolete]` — disant aux utilisateurs de cet éditeur quelque

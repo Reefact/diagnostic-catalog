@@ -39,16 +39,22 @@ n'a pas besoin.
 C'est la décision d'où découle le reste
 ([ADR-0009](../adr/0009-generate-catalog-content-from-analyzer-descriptors.fr.md)).
 
-`dcat` charge les assemblages d'analyseur, **construit chaque `DiagnosticAnalyzer` qu'il y trouve**,
-et lit les instances de `DiagnosticDescriptor` qu'ils déclarent réellement. Pas le site de
-documentation de l'éditeur, pas un JSON de métadonnées livré à côté du paquet.
+`dcat` lit les métadonnées des assemblages d'analyseur pour y trouver les types qu'ils marquent
+`[DiagnosticAnalyzer]`, **construit ceux-là**, et lit les instances de `DiagnosticDescriptor` qu'ils
+déclarent réellement. Pas le site de documentation de l'éditeur, pas un JSON de métadonnées livré à
+côté du paquet.
+
+Les trouver par l'attribut, c'est ainsi que le compilateur les trouve, et le catalogue le suit plutôt
+que de lire chaque type que l'assemblage déclare
+([ADR-0031](../adr/0031-find-analyzers-the-way-the-compiler-finds-them.fr.md)). Un analyseur que
+l'attribut ne nomme pas n'est chargé par aucun hôte et ne signale rien dans aucun build.
 
 ```mermaid
 flowchart LR
     SRC["un paquet, un .nupkg,<br/>un projet, une solution,<br/>ou des assemblages sur disque"]
     SRC --> ACQ["acquisition<br/><i>résoudre, télécharger, localiser</i>"]
     ACQ --> WORK["worker de descripteurs<br/><i>un processus séparé</i>"]
-    WORK --> CTOR["construire chaque DiagnosticAnalyzer"]
+    WORK --> CTOR["construire les types que<br/>[DiagnosticAnalyzer] nomme"]
     CTOR --> DESC["les instances de DiagnosticDescriptor<br/>qu'ils déclarent réellement"]
     DESC --> EMIT["émettre, en ordre ordinal,<br/>en culture invariante"]
     EMIT --> OUT["Catalogue.g.cs"]
@@ -118,8 +124,8 @@ Mesuré sur **ce** dépôt :
 
 | Heuristique | Projets correspondants | Réellement un analyseur |
 | --- | --- | --- |
-| référence `Microsoft.CodeAnalysis` | 6 | 1 |
-| déclare une sous-classe de `DiagnosticAnalyzer` | 2 | 1 — l'autre est un montage écrit pour *échouer* à la construction |
+| référence `Microsoft.CodeAnalysis` | 9 | 1 |
+| déclare une sous-classe de `DiagnosticAnalyzer` | 4 | 1 — les trois autres sont des montages, écrits pour *échouer* à la construction, pour exiger une façade, et pour ne pas charger en entier |
 
 Lire le mauvais ensemble n'est pas un désagrément ici. Un projet manqué, ce sont ses règles absentes
 du catalogue ; une règle absente est indiscernable d'une règle retirée ; et elles sont publiées en

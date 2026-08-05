@@ -1495,10 +1495,14 @@ using DiagnosticCatalog.Sonar;
 
 ### 14.1 Comment un catalogue généré est produit
 
-Le générateur (`eng/CatalogGen`) charge l'assembly d'analyzer amont, construit
-chaque `DiagnosticAnalyzer` qu'elle contient et lit les `DiagnosticDescriptor`
-qu'ils déclarent. Les descriptors sont la seule source qui ne peut pas avoir
-dérivé.
+Le générateur (`eng/CatalogGen`) lit les métadonnées de l'assembly d'analyzer
+amont pour y trouver les types marqués `[DiagnosticAnalyzer]`, charge et
+construit ceux-là, et lit les `DiagnosticDescriptor` qu'ils déclarent. C'est
+ainsi que le compilateur trouve les analyzers, et les lire de la même façon est
+ce qui limite un catalogue aux règles que le build d'un consommateur peut
+réellement signaler
+([ADR-0031](adr/0031-find-analyzers-the-way-the-compiler-finds-them.fr.md)).
+Les descriptors sont la seule source qui ne peut pas avoir dérivé.
 
 ```text
 dotnet run --project eng/CatalogGen -- \

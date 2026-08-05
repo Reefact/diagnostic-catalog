@@ -34,6 +34,10 @@
       rather than satisfied with a fiction. Everything else the authoring rules check stays on.
     -->
     <NoWarn>$(NoWarn);RS2008</NoWarn>
+    <!-- RS1036 asks for it on any project declaring an analyzer, and there is no reason to refuse:
+         the authoring rules are what would catch this fixture drifting away from the shape a real
+         analyzer has, which is the only thing it is good for. -->
+    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
   </PropertyGroup>
 
   <!--

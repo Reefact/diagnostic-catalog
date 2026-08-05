@@ -14,7 +14,9 @@
     <Project Path="src/DiagnosticCatalog/DiagnosticCatalog.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/CatalogGen.AbsentContract/CatalogGen.AbsentContract.csproj" />
     <Project Path="tests/CatalogGen.AnalyzerFixture/CatalogGen.AnalyzerFixture.csproj" />
+    <Project Path="tests/CatalogGen.PartialLoadFixture/CatalogGen.PartialLoadFixture.csproj" />
     <Project Path="tests/CatalogGen.UnitTests/CatalogGen.UnitTests.csproj" />
     <Project Path="tests/DiagnosticCatalog.Analyzers.UnitTests/DiagnosticCatalog.Analyzers.UnitTests.csproj" />
     <Project Path="tests/DiagnosticCatalog.Catalogs.UnitTests/DiagnosticCatalog.Catalogs.UnitTests.csproj" />

@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    An analyzer assembly the worker cannot load ENTIRELY, for the test that says a type nobody asked
+    for must not fail the read.
+
+    CatalogGen.AnalyzerFixture next door reproduces an assembly whose unloadable type the host can
+    fix by carrying an identity. This one reproduces the case nothing can fix: a type whose interface
+    lives in an assembly that is simply not there. Upstream that is Microsoft.CodeAnalysis.Analyzers,
+    whose internal helpers implement a Roslyn interface that has since gained a member — same shape,
+    a type this process was never going to load, and no dependency of its own can answer it.
+
+    The absent assembly is CatalogGen.AbsentContract, referenced for one empty interface. Nothing
+    here has to arrange for it to go missing: the copy target in CatalogGen.UnitTests moves this
+    project's own assembly and nothing else, so the reference is dangling wherever the test reads it
+    from.
+  -->
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>CatalogGen.PartialLoadFixture</AssemblyName>
+    <RootNamespace>CatalogGen.PartialLoadFixture</RootNamespace>
+    <IsPackable>false</IsPackable>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <!-- FIX0002 is shipped to nobody and has no release to track. Same reasoning as the sibling
+         fixture, which the comment there sets out in full. -->
+    <NoWarn>$(NoWarn);RS2008</NoWarn>
+    <!-- RS1036 asks for it on any project declaring an analyzer, and there is no reason to refuse:
+         the authoring rules are what would catch this fixture drifting away from the shape a real
+         analyzer has, which is the only thing it is good for. -->
+    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CatalogGen.AbsentContract\CatalogGen.AbsentContract.csproj"
+                      PrivateAssets="all" />
+  </ItemGroup>
+
+</Project>

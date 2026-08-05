@@ -74,11 +74,22 @@
   <ItemGroup>
     <ProjectReference Include="..\CatalogGen.AnalyzerFixture\CatalogGen.AnalyzerFixture.csproj"
                       ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\CatalogGen.PartialLoadFixture\CatalogGen.PartialLoadFixture.csproj"
+                      ReferenceOutputAssembly="false" />
   </ItemGroup>
 
-  <Target Name="_CopyAnalyzerFixture" AfterTargets="Build">
+  <!--
+    One folder each, holding one assembly each. The partial-load fixture references the analyzer
+    fixture and neither folder has the other, which is what makes its helper type unloadable where
+    the test reads it — the same absence an analyzer package has for everything it does not ship.
+  -->
+  <Target Name="_CopyAnalyzerFixtures" AfterTargets="Build">
     <Copy SourceFiles="..\CatalogGen.AnalyzerFixture\bin\$(Configuration)\netstandard2.0\CatalogGen.AnalyzerFixture.dll"
           DestinationFolder="$(OutDir)analyzer-fixture"
+          SkipUnchangedFiles="true"
+          OverwriteReadOnlyFiles="true" />
+    <Copy SourceFiles="..\CatalogGen.PartialLoadFixture\bin\$(Configuration)\netstandard2.0\CatalogGen.PartialLoadFixture.dll"
+          DestinationFolder="$(OutDir)partial-load-fixture"
           SkipUnchangedFiles="true"
           OverwriteReadOnlyFiles="true" />
   </Target>
