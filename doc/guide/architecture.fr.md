@@ -19,12 +19,14 @@ flowchart TB
         N["DiagnosticCatalog.NetAnalyzers"]
         T["DiagnosticCatalog.StyleCop"]
         CS["DiagnosticCatalog.CodeStyle"]
+        XU["DiagnosticCatalog.Xunit"]
         CLI["DiagnosticCatalog.Cli<br/><i>livré sous le nom dcat</i>"]
         A -. "embarque" .-> CF
         S --> F
         N --> F
         T --> F
         CS --> F
+        XU --> F
         SELF --> F
     end
     subgraph ENG["eng/ — outillage de compilation"]

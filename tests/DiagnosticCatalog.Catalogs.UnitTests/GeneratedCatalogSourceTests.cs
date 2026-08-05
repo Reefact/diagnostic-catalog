@@ -24,6 +24,7 @@ public sealed class GeneratedCatalogSourceTests
         "NetAnalyzersRules.g.cs",
         "StyleCopRules.g.cs",
         "CodeStyleRules.g.cs",
+        "XunitRules.g.cs",
     ];
 
     /// <summary>

@@ -42,6 +42,17 @@
       "output": "../src/DiagnosticCatalog.Sonar/SonarRules.g.cs"
     },
     {
+      "$comment": [
+        "The xUnit.net analyzers. They reach a project TRANSITIVELY — xunit depends on",
+        "xunit.analyzers — so a test project has them without anybody choosing them, which is why",
+        "their rules are suppressed in source rather than configured away in .editorconfig."
+      ],
+      "package": "xunit.analyzers",
+      "namespace": "DiagnosticCatalog.Xunit",
+      "container": "XunitRule",
+      "output": "../src/DiagnosticCatalog.Xunit/XunitRules.g.cs"
+    },
+    {
       "package": "Microsoft.CodeAnalysis.NetAnalyzers",
       "namespace": "DiagnosticCatalog.NetAnalyzers",
       "container": "NetAnalyzersRule",
