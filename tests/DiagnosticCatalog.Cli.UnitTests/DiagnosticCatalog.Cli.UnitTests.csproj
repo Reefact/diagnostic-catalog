@@ -41,4 +41,13 @@
     <ProjectReference Include="..\..\src\DiagnosticCatalog.Cli\DiagnosticCatalog.Cli.csproj" />
   </ItemGroup>
 
+  <!--
+    The descriptor worker, beside this suite's own output. `generate` and `validate` read descriptors
+    by SPAWNING it, so a test that runs either of them to completion needs it here — the copy that
+    sits beside dcat.dll is in another directory, and DescriptorReader looks in AppContext.BaseDirectory.
+    Without this the reads return null, both commands answer 1, and the failure names the packaging
+    rather than the test. CatalogGen.UnitTests imports it for the same reason.
+  -->
+  <Import Project="..\..\build\BundleDescriptorWorker.props" />
+
 </Project>
