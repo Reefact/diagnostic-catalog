@@ -54,17 +54,17 @@ packages the catalogues mirror, satellite resources aside:
 | `xunit.analyzers` 1.27.0 | 178 | 219 | 0 |
 | `NUnit.Analyzers` 4.14.0 | 103 | 1 | 0 |
 | `MSTest.Analyzers` 4.3.3 | 182 | 0 | 0 |
+| `Microsoft.CodeAnalysis.Analyzers` 5.6.0 | 309 | 90 | 0 |
 | `Microsoft.NET.ILLink.Tasks` 10.0.10 | 80 | 262 | 0 |
 | `Microsoft.AspNetCore.App.Ref` 10.0.10 | 96 | 435 | 0 |
 | `Microsoft.NETCore.App.Ref` 10.0.10 | 260 | 369 | 37 |
-| `Microsoft.CodeAnalysis.Analyzers` 5.6.0 | 155 | 1820 | 72 |
 
 StyleCop is the clearest: 1314 types across its two assemblies, six of them public, and not one of
 those an analyzer. MSTest is the flattest: 182 public types with not a single public constant among
 them. `xunit.analyzers` is the sharpest: more public constants than it has public types — 219
 against 178 — and not one of them a rule id.
 
-Three packages leak, and none leaks a contract. NetAnalyzers declares nine rule ids as public
+Two packages leak, and neither leaks a contract. NetAnalyzers declares nine rule ids as public
 constants — seven named `RuleId` (`CA1008`, `CA1052`, `CA1069`, `CA1708`, `CA1715`, `CA1821`,
 `CA2214`) and two more on the P/Invoke analyzer (`CA1401`, `CA2101`) — against the 318 rules its
 catalogue holds. The runtime pack leaks the other way round: its source generators declare 37 such
@@ -72,16 +72,7 @@ constants, 31 distinct `SYSLIB` ids, against the 13 rules its catalogue holds. M
 catalogue carries, and still nothing to take: every one of them sits in a generator assembly the
 compiler loads as a plugin, which is the paragraph above.
 
-`Microsoft.CodeAnalysis.Analyzers` leaks the whole thing, and is the interesting case. A public
-`DiagnosticIds` class holds every one of the 52 rule ids its catalogue mirrors, `RS1001` through
-`RS2008`, plus `IDE0055`; a public `DiagnosticCategory` class holds 19 categories. That is, to the
-value, what a generated catalogue publishes — written by the vendor, complete, and correct. And it
-is unreachable: the package declares `<developmentDependency>true</developmentDependency>` and
-ships no `lib/`, so both assemblies reach the compiler as plugins and no `using` resolves to
-either. The one vendor that did the work put it where it cannot be referenced.
-
-**And a category is a constant in exactly one of the eleven** — those 19, as unreachable as the
-ids beside them. Everywhere else it is zero. A category exists only on
+**And a category is nowhere a constant at all** — zero, across all eleven. A category exists only on
 the `DiagnosticDescriptor` instances an analyzer builds at run time, out of localisable resources.
 An attribute argument must be a compile-time constant, so even reflecting over
 `SupportedDiagnostics` yields a `string` that cannot occupy the position.
@@ -90,8 +81,8 @@ Which is why generation happens where it does: constructing the analyzers and re
 descriptors ([ADR-0009](../adr/0009-generate-catalog-content-from-analyzer-descriptors.en.md)) is
 the only way to obtain a category at all, and it has to happen before the consumer compiles.
 
-None of this is a law. A vendor could publish a package of constants beside its analyzer tomorrow —
-one the compiler would actually reference. None has.
+None of this is a law. A vendor could publish a package of constants beside its analyzer tomorrow.
+None has.
 
 ## Can I just write my own constants file?
 

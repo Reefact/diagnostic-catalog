@@ -57,17 +57,17 @@ paquets que reflètent les catalogues, ressources satellites mises à part :
 | `xunit.analyzers` 1.27.0 | 178 | 219 | 0 |
 | `NUnit.Analyzers` 4.14.0 | 103 | 1 | 0 |
 | `MSTest.Analyzers` 4.3.3 | 182 | 0 | 0 |
+| `Microsoft.CodeAnalysis.Analyzers` 5.6.0 | 309 | 90 | 0 |
 | `Microsoft.NET.ILLink.Tasks` 10.0.10 | 80 | 262 | 0 |
 | `Microsoft.AspNetCore.App.Ref` 10.0.10 | 96 | 435 | 0 |
 | `Microsoft.NETCore.App.Ref` 10.0.10 | 260 | 369 | 37 |
-| `Microsoft.CodeAnalysis.Analyzers` 5.6.0 | 155 | 1820 | 72 |
 
 StyleCop est le cas le plus net : 1314 types répartis sur ses deux assemblages, six publics, et
 aucun de ceux-là n'est un analyseur. MSTest est le plus plat : 182 types publics sans une seule
 constante publique parmi eux. `xunit.analyzers` est le plus tranchant : plus de constantes publiques
 que de types publics — 219 contre 178 — et pas une seule n'est un identifiant de règle.
 
-Trois paquets fuient, et aucun ne fuit un contrat. NetAnalyzers déclare neuf identifiants de règle en
+Deux paquets fuient, et aucun ne fuit un contrat. NetAnalyzers déclare neuf identifiants de règle en
 constantes publiques — sept nommées `RuleId` (`CA1008`, `CA1052`, `CA1069`, `CA1708`, `CA1715`,
 `CA1821`, `CA2214`) et deux autres sur l'analyseur P/Invoke (`CA1401`, `CA2101`) — face aux 318
 règles que tient son catalogue. Le pack du runtime fuit dans l'autre sens : ses générateurs de source
@@ -76,17 +76,7 @@ son catalogue. Plus d'identifiants que n'en porte le catalogue, et toujours rien
 siège dans un assemblage de générateur que le compilateur charge comme greffon, ce qui est le
 paragraphe ci-dessus.
 
-`Microsoft.CodeAnalysis.Analyzers` fuit le tout, et c'est le cas intéressant. Une classe publique
-`DiagnosticIds` porte chacun des 52 identifiants de règle que reflète son catalogue, de `RS1001` à
-`RS2008`, plus `IDE0055` ; une classe publique `DiagnosticCategory` porte 19 catégories. C'est, à la
-valeur près, ce que publie un catalogue généré — écrit par l'éditeur, complet, et juste. Et c'est
-hors d'atteinte : le paquet déclare `<developmentDependency>true</developmentDependency>` et ne livre
-aucun `lib/`, si bien que les deux assemblages parviennent au compilateur comme greffons et qu'aucun
-`using` ne résout ni l'un ni l'autre. Le seul éditeur à avoir fait le travail l'a mis là où on ne
-peut pas le référencer.
-
-**Et une catégorie n'est une constante que dans un seul des onze** — ces 19-là, aussi hors
-d'atteinte que les identifiants à côté d'elles. Partout ailleurs, zéro. Une catégorie n'existe
+**Et une catégorie n'est nulle part une constante** — zéro, dans les onze. Une catégorie n'existe
 que sur les instances de `DiagnosticDescriptor` qu'un analyseur construit à l'exécution, à partir de
 ressources localisables. Un argument d'attribut doit être une constante de compilation : même en
 passant par `SupportedDiagnostics` par réflexion, on obtient une `string` qui ne peut pas occuper la
@@ -97,7 +87,7 @@ D'où le lieu où se fait la génération : construire les analyseurs et lire le
 d'obtenir une catégorie, et cela doit arriver avant que le consommateur ne compile.
 
 Rien de tout cela n'est une loi. Un éditeur pourrait publier demain un paquet de constantes à côté
-de son analyseur — un que le compilateur référencerait vraiment. Aucun ne l'a fait.
+de son analyseur. Aucun ne l'a fait.
 
 ## Ne puis-je pas simplement écrire mon propre fichier de constantes ?
 
