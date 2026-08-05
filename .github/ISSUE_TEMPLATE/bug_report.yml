@@ -27,6 +27,7 @@ body:
         - DiagnosticCatalog.Trimming
         - DiagnosticCatalog.AspNetCore
         - DiagnosticCatalog.Syslib
+        - DiagnosticCatalog.Roslyn
         - DiagnosticCatalog.Self
         - DiagnosticCatalog.Cli (the dcat tool)
         - Not sure
