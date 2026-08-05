@@ -3,8 +3,9 @@
 🌍 **Languages:**  
 🇬🇧 English (this file) | 🇫🇷 [Français](./0031-find-analyzers-the-way-the-compiler-finds-them.fr.md)
 
-**Status:** Proposed
+**Status:** Accepted
 **Proposed:** 2026-08-05
+**Accepted:** 2026-08-05
 **Decision Makers:** Reefact
 
 ## Context

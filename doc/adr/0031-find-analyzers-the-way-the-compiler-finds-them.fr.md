@@ -3,11 +3,12 @@
 🌍 **Langues :**  
 🇬🇧 [English](./0031-find-analyzers-the-way-the-compiler-finds-them.en.md) | 🇫🇷 Français (ce fichier)
 
-**Statut :** Proposé
-**Proposé :** 2026-08-05
-**Décideurs :** Reefact
+**Status:** Accepted
+**Proposed:** 2026-08-05
+**Accepted:** 2026-08-05
+**Decision Makers:** Reefact
 
-## Contexte
+## Context
 
 Le générateur lit un package d'analyzer amont en chargeant ses assemblies et en
 construisant les analyzers qu'elles déclarent, parce qu'un `DiagnosticDescriptor`
@@ -52,13 +53,13 @@ séparée plutôt que par la découverte d'analyzers ; avec `IDE0079` configuré
 avertissement et l'application du style activée, un build ne le signale pas du
 tout sur une suppression inutile, là où le même montage signale `IDE0005`.
 
-## Décision
+## Decision
 
 Le générateur sélectionne les analyzers qu'une assembly marque
 `[DiagnosticAnalyzer]`, lus depuis les métadonnées avant tout chargement, et
 n'énumère plus les types qu'une assembly déclare.
 
-## Justification
+## Rationale
 
 Le refus avait raison au vu des éléments dont il disposait et tort sur les
 packages qu'il écartait, et les deux tiennent au même fait : un type qui n'a pas
@@ -100,7 +101,7 @@ catalogue exhaustif sur des règles dont il ne peut pas rendre les références
 utiles — et qu'une règle dont l'analyzer n'est chargé par aucun hôte vaut mieux
 absente que présente et inapplicable.
 
-## Alternatives considérées
+## Alternatives Considered
 
 ### Continuer d'énumérer les types, et ne refuser que si un analyzer attribué est perdu
 
@@ -140,9 +141,9 @@ courants, et un analyzer dont les langages déclarés ne correspondraient pas à
 l'orthographe attendue perdrait ses règles silencieusement — exactement la
 défaillance que tout ce domaine existe pour empêcher.
 
-## Conséquences
+## Consequences
 
-### Positives
+### Positive
 
 * Les quatre packages refusés pour des types ne déclarant aucune règle sont lus
   intégralement : `Roslynator.Analyzers` (242 règles),
@@ -156,7 +157,7 @@ défaillance que tout ce domaine existe pour empêcher.
 * Les assemblies ne déclarant aucun analyzer — l'essentiel d'un package
   d'analyzer — ne sont plus chargées du tout.
 
-### Négatives
+### Negative
 
 * `IDE0079` et l'entrée `Debug` de `SecurityCodeScan.VS2019` quittent l'ensemble
   atteignable. Aucune n'est publiée aujourd'hui par un catalogue livré ici.
@@ -164,7 +165,7 @@ défaillance que tout ce domaine existe pour empêcher.
   charge proprement, ce qui est un changement de comportement pour tout package
   de ce genre non mesuré ici.
 
-### Risques
+### Risks
 
 * L'attribut est reconnu à son nom simple : un attribut homonyme sans rapport
   sélectionnerait donc un type. Le type de base est vérifié après chargement,
@@ -174,12 +175,12 @@ défaillance que tout ce domaine existe pour empêcher.
   `IDE0079`. Les règles atteintes ainsi sortent de ce qu'un catalogue peut
   promettre.
 
-## Actions de suivi
+## Follow-up Actions
 
 * Décider si un catalogue des règles IDE vaut d'être publié, sachant qu'`IDE0079`
   en serait absente.
 
-## Références
+## References
 
 * [ADR-0009](0009-generate-catalog-content-from-analyzer-descriptors.fr.md) — le contenu vient des descriptors
 * [ADR-0010](0010-carry-a-retired-rule-forward-as-obsolete.fr.md) — pourquoi une règle absente est dangereuse

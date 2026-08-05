@@ -226,4 +226,4 @@ Matériel de support, optionnel :
 | [ADR-0028](0028-require-every-rule-to-reach-its-category-through-a-declared-constant.fr.md) | Exiger que chaque règle atteigne sa catégorie via une constante déclarée | Accepted |
 | [ADR-0029](0029-pair-the-project-readme-across-the-doc-boundary.fr.md) | Apparier le README du projet par-delà la frontière de `doc/` | Accepted |
 | [ADR-0030](0030-keep-the-usage-suite-out-of-the-sonar-analysis.fr.md) | Garder la suite d'usage hors de l'analyse Sonar | Accepted |
-| [ADR-0031](0031-find-analyzers-the-way-the-compiler-finds-them.fr.md) | Trouver les analyzers comme le compilateur les trouve | Proposed |
+| [ADR-0031](0031-find-analyzers-the-way-the-compiler-finds-them.fr.md) | Trouver les analyzers comme le compilateur les trouve | Accepted |
