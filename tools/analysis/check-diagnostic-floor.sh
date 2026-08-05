@@ -31,6 +31,24 @@ set -eu
 
 fail() { printf 'check-diagnostic-floor: %s\n' "$1" >&2; exit "${2:-1}"; }
 
+# ONE handler, installed once, for everything this script creates. A second
+# `trap ... EXIT` REPLACES the first rather than adding to it, so the two temporaries
+# below cannot be two traps: the second one was installed after the build's log
+# directory and silently took over its removal, leaving a full build's worth of SARIF
+# behind on every run. The names are declared empty here so the handler can be installed
+# before anything exists to remove.
+logs_are_ours=0
+found=""
+raw=""
+
+# shellcheck disable=SC2317  # reached through the trap below, which shellcheck cannot follow.
+cleanup() {
+  [ -z "$found" ] || rm -f "$found"
+  [ -z "$raw" ] || rm -f "$raw"
+  [ "$logs_are_ours" -eq 0 ] || rm -rf "$logs"
+}
+trap cleanup EXIT INT TERM
+
 command -v jq >/dev/null || fail "jq is required"
 
 script_dir=$(cd "$(dirname "$0")" && pwd)
@@ -40,7 +58,7 @@ logs="${1:-}"
 if [ -z "$logs" ]; then
   command -v dotnet >/dev/null || fail "dotnet is required"
   logs="$(mktemp -d)"
-  trap 'rm -rf "$logs"' EXIT INT TERM
+  logs_are_ours=1
 
   # DiagnosticLogDirectory is read by Directory.Build.props, which names one log per project and
   # per target framework. It is set there rather than here because MSBuild does not expand
@@ -61,7 +79,7 @@ done
 [ "$count" -gt 0 ] || fail "no .sarif log in ${logs}; the build must run with -p:DiagnosticLogDirectory=<path>"
 
 found="$(mktemp)"
-trap 'rm -f "$found"' EXIT INT TERM
+raw="$(mktemp)"
 
 # Both SARIF shapes are read. The .NET SDK emits version 1 by default (suppressionStates,
 # resultFile) and 2.1 on request (suppressions, physicalLocation/artifactLocation); which one
@@ -70,20 +88,48 @@ trap 'rm -f "$found"' EXIT INT TERM
 # A result carries no `level` when it matches the rule's own default configuration, so the rule
 # table is consulted before falling back to `warning` — reading an absent level as `warning` for a
 # rule whose default is `note` is precisely how this check would report nothing forever.
-jq -r '
-  [ .runs[]? as $run
-    | ($run.tool.driver.rules // [] | map({key: .id, value: (.defaultConfiguration.level // "warning")}) | from_entries) as $default
-    | $run.results[]?
-    | select((.suppressionStates // .suppressions // []) | length == 0)
-    | . as $r
-    | (($r.level // $default[$r.ruleId] // "warning")) as $level
-    | select($level != "warning" and $level != "error")
-    | (($r.locations[0].resultFile // $r.locations[0].physicalLocation) // {}) as $loc
-    | (($loc.uri // $loc.artifactLocation.uri) // "?") as $uri
-    | (($loc.region.startLine) // 0) as $line
-    | "\($level)\t\($r.ruleId)\t\($uri)\t\($line)\t\(if ($r.message|type) == "string" then $r.message else ($r.message.text // "") end)"
-  ] | .[]
-' "$logs"/*.sarif 2>/dev/null | sort -u > "$found" || fail "could not read the diagnostic logs"
+# One log at a time, and the status read is jq's own. Every part of that sentence is load
+# bearing, because this check is only worth having if it cannot report a clean build
+# without having read one:
+#
+#   * NOT `jq ... "$logs"/*.sarif`. A single unparseable log ends the read for all of
+#     them, so the diagnostics in every other log go unreported too.
+#   * NOT `jq ... | sort`. A pipeline's status is its LAST command's, and `sort` succeeds
+#     on the empty stream a dead jq leaves it. `|| fail` was therefore watching sort and
+#     never once fired. `set -o pipefail` is not the repair: the shebang is #!/bin/sh,
+#     and dash — /bin/sh on Debian and Ubuntu, including the CI runner — rejects it.
+#   * NOT `2>/dev/null`. That was hiding the only evidence the read had failed at all.
+#
+# Together those three made the failure mode a green line reading "every diagnostic this
+# build reports is at least a warning (N log(s) read)", counting logs it had not opened.
+for sarif in "$logs"/*.sarif; do
+  [ -e "$sarif" ] || break
+
+  # An empty log is the quieter half of the same interrupted build: jq reads zero
+  # documents from it, reports success, and produces nothing — indistinguishable
+  # downstream from a project that genuinely had no diagnostic to report. Measured on a
+  # full Release build of this repository, all 29 logs are non-empty (smallest: 333
+  # bytes), so nothing the build legitimately writes is refused here.
+  [ -s "$sarif" ] || fail "empty diagnostic log: ${sarif}; the diagnostic floor was NOT checked"
+
+  jq -r '
+    [ .runs[]? as $run
+      | ($run.tool.driver.rules // [] | map({key: .id, value: (.defaultConfiguration.level // "warning")}) | from_entries) as $default
+      | $run.results[]?
+      | select((.suppressionStates // .suppressions // []) | length == 0)
+      | . as $r
+      | (($r.level // $default[$r.ruleId] // "warning")) as $level
+      | select($level != "warning" and $level != "error")
+      | (($r.locations[0].resultFile // $r.locations[0].physicalLocation) // {}) as $loc
+      | (($loc.uri // $loc.artifactLocation.uri) // "?") as $uri
+      | (($loc.region.startLine) // 0) as $line
+      | "\($level)\t\($r.ruleId)\t\($uri)\t\($line)\t\(if ($r.message|type) == "string" then $r.message else ($r.message.text // "") end)"
+    ] | .[]
+  ' "$sarif" >> "$raw" \
+    || fail "could not read the diagnostic log ${sarif}; the diagnostic floor was NOT checked"
+done
+
+sort -u < "$raw" > "$found"
 
 leaks="$(grep -c . < "$found" || true)"
 
