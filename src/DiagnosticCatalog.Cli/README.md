@@ -120,9 +120,10 @@ dcat generate --solution MySolution.slnx \
 
 **Nothing is inferred, and that is the point.** Which of a solution's projects
 produce analyzers cannot be told from the outside. Measured on this tool's own
-repository, *references `Microsoft.CodeAnalysis`* matches six projects of which one
-is an analyzer; *declares a `DiagnosticAnalyzer`* matches two, and the second is a
-fixture written to fail construction. Reading the wrong set is not a nuisance here:
+repository, *references `Microsoft.CodeAnalysis`* matches nine projects of which one
+is an analyzer; *declares a `DiagnosticAnalyzer`* matches three, and two of those are
+fixtures — one written to fail construction, one in an assembly written not to load
+whole. Reading the wrong set is not a nuisance here:
 a project missed means its rules are absent, an absent rule is indistinguishable
 from a retired one, and they would be published as `[Obsolete]` — telling that
 vendor's users something false, with nothing anywhere to report it.

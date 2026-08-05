@@ -119,7 +119,7 @@ cannot be inferred from the outside, and the numbers are not close. Measured on 
 | Heuristic | Projects matched | Actually an analyzer |
 | --- | --- | --- |
 | references `Microsoft.CodeAnalysis` | 9 | 1 |
-| declares a `DiagnosticAnalyzer` subclass | 4 | 1 — the other three are fixtures, written to *fail* construction, to need a facade, and to not load whole |
+| declares a `DiagnosticAnalyzer` subclass | 3 | 1 — the other two are fixtures, one written to *fail* construction, one in an assembly written not to load whole |
 
 Reading the wrong set is not a nuisance here. A project missed means its rules are absent from the
 catalogue, an absent rule is indistinguishable from a retired one, and they are published as
