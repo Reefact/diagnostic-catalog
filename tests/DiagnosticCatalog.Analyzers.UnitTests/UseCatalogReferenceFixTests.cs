@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
@@ -244,6 +245,46 @@ public sealed class UseCatalogReferenceFixTests
 
         Assert.DoesNotContain("Unused private members should be removed", fixedSource);
         Assert.Contains("SonarRules.S1144.Id", fixedSource);
+    }
+
+    // --- the inserted import must be spelled in the file's own line ending ------------------
+    //
+    // Written out here rather than left to the raw string literals above, because those carry
+    // whatever endings this test FILE was checked out with: asserting on them would pass on one
+    // platform and fail on the other, which is the failure DefinitionFixTests already normalises
+    // around for the same reason.
+
+    private const string LiteralSuppression = """
+        [SuppressMessage("Major Code Smell", "S1144", Justification = "j")]
+        public sealed class Target { }
+        """;
+
+    [Fact]
+    public async Task The_import_is_spelled_in_an_lf_file_s_own_line_ending()
+    {
+        string source = (Usings + NamespacedRules + LiteralSuppression).Replace("\r\n", "\n");
+
+        string fixedSource = await CodeFixHarness.ApplyAsync(Analyzer, Provider, source);
+
+        Assert.Contains("using Vendor.Catalog;", fixedSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("\r", fixedSource, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task The_import_is_spelled_in_a_crlf_file_s_own_line_ending()
+    {
+        // The other half, and it is what says the fix READS the document rather than having had one
+        // constant swapped for the other.
+        string source = (Usings + NamespacedRules + LiteralSuppression).Replace("\r\n", "\n").Replace("\n", "\r\n");
+
+        string fixedSource = await CodeFixHarness.ApplyAsync(Analyzer, Provider, source);
+
+        Assert.Contains("using Vendor.Catalog;\r\n", fixedSource, StringComparison.Ordinal);
+
+        // No line ending stands alone: every \n in the result is preceded by a \r.
+        Assert.Equal(
+            Occurrences(fixedSource, "\n"),
+            Occurrences(fixedSource, "\r\n"));
     }
 
     private static int Occurrences(string text, string value)
