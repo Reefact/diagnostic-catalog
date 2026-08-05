@@ -269,10 +269,36 @@ internal static class CatalogEmitter
                       .Select(r => (Id: r.Key, From: previous.Rules[r.Key].Title, To: r.Value.Title))
                       .ToList();
 
+        // A help link is published content too — the catalogue emits it as a constant a consumer can
+        // reference — and it moves without anything else moving: a vendor fixing a broken docs URL
+        // changes the link and nothing else. Compared for the reason the title is: what this file
+        // states, this comparison has to be able to notice.
+        List<(string Id, string From, string To)> relinked = previous is null
+            ? []
+            : accepted.Where(r => previous.Rules.TryGetValue(r.Key, out RuleInfo? old)
+                                  && !string.Equals(old.HelpLinkUri, r.Value.HelpLinkUri, StringComparison.Ordinal))
+                      .Select(r => (Id: r.Key, From: previous.Rules[r.Key].HelpLinkUri, To: r.Value.HelpLinkUri))
+                      .ToList();
+
+        // The retirement running backwards. `retired` above is what CarryForwardRetired found going
+        // the other way — a rule upstream no longer declares — and it cannot see this one, because a
+        // rule the vendor declares again is in `accepted` and is never carried forward at all.
+        //
+        // Missing it leaves the catalogue telling a consumer that a live rule is gone and that their
+        // suppression should be removed. Nothing downstream contradicts that: the platform never
+        // validates a suppression's category (§3.2), which is the whole reason this file exists.
+        List<string> restored = previous is null
+            ? []
+            : accepted.Where(r => !r.Value.Retired
+                                  && previous.Rules.TryGetValue(r.Key, out RuleInfo? old)
+                                  && old.Retired)
+                      .Select(r => r.Key)
+                      .ToList();
+
         bool versionChanged = previous is null
                               || !string.Equals(previous.SourceVersion, version, StringComparison.Ordinal);
 
-        return new Changes(added, recategorised, retitled, retired, versionChanged);
+        return new Changes(added, recategorised, retitled, relinked, retired, restored, versionChanged);
     }
 
     // ---------------------------------------------------------------------------
@@ -426,7 +452,9 @@ internal static class CatalogEmitter
             AppendAdded(md, changes.Added, catalogue.Rules);
             AppendRecategorised(md, changes.Recategorised);
             AppendRetitled(md, changes.Retitled);
+            AppendRelinked(md, changes.Relinked);
             AppendRetired(md, changes.Retired);
+            AppendRestored(md, changes.Restored);
         }
 
         md.AppendLine($"{liveCount} live rules, {categoryCount} categories.");
@@ -473,6 +501,34 @@ internal static class CatalogEmitter
         static string Quoted(string title) => title.Length == 0 ? "*(none)*" : $"\"{title}\"";
     }
 
+    private static void AppendRelinked(StringBuilder md, List<(string Id, string From, string To)> relinked)
+    {
+        if (relinked.Count == 0) return;
+
+        md.AppendLine($"**Help link moved ({relinked.Count}):**");
+        // Capped like the added and retitled lists: the run that first emits links reports every
+        // rule that has one, and a pull request body is not the place to read hundreds of URLs.
+        foreach ((string Id, string From, string To) r in relinked.Take(50))
+            md.AppendLine($"- `{r.Id}` — {Shown(r.From)} → {Shown(r.To)}");
+        if (relinked.Count > 50) md.AppendLine($"- …and {relinked.Count - 50} more");
+        md.AppendLine();
+
+        static string Shown(string link) => link.Length == 0 ? "*(none)*" : $"<{link}>";
+    }
+
+    private static void AppendRestored(StringBuilder md, List<string> restored)
+    {
+        if (restored.Count == 0) return;
+
+        md.AppendLine($"**Declared again upstream ({restored.Count}) — `[Obsolete]` removed:**");
+        foreach (string id in restored)
+            md.AppendLine($"- `{id}`");
+        md.AppendLine();
+        md.AppendLine("> The catalogue had been telling consumers to remove their suppression for " +
+                      "these. The vendor declares them again, so the marker goes.");
+        md.AppendLine();
+    }
+
     private static void AppendRetired(StringBuilder md, List<string> retired)
     {
         if (retired.Count == 0) return;
@@ -509,10 +565,13 @@ internal static class CatalogEmitter
         List<string> Added,
         List<(string Id, string From, string To)> Recategorised,
         List<(string Id, string From, string To)> Retitled,
+        List<(string Id, string From, string To)> Relinked,
         List<string> Retired,
+        List<string> Restored,
         bool VersionChanged)
     {
         internal bool Any =>
-            Added.Count > 0 || Retired.Count > 0 || Recategorised.Count > 0 || Retitled.Count > 0;
+            Added.Count > 0 || Retired.Count > 0 || Restored.Count > 0
+            || Recategorised.Count > 0 || Retitled.Count > 0 || Relinked.Count > 0;
     }
 }
