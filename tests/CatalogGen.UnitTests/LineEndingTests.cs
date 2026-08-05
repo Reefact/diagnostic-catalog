@@ -78,9 +78,9 @@ public sealed class LineEndingTests : IDisposable
     [Fact]
     public void A_retirement_survives_a_regeneration_from_a_crlf_checkout()
     {
-        // The consequence that costs something. A previous run carried X0002 forward as [Obsolete];
-        // read back as zero rules, CarryForwardRetired has nothing to carry and the constant is
-        // deleted — the one thing §23.1 says a catalogue may never do to a consumer.
+        // The consequence that costs something. An earlier run carried X0002 forward and marked it
+        // obsolete. Read back as zero rules, CarryForwardRetired has nothing to carry, so the
+        // constant is deleted — the one thing §23.1 says a catalogue may never do to a consumer.
         string output = Path.Combine(_temp, "VendorRules.g.cs");
         Job job = new(Package, "2.0.0", "Vendor.Catalog", "VendorRule", output, "cs");
 
