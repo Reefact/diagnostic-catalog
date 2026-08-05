@@ -29,6 +29,7 @@ body:
         - DiagnosticCatalog.Syslib
         - DiagnosticCatalog.Roslyn
         - DiagnosticCatalog.PublicApi
+        - DiagnosticCatalog.BannedApi
         - DiagnosticCatalog.Self
         - DiagnosticCatalog.Cli (the dcat tool)
         - Not sure

@@ -4,7 +4,7 @@
 
 Security updates are provided for the latest stable release of each
 DiagnosticCatalog release train (`lib`, `sonar`, `netanalyzers`, `stylecop`, `codestyle`, `xunit`,
-`nunit`, `mstest`, `trimming`, `aspnetcore`, `syslib`, `roslyn`, `publicapi` —
+`nunit`, `mstest`, `trimming`, `aspnetcore`, `syslib`, `roslyn`, `publicapi`, `bannedapi` —
 see [CONTRIBUTING.md](CONTRIBUTING.md)). The trains version independently, so
 "latest stable" is read per train, not across the repository.
 

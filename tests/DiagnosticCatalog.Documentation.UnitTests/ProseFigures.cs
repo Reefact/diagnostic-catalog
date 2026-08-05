@@ -39,8 +39,11 @@ internal static class ProseFigures
     internal static readonly TimeSpan MatchTimeout = TimeSpan.FromSeconds(10);
 
     /// <summary>
-    /// The number words the documentation spells counts in, in both languages. Deliberately stops at
-    /// twelve: past that a page writes the digit, and a longer map would be a parser nobody asked for.
+    /// The number words the documentation spells counts in, in both languages. It stopped at twelve
+    /// while nothing counted higher; the thirteenth catalogue is what moved it. The ceiling is now
+    /// sixteen, and that is a property of French rather than a preference: <c>seize</c> is the last
+    /// numeral it spells as one word, and every larger one is hyphenated, which this vocabulary does
+    /// not tokenise. Past that a page writes the digit.
     /// A word outside it fails loudly through <see cref="Read"/> rather than being read as zero.
     /// </summary>
     private static readonly Dictionary<string, int> Words = new(StringComparer.OrdinalIgnoreCase)
@@ -57,6 +60,10 @@ internal static class ProseFigures
         ["ten"] = 10,
         ["eleven"] = 11,
         ["twelve"] = 12,
+        ["thirteen"] = 13,
+        ["fourteen"] = 14,
+        ["fifteen"] = 15,
+        ["sixteen"] = 16,
         ["un"] = 1,
         ["une"] = 1,
         ["deux"] = 2,
@@ -69,6 +76,10 @@ internal static class ProseFigures
         ["dix"] = 10,
         ["onze"] = 11,
         ["douze"] = 12,
+        ["treize"] = 13,
+        ["quatorze"] = 14,
+        ["quinze"] = 15,
+        ["seize"] = 16,
     };
 
     /// <summary>

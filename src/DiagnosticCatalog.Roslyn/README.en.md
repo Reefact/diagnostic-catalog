@@ -178,7 +178,7 @@ signed build provenance — no long-lived API key exists anywhere to leak.
 
 ## See also
 
-Twelve sibling catalogues are generated from this repository the same way, each read from one
+Thirteen sibling catalogues are generated from this repository the same way, each read from one
 analyzer's own descriptors:
 
 - [`DiagnosticCatalog.Sonar`](https://www.nuget.org/packages/DiagnosticCatalog.Sonar)
@@ -203,6 +203,8 @@ analyzer's own descriptors:
   — the .NET runtime source-generator (`SYSLIB1xxx`) diagnostics.
 - [`DiagnosticCatalog.PublicApi`](https://www.nuget.org/packages/DiagnosticCatalog.PublicApi)
   — the public-API tracking (`RS00xx`) rules.
+- [`DiagnosticCatalog.BannedApi`](https://www.nuget.org/packages/DiagnosticCatalog.BannedApi)
+  — the banned-API (`RS0030`, `RS0031`, `RS0035`) rules.
 - [`DiagnosticCatalog.Self`](https://www.nuget.org/packages/DiagnosticCatalog.Self)
   — this library's own `DCATxxxx` rules, for suppressing a diagnostic the catalogue analyzers
   themselves report.

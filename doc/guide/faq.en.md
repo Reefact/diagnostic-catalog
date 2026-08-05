@@ -31,7 +31,7 @@ before an upgrade — gets an answer that is quietly short.
 
 Because there is nothing to reference, and nothing in it to reference.
 
-**Nothing to reference.** Nine of these packages ship their assemblies under `analyzers/`, with no
+**Nothing to reference.** Ten of these packages ship their assemblies under `analyzers/`, with no
 `lib/` and no `ref/` folder, and declare `<developmentDependency>true</developmentDependency>`.
 NuGet hands such an assembly to the compiler as an analyzer plugin; it never enters the consumer's
 reference set. There is no `using` to write, whatever the assembly holds.
@@ -42,7 +42,7 @@ against. Their analyzers are not in it: they sit beside it under `analyzers/dotn
 as plugins like all the rest. Reading both packs whole, every reference assembly included, turns up
 no rule-id constant outside that folder — the half you can reference is the half with nothing on it.
 
-**Nothing in it to reference.** Measured over the metadata of every analyzer assembly in the twelve
+**Nothing in it to reference.** Measured over the metadata of every analyzer assembly in the thirteen
 packages the catalogues mirror, satellite resources aside:
 
 | Package | Public types | `public const` | Rule-id or category constants |
@@ -56,6 +56,7 @@ packages the catalogues mirror, satellite resources aside:
 | `MSTest.Analyzers` 4.3.3 | 182 | 0 | 0 |
 | `Microsoft.CodeAnalysis.Analyzers` 5.6.0 | 309 | 90 | 0 |
 | `Microsoft.CodeAnalysis.PublicApiAnalyzers` 5.6.0 | 115 | 38 | 0 |
+| `Microsoft.CodeAnalysis.BannedApiAnalyzers` 5.6.0 | 238 | 80 | 0 |
 | `Microsoft.NET.ILLink.Tasks` 10.0.10 | 80 | 262 | 0 |
 | `Microsoft.AspNetCore.App.Ref` 10.0.10 | 96 | 435 | 0 |
 | `Microsoft.NETCore.App.Ref` 10.0.10 | 260 | 369 | 37 |
@@ -73,7 +74,7 @@ constants, 31 distinct `SYSLIB` ids, against the 13 rules its catalogue holds. M
 catalogue carries, and still nothing to take: every one of them sits in a generator assembly the
 compiler loads as a plugin, which is the paragraph above.
 
-**And a category is nowhere a constant at all** — zero, across all twelve. A category exists only on
+**And a category is nowhere a constant at all** — zero, across all thirteen. A category exists only on
 the `DiagnosticDescriptor` instances an analyzer builds at run time, out of localisable resources.
 An attribute argument must be a compile-time constant, so even reflecting over
 `SupportedDiagnostics` yields a `string` that cannot occupy the position.
