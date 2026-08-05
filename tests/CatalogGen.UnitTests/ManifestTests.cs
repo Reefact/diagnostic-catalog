@@ -77,6 +77,26 @@ public sealed class ManifestTests
     }
 
     [Fact]
+    public void An_entry_naming_a_package_beside_a_disk_source_is_refused_too()
+    {
+        // The refusal above counted the four disk sources and not "package", so this pair — the
+        // natural shape of a hand edit that adds one source and forgets to delete the other — was
+        // accepted and the package silently dropped. The message it produces has always enumerated
+        // "package"; the sum it guards did not.
+        string message = Refused("""
+            { "catalogs": [
+                { "package": "SomePkg", "assemblies": ["a.dll"],
+                  "namespace": "N", "container": "C", "output": "o.g.cs" }
+            ] }
+            """);
+
+        Assert.Equal(
+            "catalogs.json: catalogs[0]: names more than one source; give one of " +
+            "\"package\", \"nupkg\", \"projects\", \"solution\" or \"assemblies\".",
+            message);
+    }
+
+    [Fact]
     public void A_manifest_with_no_catalogs_array_is_refused()
         => Assert.Equal("catalogs.json: no \"catalogs\" array.", Refused("""{ "catalog": [] }"""));
 

@@ -82,13 +82,22 @@ public static class CatalogRun
             ? Path.GetFullPath(Path.Combine(manifestDir, Text(so, where, "solution")))
             : null;
 
-        int named = (assemblies is not null ? 1 : 0) + (nupkg is not null ? 1 : 0)
+        // Counted, and "package" among them: the message below has always enumerated it while the
+        // sum left it out, so an entry naming a package beside a disk source was accepted and the
+        // package dropped without a word. The command line refuses that same pair, and so does the
+        // schema beside this file — three statements agreeing and one not.
+        bool namesPackage = entry.TryGetProperty("package", out _);
+
+        int named = (namesPackage ? 1 : 0) + (assemblies is not null ? 1 : 0) + (nupkg is not null ? 1 : 0)
                     + (projects is not null ? 1 : 0) + (solution is not null ? 1 : 0);
         if (named > 1)
             throw new ManifestException($"{where}: names more than one source; give one of " +
                                         "\"package\", \"nupkg\", \"projects\", \"solution\" or \"assemblies\".");
 
-        bool fromFeed = named == 0;
+        // Read from the disk sources rather than from the count, which now includes the package
+        // itself: an entry naming only a package must still be read as a feed. An entry naming
+        // nothing lands here too, and Required says which key is missing.
+        bool fromFeed = assemblies is null && nupkg is null && projects is null && solution is null;
 
         return new Job(
             Package: fromFeed ? Required(entry, "package", where) : null,
