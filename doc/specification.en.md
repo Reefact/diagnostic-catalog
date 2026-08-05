@@ -382,16 +382,26 @@ with the attribute serving as the explicit, preferred opt-in signal.
 ### 7.3 Minimal definition
 
 A valid rule is a static class marked `[DiagnosticRule]` exposing two public
-constants:
+constants, the second of which reaches a category declared per §8.5:
 
 ```csharp
+[DiagnosticCategory]
+internal static class JdCategory
+{
+    public const string Usage = "Usage";
+}
+
 [DiagnosticRule]
 public static class JD0007
 {
     public const string Id = nameof(JD0007);
-    public const string Category = "Usage";
+    public const string Category = JdCategory.Usage;
 }
 ```
+
+A catalogue declares that container once, and every sample below refers to this
+one rather than repeating the declaration — which is §8.5's requirement applied
+to this document.
 
 The full canonical form nests rules inside a container class:
 
@@ -404,7 +414,7 @@ public static class JustDummiesRules
     public static class JD0007
     {
         public const string Id = nameof(JD0007);
-        public const string Category = "Usage";
+        public const string Category = JdCategory.Usage;
     }
 }
 ```
@@ -449,7 +459,7 @@ A rule may expose further metadata:
 public static class JD0007
 {
     public const string Id = nameof(JD0007);
-    public const string Category = "Usage";
+    public const string Category = JdCategory.Usage;
 
     public const string Title =
         "Dummy factories should follow the expected convention";
@@ -649,7 +659,7 @@ the id necessarily differ:
 public static class RULE_001
 {
     public const string Id = "RULE-001";
-    public const string Category = "Usage";
+    public const string Category = JdCategory.Usage;
 }
 ```
 
@@ -959,7 +969,7 @@ Same validations as `Id`.
 public static class RULE_0001
 {
     public const string Id = "RULE-0001";
-    public const string Category = "Usage";
+    public const string Category = JdCategory.Usage;
 }
 ```
 
@@ -986,7 +996,7 @@ said nothing at all about the declaration that most needs saying something about
 public static class RULE42
 {
     public const string Id = "RULE-0001";  // silent under the old condition
-    public const string Category = "Usage";
+    public const string Category = JdCategory.Usage;
 }
 ```
 
@@ -1114,7 +1124,7 @@ a `nameof` invocation.
 public static class JD0007
 {
     public const string Id = "JD0007";  // reported
-    public const string Category = "Usage";
+    public const string Category = JdCategory.Usage;
 }
 ```
 
@@ -1153,7 +1163,7 @@ condition left silent.
 public static class RuleSeven
 {
     public const string Id = "JD0007";  // JD0007 was available as a type name
-    public const string Category = "Usage";
+    public const string Category = JdCategory.Usage;
 }
 ```
 
@@ -1521,7 +1531,7 @@ public static class Dummies
     public static class JD0007
     {
         public const string Id = nameof(JD0007);
-        public const string Category = "Usage";
+        public const string Category = JdCategory.Usage;
     }
 }
 ```
@@ -2023,13 +2033,20 @@ using DiagnosticCatalog;
 
 namespace ExampleAnalyzer.Suppressions;
 
+[DiagnosticCategory]
+internal static class ExampleCategory
+{
+    public const string Design = "Design";
+    public const string Usage = "Usage";
+}
+
 public static class Example
 {
     [DiagnosticRule]
     public static class EXAMPLE0001
     {
         public const string Id = nameof(EXAMPLE0001);
-        public const string Category = "Design";
+        public const string Category = ExampleCategory.Design;
         public const string Title = "Avoid example design";
         public const string HelpLinkUri = "https://example.org/rules/EXAMPLE0001";
     }
@@ -2038,7 +2055,7 @@ public static class Example
     public static class EXAMPLE0002
     {
         public const string Id = nameof(EXAMPLE0002);
-        public const string Category = "Usage";
+        public const string Category = ExampleCategory.Usage;
         public const string Title = "Avoid example usage";
         public const string HelpLinkUri = "https://example.org/rules/EXAMPLE0002";
     }
