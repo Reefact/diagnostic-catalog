@@ -62,16 +62,28 @@ internal static class CatalogEmitter
     //
     // Which upstream release a catalogue reflects is the first thing a consumer needs, and a
     // hand-written banner saying so goes stale the first night regeneration moves it — silently,
-    // because nothing compiles a README. So the generator writes it, in the two files a consumer
+    // because nothing compiles a README. So the generator writes it, in the files a consumer
     // actually opens, and DocumentedMirrorTests asserts that what they say matches the catalogue's
     // own CatalogSource attribute. Between the two, the statement cannot drift: the generator keeps
     // it current, and the test fails the build if anything else moves it.
+    //
+    // A README is a PAIR (ADR-0034), and both halves are written here for the reason the banner is
+    // written at all: a translation nothing refreshes states last month's release in the language
+    // its reader cannot check against anything. Only the prose differs — the mirrored release is a
+    // package id and a version, which are not translated.
     //
     // The nightly job commits the whole of src/, so the refreshed banners travel in the same pull
     // request as the rules that moved, with no change to the workflow.
 
     private const string MirrorBegin = "<!-- mirror:begin -->";
     private const string MirrorEnd = "<!-- mirror:end -->";
+
+    // What a README is called where the banner has to land. Here it is a pair, because a catalogue's
+    // page is maintained in both languages (ADR-0034); in a repository `dcat` was pointed at it is
+    // whatever single file that repository keeps, which is the spelling this generator wrote into
+    // before the pair existed and must keep writing into.
+    private static readonly string[] EnglishReadmes = ["README.en.md", "README.md"];
+    private const string FrenchReadme = "README.fr.md";
 
     private static void UpdateMirrorBanners(
         Job job, Catalogue catalogue, Previous? previous, string date, int liveCount, int categoryCount)
@@ -83,11 +95,20 @@ internal static class CatalogEmitter
         // about its upstream — a vendor mirrored on its prerelease line, analyzers that ship inside
         // the SDK — is prose belonging to that catalogue and is written OUTSIDE the markers, where
         // rewriting the block cannot destroy it.
-        WriteBlock(Path.Combine(dir, "README.md"),
+        //
+        // Only the spellings that are actually there are written to, and a missing one is not
+        // reported: a repository that keeps a single README has not lost a translation, and a
+        // repository that keeps a pair has not lost the single file. What IS worth saying is a
+        // catalogue with no README at all, and that is said once, below.
+        WriteReadmeBlocks(dir,
             $"> ## 🪞 Mirrors {mirrored}\n" +
             ">\n" +
             $"> **{liveCount} rules, {categoryCount} categories**, every identifier and category read\n" +
-            $"> from that release's own analyzers. Regenerated {date}.");
+            $"> from that release's own analyzers. Regenerated {date}.",
+            $"> ## 🪞 Reflète {mirrored}\n" +
+            ">\n" +
+            $"> **{liveCount} règles, {categoryCount} catégories**, chaque identifiant et chaque\n" +
+            $"> catégorie lus dans les analyseurs de cette version. Régénéré le {date}.");
 
         // In the changelog the banner sits under Unreleased, so a release promotes it into that
         // version's section along with everything else — which is what makes every published entry
@@ -97,6 +118,33 @@ internal static class CatalogEmitter
             ? $" — upstream moved from `{previous.SourceVersion}`"
             : " — unchanged upstream";
         WriteBlock(Path.Combine(dir, "CHANGELOG.md"), $"**Mirrors {mirrored}**{moved}.");
+    }
+
+    // Each half where it belongs, into the README spellings the catalogue's folder actually has.
+    // The mirrored release itself is a package id and a version, which are the same sentence in
+    // either language; only the prose around them is translated.
+    private static void WriteReadmeBlocks(string dir, string english, string french)
+    {
+        List<string> written = [];
+
+        foreach (string name in EnglishReadmes)
+        {
+            if (!File.Exists(Path.Combine(dir, name))) continue;
+
+            WriteBlock(Path.Combine(dir, name), english);
+            written.Add(name);
+        }
+
+        if (File.Exists(Path.Combine(dir, FrenchReadme)))
+        {
+            WriteBlock(Path.Combine(dir, FrenchReadme), french);
+            written.Add(FrenchReadme);
+        }
+
+        if (written.Count == 0)
+        {
+            Console.WriteLine("  note: no README found beside the catalogue — no banner written");
+        }
     }
 
     // Replaces what sits between the markers, and reports rather than repairs when they are absent:

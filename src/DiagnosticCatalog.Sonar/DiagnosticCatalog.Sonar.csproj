@@ -22,7 +22,7 @@
     <Title>DiagnosticCatalog.Sonar</Title>
     <Description>The SonarAnalyzer.CSharp rules as strongly referenced constants, so that SuppressMessageAttribute takes compile-checked references instead of magic strings. Ids and categories are read from the analyzers' own DiagnosticDescriptor instances. Unofficial; not affiliated with or endorsed by SonarSource.</Description>
     <PackageTags>roslyn;analyzers;diagnostics;suppressmessage;sonar;sonaranalyzer;code-analysis;catalog</PackageTags>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReadmeFile>README.en.md</PackageReadmeFile>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <Authors>Reefact</Authors>
     <Copyright>Copyright (c) Reefact</Copyright>
@@ -30,7 +30,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="README.md" Pack="true" PackagePath="/" />
+    <None Include="README.en.md" Pack="true" PackagePath="/" />
   </ItemGroup>
 
   <!--

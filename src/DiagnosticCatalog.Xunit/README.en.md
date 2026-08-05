@@ -1,5 +1,8 @@
 # DiagnosticCatalog.Xunit
 
+🌍 **Languages:**  
+🇬🇧 English (this file) | 🇫🇷 [Français](https://github.com/Reefact/diagnostic-catalog/blob/main/src/DiagnosticCatalog.Xunit/README.fr.md)
+
 The **xunit.analyzers** rules as strongly referenced constants, so that
 `SuppressMessageAttribute` takes compile-checked references instead of magic strings.
 

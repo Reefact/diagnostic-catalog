@@ -45,7 +45,23 @@ public sealed class DocumentedMirrorTests
     {
         string expected = MirroredBy(source);
 
-        Assert.Contains($"`{expected}`", MirrorBlock(project, "README.md"), StringComparison.Ordinal);
+        Assert.Contains($"`{expected}`", MirrorBlock(project, "README.en.md"), StringComparison.Ordinal);
+    }
+
+    /// <summary>
+    /// And so does its translation. A catalogue's README is a pair (ADR-0034), and a stale banner in
+    /// the French half is the same wrong statement in the place a French reader looks first — with
+    /// the added difficulty that neither the assembly attribute it contradicts nor the guides that
+    /// would correct it are the document they opened.
+    /// </summary>
+    [Theory]
+    [MemberData(nameof(Catalogues))]
+    public void The_translated_readme_states_the_release_the_catalogue_actually_mirrors(
+        string project, string source)
+    {
+        string expected = MirroredBy(source);
+
+        Assert.Contains($"`{expected}`", MirrorBlock(project, "README.fr.md"), StringComparison.Ordinal);
     }
 
     [Theory]

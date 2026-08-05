@@ -1,6 +1,9 @@
 # DiagnosticCatalog.Self
 
-The `DCAT` rules — the ones [`DiagnosticCatalog.Analyzers`](https://github.com/Reefact/diagnostic-catalog/blob/main/src/DiagnosticCatalog.Analyzers/README.md)
+🌍 **Languages:**  
+🇬🇧 English (this file) | 🇫🇷 [Français](https://github.com/Reefact/diagnostic-catalog/blob/main/src/DiagnosticCatalog.Self/README.fr.md)
+
+The `DCAT` rules — the ones [`DiagnosticCatalog.Analyzers`](https://github.com/Reefact/diagnostic-catalog/blob/main/src/DiagnosticCatalog.Analyzers/README.en.md)
 reports — as constants you can reference.
 
 It is the library applied to itself. The analyzers that check *your* suppressions publish their own
@@ -88,7 +91,7 @@ analyzer's own descriptors — the difference being that theirs belong to somebo
 **Want a catalogue of your own?** That is what
 [the catalogue author's guide](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/authoring-a-catalogue.en.md) is for, and this package is its
 worked example: a static class of constants marked `[DiagnosticRule]`, generated from the analyzer
-that reports them. The marker ships in [`DiagnosticCatalog`](https://github.com/Reefact/diagnostic-catalog/blob/main/src/DiagnosticCatalog/README.md).
+that reports them. The marker ships in [`DiagnosticCatalog`](https://github.com/Reefact/diagnostic-catalog/blob/main/src/DiagnosticCatalog/README.en.md).
 
 ## Documentation
 

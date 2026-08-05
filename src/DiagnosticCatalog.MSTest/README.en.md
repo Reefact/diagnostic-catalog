@@ -1,5 +1,8 @@
 # DiagnosticCatalog.MSTest
 
+🌍 **Languages:**  
+🇬🇧 English (this file) | 🇫🇷 [Français](https://github.com/Reefact/diagnostic-catalog/blob/main/src/DiagnosticCatalog.MSTest/README.fr.md)
+
 The **MSTest.Analyzers** rules as strongly referenced constants, so that
 `SuppressMessageAttribute` takes compile-checked references instead of magic strings.
 

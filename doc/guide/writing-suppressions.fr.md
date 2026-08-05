@@ -244,7 +244,7 @@ que supprimer cette règle *à cet endroit* était une bonne idée. Ce jugement 
 
 ## Où regarder ensuite
 
-* [`DiagnosticCatalog.Self`](../../src/DiagnosticCatalog.Self/README.md) — les règles `DCAT`
+* [`DiagnosticCatalog.Self`](../../src/DiagnosticCatalog.Self/README.fr.md) — les règles `DCAT`
   elles-mêmes en tant que catalogue, pour quand vous supprimez l'un de *ces* diagnostics.
 * [La référence des diagnostics](diagnostics.fr.md) — chaque identifiant `DCAT`, ce qui le
   déclenche, comment le configurer.

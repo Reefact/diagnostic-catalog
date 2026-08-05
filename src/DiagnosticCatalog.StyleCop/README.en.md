@@ -1,5 +1,8 @@
 # DiagnosticCatalog.StyleCop
 
+🌍 **Languages:**  
+🇬🇧 English (this file) | 🇫🇷 [Français](https://github.com/Reefact/diagnostic-catalog/blob/main/src/DiagnosticCatalog.StyleCop/README.fr.md)
+
 The **StyleCop.Analyzers** rules as strongly referenced constants, so that
 `SuppressMessageAttribute` takes compile-checked references instead of magic strings.
 

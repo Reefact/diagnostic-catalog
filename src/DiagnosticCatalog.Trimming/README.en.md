@@ -1,5 +1,8 @@
 # DiagnosticCatalog.Trimming
 
+🌍 **Languages:**  
+🇬🇧 English (this file) | 🇫🇷 [Français](https://github.com/Reefact/diagnostic-catalog/blob/main/src/DiagnosticCatalog.Trimming/README.fr.md)
+
 The **trimming, Native AOT and single-file warnings** (`ILxxxx`) as strongly referenced constants,
 so that `UnconditionalSuppressMessageAttribute` takes compile-checked references instead of magic
 strings.

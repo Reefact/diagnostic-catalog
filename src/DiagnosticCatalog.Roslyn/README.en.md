@@ -1,5 +1,8 @@
 # DiagnosticCatalog.Roslyn
 
+🌍 **Languages:**  
+🇬🇧 English (this file) | 🇫🇷 [Français](https://github.com/Reefact/diagnostic-catalog/blob/main/src/DiagnosticCatalog.Roslyn/README.fr.md)
+
 The **Roslyn analyzer-authoring** rules (`RS1xxx`, `RS2xxx`) as strongly referenced constants, so
 that `SuppressMessageAttribute` takes compile-checked references instead of magic strings.
 

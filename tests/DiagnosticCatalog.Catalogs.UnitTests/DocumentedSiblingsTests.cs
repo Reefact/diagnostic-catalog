@@ -112,7 +112,7 @@ public sealed class DocumentedSiblingsTests
     {
         Assert.True(
             Names(Readme(catalogue), sibling),
-            $"{catalogue}/README.md never names {sibling}, so that catalogue is undiscoverable from " +
+            $"{catalogue}/README.en.md never names {sibling}, so that catalogue is undiscoverable from " +
             "this one's nuget.org page, where no sibling sits beside it.");
     }
 
@@ -122,7 +122,7 @@ public sealed class DocumentedSiblingsTests
     {
         Assert.True(
             Names(Readme(catalogue), Foundation),
-            $"{catalogue}/README.md never names {Foundation}, so a reader who wants a catalogue of " +
+            $"{catalogue}/README.en.md never names {Foundation}, so a reader who wants a catalogue of " +
             "their own — for their own analyzer, or an internal ruleset — is told nothing about the " +
             "package that makes one possible.");
     }
@@ -133,7 +133,7 @@ public sealed class DocumentedSiblingsTests
     {
         Assert.True(
             Names(Readme(Foundation), catalogue),
-            $"{Foundation}/README.md never names {catalogue}, so a reader about to declare rules by " +
+            $"{Foundation}/README.en.md never names {catalogue}, so a reader about to declare rules by " +
             "hand is not told that catalogue already exists.");
     }
 
@@ -167,9 +167,59 @@ public sealed class DocumentedSiblingsTests
             string id = link.Groups["id"].Value;
             Assert.True(
                 published.Contains(id, StringComparer.Ordinal),
-                $"{project}/README.md links {NuGetPackage}{id}, which this repository publishes no " +
+                $"{project}/README.en.md links {NuGetPackage}{id}, which this repository publishes no " +
                 $"package under. The address of a package is its id, exactly: {NuGetPackage}{{id}}.");
         }
+    }
+
+    /// <summary>
+    /// A translation offers the same way out as the page it translates. Everything above is about a
+    /// reader who has to be told that the other catalogues exist, because nothing on the page they
+    /// are looking at says so — and a French reader is in that position twice over, since the
+    /// sibling they are not told about has a page they could not read either.
+    /// </summary>
+    /// <remarks>
+    /// Compared as a set of addresses rather than re-run per sibling. Package ids are not translated,
+    /// so the two halves must link exactly the same ones; what parity cannot see is a list that kept
+    /// its length while losing an entry — which is what this reports, naming the entry.
+    /// </remarks>
+    [Theory]
+    [MemberData(nameof(PackagedFolders))]
+    public void The_translated_readme_offers_the_same_packages_as_the_page_that_ships(string project)
+    {
+        List<string> shipped = Linked(Readme(project));
+        List<string> translated = Linked(Readme(project, "README.fr.md"));
+
+        Assert.True(
+            shipped.SequenceEqual(translated, StringComparer.Ordinal),
+            $"{project}/README.en.md and README.fr.md do not link the same packages.\n" +
+            $"  only in English: {string.Join(", ", shipped.Except(translated, StringComparer.Ordinal))}\n" +
+            $"  only in French:  {string.Join(", ", translated.Except(shipped, StringComparer.Ordinal))}\n" +
+            "A package id is the same word in both languages, so a difference is an entry one half " +
+            "lost — and the reader of that half is never told the package exists.");
+    }
+
+    /// <summary>The ids of our own packages a document links, sorted, without repeats.</summary>
+    /// <remarks>
+    /// Walked with a <c>foreach</c> rather than projected off the collection, as the theory above
+    /// does. This project runs on the .NET Framework 4.7.2 floor, where <see cref="MatchCollection"/>
+    /// implements only the non-generic <c>IEnumerable</c> — <c>Select</c> then binds to nothing it can
+    /// infer, and the failure is a compile error on one target framework and silence on the other.
+    /// </remarks>
+    private static List<string> Linked(string document)
+    {
+        SortedSet<string> ids = new(StringComparer.Ordinal);
+
+        foreach (Match link in Regex.Matches(
+                     document,
+                     Regex.Escape(NuGetPackage) + "(?<id>DiagnosticCatalog[^)\\s]*)",
+                     RegexOptions.None,
+                     TimeSpan.FromSeconds(10)))
+        {
+            ids.Add(link.Groups["id"].Value);
+        }
+
+        return ids.ToList();
     }
 
     /// <summary>
@@ -283,10 +333,17 @@ public sealed class DocumentedSiblingsTests
             RegexOptions.None,
             TimeSpan.FromSeconds(10));
 
-    private static string Readme(string project)
+    /// <summary>
+    /// The half that ships. A package README is a pair (ADR-0034) and nuget.org renders one file, so
+    /// the page these theories are about — the one a reader meets with no sibling beside it — is the
+    /// English half. What the translation owes it is checked separately, below.
+    /// </summary>
+    private static string Readme(string project) => Readme(project, "README.en.md");
+
+    private static string Readme(string project, string fileName)
     {
-        string path = Path.Combine(AppContext.BaseDirectory, "catalogdocs", project, "README.md");
-        Assert.True(File.Exists(path), $"README.md not found beside the tests for {project}: {path}");
+        string path = Path.Combine(AppContext.BaseDirectory, "catalogdocs", project, fileName);
+        Assert.True(File.Exists(path), $"{fileName} not found beside the tests for {project}: {path}");
 
         return File.ReadAllText(path).Replace("\r\n", "\n");
     }

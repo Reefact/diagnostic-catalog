@@ -47,7 +47,7 @@
     preserved in the link, because that is what ties a README to its catalogue.
   -->
   <ItemGroup>
-    <Content Include="..\..\src\**\README.md;..\..\src\**\CHANGELOG.md"
+    <Content Include="..\..\src\**\README.en.md;..\..\src\**\README.fr.md;..\..\src\**\CHANGELOG.md"
              Link="catalogdocs\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 

@@ -22,7 +22,7 @@
     <Title>DiagnosticCatalog.Trimming</Title>
     <Description>The .NET trimming, Native AOT and single-file warnings (ILxxxx) as strongly referenced constants, so that UnconditionalSuppressMessageAttribute takes compile-checked references instead of magic strings. Ids and categories are read from the ILLink analyzer's own DiagnosticDescriptor instances. For Blazor WebAssembly, MAUI, Native AOT and trimmable libraries. Unofficial; not affiliated with or endorsed by Microsoft.</Description>
     <PackageTags>roslyn;analyzers;diagnostics;unconditionalsuppressmessage;trimming;aot;nativeaot;blazor;illink;code-analysis;catalog</PackageTags>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReadmeFile>README.en.md</PackageReadmeFile>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <Authors>Reefact</Authors>
     <Copyright>Copyright (c) Reefact</Copyright>
@@ -30,7 +30,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="README.md" Pack="true" PackagePath="/" />
+    <None Include="README.en.md" Pack="true" PackagePath="/" />
   </ItemGroup>
 
   <!--

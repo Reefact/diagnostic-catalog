@@ -24,7 +24,7 @@ quoi que ce soit.
 | [`doc/specification.en.md`](specification.en.md) | Le document de conception normatif. Canonique. | Anglais et français |
 | [`doc/adr/`](adr/) | Les décisions d'architecture. | Anglais **et** français |
 | `README.md` à la racine du dépôt | La vitrine. | Anglais **et** français — la paire traverse la frontière, voir plus bas |
-| `src/*/README.md` | Les pages de paquet sur nuget.org. | Anglais uniquement — voir plus bas |
+| `src/*/README.en.md` | Les pages de paquet sur nuget.org. | Anglais **et** français — la moitié livrée est l'anglaise, voir plus bas |
 
 **Ce que la vérification de parité voit réellement**, c'est tout document dont le nom porte un
 suffixe de langue — `<nom>.en.md` ou `<nom>.fr.md`. Tout ce qui est sous `doc/` en porte un,
@@ -59,12 +59,17 @@ bannière et liens compris
 l'index de ce dossier : le panneau indicateur vers le guide, la spécification, les décisions et ces
 conventions est une section du README du projet plutôt qu'une seconde page derrière lui.
 
-**Les READMEs de paquet ne font pas partie de ce jeu.** Ils sont livrés dans le `.nupkg` en tant que
-`<PackageReadmeFile>` et rendus par nuget.org, qui ne résout aucun lien relatif et n'offre aucun
-sélecteur de langue. Ils restent en anglais, en un seul fichier, et pointent vers l'extérieur avec
-des adresses absolues `https://github.com/Reefact/diagnostic-catalog/blob/main/...`. Deux tests les
-lisent déjà — `DocumentedMirrorTests` et `DocumentedSiblingsTests` — si bien que leur contenu est
-contraint par plus que ce fichier.
+**Les READMEs de paquet sont appariés eux aussi, et une seule moitié est livrée.** Ils vivent sous
+`src/` plutôt qu'ici, et ce sont le seul endroit où un lien relatif est toujours faux : chacun est
+livré dans le `.nupkg` en tant que `<PackageReadmeFile>` et rendu par nuget.org, qui n'en résout
+aucun. Chaque adresse qu'ils portent est donc écrite en entier —
+`https://github.com/Reefact/diagnostic-catalog/blob/main/...` — bannière de langue comprise, ce qui
+est ce qui permet à un lecteur sur une page de paquet d'atteindre l'autre moitié
+([ADR-0034](adr/0034-pair-every-package-readme-in-english-and-french.fr.md)). Le moteur de rendu
+décide quelle moitié un paquet emporte, pas si une traduction existe : `<PackageReadmeFile>` nomme
+`README.en.md`, et `README.fr.md` est une page GitHub. Deux tests les lisent déjà —
+`DocumentedMirrorTests` et `DocumentedSiblingsTests` — si bien que leur contenu est contraint par
+plus que ce fichier.
 
 ## Nommage
 

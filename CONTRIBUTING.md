@@ -210,9 +210,14 @@ signpost to the guide, the specification, the records and the conventions is a
 section of the README rather than a page behind it
 ([ADR-0029](doc/adr/0029-pair-the-project-readme-across-the-doc-boundary.en.md)).
 
-The package READMEs under `src/` stay English-only. nuget.org renders one file
-per package, offers no language switch, and resolves no relative link — which is
-also why those READMEs link outward with absolute addresses.
+The package READMEs under `src/` are paired as well, and only one half ships.
+nuget.org renders one file per package and resolves no relative link, so
+`<PackageReadmeFile>` names `README.en.md` and every address those pages carry is
+written out in full — the language banner that reaches `README.fr.md` included
+([ADR-0034](doc/adr/0034-pair-every-package-readme-in-english-and-french.en.md)).
+The per-package `CHANGELOG.md` stays English-only: it is a log of released
+versions rather than a page anybody reads to understand the library, and it ships
+in no package.
 
 A page and its translation land in the **same commit**. This is not a style
 preference: `tests/DiagnosticCatalog.Documentation.UnitTests` fails a pair

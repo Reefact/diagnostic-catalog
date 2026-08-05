@@ -120,9 +120,12 @@ paquet, aussi correct soit-il dans le dépôt. Pointez vers l'extérieur en adre
 
 Ce dépôt en avait cinq, en ligne sur des pages publiées, jusqu'à ce qu'un test se mette à les refuser.
 
-**Il n'offre aucun sélecteur de langue.** Un fichier par paquet, dans une langue. C'est pourquoi
-`doc/` est bilingue ici et pas les READMEs de paquet
-([ADR-0022](../adr/0022-maintain-every-document-under-doc-in-english-and-french.fr.md)).
+**Il n'offre aucun sélecteur de langue.** Un fichier par paquet, dans une langue — ce qui décide
+quelle moitié d'un README bilingue un paquet emporte, pas si l'autre moitié existe. Les pages d'ici
+sont maintenues sous les noms `README.en.md` et `README.fr.md`, `<PackageReadmeFile>` nomme
+l'anglaise, et la bannière qui offre la française est une adresse complète comme chaque autre lien
+qu'elles écrivent
+([ADR-0034](../adr/0034-pair-every-package-readme-in-english-and-french.fr.md)).
 
 Deux choses que le README d'un catalogue doit porter et que rien d'autre ne dira au lecteur :
 
@@ -130,7 +133,9 @@ Deux choses que le README d'un catalogue doit porter et que rien d'autre ne dira
   quiconque évalue le paquet, et une page de paquet n'a aucun voisin à côté d'elle. Dans ce dépôt, le
   générateur l'écrit entre des marqueurs `<!-- mirror:begin -->`, et `DocumentedMirrorTests` fait
   échouer un document dont le bandeau ne correspond pas à l'attribut `CatalogSource` que le générateur
-  a écrit — un bandeau que rien ne peut atteindre n'énonce rien.
+  a écrit — un bandeau que rien ne peut atteindre n'énonce rien. `dcat` écrit dans le README que votre
+  dossier de catalogue détient réellement : `README.md` si c'est votre convention, `README.en.md` et
+  `README.fr.md` si vous maintenez une paire. Une orthographe que vous ne gardez pas n'est pas signalée.
 * **Les autres catalogues que vous publiez, par identifiant de paquet.** Un lecteur arrivé d'une
   recherche voit ce catalogue et rien d'autre.
 

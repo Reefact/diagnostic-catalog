@@ -26,12 +26,92 @@ public sealed class MirrorBannerTests : IDisposable
     [Fact]
     public void Regenerating_restates_the_mirrored_release_in_the_readme()
     {
+        WriteDoc("README.en.md", "> ## Mirrors `Vendor.Analyzers 1.0.0`");
+
+        Emit();
+
+        Assert.Contains("Mirrors `Vendor.Analyzers 2.0.0`", ReadDoc("README.en.md"), StringComparison.Ordinal);
+        Assert.DoesNotContain("1.0.0", ReadDoc("README.en.md"), StringComparison.Ordinal);
+    }
+
+    /// <summary>
+    /// A catalogue's README is a pair (ADR-0034), and the half nothing refreshes is the one that
+    /// goes stale: it states last month's release to the reader least able to check it against
+    /// anything else, because the assembly attribute and the guides are not in their language.
+    /// </summary>
+    [Fact]
+    public void Regenerating_restates_the_mirrored_release_in_both_halves()
+    {
+        WriteDoc("README.en.md", "> ## Mirrors `Vendor.Analyzers 1.0.0`");
+        WriteDoc("README.fr.md", "> ## Reflète `Vendor.Analyzers 1.0.0`");
+
+        Emit();
+
+        Assert.Contains("Mirrors `Vendor.Analyzers 2.0.0`", ReadDoc("README.en.md"), StringComparison.Ordinal);
+        Assert.Contains("Reflète `Vendor.Analyzers 2.0.0`", ReadDoc("README.fr.md"), StringComparison.Ordinal);
+        Assert.DoesNotContain("1.0.0", ReadDoc("README.fr.md"), StringComparison.Ordinal);
+    }
+
+    /// <summary>
+    /// The French half is written in French. A banner regenerated in English inside a French page
+    /// is the failure the pair exists to prevent, arriving through the one door a translator cannot
+    /// close by hand.
+    /// </summary>
+    [Fact]
+    public void The_french_half_is_restated_in_french()
+    {
+        WriteDoc("README.fr.md", "> ## Reflète `Vendor.Analyzers 1.0.0`");
+
+        Emit();
+
+        string french = ReadDoc("README.fr.md");
+
+        Assert.Contains("règles", french, StringComparison.Ordinal);
+        Assert.Contains("catégories", french, StringComparison.Ordinal);
+        Assert.DoesNotContain("every identifier", french, StringComparison.Ordinal);
+    }
+
+    /// <summary>
+    /// `dcat generate` ships to repositories that keep one README and have never heard of a
+    /// language suffix. The spelling this generator wrote into before the pair existed still has to
+    /// be written into, or a stranger's banner quietly stops being refreshed.
+    /// </summary>
+    [Fact]
+    public void A_repository_that_keeps_a_single_readme_still_gets_its_banner()
+    {
         WriteDoc("README.md", "> ## Mirrors `Vendor.Analyzers 1.0.0`");
 
         Emit();
 
         Assert.Contains("Mirrors `Vendor.Analyzers 2.0.0`", ReadDoc("README.md"), StringComparison.Ordinal);
-        Assert.DoesNotContain("1.0.0", ReadDoc("README.md"), StringComparison.Ordinal);
+    }
+
+    /// <summary>
+    /// A spelling that is absent is another repository's convention rather than a missing document,
+    /// so it is not reported. A note on every run for a file nobody meant to keep is how a reader
+    /// learns to stop reading the notes — including the one below, which is real.
+    /// </summary>
+    [Fact]
+    public void A_readme_spelling_the_repository_does_not_keep_is_not_reported()
+    {
+        WriteDoc("README.en.md", "> ## Mirrors `Vendor.Analyzers 1.0.0`");
+
+        string said = Capture(Emit);
+
+        Assert.DoesNotContain("README.md not found", said, StringComparison.Ordinal);
+        Assert.DoesNotContain("README.fr.md not found", said, StringComparison.Ordinal);
+    }
+
+    /// <summary>
+    /// A catalogue with no README at all is worth one line: nothing states the release it mirrors,
+    /// and no spelling of the name explains it.
+    /// </summary>
+    [Fact]
+    public void A_catalogue_with_no_readme_at_all_is_noted()
+    {
+        string said = Capture(Emit);
+
+        Assert.Contains("no README found beside the catalogue", said, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -62,13 +142,13 @@ public sealed class MirrorBannerTests : IDisposable
         // Whatever a catalogue has to explain about its upstream — a vendor mirrored on its
         // prerelease line, analyzers that ship inside the SDK — is authored prose that lives
         // outside the markers. Rewriting the block must not be able to take it with it.
-        WriteDoc("README.md", "> ## Mirrors `Vendor.Analyzers 1.0.0`",
+        WriteDoc("README.en.md", "> ## Mirrors `Vendor.Analyzers 1.0.0`",
                  before: "# Vendor catalogue\n\nA tagline nobody generated.\n\n",
                  after: "\nMirrored on its prerelease line, deliberately.\n");
 
         Emit();
 
-        string readme = ReadDoc("README.md");
+        string readme = ReadDoc("README.en.md");
         Assert.Contains("A tagline nobody generated.", readme, StringComparison.Ordinal);
         Assert.Contains("Mirrored on its prerelease line, deliberately.", readme, StringComparison.Ordinal);
     }

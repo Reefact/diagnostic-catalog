@@ -1,5 +1,8 @@
 # DiagnosticCatalog.Sonar
 
+🌍 **Languages:**  
+🇬🇧 English (this file) | 🇫🇷 [Français](https://github.com/Reefact/diagnostic-catalog/blob/main/src/DiagnosticCatalog.Sonar/README.fr.md)
+
 The **SonarAnalyzer.CSharp** rules as strongly referenced constants, so that
 `SuppressMessageAttribute` takes compile-checked references instead of magic strings.
 
