@@ -3,7 +3,7 @@
 🌍 **Languages:**  
 🇬🇧 English (this file) | 🇫🇷 [Français](./0032-badge-a-catalogues-icon-with-its-rule-prefix.fr.md)
 
-**Status:** Accepted
+**Status:** Superseded by [ADR-0033](0033-cap-the-badge-at-three-letters.en.md)
 **Proposed:** 2026-08-05
 **Accepted:** 2026-08-05
 **Decision Makers:** Reefact

@@ -149,13 +149,20 @@ ouvre la page. La marque elle-même est
 [`assets/icon-template.svg`](../../assets/icon-template.svg), où le texte du badge est la seule
 chose qu'il reste à modifier.
 
+Trois caractères est ici un plafond, pas un constat : un préfixe plus long est abrégé — `xUnit`
+devient `XU`, `MSTEST` devient `MST`. Le texte rétrécit pour dégager les coins de la plaque, si bien
+que le mot qui tient exactement est le mot que personne ne peut lire ; mesuré sur les catalogues
+publiés ici, un badge de six lettres tombe sous les 5px dans cette liste quand un badge de trois en
+tient 9,8. Le raisonnement est [ADR-0033](../adr/0033-cap-the-badge-at-three-letters.fr.md), qui
+supersède [ADR-0032](../adr/0032-badge-a-catalogues-icon-with-its-rule-prefix.fr.md) sur ce seul
+point.
+
 Il vaut la peine de savoir jusqu'où porte la vérification qui l'entoure, car elle est plus étroite
 qu'il n'y paraît. `PackageIconTests` fait échouer un catalogue qui ne porte pas son propre
 `icon.png`, celui dont l'icône est identique octet pour octet à celle d'un autre catalogue, et celui
 qui porte encore la marque sans badge du dépôt. Il ne lit jamais le badge : la distinction est la
 propriété qu'il peut affirmer, et ce que disent réellement les lettres repose sur ce gabarit et sur
-la revue. La décision, et la vérification qu'elle refuse délibérément, sont
-[ADR-0032](../adr/0032-badge-a-catalogues-icon-with-its-rule-prefix.fr.md).
+la revue.
 
 ## Ce que l'empaquetage vous donne ici
 
