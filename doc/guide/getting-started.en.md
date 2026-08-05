@@ -33,8 +33,9 @@ Pick the one matching the analyzer whose warnings you suppress:
 
 There is one for [SonarAnalyzer](https://www.nuget.org/packages/DiagnosticCatalog.Sonar) (`Sxxxx`),
 one for [the .NET analyzers](https://www.nuget.org/packages/DiagnosticCatalog.NetAnalyzers)
-(`CAxxxx`) and one for [StyleCop](https://www.nuget.org/packages/DiagnosticCatalog.StyleCop)
-(`SAxxxx`). Reference more than one if you run more than one.
+(`CAxxxx`), one for [StyleCop](https://www.nuget.org/packages/DiagnosticCatalog.StyleCop)
+(`SAxxxx`) and one for [the Roslyn IDE rules](https://www.nuget.org/packages/DiagnosticCatalog.CodeStyle)
+(`IDExxxx`). Reference more than one if you run more than one.
 
 ## 2. Rewrite one suppression
 

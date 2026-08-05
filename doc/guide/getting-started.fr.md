@@ -33,8 +33,9 @@ Prenez celui qui correspond à l'analyseur dont vous faites taire les avertissem
 
 Il y en a un pour [SonarAnalyzer](https://www.nuget.org/packages/DiagnosticCatalog.Sonar) (`Sxxxx`),
 un pour [les analyseurs .NET](https://www.nuget.org/packages/DiagnosticCatalog.NetAnalyzers)
-(`CAxxxx`) et un pour [StyleCop](https://www.nuget.org/packages/DiagnosticCatalog.StyleCop)
-(`SAxxxx`). Référencez-en plusieurs si vous exécutez plusieurs analyseurs.
+(`CAxxxx`), un pour [StyleCop](https://www.nuget.org/packages/DiagnosticCatalog.StyleCop)
+(`SAxxxx`) et un pour [les règles IDE de Roslyn](https://www.nuget.org/packages/DiagnosticCatalog.CodeStyle)
+(`IDExxxx`). Référencez-en plusieurs si vous exécutez plusieurs analyseurs.
 
 ## 2. Réécrire une suppression
 

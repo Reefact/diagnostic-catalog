@@ -18,11 +18,13 @@ flowchart TB
         S["DiagnosticCatalog.Sonar"]
         N["DiagnosticCatalog.NetAnalyzers"]
         T["DiagnosticCatalog.StyleCop"]
+        CS["DiagnosticCatalog.CodeStyle"]
         CLI["DiagnosticCatalog.Cli<br/><i>ships as dcat</i>"]
         A -. "bundles" .-> CF
         S --> F
         N --> F
         T --> F
+        CS --> F
         SELF --> F
     end
     subgraph ENG["eng/ — build-time only"]

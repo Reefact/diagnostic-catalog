@@ -1,0 +1,58 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net10.0</TargetFrameworks>
+    <AssemblyName>DiagnosticCatalog.CodeStyle</AssemblyName>
+    <RootNamespace>DiagnosticCatalog.CodeStyle</RootNamespace>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <!--
+    This catalogue ships on the 'codestyle' train, which versions independently of the foundation so it
+    can follow Roslyn's releases without dragging anything else along. Declaring the train here is the
+    whole membership (Directory.Build.targets); it is also what makes the project packable, what gives
+    it an embedded SBOM, and what puts the icon on the package.
+
+    Its own train rather than a share of another, because its upstream keeps nobody else's pace:
+    Microsoft.CodeAnalysis.CSharp.CodeStyle is versioned with the compiler, and a package that
+    declares a newer compiler than the one running is refused outright (CS9057). Following that line
+    is a cadence no other catalogue here has a reason to follow.
+  -->
+  <PropertyGroup>
+    <ReleaseTrain>codestyle</ReleaseTrain>
+  </PropertyGroup>
+  <PropertyGroup Label="Package">
+    <PackageId>DiagnosticCatalog.CodeStyle</PackageId>
+    <DevelopmentDependency>false</DevelopmentDependency>
+    <Title>DiagnosticCatalog.CodeStyle</Title>
+    <Description>The Roslyn IDE code-style rules (IDExxxx) as strongly referenced constants, so that SuppressMessageAttribute takes compile-checked references instead of magic strings. Ids, categories, titles and help links are read from Microsoft.CodeAnalysis.CSharp.CodeStyle's own DiagnosticDescriptor instances. Unofficial; not affiliated with or endorsed by Microsoft.</Description>
+    <PackageTags>roslyn;analyzers;diagnostics;suppressmessage;ide;codestyle;editorconfig;code-analysis;catalog</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <Authors>Reefact</Authors>
+    <Copyright>Copyright (c) Reefact</Copyright>
+    <PackageProjectUrl>https://github.com/Reefact/diagnostic-catalog</PackageProjectUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="/" />
+  </ItemGroup>
+
+  <!--
+    A PACKAGE reference, not a project one. The foundation rides the 'lib' train and this catalogue
+    rides its own, so packing against the project would stamp a dependency on a lib version that was
+    never published, and every consumer's restore would fail with NU1102 on an immutable artifact
+    (ADR-0007).
+
+    Version-less, so it resolves from Directory.Packages.props — where moving every catalogue onto a
+    new foundation is one deliberate edit rather than four.
+
+    NOT PrivateAssets="all": the foundation must reach whoever consumes this catalogue. They need
+    [DiagnosticRule] resolvable to declare rules of their own, and present at run time for reflection
+    over a catalogue to work (specification §16.1).
+  -->
+  <ItemGroup>
+    <PackageReference Include="DiagnosticCatalog" />
+  </ItemGroup>
+
+</Project>
