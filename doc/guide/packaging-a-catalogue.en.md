@@ -136,7 +136,7 @@ result. It is the first thing anybody sees of your package and about the last th
 about while building it — and at that size it holds roughly three characters.
 
 The catalogues here spend those characters on the **prefix of the rules the catalogue mirrors**,
-never on the vendor's name: `S`, `CA`, `IDE`, `SA`. StyleCop's badge reads `SA` rather than `SC`
+never on the vendor's name. StyleCop's badge reads `SA` rather than `SC`
 because `SA1000` is what a reader types inside `[SuppressMessage(...)]` and `SC` is what nobody
 types, so the icon answers "does this package hold my rule?" without the page being opened. The mark
 itself is [`assets/icon-template.svg`](../../assets/icon-template.svg), where the badge text is the

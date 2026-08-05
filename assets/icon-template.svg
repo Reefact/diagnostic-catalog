@@ -7,10 +7,13 @@
     marked below.
 
     THE BADGE CARRIES THE PREFIX OF THE RULES THE CATALOGUE MIRRORS, NEVER THE VENDOR'S NAME.
-    S for the Sonar catalogue, CA for the .NET analyzers, IDE for the Roslyn code styles, and SA
-    for StyleCop &#8212; SA rather than SC, because SA1000 is what a reader types inside
+    StyleCop's reads SA rather than SC, because SA1000 is what a reader types inside
     [SuppressMessage(...)] and SC is what nobody types. At the 128 px a nuget.org listing renders,
     the badge is the only thing that answers "does this package hold my rule?".
+
+    The badges in service are not listed here, deliberately: the same list in
+    Directory.Build.targets read "S, CA, SA" the day a fourth catalogue arrived, and a list of
+    four was stale within a day of being written here too. Read them off src/*/icon.png.
 
     That convention needs stating because nothing enforces it. PackageIconTests asserts that no
     two catalogues ship the SAME icon and that none ships the repository's unbadged one; it never

@@ -152,7 +152,7 @@ remind you of — because nothing compiles a README, and nothing reads an icon.
    ([ADR-0007](doc/adr/0007-depend-across-trains-through-published-packages.en.md)).
 6. **Draw its icon**, as a 512×512 `icon.png` beside the `.csproj`. The badge on
    it carries the **prefix of the rules the catalogue mirrors**, never the
-   vendor's name: `S`, `CA`, `IDE`, `SA`. StyleCop's reads `SA` and not `SC`
+   vendor's name — StyleCop's reads `SA` and not `SC`,
    because `SA1000` is what a reader types inside `[SuppressMessage(...)]`, and
    at the 128px a nuget.org listing renders, that badge is the whole of what
    distinguishes one catalogue from the next. Start from
