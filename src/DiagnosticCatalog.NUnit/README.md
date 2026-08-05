@@ -140,7 +140,7 @@ constant. This package covers the `NUnitxxxx` analyzer rules only.
 
 ## See also
 
-Seven sibling catalogues are generated from this repository the same way, each read from one
+Eight sibling catalogues are generated from this repository the same way, each read from one
 analyzer's own descriptors:
 
 - [`DiagnosticCatalog.Sonar`](https://www.nuget.org/packages/DiagnosticCatalog.Sonar)
@@ -155,6 +155,8 @@ analyzer's own descriptors:
   — the xunit.analyzers (`xUnitxxxx`) rules.
 - [`DiagnosticCatalog.MSTest`](https://www.nuget.org/packages/DiagnosticCatalog.MSTest)
   — the MSTest.Analyzers (`MSTESTxxxx`) rules.
+- [`DiagnosticCatalog.Trimming`](https://www.nuget.org/packages/DiagnosticCatalog.Trimming)
+  — the trimming, Native AOT and single-file (`ILxxxx`) warnings.
 - [`DiagnosticCatalog.Self`](https://www.nuget.org/packages/DiagnosticCatalog.Self)
   — this library's own `DCATxxxx` rules, for suppressing a diagnostic the catalogue analyzers
   themselves report.

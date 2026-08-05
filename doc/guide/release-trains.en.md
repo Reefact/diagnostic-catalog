@@ -3,7 +3,7 @@
 🌍 **Languages:**  
 🇬🇧 English (this file) | 🇫🇷 [Français](./release-trains.fr.md)
 
-For anyone adding a project, cutting a release, or wondering why a commit needs a scope. Nine trains,
+For anyone adding a project, cutting a release, or wondering why a commit needs a scope. Ten trains,
 one declaration, and one rule that follows from both.
 
 ## Why not one version
@@ -12,7 +12,7 @@ A catalogue follows its vendor's pace. SonarSource ships often; the foundation i
 stable. Tie them to one number and every Sonar refresh moves the foundation's version — which tells
 every consumer of the foundation that something changed when nothing did.
 
-So the repository publishes on **nine independent lines**
+So the repository publishes on **ten independent lines**
 ([ADR-0002](../adr/0002-partition-releases-into-trains-by-commit-scope.en.md),
 [ADR-0015](../adr/0015-a-catalogues-version-runs-on-its-own-line.en.md)):
 
@@ -27,6 +27,7 @@ So the repository publishes on **nine independent lines**
 | `xunit` | `xunit-v` | `xunit` | The xUnit.net analyzer rule catalogue |
 | `nunit` | `nunit-v` | `nunit` | The NUnit analyzer rule catalogue |
 | `mstest` | `mstest-v` | `mstest` | The MSTest analyzer rule catalogue |
+| `trimming` | `trimming-v` | `trimming` | The trimming, Native AOT and single-file rule catalogue |
 
 That table lives once, in [`tools/trains.sh`](../../tools/trains.sh). The packaging and release-notes
 scripts **source** it, so what a release publishes and what its notes describe cannot drift apart.
@@ -84,6 +85,9 @@ flowchart TB
     subgraph MS["mstest"]
         MST["DiagnosticCatalog.MSTest"]
     end
+    subgraph TR["trimming"]
+        TRC["DiagnosticCatalog.Trimming"]
+    end
     CF["DiagnosticCatalog.CodeFixes<br/><i>no train — bundled into the analyzers' package</i>"]
     GEN["eng/CatalogGen<br/><i>no train — bundled into dcat</i>"]
     A -. "packs" .-> CF
@@ -95,6 +99,7 @@ flowchart TB
     XU -- "PackageReference" --> F
     NUC -- "PackageReference" --> F
     MST -- "PackageReference" --> F
+    TRC -- "PackageReference" --> F
     SELF -- "PackageReference" --> F
 ```
 

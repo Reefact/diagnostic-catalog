@@ -426,11 +426,12 @@ When present it MUST be lowercase and MUST be one of:
 | `xunit` | The **catalog of xUnit.net analyzer (xUnitxxxx) rules** |
 | `nunit` | The **catalog of NUnit analyzer (NUnitxxxx) rules** |
 | `mstest` | The **catalog of MSTest analyzer (MSTESTxxxx) rules** |
+| `trimming` | The **catalog of trimming, Native AOT and single-file (ILxxxx) rules** |
 | `cataloggen` | The **generation engine** (`eng/CatalogGen`) — acquiring analyzer assemblies, reading their descriptors, emitting a catalog |
 
 > `analyzers` and `netanalyzers` are close in spelling and far apart in meaning.
 > `analyzers` is *code this repository ships* — Roslyn analyzers that enforce our
-> own contract. `netanalyzers`, `sonar`, `stylecop`, `codestyle`, `xunit`, `nunit` and `mstest` are *catalogs describing
+> own contract. `netanalyzers`, `sonar`, `stylecop`, `codestyle`, `xunit`, `nunit`, `mstest` and `trimming` are *catalogs describing
 > somebody else's rules*, which is the product. When in doubt: if the commit
 > changes a rule catalog, its scope is the vendor's name.
 
@@ -465,6 +466,7 @@ independently:
 | `xunit` | `xunit` | Follows xunit.analyzers' releases. |
 | `nunit` | `nunit` | Follows NUnit.Analyzers' releases. |
 | `mstest` | `mstest` | Follows MSTest.Analyzers' releases. |
+| `trimming` | `trimming` | Follows the .NET SDK's ILLink releases. |
 
 Two scopes ride the `cli` train, and the distinction between them is worth
 keeping. `cli` is the shell — the command tree, the arguments, the exit codes;

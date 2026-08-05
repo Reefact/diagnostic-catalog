@@ -33,6 +33,7 @@ public sealed class DocumentedMirrorTests
             { "DiagnosticCatalog.Xunit", "XunitRules.g.cs" },
             { "DiagnosticCatalog.NUnit", "NUnitRules.g.cs" },
             { "DiagnosticCatalog.MSTest", "MSTestRules.g.cs" },
+            { "DiagnosticCatalog.Trimming", "TrimRules.g.cs" },
         };
 
     [Theory]

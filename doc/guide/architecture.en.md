@@ -22,6 +22,7 @@ flowchart TB
         XU["DiagnosticCatalog.Xunit"]
         NU["DiagnosticCatalog.NUnit"]
         MS["DiagnosticCatalog.MSTest"]
+        TR["DiagnosticCatalog.Trimming"]
         CLI["DiagnosticCatalog.Cli<br/><i>ships as dcat</i>"]
         A -. "bundles" .-> CF
         S --> F
@@ -31,6 +32,7 @@ flowchart TB
         XU --> F
         NU --> F
         MS --> F
+        TR --> F
         SELF --> F
     end
     subgraph ENG["eng/ — build-time only"]
