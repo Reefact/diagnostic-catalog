@@ -2,7 +2,7 @@
 """Draw a catalogue's icon.png from assets/icon-template.svg and a badge string.
 
     tools/icon/render-icon.py SA src/DiagnosticCatalog.StyleCop/icon.png
-    tools/icon/render-icon.py --all          # redraw every catalogue from eng/catalogs.json
+    tools/icon/render-icon.py --all          # redraw every catalogue in tools/icon/badges.py
 
 Exit status: 0 = written, 1 = refused.
 
@@ -31,27 +31,12 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import template as tpl                                                  # noqa: E402
+from badges import BADGES                                               # noqa: E402
 from truetype import Font                                               # noqa: E402
 
 DEFAULT_FONT = "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf"
 MAX_CAP = 68.0
 MAX_INK = 93.0
-
-# The badge each catalogue wears. Three letters at most, abbreviating a longer rule prefix
-# (ADR-0033); the prefix itself is what the catalogue's generated source calls its rules.
-BADGES = {
-    "DiagnosticCatalog.AspNetCore": "ASP",
-    "DiagnosticCatalog.Sonar": "S",
-    "DiagnosticCatalog.NetAnalyzers": "CA",
-    "DiagnosticCatalog.CodeStyle": "IDE",
-    "DiagnosticCatalog.StyleCop": "SA",
-    "DiagnosticCatalog.Trimming": "IL",
-    "DiagnosticCatalog.Xunit": "XU",
-    "DiagnosticCatalog.NUnit": "NU",
-    "DiagnosticCatalog.MSTest": "MST",
-    "DiagnosticCatalog.AspNetCore": "ASP",
-    "DiagnosticCatalog.Syslib": "SYS",
-}
 
 
 def badge_contours(font, text, plate):

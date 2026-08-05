@@ -3,6 +3,7 @@
 
     tools/icon/check-icon-template.py                  # every src/*/icon.png
     tools/icon/check-icon-template.py path/to/icon.png # a candidate, before committing it
+    tools/icon/check-icon-template.py --root DIR       # the same, against another tree
 
 Exit status: 0 = the template and the icons agree, 1 = they do not.
 
@@ -32,10 +33,10 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+import badges                                                           # noqa: E402
 import template as tpl                                                  # noqa: E402
 
 ROOT = tpl.ROOT
-TEMPLATE = tpl.SVG
 
 # The icons in the repository are drawn by render-icon.py from this same template, so they now
 # report RMS 0.001. The bars stay where they were set against the hand-drawn ones — 0.068 with a
@@ -110,14 +111,26 @@ def main(argv):
         print(__doc__)
         return 0
 
-    icons = [Path(a) for a in argv] or sorted(ROOT.glob("src/*/icon.png"))
+    root = ROOT
+    if "--root" in argv:
+        at = argv.index("--root")
+        root = Path(argv[at + 1]).resolve()
+        argv = argv[:at] + argv[at + 2:]
+
+    # Scanning is what the roster check applies to: given explicit paths, the caller is asking
+    # about a candidate that has no project yet, and answering with a complaint about the table
+    # would be answering a question nobody asked.
+    scanning = not argv
+    template_path = root / "assets" / "icon-template.svg"
+
+    icons = [Path(a) for a in argv] or sorted(root.glob("src/*/icon.png"))
     if not icons:
         # A discovery that finds nothing must not report success: that is the same failure
         # tools/tests/run.sh refuses, and here it would mean the template is unchecked.
         print("no icon found under src/*/icon.png — nothing was checked", file=sys.stderr)
         return 1
 
-    mark = tpl.Template()
+    mark = tpl.Template(template_path)
     width, height = mark.width, mark.height
     box, stops, span = mark.plate, mark.stops, mark.gradient_span
     grid = tpl.coverage(mark.contours, width, height)
@@ -129,14 +142,23 @@ def main(argv):
     inset = box[2] * 0.12
     lettering = (box[0] + inset, box[1] + inset, box[0] + box[2] - inset, box[1] + box[3] - inset)
 
-    print(f"template  {TEMPLATE.relative_to(ROOT)}  {stops[0]} -> {stops[-1]}")
+    print(f"template  {template_path.relative_to(root)}  {stops[0]} -> {stops[-1]}")
     failures = 0
+
+    # Every icon in the tree is declared, and everything declared is in the tree. Counted apart
+    # from the comparison below because it is a different complaint: an undeclared catalogue is
+    # not an icon that disagrees with the template, it is an icon nothing draws — and the
+    # comparison passes it happily, as it did for the one that arrived hand-drawn.
+    undeclared = badges.roster(root) if scanning else []
+    for complaint in undeclared:
+        print(f"  FAIL {complaint}")
+
     for icon in icons:
         # A candidate export sits wherever whoever drew it saved it, which is routinely
         # outside the repository — so shorten the path when it is inside and leave it alone
         # when it is not, rather than assuming.
         try:
-            name = icon.resolve().relative_to(ROOT)
+            name = icon.resolve().relative_to(root)
         except ValueError:
             name = icon
         try:
@@ -173,9 +195,15 @@ def main(argv):
               "was changed and no longer draws the mark the published packages wear. Redraw the\n"
               "icon from the template, or — if the mark itself is meant to move — say so, and\n"
               "move every icon with it.", file=sys.stderr)
+    if undeclared:
+        print(f"\n{len(undeclared)} catalogue(s) and the badge table disagree about what exists.\n"
+              "tools/icon/badges.py is the roster render-icon.py draws from, so a catalogue "
+              "missing\nfrom it is one nothing can redraw.", file=sys.stderr)
+    if failures or undeclared:
         return 1
 
-    print(f"\n{len(icons)} icon(s) match the template")
+    print(f"\n{len(icons)} icon(s) match the template"
+          + (", and the badge table names every one of them" if scanning else ""))
     return 0
 
 
