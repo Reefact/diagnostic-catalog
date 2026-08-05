@@ -31,6 +31,7 @@ public sealed class GeneratedCatalogTests
         "DiagnosticCatalog.AspNetCore",
         "DiagnosticCatalog.Syslib",
         "DiagnosticCatalog.Roslyn",
+        "DiagnosticCatalog.PublicApi",
     ];
 
     private static Assembly Load(string name) =>

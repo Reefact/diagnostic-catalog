@@ -64,7 +64,7 @@ build avec un message qui ne nomme rien d'utile.
 
 ## Voir aussi
 
-Onze catalogues frères sont générés depuis ce dépôt de la même façon, chacun lu depuis les descripteurs d'un
+Douze catalogues frères sont générés depuis ce dépôt de la même façon, chacun lu depuis les descripteurs d'un
 seul analyseur — à ceci près que les leurs appartiennent à quelqu'un d'autre :
 
 - [`DiagnosticCatalog.Sonar`](https://www.nuget.org/packages/DiagnosticCatalog.Sonar)
@@ -89,6 +89,8 @@ seul analyseur — à ceci près que les leurs appartiennent à quelqu'un d'autr
   — les diagnostics des générateurs de source du runtime .NET (`SYSLIB1xxx`).
 - [`DiagnosticCatalog.Roslyn`](https://www.nuget.org/packages/DiagnosticCatalog.Roslyn)
   — les règles d'écriture d'analyseurs Roslyn (`RS1xxx`, `RS2xxx`).
+- [`DiagnosticCatalog.PublicApi`](https://www.nuget.org/packages/DiagnosticCatalog.PublicApi)
+  — les règles de suivi d'API publique (`RS00xx`).
 
 **Vous voulez un catalogue à vous ?** C'est à cela que sert
 [le guide de l'auteur de catalogue](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/authoring-a-catalogue.fr.md), et ce paquet en est

@@ -213,7 +213,7 @@ constant. This package covers Sonar's `Sxxxx` analyzer rules only.
 
 ## See also
 
-Eleven sibling catalogues are generated from this repository the same way, each read from one
+Twelve sibling catalogues are generated from this repository the same way, each read from one
 analyzer's own descriptors:
 
 - [`DiagnosticCatalog.NetAnalyzers`](https://www.nuget.org/packages/DiagnosticCatalog.NetAnalyzers)
@@ -236,6 +236,8 @@ analyzer's own descriptors:
   — the .NET runtime source-generator (`SYSLIB1xxx`) diagnostics.
 - [`DiagnosticCatalog.Roslyn`](https://www.nuget.org/packages/DiagnosticCatalog.Roslyn)
   — the Roslyn analyzer-authoring (`RS1xxx`, `RS2xxx`) rules.
+- [`DiagnosticCatalog.PublicApi`](https://www.nuget.org/packages/DiagnosticCatalog.PublicApi)
+  — the public-API tracking (`RS00xx`) rules.
 - [`DiagnosticCatalog.Self`](https://www.nuget.org/packages/DiagnosticCatalog.Self)
   — this library's own `DCATxxxx` rules, for suppressing a diagnostic the catalogue analyzers
   themselves report.

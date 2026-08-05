@@ -31,6 +31,7 @@ public sealed class GeneratedCatalogSourceTests
         "AspNetCoreRules.g.cs",
         "SyslibRules.g.cs",
         "RoslynRules.g.cs",
+        "PublicApiRules.g.cs",
     ];
 
     /// <summary>

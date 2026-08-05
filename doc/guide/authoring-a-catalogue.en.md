@@ -202,7 +202,7 @@ arguments must be compile-time constants and no date type can be one. Use `yyyy-
 A first-party catalogue maintained beside its own analyzer needs none of this — the two ship from
 one repository at one version.
 
-If you are mirroring at scale, this repository generates eleven catalogues that way and publishes the
+If you are mirroring at scale, this repository generates twelve catalogues that way and publishes the
 generator as a tool. The Sonar, .NET-analyzers and StyleCop catalogues under `src/` are what the
 output looks like with 465, 318 and 193 rules; the method is in §14 of
 [the specification](../specification.en.md).
