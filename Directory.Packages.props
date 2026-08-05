@@ -60,6 +60,16 @@
          analyzers derive from types that reference it. -->
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.14.0" />
+    <!-- The facade that carries IAsyncEnumerable<T> and IAsyncDisposable for an assembly compiled
+         against netstandard2.0 — which is what every shipped analyzer is. The runtime the worker
+         runs on HAS those types; what it does not have is this assembly NAME, because this is the
+         one netstandard-era compat facade the shared framework does not carry (it ships
+         System.Threading.Tasks.Extensions and System.Runtime.CompilerServices.Unsafe, not this).
+         An analyzer package supplies nothing either: it ships its own assembly and declares no
+         dependencies at all, so the identity has to come from the host. Consumed by
+         eng/CatalogGen.Worker, which is that host, and by tests/CatalogGen.AnalyzerFixture, which
+         reproduces the assembly shape that needs it. -->
+    <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.10" />
     <!-- The command tree, argument parsing and help output of the `dcat` tool. Chosen over a
          hand-rolled parser because the tool is published: the parser it replaced read arguments in
          pairs, which made a switch left dangling at the end of a command line neither applied nor
