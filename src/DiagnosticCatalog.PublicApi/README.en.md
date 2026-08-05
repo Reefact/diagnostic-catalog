@@ -113,11 +113,11 @@ Three Microsoft packages issue `RS` rules, and the ids partition cleanly between
 
 Two catalogues rather than one because a catalogue mirrors one package: the manifest takes a single
 package id, and `[assembly: CatalogSource]` records a single source and version. What kept them
-apart for a while was the icon — a badge carries the catalogue's rule prefix
-([ADR-0032](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/adr/0032-badge-a-catalogues-icon-with-its-rule-prefix.en.md))
-capped at three letters
-([ADR-0033](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/adr/0033-cap-the-badge-at-three-letters.en.md)),
-so both wanted `RS` and no icon could tell them apart. This one wears `API`.
+apart for a while was the icon — a badge carries the catalogue's rule prefix, capped at three
+letters, so both wanted `RS` and no icon could tell them apart. A badge whose prefix is already in
+service names the catalogue's subject instead, and the prefix stays with the catalogue publishing it
+([ADR-0035](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/adr/0035-badge-a-shared-prefix-catalogue-with-its-subject.en.md)):
+`RS` is `DiagnosticCatalog.Roslyn`'s, and this one wears `API`.
 
 ## Categories declared once
 
