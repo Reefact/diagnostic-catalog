@@ -3,8 +3,8 @@
 🌍 **Languages:**  
 🇬🇧 English (this file) | 🇫🇷 [Français](./architecture.fr.md)
 
-For anyone contributing, reviewing, or wondering why there are eight projects for what sounds like
-one idea. Every split here is forced by something; this page says by what.
+For anyone contributing, reviewing, or wondering why there are twenty-seven projects for what sounds
+like one idea. Every split here is forced by something; this page says by what.
 
 ## The map
 
@@ -53,8 +53,8 @@ flowchart TB
 ```
 
 `src/` is what reaches a consumer. `eng/` is build-time tooling that never ships as a package of its
-own. `tests/` is seven projects, and which of them run on the .NET Framework CLR is a decision per
-project.
+own. `tests/` is ten projects: seven that assert, and three that exist to be compiled or read by them.
+Which of the seven run on the .NET Framework CLR is a decision per project.
 
 ## Four splits, each forced
 
