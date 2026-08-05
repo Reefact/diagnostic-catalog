@@ -6,10 +6,13 @@
     The family mark worn by every catalogue package here, with one thing to edit: the badge text,
     marked below.
 
-    THE BADGE CARRIES THE PREFIX OF THE RULES THE CATALOGUE MIRRORS, NEVER THE VENDOR'S NAME.
-    StyleCop's reads SA rather than SC, because SA1000 is what a reader types inside
-    [SuppressMessage(...)] and SC is what nobody types. At the 128 px a nuget.org listing renders,
-    the badge is the only thing that answers "does this package hold my rule?".
+    THE BADGE CARRIES THE PREFIX OF THE RULES THE CATALOGUE MIRRORS, NEVER THE VENDOR'S NAME,
+    AND AT MOST THREE LETTERS OF IT. StyleCop's reads SA rather than SC, because SA1000 is what a
+    reader types inside [SuppressMessage(...)] and SC is what nobody types. A longer prefix is
+    abbreviated &#8212; xUnit to XU, MSTEST to MST &#8212; because the type shrinks to clear the
+    plate's corners, and past three letters it shrinks below what the 128 px a nuget.org listing
+    renders can carry (ADR-0033). The badge is the only thing there that answers "does this package
+    hold my rule?", so a badge nobody can read answers nothing.
 
     The badges in service are not listed here, deliberately: the same list in
     Directory.Build.targets read "S, CA, SA" the day a fourth catalogue arrived, and a list of
@@ -40,17 +43,22 @@
       The letters are KNOCKED OUT of the plate rather than painted white: the whole icon is one
       gradient and a set of holes, which is why nothing in it is white and the C reads the same way.
 
-      The lettering is a <text> element, so it renders with whatever bold sans-serif the exporter
-      resolves. The four shipped badges were not drawn from this file and their font is not
-      recorded, so do not trust a font name &#8212; check the ink, which is what was measured on
-      them. All four centre it on (425.55, 373.95):
+      DO NOT EXPORT THIS FILE BY HAND. tools/icon/render-icon.py draws the shipped icons from it,
+      and every src/*/icon.png in the repository came out of that command. The &lt;text&gt; below
+      is what makes the file viewable in an editor; the renderer replaces it, so the two agree on
+      the word and only roughly on its size.
 
-        letters      cap height   ink width   font-size below
-        1 (S)            68           51            95
-        2 (SA, CA)       46           91            64
-        3 (IDE)          39           93            54
+      The font is the one named below, Arial &#8212; resolved by the renderer to Liberation Sans
+      Bold, which is the same face metrically and is what the stack picks up on Linux. Naming a
+      stack every platform already resolves is what keeps the export reproducible with no font
+      committed and no licence to carry.
 
-      A longer prefix is set smaller so the word still clears the rounded corners.
+      The size is not chosen per badge. The word is set as large as it goes without its ink
+      passing 93 wide or 68 tall, centred on the plate at (425.55, 373.95). That single rule
+      reproduces every size the hand-drawn badges used &#8212; 68 for one letter, which the height
+      bounds, and 48 and 39 for two and three, which the width bounds &#8212; and it is why the
+      badge is capped at three letters (ADR-0033): past that the width bound drives the type below
+      what a 128 px listing can carry.
     -->
     <mask id="prefix" maskUnits="userSpaceOnUse" x="354.5" y="302.9" width="142.1" height="142.1">
       <rect x="354.5" y="302.9" width="142.1" height="142.1" rx="34.05" fill="#fff"/>

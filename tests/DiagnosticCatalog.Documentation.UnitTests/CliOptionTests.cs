@@ -66,6 +66,8 @@ public sealed class CliOptionTests
         // this repository's own scripts, quoted where a contributor is told to run one:
         // tools/commit-lint/check-docs-footer.sh takes --commit <sha>
         "commit",
+        // tools/icon/render-icon.py takes --all, which redraws every catalogue's icon
+        "all",
     };
 
     /// <summary>

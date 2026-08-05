@@ -55,3 +55,8 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+
+# Python bytecode. tools/icon/ is importable now — check-icon-template.py and render-icon.py
+# share template.py — so running either leaves a __pycache__ beside them.
+__pycache__/
+*.py[cod]
