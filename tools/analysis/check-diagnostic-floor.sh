@@ -103,13 +103,21 @@ raw="$(mktemp)"
 # Together those three made the failure mode a green line reading "every diagnostic this
 # build reports is at least a warning (N log(s) read)", counting logs it had not opened.
 for sarif in "$logs"/*.sarif; do
-  [ -e "$sarif" ] || break
+  # Every way a log can fail to be read ends this script LOUDLY, and none of them
+  # `break`. The count loop above breaks on purpose — `[ -e ... ] || break` is the POSIX
+  # idiom for "the glob matched nothing", and it can only be true on its first turn. Here
+  # the same line would mean something else entirely: abandon this log AND every log
+  # sorting after it, then carry on to the verdict. That is the defect this whole change
+  # is about, and writing it back in one loop lower is exactly how it would survive being
+  # fixed. Reaching this loop already implies the glob matched, since count would
+  # otherwise be zero and the script would have stopped.
+  [ -r "$sarif" ] || fail "unreadable diagnostic log: ${sarif}; the diagnostic floor was NOT checked"
 
-  # An empty log is the quieter half of the same interrupted build: jq reads zero
-  # documents from it, reports success, and produces nothing — indistinguishable
-  # downstream from a project that genuinely had no diagnostic to report. Measured on a
-  # full Release build of this repository, all 29 logs are non-empty (smallest: 333
-  # bytes), so nothing the build legitimately writes is refused here.
+  # An empty log is the quieter half of an interrupted build: jq reads zero documents from
+  # it, reports success, and produces nothing — indistinguishable downstream from a
+  # project that genuinely had no diagnostic to report. Measured on a full Release build
+  # of this repository, all 29 logs are non-empty (smallest: 333 bytes), so nothing the
+  # build legitimately writes is refused here.
   [ -s "$sarif" ] || fail "empty diagnostic log: ${sarif}; the diagnostic floor was NOT checked"
 
   jq -r '
