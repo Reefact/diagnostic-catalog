@@ -125,7 +125,9 @@ Two things a catalogue's README should carry that nothing else will tell a reade
   evaluating the package needs, and a package page has no sibling beside it. In this repository the
   generator writes it between `<!-- mirror:begin -->` markers, and `DocumentedMirrorTests` fails a
   document whose banner does not match the `CatalogSource` attribute the generator wrote — a banner
-  nothing can reach states nothing.
+  nothing can reach states nothing. `dcat` writes into whichever README your catalogue folder
+  actually keeps: `README.md` if that is your convention, `README.en.md` and `README.fr.md` if you
+  maintain a pair. A spelling you do not keep is not reported.
 * **The other catalogues you publish, by package id.** A reader landing from a search sees that
   catalogue and nothing else.
 
