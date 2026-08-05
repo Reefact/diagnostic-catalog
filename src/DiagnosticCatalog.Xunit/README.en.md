@@ -147,7 +147,7 @@ constant. This package covers the `xUnitxxxx` analyzer rules only.
 
 ## See also
 
-Ten sibling catalogues are generated from this repository the same way, each read from one
+Eleven sibling catalogues are generated from this repository the same way, each read from one
 analyzer's own descriptors:
 
 - [`DiagnosticCatalog.Sonar`](https://www.nuget.org/packages/DiagnosticCatalog.Sonar)
@@ -168,6 +168,8 @@ analyzer's own descriptors:
   — the ASP.NET Core and Blazor (`ASPxxxx`, `BLxxxx`) rules.
 - [`DiagnosticCatalog.Syslib`](https://www.nuget.org/packages/DiagnosticCatalog.Syslib)
   — the .NET runtime source-generator (`SYSLIB1xxx`) diagnostics.
+- [`DiagnosticCatalog.Roslyn`](https://www.nuget.org/packages/DiagnosticCatalog.Roslyn)
+  — the Roslyn analyzer-authoring (`RS1xxx`, `RS2xxx`) rules.
 - [`DiagnosticCatalog.Self`](https://www.nuget.org/packages/DiagnosticCatalog.Self)
   — this library's own `DCATxxxx` rules, for suppressing a diagnostic the catalogue analyzers
   themselves report.

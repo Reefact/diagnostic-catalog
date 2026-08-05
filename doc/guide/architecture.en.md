@@ -25,6 +25,7 @@ flowchart TB
         TR["DiagnosticCatalog.Trimming"]
         AS["DiagnosticCatalog.AspNetCore"]
         SY["DiagnosticCatalog.Syslib"]
+        RO["DiagnosticCatalog.Roslyn"]
         CLI["DiagnosticCatalog.Cli<br/><i>ships as dcat</i>"]
         A -. "bundles" .-> CF
         S --> F
@@ -37,6 +38,7 @@ flowchart TB
         TR --> F
         AS --> F
         SY --> F
+        RO --> F
         SELF --> F
     end
     subgraph ENG["eng/ — build-time only"]
