@@ -149,8 +149,9 @@
       reports nothing — which looks exactly like a codebase with no problems. The floor lives in
       Directory.Build.props and RoslynFloorTests asserts against it.
 
-      The central 4.14.0 pin exists for eng/CatalogGen, a build-time tool that constrains nobody. The
-      VersionOverride is what lets the two coexist under Central Package Management.
+      The central pin exists for eng/CatalogGen, a build-time tool that constrains nobody. The
+      VersionOverride is what lets the two coexist under Central Package Management. Its value is
+      deliberately not repeated here: Dependabot moves it, and nothing checks a number kept in prose.
     -->
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" VersionOverride="$(RoslynFloorVersion)" PrivateAssets="all" />
     <!-- Authoring analyzers only, not part of the load contract, so free to track the newest version. -->
