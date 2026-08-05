@@ -33,6 +33,15 @@ internal static class Repository
     ];
 
     /// <summary>
+    /// The address a document writes when a relative link would not work. The package READMEs are
+    /// shipped inside the <c>.nupkg</c> and rendered by nuget.org, which resolves no relative link,
+    /// so they reach the rest of the repository in full — the language banner that offers the other
+    /// half included (ADR-0034). An address naming a path inside this repository is still a path
+    /// inside it, so it is checked rather than waved through as external.
+    /// </summary>
+    private const string BlobAddress = "https://github.com/Reefact/diagnostic-catalog/blob/main/";
+
+    /// <summary>
     /// Top-level documents outside any scanned folder that still link into the set.
     /// </summary>
     private static readonly string[] LinkedFiles =
@@ -84,6 +93,19 @@ internal static class Repository
     internal static IReadOnlyList<MarkdownDocument> Bilingual =>
         Documents.Where(document => document.Language is not null).ToList();
 
+    /// <summary>
+    /// The package READMEs: the pages shipped inside a <c>.nupkg</c> and rendered by nuget.org.
+    /// That renderer is what makes their rules differ from every other page's — it resolves no
+    /// relative link — so which documents it governs is answered here rather than in each test that
+    /// has to ask.
+    /// </summary>
+    internal static IReadOnlyList<MarkdownDocument> PackageReadmes =>
+        Documents
+            .Where(document =>
+                document.Path.StartsWith("src/", StringComparison.Ordinal) &&
+                document.FileName.StartsWith("README.", StringComparison.Ordinal))
+            .ToList();
+
     /// <summary>Whether a repository-relative path exists as a file on disk.</summary>
     internal static bool Exists(string relativePath) =>
         File.Exists(Path.Combine(Root, relativePath.Replace('/', Path.DirectorySeparatorChar)));
@@ -119,8 +141,19 @@ internal static class Repository
     /// Returns <c>null</c> when the target climbs above the repository root, which is itself a
     /// broken link.
     /// </summary>
+    /// <remarks>
+    /// An address that names this repository in full resolves to the path it names, whatever
+    /// document carries it. That is what keeps a package README checkable: nuget.org resolves no
+    /// relative link, so those pages write every address out (<see cref="BlobAddress"/>), and a
+    /// check that read them as external would verify nothing about the one link that has to work.
+    /// </remarks>
     internal static string? Resolve(MarkdownDocument from, string target)
     {
+        if (target.StartsWith(BlobAddress, StringComparison.Ordinal))
+        {
+            return target[BlobAddress.Length..];
+        }
+
         string folder = from.Path.Contains('/')
             ? from.Path[..from.Path.LastIndexOf('/')]
             : string.Empty;

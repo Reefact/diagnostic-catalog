@@ -28,8 +28,13 @@ documented, and close to the code that uses it.
   two are declared to the documentation tests as siblings and checked like any
   other pair; the decision is
   [ADR-0029](doc/adr/0029-pair-the-project-readme-across-the-doc-boundary.en.md).
-* The package READMEs under `src/` stay **English-only**. nuget.org renders one
-  file per package, offers no language switch, and resolves no relative link.
+* **The package READMEs under `src/` are paired as well**, and only one half ships.
+  nuget.org renders one file per package and resolves no relative link, so
+  `<PackageReadmeFile>` names `README.en.md` and every address those pages carry —
+  the language banner reaching `README.fr.md` included — is written out in full;
+  the decision is
+  [ADR-0034](doc/adr/0034-pair-every-package-readme-in-english-and-french.en.md).
+  The per-package `CHANGELOG.md` stays **English-only**.
 
 ## Build & test
 

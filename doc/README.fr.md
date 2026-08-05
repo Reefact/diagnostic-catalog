@@ -287,20 +287,20 @@ de l'une à l'autre — et chacune porte une navigation précédent/suivant, de 
 lit aussi d'une traite.
 
 Guides par paquet :
-[`DiagnosticCatalog`](../src/DiagnosticCatalog/README.md) ·
-[`.Analyzers`](../src/DiagnosticCatalog.Analyzers/README.md) ·
-[`.Self`](../src/DiagnosticCatalog.Self/README.md) ·
-[`.Sonar`](../src/DiagnosticCatalog.Sonar/README.md) ·
-[`.NetAnalyzers`](../src/DiagnosticCatalog.NetAnalyzers/README.md) ·
-[`.StyleCop`](../src/DiagnosticCatalog.StyleCop/README.md) ·
-[`.CodeStyle`](../src/DiagnosticCatalog.CodeStyle/README.md) ·
-[`.Xunit`](../src/DiagnosticCatalog.Xunit/README.md) ·
-[`.NUnit`](../src/DiagnosticCatalog.NUnit/README.md) ·
-[`.MSTest`](../src/DiagnosticCatalog.MSTest/README.md) ·
-[`.Trimming`](../src/DiagnosticCatalog.Trimming/README.md) ·
-[`.AspNetCore`](../src/DiagnosticCatalog.AspNetCore/README.md) ·
-[`.Syslib`](../src/DiagnosticCatalog.Syslib/README.md) ·
-[`.Cli`](../src/DiagnosticCatalog.Cli/README.md)
+[`DiagnosticCatalog`](../src/DiagnosticCatalog/README.fr.md) ·
+[`.Analyzers`](../src/DiagnosticCatalog.Analyzers/README.fr.md) ·
+[`.Self`](../src/DiagnosticCatalog.Self/README.fr.md) ·
+[`.Sonar`](../src/DiagnosticCatalog.Sonar/README.fr.md) ·
+[`.NetAnalyzers`](../src/DiagnosticCatalog.NetAnalyzers/README.fr.md) ·
+[`.StyleCop`](../src/DiagnosticCatalog.StyleCop/README.fr.md) ·
+[`.CodeStyle`](../src/DiagnosticCatalog.CodeStyle/README.fr.md) ·
+[`.Xunit`](../src/DiagnosticCatalog.Xunit/README.fr.md) ·
+[`.NUnit`](../src/DiagnosticCatalog.NUnit/README.fr.md) ·
+[`.MSTest`](../src/DiagnosticCatalog.MSTest/README.fr.md) ·
+[`.Trimming`](../src/DiagnosticCatalog.Trimming/README.fr.md) ·
+[`.AspNetCore`](../src/DiagnosticCatalog.AspNetCore/README.fr.md) ·
+[`.Syslib`](../src/DiagnosticCatalog.Syslib/README.fr.md) ·
+[`.Cli`](../src/DiagnosticCatalog.Cli/README.fr.md)
 
 ## 🎯 Quand c'est un bon choix
 
@@ -377,9 +377,12 @@ lien qui ne résout pas, ou une page que rien ne référence.
 Cette page fait partie de cette règle. GitHub compose la page d'accueil du dépôt à partir d'un
 fichier nommé `README.md` à la racine et d'aucun autre, si bien que la moitié anglaise ne peut pas
 siéger sous `doc/` ; sa moitié française est cette page, et les deux sont vérifiées comme une paire
-ordinaire ([ADR-0029](adr/0029-pair-the-project-readme-across-the-doc-boundary.fr.md)). Ce qui reste
-hors de la règle, ce sont les README de paquets sous [`src/`](../src) : nuget.org rend un fichier par
-paquet, n'offre aucun sélecteur de langue et ne résout aucun lien relatif.
+ordinaire ([ADR-0029](adr/0029-pair-the-project-readme-across-the-doc-boundary.fr.md)). Les README
+de paquets sous [`src/`](../src) sont dans la règle eux aussi, le moteur de rendu décidant quelle
+moitié un paquet emporte plutôt que si une traduction existe : nuget.org montre un fichier par paquet
+et ne résout aucun lien relatif, donc `<PackageReadmeFile>` nomme la moitié anglaise et chaque adresse
+que ces pages écrivent — bannière offrant la française comprise — est une adresse complète
+([ADR-0034](adr/0034-pair-every-package-readme-in-english-and-french.fr.md)).
 
 Hors de `doc/` :
 

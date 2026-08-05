@@ -22,6 +22,8 @@ namespace DiagnosticCatalog.Documentation.UnitTests;
 /// The package READMEs are checked the other way round. They are shipped inside the <c>.nupkg</c>
 /// and rendered by nuget.org, which resolves no relative link at all: there a relative link is
 /// always broken, however carefully it was written, so the requirement is that they carry none.
+/// Their language banner is no exception and is written out in full like every other link they
+/// carry — which is what lets a reader on nuget.org reach the other half (ADR-0034).
 /// </para>
 /// </remarks>
 public sealed class LinkTests
@@ -45,13 +47,9 @@ public sealed class LinkTests
     public static TheoryData<string> PackageReadmes()
     {
         TheoryData<string> paths = [];
-        foreach (MarkdownDocument document in Repository.Documents)
+        foreach (MarkdownDocument document in Repository.PackageReadmes)
         {
-            if (document.Path.StartsWith("src/", StringComparison.Ordinal) &&
-                document.Path.EndsWith("/README.md", StringComparison.Ordinal))
-            {
-                paths.Add(document.Path);
-            }
+            paths.Add(document.Path);
         }
 
         return paths;

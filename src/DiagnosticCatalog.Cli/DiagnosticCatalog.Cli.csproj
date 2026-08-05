@@ -54,7 +54,7 @@
     <Title>DiagnosticCatalog.Cli</Title>
     <Description>dcat generates a DiagnosticCatalog rule catalogue from the analyzers you point it at — a package on NuGet, or assemblies already on disk — by reading the DiagnosticDescriptor instances those analyzers actually declare, never their documentation. The result is a set of strongly referenced constants, so SuppressMessageAttribute takes compile-checked references instead of magic strings.</Description>
     <PackageTags>roslyn;analyzers;diagnostics;suppressmessage;code-analysis;catalog;cli;dotnet-tool;dcat</PackageTags>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReadmeFile>README.en.md</PackageReadmeFile>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <Authors>Reefact</Authors>
     <Copyright>Copyright (c) Reefact</Copyright>
@@ -62,7 +62,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="README.md" Pack="true" PackagePath="/" />
+    <None Include="README.en.md" Pack="true" PackagePath="/" />
   </ItemGroup>
 
   <ItemGroup>

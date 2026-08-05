@@ -1,5 +1,8 @@
 # DiagnosticCatalog.CodeStyle
 
+🌍 **Languages:**  
+🇬🇧 English (this file) | 🇫🇷 [Français](https://github.com/Reefact/diagnostic-catalog/blob/main/src/DiagnosticCatalog.CodeStyle/README.fr.md)
+
 The **Roslyn IDE code-style rules** as strongly referenced constants, so that
 `SuppressMessageAttribute` takes compile-checked references instead of magic strings.
 

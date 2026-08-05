@@ -24,7 +24,7 @@ anything.
 | [`doc/specification.en.md`](specification.en.md) | The normative design document. Canonical. | English and French |
 | [`doc/adr/`](adr/) | Architecture decision records. | English **and** French |
 | `README.md` at the repository root | The shop window. | English **and** French — the pair crosses the boundary, see below |
-| `src/*/README.md` | The package pages on nuget.org. | English only — see below |
+| `src/*/README.en.md` | The package pages on nuget.org. | English **and** French — the shipped half is the English one, see below |
 
 **What the parity check actually sees** is any document whose name carries a language suffix —
 `<name>.en.md` or `<name>.fr.md`. Everything under `doc/` carries one, decision records included:
@@ -56,12 +56,17 @@ and links included ([ADR-0029](adr/0029-pair-the-project-readme-across-the-doc-b
 That page is also this folder's index: the signpost to the guide, the specification, the records and
 these conventions is a section of the project README rather than a second page behind it.
 
-**The package READMEs are not part of this set.** They are shipped inside the `.nupkg` as
-`<PackageReadmeFile>` and rendered by nuget.org, which resolves no relative link and offers no
-language switch. They stay English, single-file, and link outward with absolute
-`https://github.com/Reefact/diagnostic-catalog/blob/main/...` addresses. Three tests already read
-them — `DocumentedMirrorTests` and `DocumentedSiblingsTests` — so their content is constrained by
-more than this file.
+**The package READMEs are paired too, and only one half ships.** They live under `src/` rather than
+here, and they are the one place a relative link is always wrong: each is shipped inside the `.nupkg`
+as `<PackageReadmeFile>` and rendered by nuget.org, which resolves none of them. So every address
+they carry is written out in full —
+`https://github.com/Reefact/diagnostic-catalog/blob/main/...` — the language banner included, which
+is what lets a reader on a package page reach the other half at all
+([ADR-0034](adr/0034-pair-every-package-readme-in-english-and-french.en.md)). The renderer decides
+which half a package carries, not whether a translation exists: `<PackageReadmeFile>` names
+`README.en.md`, and `README.fr.md` is a GitHub page. Three tests already read them —
+`DocumentedMirrorTests` and `DocumentedSiblingsTests` — so their content is constrained by more than
+this file.
 
 ## Naming
 

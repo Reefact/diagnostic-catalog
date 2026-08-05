@@ -175,7 +175,7 @@ un état cohérent.
 3. **Montez `DCAT0006` à `error` pour chaque projet au fur et à mesure**, dans une section
    `.editorconfig` cantonnée.
 4. **En dernier, le fichier qui supprime les diagnostics `DCAT` eux-mêmes**, si vous en avez un.
-   C'est à cela que sert [`DiagnosticCatalog.Self`](../../src/DiagnosticCatalog.Self/README.md).
+   C'est à cela que sert [`DiagnosticCatalog.Self`](../../src/DiagnosticCatalog.Self/README.fr.md).
 
 Gardez la conversion dans ses propres pull requests, séparée des changements de comportement. Une
 réécriture de toutes les suppressions d'un projet est exactement le diff dans lequel un vrai

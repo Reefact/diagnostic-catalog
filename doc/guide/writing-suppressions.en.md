@@ -228,7 +228,7 @@ rule *there* was a good idea. That judgement stays yours, which is what `Justifi
 
 ## Where to look next
 
-* [`DiagnosticCatalog.Self`](../../src/DiagnosticCatalog.Self/README.md) — the `DCAT` rules
+* [`DiagnosticCatalog.Self`](../../src/DiagnosticCatalog.Self/README.en.md) — the `DCAT` rules
   themselves as a catalogue, for when you suppress one of *these* diagnostics.
 * [The diagnostics reference](diagnostics.en.md) — every `DCAT` id, what triggers it, how to
   configure it.

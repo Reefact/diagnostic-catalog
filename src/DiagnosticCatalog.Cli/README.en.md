@@ -1,5 +1,8 @@
 # DiagnosticCatalog.Cli — `dcat`
 
+🌍 **Languages:**  
+🇬🇧 English (this file) | 🇫🇷 [Français](https://github.com/Reefact/diagnostic-catalog/blob/main/src/DiagnosticCatalog.Cli/README.fr.md)
+
 Generates a [DiagnosticCatalog](https://github.com/Reefact/diagnostic-catalog) rule
 catalogue from the analyzers you point it at, so that `SuppressMessageAttribute`
 takes compile-checked references instead of magic strings.

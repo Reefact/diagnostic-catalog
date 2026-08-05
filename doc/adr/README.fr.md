@@ -229,3 +229,4 @@ Matériel de support, optionnel :
 | [ADR-0031](0031-find-analyzers-the-way-the-compiler-finds-them.fr.md) | Trouver les analyzers comme le compilateur les trouve | Accepted |
 | [ADR-0032](0032-badge-a-catalogues-icon-with-its-rule-prefix.fr.md) | Badger l'icône d'un catalogue de son préfixe de règles, jamais du nom de l'éditeur | Superseded by [ADR-0033](0033-cap-the-badge-at-three-letters.fr.md) |
 | [ADR-0033](0033-cap-the-badge-at-three-letters.fr.md) | Plafonner le badge à trois lettres, en abrégeant un préfixe plus long | Accepted |
+| [ADR-0034](0034-pair-every-package-readme-in-english-and-french.fr.md) | Apparier chaque README de paquet en anglais et en français | Proposed |

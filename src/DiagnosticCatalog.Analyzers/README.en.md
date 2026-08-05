@@ -1,5 +1,8 @@
 # DiagnosticCatalog.Analyzers
 
+🌍 **Languages:**  
+🇬🇧 English (this file) | 🇫🇷 [Français](https://github.com/Reefact/diagnostic-catalog/blob/main/src/DiagnosticCatalog.Analyzers/README.fr.md)
+
 Roslyn analyzers for [DiagnosticCatalog](https://github.com/Reefact/diagnostic-catalog).
 
 They check two things: that a rule **declaration** satisfies the structural contract — its shape, its

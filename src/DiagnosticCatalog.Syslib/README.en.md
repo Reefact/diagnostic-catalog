@@ -1,5 +1,8 @@
 # DiagnosticCatalog.Syslib
 
+🌍 **Languages:**  
+🇬🇧 English (this file) | 🇫🇷 [Français](https://github.com/Reefact/diagnostic-catalog/blob/main/src/DiagnosticCatalog.Syslib/README.fr.md)
+
 The **.NET runtime source-generator diagnostics** (`SYSLIB1xxx`) as strongly referenced constants,
 so that `SuppressMessageAttribute` takes compile-checked references instead of magic strings.
 

@@ -22,7 +22,7 @@
     <Title>DiagnosticCatalog.AspNetCore</Title>
     <Description>The ASP.NET Core and Blazor analyzer rules (ASPxxxx, BLxxxx) as strongly referenced constants, so that SuppressMessageAttribute takes compile-checked references instead of magic strings. Ids, categories, titles and help links are read from the analyzers' own DiagnosticDescriptor instances. Every Microsoft.NET.Sdk.Web project runs these analyzers without installing anything. Unofficial; not affiliated with or endorsed by Microsoft.</Description>
     <PackageTags>roslyn;analyzers;diagnostics;suppressmessage;aspnetcore;blazor;minimal-apis;code-analysis;catalog</PackageTags>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReadmeFile>README.en.md</PackageReadmeFile>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <Authors>Reefact</Authors>
     <Copyright>Copyright (c) Reefact</Copyright>
@@ -30,7 +30,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="README.md" Pack="true" PackagePath="/" />
+    <None Include="README.en.md" Pack="true" PackagePath="/" />
   </ItemGroup>
 
   <!--
