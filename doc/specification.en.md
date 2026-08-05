@@ -296,35 +296,36 @@ business or technical relevance.
 ```text
 DiagnosticCatalog/
 ├── src/
-│   ├── DiagnosticCatalog/                 → lib, ships the attributes
+│   ├── DiagnosticCatalog/                  → lib, ships the attributes
 │   ├── DiagnosticCatalog.Analyzers/        → analyzer assemblies
-│   ├── DiagnosticCatalog.CodeFixes/        → code fix assemblies
-│   ├── DiagnosticCatalog.Sonar/            → generated catalogue (§14)
-│   ├── DiagnosticCatalog.NetAnalyzers/     → generated catalogue (§14)
-│   ├── DiagnosticCatalog.StyleCop/         → generated catalogue (§14)
-│   ├── DiagnosticCatalog.CodeStyle/        → generated catalogue (§14)
-│   ├── DiagnosticCatalog.Xunit/            → generated catalogue (§14)
-│   ├── DiagnosticCatalog.NUnit/            → generated catalogue (§14)
-│   ├── DiagnosticCatalog.MSTest/           → generated catalogue (§14)
-│   ├── DiagnosticCatalog.Trimming/         → generated catalogue (§14)
-│   ├── DiagnosticCatalog.AspNetCore/       → generated catalogue (§14)
-│   └── DiagnosticCatalog.Syslib/           → generated catalogue (§14)
+│   ├── DiagnosticCatalog.CodeFixes/        → code fix assemblies, bundled into the above
+│   ├── DiagnosticCatalog.Cli/              → the dcat tool (§14.1)
+│   ├── DiagnosticCatalog.Self/             → this library's own rules, catalogued
+│   └── DiagnosticCatalog.<Vendor>/         → one generated catalogue each (§14)
 ├── eng/
-│   └── CatalogGen/                         → generator, never shipped (§14.1)
+│   ├── catalogs.json                       → which catalogues exist, and their sources
+│   ├── catalogs.schema.json                → what that manifest accepts
+│   ├── CatalogGen/                         → generator, never shipped (§14.1)
+│   └── CatalogGen.Worker/                  → loads analyzers out of process
 ├── tests/
-│   ├── DiagnosticCatalog.Analyzers.Tests/
-│   ├── DiagnosticCatalog.CodeFixes.Tests/
-│   ├── DiagnosticCatalog.CompilationTests/ → real compilation + reflection
-│   └── DiagnosticCatalog.Packaging.Tests/  → real restore of the produced packages
-├── samples/
-│   ├── ManualCatalog/
-│   └── CatalogConsumer/
+│   ├── *.UnitTests/                        → one per shipped project, plus the documentation set
+│   ├── DiagnosticCatalog.Usage/            → a consumer whose BUILD is the assertion
+│   └── CatalogGen.*Fixture/                → assemblies the generator is pointed at
+├── tools/                                  → release, commit and icon tooling (POSIX sh; ADR-0013)
+├── build/                                  → shared MSBuild props, including the net472 floor
+├── assets/                                 → the icon template every catalogue is drawn from
 └── doc/
 ```
 
-Two NuGet packages are produced, not one — see §16 for the rationale. There is
-no separate `.Package` project: each package is produced by the project that
-owns its content.
+The catalogues are not listed here. There are more of them than of anything else, they arrive
+faster than any other kind of project, and [`eng/catalogs.json`](../eng/catalogs.json) already
+names every one — a second roster is one that goes stale between a reader opening this page and
+finishing it.
+
+A package per publishable project, not one for the whole repository — see §16 for the rationale,
+and *Release trains* in [`CONTRIBUTING.md`](../CONTRIBUTING.md) for which of them version
+together. There is no separate `.Package` project: each package is produced by the project that
+owns its content, which is what makes `<ReleaseTrain>` the whole of a project's membership.
 
 ### 6.1 Analyzer release tracking
 

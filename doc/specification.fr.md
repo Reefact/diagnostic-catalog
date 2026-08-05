@@ -309,35 +309,37 @@ pertinence métier ou technique.
 ```text
 DiagnosticCatalog/
 ├── src/
-│   ├── DiagnosticCatalog/                 → lib, expose les attributs
+│   ├── DiagnosticCatalog/                  → lib, expose les attributs
 │   ├── DiagnosticCatalog.Analyzers/        → assemblies d'analyse
-│   ├── DiagnosticCatalog.CodeFixes/        → assemblies de code fixers
-│   ├── DiagnosticCatalog.Sonar/            → catalogue généré (§14)
-│   ├── DiagnosticCatalog.NetAnalyzers/     → catalogue généré (§14)
-│   ├── DiagnosticCatalog.StyleCop/         → catalogue généré (§14)
-│   ├── DiagnosticCatalog.CodeStyle/        → catalogue généré (§14)
-│   ├── DiagnosticCatalog.Xunit/            → catalogue généré (§14)
-│   ├── DiagnosticCatalog.NUnit/            → catalogue généré (§14)
-│   ├── DiagnosticCatalog.MSTest/           → catalogue généré (§14)
-│   ├── DiagnosticCatalog.Trimming/         → catalogue généré (§14)
-│   ├── DiagnosticCatalog.AspNetCore/       → catalogue généré (§14)
-│   └── DiagnosticCatalog.Syslib/           → catalogue généré (§14)
+│   ├── DiagnosticCatalog.CodeFixes/        → code fixers, embarqués dans la précédente
+│   ├── DiagnosticCatalog.Cli/              → l'outil dcat (§14.1)
+│   ├── DiagnosticCatalog.Self/             → les règles de cette bibliothèque, cataloguées
+│   └── DiagnosticCatalog.<Éditeur>/        → un catalogue généré par éditeur (§14)
 ├── eng/
-│   └── CatalogGen/                         → générateur, jamais livré (§14.1)
+│   ├── catalogs.json                       → quels catalogues existent, et leurs sources
+│   ├── catalogs.schema.json                → ce que ce manifeste accepte
+│   ├── CatalogGen/                         → générateur, jamais livré (§14.1)
+│   └── CatalogGen.Worker/                  → charge les analyseurs hors du processus
 ├── tests/
-│   ├── DiagnosticCatalog.Analyzers.Tests/
-│   ├── DiagnosticCatalog.CodeFixes.Tests/
-│   ├── DiagnosticCatalog.CompilationTests/ → compilation réelle + réflexion
-│   └── DiagnosticCatalog.Packaging.Tests/  → restore réel des packages produits
-├── samples/
-│   ├── ManualCatalog/
-│   └── CatalogConsumer/
+│   ├── *.UnitTests/                        → un par projet livré, plus la suite de documentation
+│   ├── DiagnosticCatalog.Usage/            → un consommateur dont le BUILD est l'assertion
+│   └── CatalogGen.*Fixture/                → assemblies vers lesquelles on pointe le générateur
+├── tools/                                  → outillage release, commit, icônes (sh POSIX, ADR-0013)
+├── build/                                  → props MSBuild partagées, dont le plancher net472
+├── assets/                                 → le gabarit d'icône dont chaque catalogue est tiré
 └── doc/
 ```
 
-Deux packages NuGet sont produits, et non un seul — voir §16 pour la
-justification. Il n'y a pas de projet `.Package` distinct : chaque package est
-produit par le projet qui possède son contenu.
+Les catalogues ne sont pas listés ici. Ils sont plus nombreux que tout le reste, ils arrivent plus
+vite que n'importe quel autre type de projet, et [`eng/catalogs.json`](../eng/catalogs.json) les
+nomme déjà tous — un second inventaire est un inventaire qui se périme entre le moment où un
+lecteur ouvre cette page et celui où il la finit.
+
+Un package par projet publiable, et non un seul pour tout le dépôt — voir §16 pour la
+justification, et *Release trains* dans [`CONTRIBUTING.md`](../CONTRIBUTING.md) pour savoir
+lesquels versionnent ensemble. Il n'y a pas de projet `.Package` distinct : chaque package est
+produit par le projet qui possède son contenu, ce qui est ce qui fait de `<ReleaseTrain>` toute
+l'appartenance d'un projet.
 
 ### 6.1 Suivi des versions d'analyzers
 
