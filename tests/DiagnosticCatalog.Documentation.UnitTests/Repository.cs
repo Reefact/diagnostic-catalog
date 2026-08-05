@@ -9,7 +9,8 @@ namespace DiagnosticCatalog.Documentation.UnitTests;
 
 /// <summary>
 /// The working tree, as the documentation tests see it: where the repository root is, which Markdown
-/// documents exist, and how a path written inside one of them resolves against the others.
+/// documents exist, how a path written inside one of them resolves against the others, and which
+/// shipped C# sources carry documentation of their own.
 /// </summary>
 /// <remarks>
 /// The root is read from assembly metadata stamped by this project's <c>.csproj</c> at build time,
@@ -48,11 +49,24 @@ internal static class Repository
 
     private static readonly Lazy<IReadOnlyList<MarkdownDocument>> AllDocuments = new(LoadAll);
 
+    private static readonly Lazy<IReadOnlyList<string>> AllSources = new(LoadSources);
+
     /// <summary>The absolute path of the repository root, with a trailing separator.</summary>
     internal static string Root => RootPath.Value;
 
     /// <summary>Every Markdown document these tests read, by repository-relative path.</summary>
     internal static IReadOnlyList<MarkdownDocument> Documents => AllDocuments.Value;
+
+    /// <summary>
+    /// The hand-written C# files under <c>src/</c>, by repository-relative path. These carry the XML
+    /// documentation that ships inside the packages and that an IDE shows on hover, which is
+    /// documentation the Markdown checks never see.
+    /// </summary>
+    internal static IReadOnlyList<string> Sources => AllSources.Value;
+
+    /// <summary>The text of a source file discovered by <see cref="Sources"/>.</summary>
+    internal static string ReadSource(string relativePath) =>
+        File.ReadAllText(Path.Combine(Root, relativePath.Replace('/', Path.DirectorySeparatorChar)));
 
     /// <summary>
     /// The documents under <c>doc/guide/</c>, which is the folder that carries a reading order.
@@ -194,6 +208,31 @@ internal static class Repository
         return documents
             .OrderBy(document => document.Path, StringComparer.Ordinal)
             .ToList();
+    }
+
+    /// <summary>
+    /// The hand-written sources under <c>src/</c>. Generated files are left out: a catalogue's
+    /// <c>.g.cs</c> is written by the generator from the analyzer's own descriptors, so a sample
+    /// cannot be wrong in it, and nobody edits it to fix one.
+    /// </summary>
+    private static List<string> LoadSources()
+    {
+        List<string> sources = [];
+
+        string root = Path.Combine(Root, "src");
+        if (!Directory.Exists(root)) return sources;
+
+        foreach (string file in Directory.EnumerateFiles(root, "*.cs", SearchOption.AllDirectories))
+        {
+            string relative = Relative(file);
+            if (relative.Contains("/bin/", StringComparison.Ordinal)) continue;
+            if (relative.Contains("/obj/", StringComparison.Ordinal)) continue;
+            if (relative.EndsWith(".g.cs", StringComparison.Ordinal)) continue;
+
+            sources.Add(relative);
+        }
+
+        return sources.OrderBy(path => path, StringComparer.Ordinal).ToList();
     }
 
     private static string Relative(string absolutePath) =>
