@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
+using System.Threading;
 using System.Threading.Tasks;
 
 using DiagnosticCatalog.Analyzers;
@@ -37,8 +39,54 @@ public sealed class AlignIncoherentPairCodeFixProvider : CodeFixProvider
     public override ImmutableArray<string> FixableDiagnosticIds { get; } =
         ImmutableArray.Create(DiagnosticIds.MembersFromDifferentRules);
 
+    /// <summary>Every occurrence of a document in one pass — see <see cref="DocumentFixAllProvider"/>.</summary>
+    /// <remarks>
+    /// The invoked equivalence key decides which of the two corrections is applied, and it is the only
+    /// thing that may: §12.1 forbids this provider from choosing, and a fix-all that read anything else
+    /// would be making that choice once per occurrence.
+    /// </remarks>
+    private static readonly FixAllProvider FixAll =
+        new DocumentFixAllProvider("Align the suppressions on one rule", FixAllAsync);
+
     /// <inheritdoc />
-    public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
+    public override FixAllProvider GetFixAllProvider() => FixAll;
+
+    private static Task<Document> FixAllAsync(
+        Document document,
+        ImmutableArray<Diagnostic> diagnostics,
+        string? equivalenceKey,
+        CancellationToken cancellation)
+    {
+        // Neither alignment is the default. An unrecognised key is a fix-all this provider did not
+        // register, and applying either correction to it would align a whole document on a rule nobody
+        // named.
+        if (equivalenceKey != FixProperties.AlignOnCategory && equivalenceKey != FixProperties.AlignOnId)
+        {
+            return Task.FromResult(document);
+        }
+
+        bool rewriteCheckId = equivalenceKey == FixProperties.AlignOnCategory;
+
+        List<SuppressionFixRequest> requests = [];
+
+        foreach (Diagnostic diagnostic in diagnostics)
+        {
+            if (!diagnostic.Properties.TryGetValue(
+                    FixProperties.ReferenceKey(equivalenceKey), out string? reference)
+                || string.IsNullOrEmpty(reference))
+            {
+                continue;
+            }
+
+            diagnostic.Properties.TryGetValue(
+                FixProperties.NamespaceKey(equivalenceKey), out string? @namespace);
+
+            requests.Add(new SuppressionFixRequest(
+                diagnostic, reference!, @namespace, !rewriteCheckId, rewriteCheckId));
+        }
+
+        return SuppressionFix.ApplyAllAsync(document, requests, cancellation);
+    }
 
     /// <inheritdoc />
     public override Task RegisterCodeFixesAsync(CodeFixContext context)
