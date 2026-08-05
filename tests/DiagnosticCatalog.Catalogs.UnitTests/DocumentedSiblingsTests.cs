@@ -199,17 +199,28 @@ public sealed class DocumentedSiblingsTests
             "lost — and the reader of that half is never told the package exists.");
     }
 
-    /// <summary>The ids of our own packages a document links, in order, without repeats.</summary>
-    private static List<string> Linked(string document) =>
-        Regex.Matches(
-                 document,
-                 Regex.Escape(NuGetPackage) + "(?<id>DiagnosticCatalog[^)\\s]*)",
-                 RegexOptions.None,
-                 TimeSpan.FromSeconds(10))
-             .Select(link => link.Groups["id"].Value)
-             .Distinct(StringComparer.Ordinal)
-             .OrderBy(id => id, StringComparer.Ordinal)
-             .ToList();
+    /// <summary>The ids of our own packages a document links, sorted, without repeats.</summary>
+    /// <remarks>
+    /// Walked with a <c>foreach</c> rather than projected off the collection, as the theory above
+    /// does. This project runs on the .NET Framework 4.7.2 floor, where <see cref="MatchCollection"/>
+    /// implements only the non-generic <c>IEnumerable</c> — <c>Select</c> then binds to nothing it can
+    /// infer, and the failure is a compile error on one target framework and silence on the other.
+    /// </remarks>
+    private static List<string> Linked(string document)
+    {
+        SortedSet<string> ids = new(StringComparer.Ordinal);
+
+        foreach (Match link in Regex.Matches(
+                     document,
+                     Regex.Escape(NuGetPackage) + "(?<id>DiagnosticCatalog[^)\\s]*)",
+                     RegexOptions.None,
+                     TimeSpan.FromSeconds(10)))
+        {
+            ids.Add(link.Groups["id"].Value);
+        }
+
+        return ids.ToList();
+    }
 
     /// <summary>
     /// Guards the theories above against passing by having nothing to say: were the manifest or the
