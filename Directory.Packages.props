@@ -80,7 +80,7 @@
          constants, so nothing has to run for them to be read — and a tool that loaded a stranger's
          assembly into its own process to answer a question about its contents would be taking a
          licence it does not need. -->
-    <PackageVersion Include="System.Reflection.MetadataLoadContext" Version="9.0.0" />
+    <PackageVersion Include="System.Reflection.MetadataLoadContext" Version="10.0.10" />
   </ItemGroup>
 
 </Project>
