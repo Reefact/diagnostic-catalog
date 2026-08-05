@@ -58,38 +58,51 @@ has exactly one published source of truth, read from the analyzer's own
 
 ## 📦 What is in the box
 
+### Ready-made catalogues
+
+Reference the one that matches an analyzer you already run:
+
+| Package | Catalogues the rules of | Ids |
+| --- | --- | --- |
+| **`DiagnosticCatalog.Sonar`** | [SonarAnalyzer.CSharp](https://github.com/SonarSource/sonar-dotnet) | `Sxxxx` |
+| **`DiagnosticCatalog.NetAnalyzers`** | .NET code analysis, the rules the SDK ships | `CAxxxx` |
+| **`DiagnosticCatalog.StyleCop`** | [StyleCop.Analyzers](https://github.com/DotNetAnalyzers/StyleCopAnalyzers) | `SAxxxx` |
+| **`DiagnosticCatalog.CodeStyle`** | Roslyn's IDE code style — what `.editorconfig` configures and `EnforceCodeStyleInBuild` turns on | `IDExxxx` |
+| **`DiagnosticCatalog.Xunit`** | [xunit.analyzers](https://github.com/xunit/xunit.analyzers), which every xUnit test project already runs since `xunit` depends on them | `xUnitxxxx` |
+| **`DiagnosticCatalog.NUnit`** | [NUnit.Analyzers](https://github.com/nunit/nunit.analyzers), which `dotnet new nunit` writes into the project file it generates | `NUnitxxxx` |
+| **`DiagnosticCatalog.MSTest`** | [MSTest.Analyzers](https://github.com/microsoft/testfx), which every MSTest project already runs since `MSTest.TestFramework` depends on them | `MSTESTxxxx` |
+| **`DiagnosticCatalog.Trimming`** | The trimming, Native AOT and single-file warnings, which Blazor WebAssembly, MAUI and `PublishAot` turn on for every build | `ILxxxx` |
+| **`DiagnosticCatalog.AspNetCore`** | ASP.NET Core and Blazor, which every web project runs and none can uninstall since they ship inside the shared framework | `ASPxxxx`, `BLxxxx` |
+
+These nine are **generated**, never hand-written, and carry ids, categories, help links and
+the rule's own title — the last as a documentation comment, so that hovering a constant says
+what the rule is about. Rule descriptions and message formats are the vendors' documentation
+and are deliberately left out
+([ADR-0014](doc/adr/0014-ship-the-vendors-rule-title-as-a-catalogues-documentation.en.md)).
+How that generation works, and what keeps it honest, is the next section.
+
+These catalogues are unofficial. They are not affiliated with, endorsed by, or supported
+by SonarSource, Microsoft, the StyleCop.Analyzers project, xUnit.net, or the NUnit
+project. "Sonar" and "SonarQube" are trademarks of SonarSource S.A.
+
+### The toolkit
+
+For declaring a catalogue of your own, and for checking the references to one:
+
 | Package | What it gives you |
 | --- | --- |
 | **`DiagnosticCatalog`** | The `[DiagnosticRule]`, `[DiagnosticCategory]` and `[assembly: CatalogSource]` markers. This is what you reference to declare a catalogue **of your own** — for your analyzers, or for an internal ruleset. |
-| **`DiagnosticCatalog.Sonar`** | The [SonarAnalyzer.CSharp](https://github.com/SonarSource/sonar-dotnet) rules, ids and categories read from the analyzers' own descriptors. |
-| **`DiagnosticCatalog.NetAnalyzers`** | The .NET code analysis (`CAxxxx`) rules, same treatment. |
-| **`DiagnosticCatalog.StyleCop`** | The [StyleCop.Analyzers](https://github.com/DotNetAnalyzers/StyleCopAnalyzers) (`SAxxxx`) rules, same treatment. |
-| **`DiagnosticCatalog.CodeStyle`** | The Roslyn IDE code-style (`IDExxxx`) rules — the ones `.editorconfig` configures and `EnforceCodeStyleInBuild` turns on — same treatment. |
-| **`DiagnosticCatalog.Xunit`** | The [xunit.analyzers](https://github.com/xunit/xunit.analyzers) (`xUnitxxxx`) rules — which every xUnit test project already runs, since `xunit` depends on them — same treatment. |
-| **`DiagnosticCatalog.NUnit`** | The [NUnit.Analyzers](https://github.com/nunit/nunit.analyzers) (`NUnitxxxx`) rules — which `dotnet new nunit` writes into the project file it generates — same treatment. |
-| **`DiagnosticCatalog.MSTest`** | The [MSTest.Analyzers](https://github.com/microsoft/testfx) (`MSTESTxxxx`) rules — which every MSTest project already runs, since `MSTest.TestFramework` depends on them — same treatment. |
-| **`DiagnosticCatalog.Trimming`** | The trimming, Native AOT and single-file (`ILxxxx`) warnings — which Blazor WebAssembly, MAUI and `PublishAot` turn on for every build — same treatment. |
-| **`DiagnosticCatalog.AspNetCore`** | The ASP.NET Core and Blazor (`ASPxxxx`, `BLxxxx`) rules — which every web project runs and none can uninstall, since they ship inside the shared framework — same treatment. |
-| **`DiagnosticCatalog.Analyzers`** | The checking. Diagnostics that read a rule declaration against the structural contract and a suppression against the rule it names — a category and an id taken from two different rules, a suppression left half migrated — and the code fixes that turn a literal into a catalogue reference, complete a half-migrated one from the rule it already names, or repair a hand-written rule declaration where the code already says how. A build-time dependency: these assemblies never reach your runtime. |
-| **`DiagnosticCatalog.Self`** | The `DCATxxxx` rules the analyzers above report, catalogued the same way — so that suppressing one of *this* library's own diagnostics is a checked reference rather than the magic string everything here exists to remove. |
+| **`DiagnosticCatalog.Analyzers`** | The checking: diagnostics that read a rule declaration against the structural contract, and a suppression against the rule it names, with the code fixes that turn a literal into a catalogue reference. A build-time dependency — these assemblies never reach your runtime. |
+| **`DiagnosticCatalog.Self`** | The `DCATxxxx` rules those analyzers report, catalogued the same way — so that suppressing one of *this* library's own diagnostics is a checked reference rather than the magic string everything here exists to remove. |
 | **`DiagnosticCatalog.Cli`**, the `dcat` tool | The generator, as a .NET tool. Point it at an analyzer package or at assemblies on disk and it writes a catalogue the same way this repository writes the ten above. |
-
-The last three are built here but have no version on nuget.org yet; see **Project status** below.
-
-The nine vendor catalogues are **generated**, never hand-written, and carry ids,
-categories, help links and the rule's own title — the last as a documentation comment, so
-that hovering a constant says what the rule is about. Rule descriptions and message
-formats are the vendors' documentation and are deliberately left out
-([ADR-0014](doc/adr/0014-ship-the-vendors-rule-title-as-a-catalogues-documentation.en.md)).
-How that generation works, and what keeps it honest, is the next section.
 
 `DiagnosticCatalog.Self` comes off the same generator, pointed at this repository's own
 analyzers. It is the shortest answer to "does this actually work": the rules the library
 reports are catalogued by the library, through the pipeline it asks everyone else to use.
 
-These catalogues are unofficial. They are not affiliated with, endorsed by, or supported
-by SonarSource, Microsoft, the StyleCop.Analyzers project, xUnit.net, or the NUnit
-project. "Sonar" and "SonarQube" are trademarks of SonarSource S.A.
+Not everything here is on nuget.org yet: `.CodeStyle`, `.Xunit`, `.NUnit`, `.MSTest`,
+`.Trimming` and `.AspNetCore` among the catalogues, and `.Analyzers`, `.Self` and `.Cli`
+among the tools. See **Project status** below.
 
 ## ⚙️ How a catalogue is built and kept current
 
@@ -176,6 +189,7 @@ is what unblocked the nine vendor catalogues, which now ride their own trains.
 | --- | --- |
 | `DiagnosticCatalog` | **Published**, on the `lib` train. |
 | `DiagnosticCatalog.Sonar` / `.NetAnalyzers` / `.StyleCop` | **Published**, on their own trains, each versioning at its vendor's pace. |
+| `DiagnosticCatalog.CodeStyle` / `.Xunit` / `.NUnit` / `.MSTest` / `.Trimming` / `.AspNetCore` | **Built, not published yet** — the six newest vendor catalogues. Each already rides a train of its own (`codestyle`, `xunit`, `nunit`, `mstest`, `trimming`, `aspnetcore`), so each ships on its first tag there. |
 | `DiagnosticCatalog.Analyzers` | **Built, not published yet** — the diagnostics that validate declarations and use sites. It rides the `lib` train, so the next tag there ships it. |
 | `DiagnosticCatalog.Self` | **Built, not published yet** — the `DCAT` rules as a catalogue, generated from the analyzers above. It rides the `lib` train with them, on purpose: the two must never describe different rule sets. |
 | `DiagnosticCatalog.Cli`, the `dcat` tool | **Built, not published yet** — the generator, packaged as a .NET tool on its own `cli` train ([ADR-0017](doc/adr/0017-publish-the-generator-as-a-cli-on-its-own-release-train.en.md)). |
