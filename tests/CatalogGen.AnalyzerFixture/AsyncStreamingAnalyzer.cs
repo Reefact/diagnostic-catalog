@@ -17,13 +17,8 @@ namespace CatalogGen.AnalyzerFixture;
 /// internal helpers, never the analyzers, so the descriptors arrive complete and the run is refused
 /// anyway. A fixture whose analyzer also failed would prove a different, easier thing.
 /// </remarks>
-// RS1001 wants [DiagnosticAnalyzer] on a DiagnosticAnalyzer subclass, which is right for one
-// somebody ships and beside the point here: the reader selects on the base type alone, and
-// declaring the attribute would mark this project as a compiler extension for rules that then fire
-// on facts about a fixture. Same trade DescriptorReaderTests makes for the same reason.
-#pragma warning disable RS1001 // Missing 'DiagnosticAnalyzerAttribute' attribute
+[DiagnosticAnalyzer(LanguageNames.CSharp)]
 public sealed class AsyncStreamingAnalyzer : DiagnosticAnalyzer
-#pragma warning restore RS1001
 {
     /// <summary>The one rule this fixture declares, and the one the test asserts arrived.</summary>
     public static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(

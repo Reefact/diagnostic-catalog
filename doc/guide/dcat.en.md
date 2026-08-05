@@ -38,16 +38,21 @@ process to answer a question about its contents would be taking a licence it doe
 This is the decision the rest follows from
 ([ADR-0009](../adr/0009-generate-catalog-content-from-analyzer-descriptors.en.md)).
 
-`dcat` loads the analyzer assemblies, **constructs every `DiagnosticAnalyzer` it finds**, and reads
-the `DiagnosticDescriptor` instances they actually declare. Not the vendor's documentation site, not
-a rule-metadata JSON shipped beside the package.
+`dcat` reads the analyzer assemblies' metadata for the types they mark with `[DiagnosticAnalyzer]`,
+**constructs those**, and reads the `DiagnosticDescriptor` instances they actually declare. Not the
+vendor's documentation site, not a rule-metadata JSON shipped beside the package.
+
+Finding them by the attribute is how the compiler finds them, and the catalogue follows it rather
+than reading every type the assembly declares
+([ADR-0031](../adr/0031-find-analyzers-the-way-the-compiler-finds-them.en.md)). An analyzer the
+attribute does not name is loaded by no host and reports in no build.
 
 ```mermaid
 flowchart LR
     SRC["a package, a .nupkg,<br/>a project, a solution,<br/>or assemblies on disk"]
     SRC --> ACQ["acquire<br/><i>resolve, download, locate</i>"]
     ACQ --> WORK["descriptor worker<br/><i>a separate process</i>"]
-    WORK --> CTOR["construct every DiagnosticAnalyzer"]
+    WORK --> CTOR["construct the types<br/>[DiagnosticAnalyzer] names"]
     CTOR --> DESC["the DiagnosticDescriptor instances<br/>they actually declare"]
     DESC --> EMIT["emit, in ordinal order,<br/>culture-invariant"]
     EMIT --> OUT["Catalogue.g.cs"]
@@ -113,8 +118,8 @@ cannot be inferred from the outside, and the numbers are not close. Measured on 
 
 | Heuristic | Projects matched | Actually an analyzer |
 | --- | --- | --- |
-| references `Microsoft.CodeAnalysis` | 6 | 1 |
-| declares a `DiagnosticAnalyzer` subclass | 2 | 1 — the other is a fixture written to *fail* construction |
+| references `Microsoft.CodeAnalysis` | 9 | 1 |
+| declares a `DiagnosticAnalyzer` subclass | 4 | 1 — the other three are fixtures, written to *fail* construction, to need a facade, and to not load whole |
 
 Reading the wrong set is not a nuisance here. A project missed means its rules are absent from the
 catalogue, an absent rule is indistinguishable from a retired one, and they are published as
