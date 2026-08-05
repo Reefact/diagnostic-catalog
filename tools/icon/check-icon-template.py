@@ -106,16 +106,76 @@ def compare_gradient(rows, span, stops, box):
 
 # --- entry point --------------------------------------------------------------------------
 
+def rooted(argv):
+    """`--root DIR` taken out of the arguments, leaving the icon paths behind it."""
+    if "--root" not in argv:
+        return ROOT, argv
+    at = argv.index("--root")
+    return Path(argv[at + 1]).resolve(), argv[:at] + argv[at + 2:]
+
+
+def check(icon, root, mark, grid, lettering):
+    """Report on one icon, and answer whether it disagrees with the template."""
+    # A candidate export sits wherever whoever drew it saved it, which is routinely
+    # outside the repository — so shorten the path when it is inside and leave it alone
+    # when it is not, rather than assuming.
+    try:
+        name = icon.resolve().relative_to(root)
+    except ValueError:
+        name = icon
+    try:
+        png_width, png_height, rows = tpl.read_png(icon)
+    except (OSError, ValueError, KeyError) as unreadable:
+        # A file this cannot read is a failure, never a skip. Skipping is how a check
+        # reports success over the thing it did not look at.
+        print(f"  FAIL {name}: {unreadable}")
+        return True
+
+    if (png_width, png_height) != (mark.width, mark.height):
+        print(f"  FAIL {name}: {png_width}x{png_height}, expected {mark.width}x{mark.height}")
+        return True
+
+    rms, worst, where, counted = compare_shape(grid, rows, mark.width, mark.height, lettering)
+    measured = compare_gradient(rows, mark.gradient_span, mark.stops, mark.plate)
+    bad = rms > MAX_RMS or worst > MAX_WORST or measured is None or measured[1] > MAX_STOP_DRIFT
+    print(f"  {'FAIL' if bad else 'ok  '} {name}")
+    print(f"         shape    rms {rms:.3f} (max {MAX_RMS})   "
+          f"worst {worst:.3f} at {where} (max {MAX_WORST})   {counted} edge px")
+    if measured is None:
+        print("         gradient not measurable — the ink is not where the template puts it")
+    else:
+        ends, drift = measured
+        print(f"         gradient {ends[0]} -> {ends[-1]}   "
+              f"drift {drift} (max {MAX_STOP_DRIFT})")
+    return bad
+
+
+def verdict(failures, undeclared, counted, scanning):
+    """The closing report, and the exit status that goes with it."""
+    if failures:
+        print(f"\n{failures} icon(s) disagree with the template.\n"
+              "Either the icon was not exported from assets/icon-template.svg, or the template\n"
+              "was changed and no longer draws the mark the published packages wear. Redraw the\n"
+              "icon from the template, or — if the mark itself is meant to move — say so, and\n"
+              "move every icon with it.", file=sys.stderr)
+    if undeclared:
+        print(f"\n{len(undeclared)} catalogue(s) and the badge table disagree about what exists.\n"
+              "tools/icon/badges.py is the roster render-icon.py draws from, so a catalogue "
+              "missing\nfrom it is one nothing can redraw.", file=sys.stderr)
+    if failures or undeclared:
+        return 1
+
+    print(f"\n{counted} icon(s) match the template"
+          + (", and the badge table names every one of them" if scanning else ""))
+    return 0
+
+
 def main(argv):
     if any(a in ("-h", "--help") for a in argv):
         print(__doc__)
         return 0
 
-    root = ROOT
-    if "--root" in argv:
-        at = argv.index("--root")
-        root = Path(argv[at + 1]).resolve()
-        argv = argv[:at] + argv[at + 2:]
+    root, argv = rooted(argv)
 
     # Scanning is what the roster check applies to: given explicit paths, the caller is asking
     # about a candidate that has no project yet, and answering with a complaint about the table
@@ -131,9 +191,8 @@ def main(argv):
         return 1
 
     mark = tpl.Template(template_path)
-    width, height = mark.width, mark.height
-    box, stops, span = mark.plate, mark.stops, mark.gradient_span
-    grid = tpl.coverage(mark.contours, width, height)
+    box = mark.plate
+    grid = tpl.coverage(mark.contours, mark.width, mark.height)
 
     # The plate's interior, where the knocked-out letters live and the template cannot follow.
     # Inset by 12% of the plate: the widest ink measured on the four badges spans x 379..472
@@ -142,8 +201,7 @@ def main(argv):
     inset = box[2] * 0.12
     lettering = (box[0] + inset, box[1] + inset, box[0] + box[2] - inset, box[1] + box[3] - inset)
 
-    print(f"template  {template_path.relative_to(root)}  {stops[0]} -> {stops[-1]}")
-    failures = 0
+    print(f"template  {template_path.relative_to(root)}  {mark.stops[0]} -> {mark.stops[-1]}")
 
     # Every icon in the tree is declared, and everything declared is in the tree. Counted apart
     # from the comparison below because it is a different complaint: an undeclared catalogue is
@@ -153,58 +211,11 @@ def main(argv):
     for complaint in undeclared:
         print(f"  FAIL {complaint}")
 
+    failures = 0
     for icon in icons:
-        # A candidate export sits wherever whoever drew it saved it, which is routinely
-        # outside the repository — so shorten the path when it is inside and leave it alone
-        # when it is not, rather than assuming.
-        try:
-            name = icon.resolve().relative_to(root)
-        except ValueError:
-            name = icon
-        try:
-            png_width, png_height, rows = tpl.read_png(icon)
-        except (OSError, ValueError, KeyError) as unreadable:
-            # A file this cannot read is a failure, never a skip. Skipping is how a check
-            # reports success over the thing it did not look at.
-            print(f"  FAIL {name}: {unreadable}")
-            failures += 1
-            continue
+        failures += check(icon, root, mark, grid, lettering)
 
-        if (png_width, png_height) != (width, height):
-            print(f"  FAIL {name}: {png_width}x{png_height}, expected {width}x{height}")
-            failures += 1
-            continue
-
-        rms, worst, where, counted = compare_shape(grid, rows, width, height, lettering)
-        measured = compare_gradient(rows, span, stops, box)
-        bad = rms > MAX_RMS or worst > MAX_WORST or measured is None or measured[1] > MAX_STOP_DRIFT
-        failures += bad
-        print(f"  {'FAIL' if bad else 'ok  '} {name}")
-        print(f"         shape    rms {rms:.3f} (max {MAX_RMS})   "
-              f"worst {worst:.3f} at {where} (max {MAX_WORST})   {counted} edge px")
-        if measured is None:
-            print("         gradient not measurable — the ink is not where the template puts it")
-        else:
-            ends, drift = measured
-            print(f"         gradient {ends[0]} -> {ends[-1]}   "
-                  f"drift {drift} (max {MAX_STOP_DRIFT})")
-
-    if failures:
-        print(f"\n{failures} icon(s) disagree with the template.\n"
-              "Either the icon was not exported from assets/icon-template.svg, or the template\n"
-              "was changed and no longer draws the mark the published packages wear. Redraw the\n"
-              "icon from the template, or — if the mark itself is meant to move — say so, and\n"
-              "move every icon with it.", file=sys.stderr)
-    if undeclared:
-        print(f"\n{len(undeclared)} catalogue(s) and the badge table disagree about what exists.\n"
-              "tools/icon/badges.py is the roster render-icon.py draws from, so a catalogue "
-              "missing\nfrom it is one nothing can redraw.", file=sys.stderr)
-    if failures or undeclared:
-        return 1
-
-    print(f"\n{len(icons)} icon(s) match the template"
-          + (", and the badge table names every one of them" if scanning else ""))
-    return 0
+    return verdict(failures, undeclared, len(icons), scanning)
 
 
 if __name__ == "__main__":

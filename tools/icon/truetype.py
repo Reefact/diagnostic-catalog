@@ -22,9 +22,85 @@ def _tables(d):
     return t
 
 
+def _flags(d, p, npts):
+    """The per-point flag bytes, expanded through the repeat bit."""
+    flags = []
+    while len(flags) < npts:
+        f = d[p]; p += 1
+        flags.append(f)
+        if f & 8:
+            r = d[p]; p += 1
+            flags += [f] * r
+    return flags, p
+
+
+def _coords(d, p, flags, short, same):
+    """One axis of the point deltas, accumulated into absolute font units.
+
+    x and y are encoded identically and only the flag bits differ — 2/16 for x, 4/32 for y —
+    so reading them apart would be this loop written twice.
+    """
+    v, out = 0, []
+    for f in flags:
+        if f & short:
+            delta = d[p]; p += 1
+            v += delta if f & same else -delta
+        elif not f & same:
+            v += struct.unpack('>h', d[p:p + 2])[0]; p += 2
+        out.append(v)
+    return out, p
+
+
+def _quadratic(start, control, end):
+    """A quadratic flattened to 16 segments, `start` excluded — the caller already has it."""
+    out = []
+    for k in range(1, 17):
+        t = k / 16
+        out.append(((1 - t) ** 2 * start[0] + 2 * (1 - t) * t * control[0] + t * t * end[0],
+                    (1 - t) ** 2 * start[1] + 2 * (1 - t) * t * control[1] + t * t * end[1]))
+    return out
+
+
+def _from_on_curve(pts):
+    """The contour rotated to begin on-curve, inserting the implied point if it has none."""
+    if not any(on for _, _, on in pts):
+        x0, y0, _ = pts[0]; x1, y1, _ = pts[-1]
+        pts.insert(0, ((x0 + x1) / 2, (y0 + y1) / 2, True))
+    while not pts[0][2]:
+        pts.append(pts.pop(0))
+    return pts
+
+
+def _polygon(pts):
+    """One closed contour: on-curve points kept, quadratics flattened between them."""
+    pts = _from_on_curve(pts)
+    n = len(pts)
+    cur = (pts[0][0], pts[0][1])
+    poly = [cur]
+    i = 1
+    while i <= n:
+        px, py, on = pts[i % n]
+        if on:
+            cur = (px, py)
+            poly.append(cur)
+            i += 1
+            continue
+        nx, ny, non = pts[(i + 1) % n]
+        end = (nx, ny) if non else ((px + nx) / 2, (py + ny) / 2)
+        poly += _quadratic(cur, (px, py), end)
+        cur = end
+        # An on-curve neighbour IS the segment's endpoint and is consumed with it; an off-curve
+        # one only supplied the implied midpoint above and is read again on the next turn.
+        i += 2 if non else 1
+    return poly
+
+
 class Font:
     def __init__(self, path):
-        self.d = d = open(path, 'rb').read()
+        # Read through a context manager: the handle was left to the collector before, which is
+        # the kind of thing that holds a file open on an interpreter that does not refcount.
+        with open(path, 'rb') as source:
+            self.d = d = source.read()
         self.t = t = _tables(d)
         if 'glyf' not in t:
             raise ValueError('not a glyf font (CFF/OTF outlines unsupported)')
@@ -88,62 +164,14 @@ class Font:
         npts = ends[-1] + 1
         p = o + 10 + 2 * nc
         ilen = struct.unpack('>H', d[p:p + 2])[0]
-        p += 2 + ilen
-        flags = []
-        while len(flags) < npts:
-            f = d[p]; p += 1
-            flags.append(f)
-            if f & 8:
-                r = d[p]; p += 1
-                flags += [f] * r
-        xs, v = [], 0
-        for f in flags:
-            if f & 2:
-                dx = d[p]; p += 1
-                v += dx if f & 16 else -dx
-            elif not f & 16:
-                v += struct.unpack('>h', d[p:p + 2])[0]; p += 2
-            xs.append(v)
-        ys, v = [], 0
-        for f in flags:
-            if f & 4:
-                dy = d[p]; p += 1
-                v += dy if f & 32 else -dy
-            elif not f & 32:
-                v += struct.unpack('>h', d[p:p + 2])[0]; p += 2
-            ys.append(v)
+        flags, p = _flags(d, p + 2 + ilen, npts)
+        xs, p = _coords(d, p, flags, 2, 16)
+        ys, _ = _coords(d, p, flags, 4, 32)
 
         out, start = [], 0
         for e in ends:
             pts = [(xs[i], ys[i], bool(flags[i] & 1)) for i in range(start, e + 1)]
             start = e + 1
-            if not pts:
-                continue
-            # rotate so the contour begins on-curve, inserting an implied point if none is
-            if not any(on for _, _, on in pts):
-                x0, y0, _ = pts[0]; x1, y1, _ = pts[-1]
-                pts.insert(0, ((x0 + x1) / 2, (y0 + y1) / 2, True))
-            while not pts[0][2]:
-                pts.append(pts.pop(0))
-            poly, i, n = [], 0, len(pts)
-            cur = (pts[0][0], pts[0][1])
-            poly.append(cur)
-            i = 1
-            while i <= n:
-                px, py, on = pts[i % n]
-                if on:
-                    poly.append((px, py)); cur = (px, py); i += 1
-                else:
-                    nx, ny, non = pts[(i + 1) % n]
-                    end = (nx, ny) if non else ((px + nx) / 2, (py + ny) / 2)
-                    for k in range(1, 17):                # flatten the quadratic
-                        t = k / 16
-                        poly.append(((1 - t) ** 2 * cur[0] + 2 * (1 - t) * t * px + t * t * end[0],
-                                     (1 - t) ** 2 * cur[1] + 2 * (1 - t) * t * py + t * t * end[1]))
-                    cur = end
-                    # An on-curve neighbour IS the segment's endpoint and is consumed with it;
-                    # an off-curve one only supplied the implied midpoint above and is read
-                    # again on the next turn.
-                    i += 2 if non else 1
-            out.append(poly)
+            if pts:
+                out.append(_polygon(pts))
         return out
