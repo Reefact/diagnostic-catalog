@@ -100,9 +100,11 @@
     load it: build against a higher one and it fails to load with CS8032 on every older SDK and IDE —
     which reports no diagnostics at all, indistinguishable from code that has none.
 
-    4.8.0 is Visual Studio 2022 17.8 / the .NET 8 SDK. It is deliberately far below the 4.14.0 pinned
+    4.8.0 is Visual Studio 2022 17.8 / the .NET 8 SDK. It is deliberately far below the version pinned
     centrally for eng/CatalogGen, which is a build-time tool of this repository and constrains nobody
     else; the analyzer takes this floor through a VersionOverride so the two never share a number.
+    That pin is named here without its value on purpose: Dependabot moves it, and a number repeated
+    in prose no check reads goes stale the day it does.
 
     Declared once here so the csproj pin and the test that guards it (RoslynFloorTests, which reads it
     back through assembly metadata) cannot drift apart.
