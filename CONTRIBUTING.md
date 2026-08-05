@@ -120,8 +120,8 @@ linter and in the tables below, and its tag pattern plus dispatch option in
 ## Adding a catalogue
 
 A catalogue is generated from an analyzer's own descriptors, never hand-written.
-Adding one is five steps, and the last two are the ones nothing else would remind
-you of — because nothing compiles a README.
+Adding one is six steps, and the last three are the ones nothing else would
+remind you of — because nothing compiles a README, and nothing reads an icon.
 
 1. **Declare it in the manifest.** One entry in
    [`eng/catalogs.json`](eng/catalogs.json): the upstream package, the namespace,
@@ -150,6 +150,18 @@ you of — because nothing compiles a README.
    package id; link it only once it is published, since an address cannot be
    pointed at a version that does not exist
    ([ADR-0007](doc/adr/0007-depend-across-trains-through-published-packages.en.md)).
+6. **Draw its icon**, as a 512×512 `icon.png` beside the `.csproj`. The badge on
+   it carries the **prefix of the rules the catalogue mirrors**, never the
+   vendor's name: `S`, `CA`, `IDE`, `SA`. StyleCop's reads `SA` and not `SC`
+   because `SA1000` is what a reader types inside `[SuppressMessage(...)]`, and
+   at the 128px a nuget.org listing renders, that badge is the whole of what
+   distinguishes one catalogue from the next. Start from
+   [`assets/icon-template.svg`](assets/icon-template.svg), which carries the
+   family mark and leaves the badge text as the one thing to edit.
+   `PackageIconTests` fails a catalogue with no icon of its own, one whose icon
+   is another catalogue's, and one still wearing the repository's unbadged
+   mark — but it never reads the letters, so those are on you and on review
+   ([ADR-0032](doc/adr/0032-badge-a-catalogues-icon-with-its-rule-prefix.en.md)).
 
 ## Documentation
 

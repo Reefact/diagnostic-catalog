@@ -129,6 +129,26 @@ Two things a catalogue's README should carry that nothing else will tell a reade
 * **The other catalogues you publish, by package id.** A reader landing from a search sees that
   catalogue and nothing else.
 
+## The icon above it
+
+nuget.org renders a package icon at 128px, above the title, in every listing and every search
+result. It is the first thing anybody sees of your package and about the last thing anybody thinks
+about while building it — and at that size it holds roughly three characters.
+
+The catalogues here spend those characters on the **prefix of the rules the catalogue mirrors**,
+never on the vendor's name: `S`, `CA`, `IDE`, `SA`. StyleCop's badge reads `SA` rather than `SC`
+because `SA1000` is what a reader types inside `[SuppressMessage(...)]` and `SC` is what nobody
+types, so the icon answers "does this package hold my rule?" without the page being opened. The mark
+itself is [`assets/icon-template.svg`](../../assets/icon-template.svg), where the badge text is the
+one thing left to edit.
+
+Worth knowing how far the check around this reaches, because it is narrower than it looks.
+`PackageIconTests` fails a catalogue that carries no `icon.png` of its own, one whose icon is
+byte-identical to another catalogue's, and one still wearing the repository's unbadged fallback. It
+never reads the badge: distinctness is the property it can assert, and what the letters actually say
+rests on that template and on review. The decision, and the enforcement it deliberately declines, is
+[ADR-0032](../adr/0032-badge-a-catalogues-icon-with-its-rule-prefix.en.md).
+
 ## What packing gives you here
 
 For reference, if you are looking at this repository's own projects: a project joins a release train

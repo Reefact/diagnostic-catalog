@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512"
+     role="img" aria-label="The DiagnosticCatalog mark, badged with a rule prefix">
+  <title>DiagnosticCatalog catalogue icon &#8212; template</title>
+
+  <!--
+    The family mark worn by every catalogue package here, with one thing to edit: the badge text,
+    marked below.
+
+    THE BADGE CARRIES THE PREFIX OF THE RULES THE CATALOGUE MIRRORS, NEVER THE VENDOR'S NAME.
+    S for the Sonar catalogue, CA for the .NET analyzers, IDE for the Roslyn code styles, and SA
+    for StyleCop &#8212; SA rather than SC, because SA1000 is what a reader types inside
+    [SuppressMessage(...)] and SC is what nobody types. At the 128 px a nuget.org listing renders,
+    the badge is the only thing that answers "does this package hold my rule?".
+
+    That convention needs stating because nothing enforces it. PackageIconTests asserts that no
+    two catalogues ship the SAME icon and that none ships the repository's unbadged one; it never
+    reads a badge, so the letters rest on this file and on review. The decision, and why the
+    enforcing check was declined, is doc/adr/0032-badge-a-catalogues-icon-with-its-rule-prefix.en.md.
+
+    The geometry was recovered from those four icon.png files rather than authored, by fitting
+    this shape to their anti-aliased coverage. Rasterised back, it matches all four identically:
+    RMS 0.07 of a pixel's coverage over the 10 566 edge pixels, worst pixel 0.46, at the tip of
+    the C's lower terminal where any two rasterisers disagree most. So treat the numbers as
+    measurements of a mark that already exists, not as a design chosen in round units &#8212; and
+    do not tidy them.
+
+    Export at 512x512, which is what the four shipped icons are.
+  -->
+
+  <defs>
+    <linearGradient id="ink" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="512">
+      <stop offset="0" stop-color="#7A2DF2"/>
+      <stop offset="1" stop-color="#2B0B71"/>
+    </linearGradient>
+
+    <!--
+      The letters are KNOCKED OUT of the plate rather than painted white: the whole icon is one
+      gradient and a set of holes, which is why nothing in it is white and the C reads the same way.
+
+      The lettering is a <text> element, so it renders with whatever bold sans-serif the exporter
+      resolves. The four shipped badges were not drawn from this file and their font is not
+      recorded, so do not trust a font name &#8212; check the ink, which is what was measured on
+      them. All four centre it on (425.55, 373.95):
+
+        letters      cap height   ink width   font-size below
+        1 (S)            68           51            95
+        2 (SA, CA)       46           91            64
+        3 (IDE)          39           93            54
+
+      A longer prefix is set smaller so the word still clears the rounded corners.
+    -->
+    <mask id="prefix" maskUnits="userSpaceOnUse" x="354.5" y="302.9" width="142.1" height="142.1">
+      <rect x="354.5" y="302.9" width="142.1" height="142.1" rx="34.05" fill="#fff"/>
+      <text x="425.55" y="396.95" fill="#000" text-anchor="middle"
+            font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="64"
+            >SA</text><!-- ^^ THE BADGE TEXT: the rule prefix, and nothing else ^^ -->
+    </mask>
+  </defs>
+
+  <g fill="url(#ink)">
+    <!-- Left bracket; the right one is its mirror about x = 177.3, which is also the C's centre. -->
+    <path d="M36.18 71.3 L127.61 71.3 A21.05 21.05 0 0 1 148.66 92.35 L148.66 118.34 L75.85 118.34 A13.68 13.68 0 0 0 62.17 132.02 L62.17 384.28 A13.68 13.68 0 0 0 75.85 397.96 L148.66 397.96 L148.66 423.95 A21.05 21.05 0 0 1 127.61 445 L36.18 445 A21.05 21.05 0 0 1 15.13 423.95 L15.13 92.35 A21.05 21.05 0 0 1 36.18 71.3 Z"/>
+    <path d="M318.42 71.3 L226.99 71.3 A21.05 21.05 0 0 0 205.94 92.35 L205.94 118.34 L278.75 118.34 A13.68 13.68 0 0 1 292.43 132.02 L292.43 384.28 A13.68 13.68 0 0 1 278.75 397.96 L205.94 397.96 L205.94 423.95 A21.05 21.05 0 0 0 226.99 445 L318.42 445 A21.05 21.05 0 0 0 339.47 423.95 L339.47 92.35 A21.05 21.05 0 0 0 318.42 71.3 Z"/>
+    <!-- The C: a ring of radius 95.63 and thickness 39.05, opened eastward by two straight terminals. -->
+    <path d="M243.68 189.32 A95.63 95.63 0 1 0 243.84 326.84 L216.22 299.22 A56.58 56.58 0 1 1 216.06 216.94 Z"/>
+    <!-- The badge plate, sharing its baseline with the brackets. -->
+    <rect x="354.5" y="302.9" width="142.1" height="142.1" rx="34.05" mask="url(#prefix)"/>
+  </g>
+</svg>

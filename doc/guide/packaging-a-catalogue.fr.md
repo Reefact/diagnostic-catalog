@@ -134,6 +134,29 @@ Deux choses que le README d'un catalogue doit porter et que rien d'autre ne dira
 * **Les autres catalogues que vous publiez, par identifiant de paquet.** Un lecteur arrivé d'une
   recherche voit ce catalogue et rien d'autre.
 
+## L'icône au-dessus
+
+nuget.org affiche l'icône d'un paquet en 128px, au-dessus du titre, dans chaque liste et chaque
+résultat de recherche. C'est la première chose que l'on voit de votre paquet et à peu près la
+dernière à laquelle on pense en le construisant — et à cette taille, elle tient environ trois
+caractères.
+
+Les catalogues d'ici dépensent ces caractères sur le **préfixe des règles que le catalogue
+reflète**, jamais sur le nom de l'éditeur : `S`, `CA`, `IDE`, `SA`. Le badge de StyleCop porte `SA`
+plutôt que `SC` parce que `SA1000` est ce qu'un lecteur tape dans `[SuppressMessage(...)]` et que
+`SC` n'est tapé par personne ; l'icône répond donc à « ce paquet contient-il ma règle ? » sans qu'on
+ouvre la page. La marque elle-même est
+[`assets/icon-template.svg`](../../assets/icon-template.svg), où le texte du badge est la seule
+chose qu'il reste à modifier.
+
+Il vaut la peine de savoir jusqu'où porte la vérification qui l'entoure, car elle est plus étroite
+qu'il n'y paraît. `PackageIconTests` fait échouer un catalogue qui ne porte pas son propre
+`icon.png`, celui dont l'icône est identique octet pour octet à celle d'un autre catalogue, et celui
+qui porte encore la marque sans badge du dépôt. Il ne lit jamais le badge : la distinction est la
+propriété qu'il peut affirmer, et ce que disent réellement les lettres repose sur ce gabarit et sur
+la revue. La décision, et la vérification qu'elle refuse délibérément, sont
+[ADR-0032](../adr/0032-badge-a-catalogues-icon-with-its-rule-prefix.fr.md).
+
 ## Ce que l'empaquetage vous donne ici
 
 Pour référence, si vous regardez les projets de ce dépôt : un projet rejoint un train de release en
