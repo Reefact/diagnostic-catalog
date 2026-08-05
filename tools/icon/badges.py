@@ -14,6 +14,9 @@ table: DiagnosticCatalog.AspNetCore arrived while the renderer was being merged,
 drawn by hand, its mark happened to be right, and nothing said so.
 """
 
+import ast
+from pathlib import Path
+
 BADGES = {
     "DiagnosticCatalog.AspNetCore": "ASP",
     "DiagnosticCatalog.Sonar": "S",
@@ -24,7 +27,25 @@ BADGES = {
     "DiagnosticCatalog.Xunit": "XU",
     "DiagnosticCatalog.NUnit": "NU",
     "DiagnosticCatalog.MSTest": "MST",
+    "DiagnosticCatalog.Syslib": "SYS",
+    "DiagnosticCatalog.Roslyn": "RS",
 }
+
+
+def _declared_twice():
+    """Rows this file declares more than once, read off its own source.
+
+    A dict literal keeps the last value for a repeated key and reports nothing, so two rows for
+    one catalogue with two different badges is a silent choice between them. It is not
+    hypothetical: the row for DiagnosticCatalog.AspNetCore was added a second time while
+    DiagnosticCatalog.Syslib was being added, and both values happened to agree.
+    """
+    for node in ast.walk(ast.parse(Path(__file__).read_text(encoding="utf-8"))):
+        if isinstance(node, ast.Dict) and any(
+                isinstance(k, ast.Constant) and k.value in BADGES for k in node.keys):
+            keys = [k.value for k in node.keys if isinstance(k, ast.Constant)]
+            return sorted({key for key in keys if keys.count(key) > 1})
+    return []
 
 
 def roster(root):
@@ -36,6 +57,11 @@ def roster(root):
     """
     with_icon = {path.parent.name for path in root.glob("src/*/icon.png")}
     complaints = []
+
+    for project in _declared_twice():
+        complaints.append(
+            f"tools/icon/badges.py declares src/{project} twice; a dict literal keeps the last "
+            "row and says nothing about the other")
 
     for project in sorted(with_icon - set(BADGES)):
         complaints.append(

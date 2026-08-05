@@ -30,6 +30,7 @@ public sealed class GeneratedCatalogSourceTests
         "TrimRules.g.cs",
         "AspNetCoreRules.g.cs",
         "SyslibRules.g.cs",
+        "RoslynRules.g.cs",
     ];
 
     /// <summary>

@@ -97,7 +97,7 @@ library's own `DCAT` rules, catalogued by this library's own generator, publishe
 as the analyzers they mirror. It is not a mock-up — it is the product applied to itself, and CI
 fails if it ever stops describing the analyzers that ship beside it.
 
-The ten vendor catalogues under `src/` are the same machinery at scale — from 13 rules to 465 —
+The eleven vendor catalogues under `src/` are the same machinery at scale — from 13 rules to 465 —
 mirroring other people's analyzers.
 
 ## I am contributing to this repository
@@ -109,7 +109,7 @@ none of them is needed to *use* any of this.
   by something, the self-application loop, and where each kind of check lives. One diagram.
 * [**Inside the generator**](generator-internals.en.md) — the path a `dcat` run takes, and what each
   step refuses to do. One diagram.
-* [**Release trains**](release-trains.en.md) — the twelve lines, how a project joins one, and the
+* [**Release trains**](release-trains.en.md) — the thirteen lines, how a project joins one, and the
   cross-train rule that follows. One diagram.
 * [**The testing strategy**](testing-strategy.en.md) — what each of the seven test projects asserts,
   which run on the .NET Framework CLR, and the suite `dotnet test` cannot reach.
