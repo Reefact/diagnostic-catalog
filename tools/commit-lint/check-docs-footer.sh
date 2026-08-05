@@ -154,7 +154,21 @@ for entry in $value; do
   # doc/ is bilingual and the two halves land together (ADR-0022). BilingualPairTests
   # already fails a pair missing a half; nothing but this notices a page updated in
   # one language and left stale in the other, because both files still exist.
+  #
+  # The project README is the one pair whose halves do not sit beside each other:
+  # GitHub composes the landing page from a README.md at the root and from nothing
+  # else, so the English half carries no language suffix and cannot live under doc/
+  # (ADR-0029). Deriving the French half's sibling by suffix asks for doc/README.en.md,
+  # which does not exist and never will — so a feature that legitimately updates the
+  # pair could not describe it: naming both halves failed, and naming the English one
+  # alone is exactly what this rule exists to prevent.
+  #
+  # ONE direction only, and the asymmetry is the point rather than an omission. English
+  # is canonical (ADR-0022), so the half that must never be named alone is the French
+  # one; a footer naming the root README says nothing about a translation, exactly as it
+  # does for CONTRIBUTING.md or SECURITY.md, and test-docs-footer.sh holds it to that.
   case "$path" in
+    doc/README.fr.md) sibling='README.md' ;;
     doc/*.en.md) sibling="${path%.en.md}.fr.md" ;;
     doc/*.fr.md) sibling="${path%.fr.md}.en.md" ;;
     *) sibling='' ;; # the package READMEs and the root documents are English-only
