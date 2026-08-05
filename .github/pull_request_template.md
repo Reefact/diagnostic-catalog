@@ -39,6 +39,7 @@
 * [ ] `stylecop`
 * [ ] `codestyle`
 * [ ] `xunit`
+* [ ] `nunit`
 * [ ] None — this PR carries no `feat` or `fix` (infrastructure, docs, chore)
 
 ## Changes

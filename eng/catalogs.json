@@ -43,6 +43,17 @@
     },
     {
       "$comment": [
+        "The NUnit analyzers. Not a transitive dependency the way xUnit's are — NUnit declares none",
+        "— but `dotnet new nunit` writes NUnit.Analyzers into the project file it generates, so a",
+        "test project has them without anybody having decided to."
+      ],
+      "package": "NUnit.Analyzers",
+      "namespace": "DiagnosticCatalog.NUnit",
+      "container": "NUnitRule",
+      "output": "../src/DiagnosticCatalog.NUnit/NUnitRules.g.cs"
+    },
+    {
+      "$comment": [
         "The xUnit.net analyzers. They reach a project TRANSITIVELY — xunit depends on",
         "xunit.analyzers — so a test project has them without anybody choosing them, which is why",
         "their rules are suppressed in source rather than configured away in .editorconfig."

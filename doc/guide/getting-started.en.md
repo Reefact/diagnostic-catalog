@@ -35,8 +35,9 @@ There is one for [SonarAnalyzer](https://www.nuget.org/packages/DiagnosticCatalo
 one for [the .NET analyzers](https://www.nuget.org/packages/DiagnosticCatalog.NetAnalyzers)
 (`CAxxxx`), one for [StyleCop](https://www.nuget.org/packages/DiagnosticCatalog.StyleCop)
 (`SAxxxx`), one for [the Roslyn IDE rules](https://www.nuget.org/packages/DiagnosticCatalog.CodeStyle)
-(`IDExxxx`) and one for [xUnit's](https://www.nuget.org/packages/DiagnosticCatalog.Xunit)
-(`xUnitxxxx`). Reference more than one if you run more than one.
+(`IDExxxx`), one for [xUnit's](https://www.nuget.org/packages/DiagnosticCatalog.Xunit)
+(`xUnitxxxx`) and one for [NUnit's](https://www.nuget.org/packages/DiagnosticCatalog.NUnit)
+(`NUnitxxxx`). Reference more than one if you run more than one.
 
 ## 2. Rewrite one suppression
 
