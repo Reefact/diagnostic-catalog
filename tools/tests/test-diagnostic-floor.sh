@@ -155,6 +155,49 @@ assert_equals "the failure names the log that was empty" \
   "yes" \
   "$(grep -q 'a-empty.sarif' "$fixture/out.txt" && echo yes || echo no)"
 
+printf '  a log that cannot be read stops the check, and does not skip the rest\n'
+
+# The first draft of the repair carried `[ -e "$sarif" ] || break` into the reading loop,
+# copied from the counting loop above it where that line is the POSIX idiom for "the glob
+# matched nothing". One loop lower it means something else: drop this log and every log
+# sorting after it, then go on and pronounce the build clean. Which it duly did — the
+# violation below went unreported and the check exited 0, announcing "every diagnostic
+# this build reports is at least a warning (1 log(s) read)".
+#
+# So the fixture is built to make that outcome the LOUD one. The unreadable entry sits in
+# the middle; the log before it is clean, so nothing else can fail the check; the log
+# after it carries the only violation. A check that skips ahead reports success.
+mkdir -p "$fixture/unreadable"
+sarif_that_is_clean > "$fixture/unreadable/a-clean.sarif"
+ln -s /nonexistent/gone.sarif "$fixture/unreadable/b-unreadable.sarif"
+sarif_with_a_violation > "$fixture/unreadable/c-violating.sarif"
+
+run_check "$fixture/unreadable"
+assert_equals "an unreadable log fails the check" 1 "$status"
+assert_equals "the check never claims the build is clean" \
+  "no" \
+  "$(grep -q 'at least a warning' "$fixture/out.txt" && echo yes || echo no)"
+assert_equals "the failure names the log it could not read" \
+  "yes" \
+  "$(grep -q 'b-unreadable.sarif' "$fixture/out.txt" && echo yes || echo no)"
+
+printf '  a directory the caller supplied is never removed\n'
+
+# The cleanup handler removes the log directory only when the script made it itself. That
+# distinction is one variable wide, and on the wrong side of it the script `rm -rf`s a
+# directory its caller passed in and still owns. Nothing else here would notice: every
+# other case reads its fixture once and never looks again.
+mkdir -p "$fixture/owned-by-caller"
+sarif_that_is_clean > "$fixture/owned-by-caller/one.sarif"
+
+run_check "$fixture/owned-by-caller"
+assert_equals "the caller's directory survives" \
+  "yes" \
+  "$([ -d "$fixture/owned-by-caller" ] && echo yes || echo no)"
+assert_equals "the caller's log survives" \
+  "yes" \
+  "$([ -f "$fixture/owned-by-caller/one.sarif" ] && echo yes || echo no)"
+
 printf '  the check leaves no temporary directory behind\n'
 
 # The branch that builds for itself — the one CI takes, since ci.yml invokes the script
