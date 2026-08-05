@@ -160,7 +160,8 @@ remind you of — because nothing compiles a README, and nothing reads an icon.
    family mark and leaves the badge text as the one thing to edit.
    `PackageIconTests` fails a catalogue with no icon of its own, one whose icon
    is another catalogue's, and one still wearing the repository's unbadged
-   mark — but it never reads the letters, so those are on you and on review.
+   mark — but it never reads the letters, so those are on you and on review
+   ([ADR-0032](doc/adr/0032-badge-a-catalogues-icon-with-its-rule-prefix.en.md)).
 
 ## Documentation
 

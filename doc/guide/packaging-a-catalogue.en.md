@@ -146,7 +146,8 @@ Worth knowing how far the check around this reaches, because it is narrower than
 `PackageIconTests` fails a catalogue that carries no `icon.png` of its own, one whose icon is
 byte-identical to another catalogue's, and one still wearing the repository's unbadged fallback. It
 never reads the badge: distinctness is the property it can assert, and what the letters actually say
-rests on that template and on review.
+rests on that template and on review. The decision, and the enforcement it deliberately declines, is
+[ADR-0032](../adr/0032-badge-a-catalogues-icon-with-its-rule-prefix.en.md).
 
 ## What packing gives you here
 
