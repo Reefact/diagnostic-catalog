@@ -74,7 +74,11 @@ internal static class CatalogParser
         Console.WriteLine($"previous: {packageOrEmpty(sourceVersion)}{rules.Count} rules " +
                           $"({rules.Count(r => r.Value.Retired)} already retired), " +
                           $"{categoryNames.Count} categories");
-        return new Previous(sourceVersion, rules, categoryNames);
+
+        // The file itself travels alongside the parse, because what this run has to decide is not
+        // "did the rules move" but "would I write this same file again". The fields above answer the
+        // first; only the text answers the second.
+        return new Previous(sourceVersion, rules, categoryNames, CatalogEmitter.Canonical(text));
 
         static string packageOrEmpty(string v) => string.IsNullOrEmpty(v) ? "" : $"{v}, ";
     }

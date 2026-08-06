@@ -108,17 +108,28 @@ public sealed partial class RetiredRuleTests : IDisposable
         // stable. A night where upstream has not moved must leave the file — and its generatedOn
         // stamp — untouched, or the scheduled job opens a pull request every night whose only
         // content is a new date.
-        SortedDictionary<string, RuleInfo> settled = new(StringComparer.Ordinal)
-        {
-            ["X0001"] = new("Usage", string.Empty, Retired: false),
-            ["X0002"] = new("Usage", string.Empty, Retired: true),
-        };
+        //
+        // The settled state is WRITTEN and read back rather than assembled here, because "unchanged"
+        // now means "this run would write the file that is already there". A Previous built in a
+        // test says what the test believes the last run published; only the file says what it did.
+        string output = Path.Combine(_temp, "settled.g.cs");
+        Job job = new(Package, "2.0.0", "Vendor.Catalog", "VendorRule", output, "cs");
 
-        GenerateResult result = Emit(Rules(("X0001", "Usage")), Before("2.0.0", settled), out string emitted);
+        CatalogEmitter.Emit(job, Package, "2.0.0", Rules(("X0001", "Usage"), ("X0002", "Usage")),
+                            previous: null, dateOverride: "2026-01-01");
+        CatalogEmitter.Emit(job, Package, "2.0.0", Rules(("X0001", "Usage")),
+                            CatalogParser.ReadPrevious(output), dateOverride: "2026-01-01");
+
+        string asPublished = File.ReadAllText(output);
+        Assert.Contains("[Obsolete(", asPublished, StringComparison.Ordinal);
+
+        GenerateResult result = CatalogEmitter.Emit(
+            job, Package, "2.0.0", Rules(("X0001", "Usage")), CatalogParser.ReadPrevious(output),
+            dateOverride: "2026-01-02");
 
         Assert.False(result.Changed);
         Assert.Equal(string.Empty, result.Summary);
-        Assert.Equal(string.Empty, emitted);
+        Assert.Equal(asPublished, File.ReadAllText(output));
     }
 
     [GeneratedRegex(@"\[Obsolete\(")]

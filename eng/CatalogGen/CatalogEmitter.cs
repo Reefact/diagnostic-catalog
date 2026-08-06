@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace CatalogGen;
 
@@ -27,16 +28,33 @@ internal static class CatalogEmitter
         CategoryLayout categories = LayOutCategories(job.Container, accepted, previous);
         Changes changes = DescribeChanges(accepted, previous, version, retired);
 
-        // The date only moves when something else did. Bumping it on every run would make the
-        // scheduled job open a pull request every night whose only content was a new date.
-        if (previous is not null && !changes.VersionChanged && !changes.Any)
+        // Whether anything is rewritten is decided on WHAT WOULD BE PUBLISHED, in full, rather than
+        // on a list of the things worth comparing. Those two are not the same question, and the
+        // second one was answered wrongly for as long as it was asked: a catalogue publishes its
+        // namespace, the class its rules sit in, the source it records and the language those
+        // analyzers were read for, and every one of those comes from the MANIFEST rather than from
+        // upstream. Move one and no rule changes, no version changes, and nothing here noticed — so
+        // `dcat generate` left the old file in place and `dcat validate`, which is this same
+        // comparison stopped one step short, called it current.
+        //
+        // Rendering both sides and comparing them removes the question of which fields to compare.
+        // Anything the emitter can state, it states in this text; a field added below is compared
+        // the moment it is written, with nothing to remember.
+        //
+        // The generation date is elided from both sides, and only the date. It says when the content
+        // was established, so comparing it would report a change every night and comparing nothing
+        // else would let a real change keep yesterday's stamp. Canonical also normalises line
+        // endings: a checkout under core.autocrlf rewrites every line in the file and moves none of
+        // what it publishes.
+        string date = dateOverride ?? DateTime.UtcNow.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        string candidate = RenderSource(catalogue, DateElided, categories);
+
+        if (previous is not null && string.Equals(previous.Published, candidate, StringComparison.Ordinal))
         {
             Console.WriteLine($"unchanged: {packageId} {version}, {liveCount} rules — " +
                               (writeChanges ? "file left untouched" : "the catalogue is current"));
             return new GenerateResult(Changed: false, Summary: string.Empty);
         }
-
-        string date = dateOverride ?? DateTime.UtcNow.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
 
         if (writeChanges)
         {
@@ -57,6 +75,30 @@ internal static class CatalogEmitter
 
         return new GenerateResult(Changed: true, Summary: summary);
     }
+
+    /// <summary>
+    /// A generated catalogue reduced to what it publishes: its own text, with the generation date
+    /// elided and line endings normalised.
+    /// </summary>
+    /// <remarks>
+    /// The one form in which two runs are comparable, and the reason it is spelled here rather than
+    /// beside the parser: the emitter decides what a catalogue file says, so it is the emitter that
+    /// can say which parts of it carry meaning. A run renders its own candidate through
+    /// <see cref="RenderSource"/> with <see cref="DateElided"/> in place of the date, which is the
+    /// same shape this produces from a file already on disk.
+    /// </remarks>
+    internal static string Canonical(string generatedFile) =>
+        Regex.Replace(generatedFile.ReplaceLineEndings("\n"),
+                      """(generatedOn:\s*")[^"]*(")""", "${1}" + DateElided + "$2",
+                      RegexOptions.None, RegexLimits.MatchTimeout);
+
+    /// <summary>What stands in for the generation date while two runs are compared.</summary>
+    /// <remarks>
+    /// Not a date, and it cannot be mistaken for one: the value has to be absent from both sides of
+    /// the comparison, and a plausible date would make a file stamped with exactly that day compare
+    /// equal to one stamped with any other.
+    /// </remarks>
+    private const string DateElided = "(elided)";
 
     // --- the mirrored release, restated wherever a consumer reads -----------------
     //
@@ -502,7 +544,15 @@ internal static class CatalogEmitter
         md.AppendLine();
         if (!changes.Any)
         {
-            md.AppendLine("No rule changes. Only the mirrored upstream version moved.");
+            // Two ways to get here, and telling them apart is the whole point of writing a summary
+            // for a human. An upstream release that moved nothing is routine. A file that would be
+            // written differently while upstream stood still is not: something in the manifest moved
+            // — the namespace, the container, the recorded source, the language — and the reviewer
+            // reading this pull request is the one who has to recognise it.
+            md.AppendLine(changes.VersionChanged
+                              ? "No rule changes. Only the mirrored upstream version moved."
+                              : "No rule changes, and upstream stands where it did. What this "
+                                + "catalogue publishes moved anyway — read the diff.");
         }
         else
         {

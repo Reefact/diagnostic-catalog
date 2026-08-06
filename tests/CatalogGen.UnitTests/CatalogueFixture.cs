@@ -109,6 +109,71 @@ internal static class CatalogueFixture
         }
         """;
 
+    /// <summary>A catalogue declared in the global namespace.</summary>
+    /// <remarks>
+    /// Nothing requires a catalogue to be namespaced, and a hand-written one for an internal ruleset
+    /// often is not. It is the shape where a reference assembled from a namespace and a name has a
+    /// leading dot in it, which does not compile — the same failure the container-less rule below
+    /// produces one level up.
+    /// </remarks>
+    internal const string RuleInTheGlobalNamespace = """
+        public static class GlobalRules
+        {
+            [DiagnosticCatalog.DiagnosticRule]
+            public static class GLB0001
+            {
+                public const string Id = "GLB0001";
+                public const string Category = "Usage";
+            }
+        }
+        """;
+
+    /// <summary>A rule nested three types deep.</summary>
+    /// <remarks>
+    /// A reference that carried only the IMMEDIATE declaring type would name
+    /// <c>Inner.DEEP0001</c>, which binds to nothing from a file that has not imported its way into
+    /// <c>Outer</c>. The whole chain is what a use site has to write.
+    /// </remarks>
+    internal const string RuleNestedSeveralDeep = """
+        namespace Vendor.Catalog
+        {
+            public static class Outer
+            {
+                public static class Inner
+                {
+                    [DiagnosticCatalog.DiagnosticRule]
+                    public static class DEEP0001
+                    {
+                        public const string Id = "DEEP0001";
+                        public const string Category = "Usage";
+                    }
+                }
+            }
+        }
+        """;
+
+    /// <summary>A catalogue every part of whose name is a C# keyword.</summary>
+    /// <remarks>
+    /// Metadata has no keywords, so a namespace called <c>class</c> and a type called <c>event</c>
+    /// are perfectly ordinary to a reader and unwritable in C# without <c>@</c>. Contrived as a
+    /// catalogue and not as a case: <c>dcat explain</c> is pointed at whatever assembly a consumer
+    /// has, and the one thing its output may not be is uncompilable.
+    /// </remarks>
+    internal const string RuleNamedWithKeywords = """
+        namespace Vendor.@class
+        {
+            public static class @event
+            {
+                [DiagnosticCatalog.DiagnosticRule]
+                public static class @lock
+                {
+                    public const string Id = "KEY0001";
+                    public const string Category = "Usage";
+                }
+            }
+        }
+        """;
+
     /// <summary>An assembly that is perfectly valid and is not a catalogue.</summary>
     internal const string NotACatalogue = """
         namespace Vendor.Ordinary
