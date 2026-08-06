@@ -46,6 +46,15 @@ La dépendance d'un catalogue empaqueté vers `DiagnosticCatalog` porte la liste
 défaut de NuGet, qui nomme les analyzers parmi les actifs exclus. Le passage mesuré au §16.3 tient
 donc malgré cette liste plutôt que grâce à elle.
 
+Deux autres comportements ont été mesurés contre de vrais paquets pendant la rédaction de cet
+enregistrement, hors CI. Un projet référençant deux paquets qui demandent des versions différentes de
+`DiagnosticCatalog` en résout exactement une, la plus haute : NuGet unifie une identité de paquet sur
+tout le graphe, si bien que deux fondations ne peuvent pas coexister dans une même compilation. Et un
+projet référençant deux paquets portant chacun un assembly d'analyse de même nom de fichier mais de
+version d'assembly différente en reçoit un seul — la compilation n'a transmis au compilateur que
+l'analyzer de version la plus haute et les diagnostics n'ont pas été dupliqués, tandis que deux
+assemblys de correcteurs de version identique ont tous deux été transmis.
+
 `DCAT0006` est livré en erreur par défaut
 ([ADR-0027](0027-ship-the-use-site-diagnostics-as-errors.fr.md)), au motif énoncé que référencer un
 paquet de catalogue est en soi la déclaration d'intention.
@@ -128,10 +137,13 @@ ils le sont.
 La lecture la plus directe de l'objectif : un catalogue devient autosuffisant, et aucun consommateur
 n'a besoin de savoir qu'une fondation existe.
 
-Rejetée parce que les catalogues roulent sur des trains différents, à des rythmes différents. Un
-projet en référençant deux chargerait deux copies de l'assembly d'analyse en deux versions, et
-Roslyn rapporte depuis chaque analyzer qu'il charge — la même suppression serait donc diagnostiquée
-deux fois, par deux versions qui peuvent diverger.
+Rejetée parce que les catalogues roulent sur des trains différents, à des rythmes différents : la
+version de l'analyzer qu'exécute un projet serait donc réglée par la résolution de conflits entre des
+paquets qui se versionnent indépendamment les uns des autres. La mesure ci-dessus dit que l'objection
+évidente n'est pas la vraie : les diagnostics ne se dupliquent pas, un assembly l'emporte purement et
+simplement. C'est pire plutôt que mieux. Le gagnant est le catalogue qui se trouve porter la version
+la plus haute, aucun catalogue ne peut énoncer par quoi ses propres consommateurs sont vérifiés, et
+mettre à jour un catalogue sans rapport change en silence quel analyzer lit le code.
 
 ### Publier un métapaquet de commodité dépendant des deux, comme le suggère §16.1
 
@@ -198,11 +210,13 @@ doit déjà soupçonner utile, c'est le pari que la première fait perdre.
 
 * Réécrire les §16.1 et §16.3 de la [spécification](../specification.fr.md), qui décrivent les deux
   paquets et les leviers de transitivité dont un paquet unique n'a plus besoin.
-* Étendre `tools/packaging/verify-consumption.sh` au cas à deux sauts, et le faire avant le prochain
-  tag `lib` plutôt qu'après.
-* Mettre à jour le tableau d'état du README du projet et
-  [`doc/guide/troubleshooting`](../guide/troubleshooting.fr.md), qui envoient tous deux le lecteur
-  vers un paquet qui n'existerait plus.
+* Étendre `tools/packaging/verify-consumption.sh` au cas à deux sauts et à l'unification mesurée pour
+  cet enregistrement, afin qu'aucun des deux ne repose sur une exécution unique, et le faire avant le
+  prochain tag `lib` plutôt qu'après.
+* Mettre à jour le tableau d'état du README du projet,
+  [`doc/guide/troubleshooting`](../guide/troubleshooting.fr.md) et
+  [`doc/guide/packaging-a-catalogue`](../guide/packaging-a-catalogue.fr.md), qui envoient tous le
+  lecteur vers un paquet qui n'existerait plus.
 * Énoncer dans les notes de publication du premier catalogue portant le changement que l'adopter
   fait échouer la compilation sur chaque suppression littérale correspondant à une règle cataloguée.
 * Décider si `DiagnosticCatalog.Self`, également sur le train `lib` et également non publié, conserve
