@@ -81,16 +81,48 @@ internal static class CatalogEmitter
     /// elided and line endings normalised.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// The one form in which two runs are comparable, and the reason it is spelled here rather than
     /// beside the parser: the emitter decides what a catalogue file says, so it is the emitter that
     /// can say which parts of it carry meaning. A run renders its own candidate through
     /// <see cref="RenderSource"/> with <see cref="DateElided"/> in place of the date, which is the
     /// same shape this produces from a file already on disk.
+    /// </para>
+    /// <para>
+    /// The stamp is elided WHERE THE EMITTER WROTE IT, not wherever those words occur. A catalogue
+    /// reproduces the vendor's own rule titles verbatim in documentation comments, and a title is
+    /// prose over which this repository has no say: a sentence reading <c>generatedOn: "…"</c> is
+    /// improbable and not impossible, and a pattern that reached it would take published content out
+    /// of a comparison that claims to cover all of it. Which is the promise this method exists to
+    /// keep, so it cannot be the one it quietly breaks.
+    /// </para>
     /// </remarks>
-    internal static string Canonical(string generatedFile) =>
-        Regex.Replace(generatedFile.ReplaceLineEndings("\n"),
-                      """(generatedOn:\s*")[^"]*(")""", "${1}" + DateElided + "$2",
-                      RegexOptions.None, RegexLimits.MatchTimeout);
+    internal static string Canonical(string generatedFile)
+    {
+        string text = generatedFile.ReplaceLineEndings("\n");
+
+        Match provenance = Regex.Match(text, Provenance, RegexOptions.None, RegexLimits.MatchTimeout);
+
+        // Nothing to elide, and nothing to repair: a file this emitter did not write compares equal
+        // to no candidate and is regenerated, which is the safe direction and the honest answer.
+        if (!provenance.Success) return text;
+
+        Group stamp = provenance.Groups["date"];
+
+        return text[..stamp.Index] + DateElided + text[(stamp.Index + stamp.Length)..];
+    }
+
+    /// <summary>The generation stamp of the provenance attribute, and nothing that reads like one.</summary>
+    /// <remarks>
+    /// Anchored twice over. It opens on <c>[assembly: CatalogSource(</c> and cannot cross the
+    /// parenthesis closing it — the values in between are a package id and a version, neither of
+    /// which admits one — so the only text it can reach is the attribute's own. And the LEFTMOST
+    /// match is that attribute by construction: <see cref="RenderSource"/> writes it directly after
+    /// the using directives and before the namespace, so every rule, and every vendor sentence a
+    /// rule carries, comes after it.
+    /// </remarks>
+    private const string Provenance =
+        @"\[assembly:\s*CatalogSource\([^)]*?generatedOn:\s*""(?<date>[^""]*)""";
 
     /// <summary>What stands in for the generation date while two runs are compared.</summary>
     /// <remarks>
