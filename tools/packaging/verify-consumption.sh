@@ -220,6 +220,19 @@ RULE
       optin="    <None Include=\"OptIn.props\" Pack=\"true\" PackagePath=\"build/$id.props\" />"
       ;;
     hidden) private=' PrivateAssets="all"' ;;
+    # The silent flavour adds nothing to either variable: it depends on the foundation the
+    # ordinary way and ships no opt-in, which is the arrangement that leaves its consumer
+    # unchecked. Spelled out rather than left to fall through, so the default below can mean
+    # what it says.
+    silent) ;;
+    # Any other word would pack as the silent fixture, and no check below could tell that
+    # apart from the flavour the caller asked for: the catalogue would build, restore and
+    # report, and the run would come back green about a package nobody described. Stop here,
+    # where the mistake is still legible.
+    *)
+      printf 'error: unknown catalogue flavour "%s" (expected opt-in, silent or hidden)\n' "$2" >&2
+      exit 1
+      ;;
   esac
 
   cat > "$dir/$id.csproj" <<EOF
