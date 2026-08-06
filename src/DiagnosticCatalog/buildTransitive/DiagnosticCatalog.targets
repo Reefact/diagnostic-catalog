@@ -64,10 +64,28 @@
     already been written — measured, and the symptom is the worst kind: the property is computed
     correctly, the analyzer receives an empty value, and the diagnostic simply never fires.
 
-    Deliberately narrow. It classifies nothing unless the project actually publishes a package with an
-    id, so an application, a test project or an unpackable library is never a candidate and never has
-    to be excluded later. And it computes nothing when the property already has a value: a catalogue
-    that arranges the opt-in in some way the match below cannot see writes
+    Deliberately narrow, and narrowed once more when DCAT0015 became an error (ADR-0040).
+
+    $(IsPackable) was the whole gate, and it is not a statement of intent: the SDK defaults it to true
+    for EVERY project, so a console application or a library that declares rules for an internal
+    ruleset — the use the guides promote, on `DiagnosticCatalog` alone — was classified as a catalogue
+    publishing without its opt-in. As a warning that was noise on somebody's build; as an error it is
+    that project failing to compile over a package nobody was ever going to publish. Measured, on the
+    packaging suite's own consumer fixture.
+
+    $(_IsPacking) is what distinguishes the two. `dotnet pack` sets it and `dotnet build` does not, so
+    the classification happens exactly where the defect exists: at the moment a package is produced,
+    which is what the message is about and what the reader can act on. Nothing is lost by the
+    narrowing — a release packs, and the release rehearsal packs on every pull request — and the
+    property is read rather than assumed: if the SDK ever stops setting it, the silent fixture in
+    tools/packaging/verify-consumption.sh stops being told, and that check is asserted in both
+    directions.
+
+    GeneratePackageOnBuild is honoured beside it, because a project that packs on every build is a
+    project that packs.
+
+    It also computes nothing when the property already has a value: a catalogue that arranges the
+    opt-in in some way the match below cannot see writes
     <DiagnosticCatalogAnalyzerOptIn>packed</DiagnosticCatalogAnalyzerOptIn> and is believed. That
     escape exists because what follows is a match against how a file was DECLARED, and MSBuild offers
     more than one spelling of the same packaging.
@@ -83,7 +101,9 @@
   -->
   <Target Name="DiagnosticCatalogClassifyAnalyzerOptIn"
           BeforeTargets="GenerateMSBuildEditorConfigFileCore"
-          Condition="'$(IsPackable)' == 'true' and '$(PackageId)' != '' and '$(DiagnosticCatalogAnalyzerOptIn)' == ''">
+          Condition="'$(IsPackable)' == 'true' and '$(PackageId)' != ''
+                     and ('$(_IsPacking)' == 'true' or '$(GeneratePackageOnBuild)' == 'true')
+                     and '$(DiagnosticCatalogAnalyzerOptIn)' == ''">
 
     <ItemGroup>
       <DiagnosticCatalogOptInCandidate

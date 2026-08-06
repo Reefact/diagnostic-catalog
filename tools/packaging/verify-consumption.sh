@@ -95,8 +95,11 @@ cat > "$work/NuGet.config" <<EOF
 </configuration>
 EOF
 
-# A rule missing its Id: the analyzer reports DCAT0003 on it. Warning severity, so the
-# consumer still builds — the diagnostic is the observation, not a failure.
+# A rule missing its Id: the analyzer reports DCAT0003 on it. That is the observation every
+# `reported` check below greps for, and since ADR-0040 it ships as an ERROR — so each consumer
+# fixture also gets the .globalconfig written by `soften` to keep the build succeeding. What is
+# measured is whether the analyzer RAN, and a consumer whose build stops has produced no output
+# folder to ask the other questions of.
 cat > "$work/Offender.cs" <<'EOF'
 using DiagnosticCatalog;
 
@@ -160,10 +163,44 @@ check() {
   fi
 }
 
+# soften <directory> <id>… — writes a .globalconfig lowering those DCAT ids to warning.
+#
+# The fixtures deliberately carry the very defects the analyzers report, and since ADR-0040 those
+# defects are errors. An error stops the build, and a build that stopped answers none of the
+# questions this script exists to ask — whether the analyzer was HANDED to the compiler, what landed
+# in the output folder, how many analyzer instances were resolved. Lowering the severity is what a
+# real consumer does on the day they adopt a catalogue, and it changes nothing about whether the
+# diagnostic is reported: `reported` and `told` grep the log either way.
+#
+# A GLOBAL config, not an .editorconfig section, and that is not a preference. DCAT0015 is reported
+# with NO LOCATION -- the defect is a missing line in a project file -- and a `[*.cs]` section reaches
+# only diagnostics that have one. Measured: the section was written, the pack still failed, and the
+# id in the message was the only thing that said why. The SDK picks up a .globalconfig beside the
+# project without being told to.
+#
+# Every name here is prefixed: sh has no local variables, so a bare `id` would overwrite the caller's
+# -- which it did, and the catalogue fixture packed itself under the id of the diagnostic it was
+# softening. The failure was legible only because the pack then reported that id back.
+soften() {
+  soften_directory="$1"
+  shift
+  {
+    printf 'is_global = true\n\n'
+    for soften_id in "$@"; do
+      printf 'dotnet_diagnostic.%s.severity = warning\n' "$soften_id"
+    done
+  } > "$soften_directory/.globalconfig"
+}
+
 # project <name> <item-group-xml> [property-xml] — writes a buildable consumer.
 project() {
   mkdir -p "$work/$1"
   cp "$work/NuGet.config" "$work/$1/NuGet.config"
+  # DCAT0003 for the offender every consumer carries, and DCAT0015 for the one consumer that is
+  # PACKED — the library of the two-hop chain, which publishes that offender and ships no opt-in.
+  # Softened on all of them rather than on that one: the id only ever reaches a consumer's log if
+  # something has gone wrong, and the check above greps for it there whatever its severity.
+  soften "$work/$1" DCAT0003 DCAT0015
   cat > "$work/$1/$1.csproj" <<EOF
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
@@ -189,6 +226,12 @@ catalogue() {
   dir="$work/pkg-$id"
   mkdir -p "$dir"
   cp "$work/NuGet.config" "$dir/"
+  # DCAT0015 is an error since ADR-0040, so the silent flavour — a catalogue that publishes rules
+  # and packs no opt-in — would fail its own pack and never reach the feed. That fixture has to
+  # EXIST for the consumer check below to mean anything, so its severity is lowered here rather
+  # than the defect being removed. The `told` checks still read the diagnostic out of the pack log,
+  # which is what they were always doing.
+  soften "$dir" DCAT0015
 
   # A rule, so the fixture is a catalogue rather than an empty package that merely depends on the
   # foundation. DCAT0015 reports a project that PUBLISHES rules without the opt-in, so without this
@@ -314,6 +357,14 @@ build Direct
 
 check 'the analyzer activates for a direct consumer' yes "$(reported Direct)"
 check 'a direct consumer gets exactly one analyzer instance' 1 "$(analyzer_instances Direct)"
+
+# And DCAT0015 does NOT fire on it. This consumer declares a rule and packs no opt-in, which is
+# exactly the shape the classification used to call a catalogue: $(IsPackable) defaults to true for
+# every project, so an application declaring rules for itself was told to ship a props file for a
+# package nobody would publish. Harmless while the diagnostic was a warning; since ADR-0040 it is an
+# error, and this build would simply fail.
+check 'an ordinary build is not told to pack an opt-in' \
+  no "$(if grep -q 'DCAT0015' "$work/Direct.log"; then printf 'yes\n'; else printf 'no\n'; fi)"
 
 # §16.1's opening line: an analysis assembly must never become a runtime dependency of the
 # consuming application. A wrong DevelopmentDependency or PrivateAssets puts it here, and
