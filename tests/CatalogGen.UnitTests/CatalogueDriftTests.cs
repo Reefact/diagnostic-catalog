@@ -56,7 +56,8 @@ public sealed class CatalogueDriftTests : IDisposable
         return map;
     }
 
-    private static RuleInfo Rule(string helpLinkUri = "") => new("Usage", helpLinkUri, Retired: false, "A title.");
+    private static RuleInfo Rule(string helpLinkUri = "", string title = "A title.") =>
+        new("Usage", helpLinkUri, Retired: false, title);
 
     private string Output => Path.Combine(_temp, "VendorRules.g.cs");
 
@@ -235,6 +236,42 @@ public sealed class CatalogueDriftTests : IDisposable
         Assert.Equal(string.Empty, result.Summary);
         Assert.Equal(asPublished, emitted);
         Assert.Contains($"generatedOn:   \"{FirstRun}\"", emitted, StringComparison.Ordinal);
+    }
+
+    // --- what the VENDOR publishes, which is prose ----------------------------------
+    //
+    // A rule's documentation comment is the vendor's own sentence, reproduced verbatim, and nothing
+    // in this repository governs what it says. The comparison elides exactly one thing — the run's
+    // own date — and a sentence that happens to read like that stamp is content like any other.
+
+    private const string SentenceAboutAStamp = "Prefer generatedOn: \"2019-07-04\" over a bare date";
+
+    [Fact]
+    public void The_stamp_elided_is_the_one_the_generator_wrote_and_no_sentence_that_reads_like_it()
+    {
+        Settled(Rules(Rule(title: SentenceAboutAStamp)));
+
+        string canonical = CatalogEmitter.Canonical(File.ReadAllText(Output));
+
+        Assert.DoesNotContain($"generatedOn:   \"{FirstRun}\"", canonical, StringComparison.Ordinal);
+        Assert.Contains("generatedOn: \"2019-07-04\"", canonical, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void A_catalogue_whose_prose_reads_like_the_stamp_is_still_left_untouched()
+    {
+        // Both halves of the promise fail here at once when the elision is not anchored. The file is
+        // rewritten every run, because the sentence is elided on the disk side and rendered verbatim
+        // on the candidate side, so the two never compare equal — a pull request every night whose
+        // only content is a date. And with the sentence taken out of the comparison, a change made
+        // inside it is a change nothing looks at.
+        Previous published = Settled(Rules(Rule(title: SentenceAboutAStamp)));
+        string asPublished = File.ReadAllText(Output);
+
+        GenerateResult result = Emit(Rules(Rule(title: SentenceAboutAStamp)), published, out string emitted);
+
+        Assert.False(result.Changed, "a sentence the vendor wrote is not this comparison's own stamp");
+        Assert.Equal(asPublished, emitted);
     }
 
     [Fact]
