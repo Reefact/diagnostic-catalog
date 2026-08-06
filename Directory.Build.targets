@@ -89,9 +89,13 @@
     catalogue carries the opt-in without anybody remembering it. A list would have to be edited, and
     a catalogue missing from it would look exactly like one whose consumers are checked.
 
-    Both reference kinds are matched because the repository uses both: the twelve catalogues on their
-    own trains take a PackageReference (ADR-0007 forbids anything else across trains), while
+    Both reference kinds are matched because the repository uses both: the thirteen catalogues on
+    their own trains take a PackageReference (ADR-0007 forbids anything else across trains), while
     DiagnosticCatalog.Self rides the lib train WITH the foundation and takes a ProjectReference.
+
+    The count is stated because it says which shapes had to be matched, and it is the kind of fact
+    that ages: it read "twelve" for as long as there were thirteen. Nothing enforces it — the
+    condition below reads the project, never a number — so treat it as prose and not as a list.
 
     The foundation itself matches neither clause and must not: a package carrying buildTransitive/
     has its build/ folder ignored outright, so the file would be packed and never read. The direct
