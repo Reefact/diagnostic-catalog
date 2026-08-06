@@ -52,25 +52,21 @@ flowchart LR
 # .editorconfig
 [*.cs]
 dotnet_diagnostic.DCAT0006.severity = suggestion
+dotnet_diagnostic.DCAT0014.severity = suggestion
 ```
 
 Une suggestion apparaît dans l'IDE sous forme d'ampoule et dans `dotnet build` sous forme de rien. Le
 build qui ajoute le catalogue est vert, et la migration démarre quand vous le décidez plutôt que
 quand le paquet arrive.
 
-**Pendant la migration — ne touchez pas aux quatre autres.**
+**Pendant la migration — ne touchez pas aux trois autres.**
 
-`DCAT0001` et `DCAT0007` sont déjà des erreurs, et doivent le rester. Ils signifient qu'une
-suppression *ne fait pas ce qu'elle a l'air de faire* : une paire nommant deux règles différentes, ou
-une paire à moitié convertie. Ce sont deux défauts que vous voulez voir signalés dès qu'ils
-apparaissent, et aucun ne se déclenche en masse — ils n'existent que là où quelqu'un a déjà commencé
-à utiliser des références. `DCAT0009` est du même ordre mais reste livré en avertissement, parce
-qu'il rate un identifiant atteint via une constante ; relevez-le si un build *trimmé* compte pour
-vous.
-
-```ini
-dotnet_diagnostic.DCAT0009.severity = error
-```
+`DCAT0001`, `DCAT0007` et `DCAT0009` sont des erreurs, et doivent le rester. Ils signifient qu'une
+suppression *ne fait pas ce qu'elle a l'air de faire* : une paire nommant deux règles différentes,
+une paire à moitié convertie, ou un `UnconditionalSuppressMessage` que le *trimmer* jette purement et
+simplement. Ce sont trois défauts que vous voulez voir signalés dès qu'ils apparaissent, et aucun ne
+se déclenche en masse — ils n'existent que là où quelqu'un a déjà commencé à utiliser des références,
+ou là où une suppression de *trimmer* a été écrite à la main.
 
 **`DCAT0014` arrive dès le jour un, à côté de `DCAT0006`.** Il demande qu'une suppression dise
 pourquoi elle existe, et il le demande à *toute* suppression — une suppression littérale comprise,
@@ -78,13 +74,11 @@ qu'un catalogue décrive ou non la règle qu'elle nomme. Le premier build suivan
 signale donc chaque suppression de votre codebase qui n'a jamais porté de `Justification`, convertie
 ou non.
 
-Il est livré en avertissement plutôt qu'en erreur exactement pour cette raison : ce premier build
-reste vert. Deux façons d'y répondre, et la seconde est l'habituelle :
-
-```ini
-# Le garder visible le temps de traiter l'arriéré, puis supprimer la ligne.
-dotnet_diagnostic.DCAT0014.severity = suggestion
-```
+C'est une erreur, comme `DCAT0006`, et pour la même raison : une justification fait partie du contrat
+et n'en est pas l'ornement
+([ADR-0040](../adr/0040-grade-every-dcat-diagnostic-by-what-it-says.fr.md)). C'est pourquoi il figure
+sur la même ligne d'abaissement ci-dessus plutôt que sur une ligne à lui. Deux façons d'y répondre, et
+la seconde est l'habituelle.
 
 La façon honnête est d'écrire les raisons au fil de la conversion. Vous éditez déjà chaque suppression
 pour migrer sa paire, le code est devant vous, et la personne qui a supprimé est souvent encore
@@ -95,10 +89,11 @@ une suppression ne répond pas à la question à laquelle elle n'a jamais répon
 Si vous faites déjà tourner `SA1404` de StyleCop, vous verrez les deux — elles posent la même
 question, et une ligne d'`.editorconfig` fait taire celle dont vous ne voulez pas.
 
-**Quand vous avez fini — supprimez la ligne.**
+**Quand vous avez fini — supprimez les lignes.**
 
 ```ini
 # disparue : dotnet_diagnostic.DCAT0006.severity = suggestion
+# disparue : dotnet_diagnostic.DCAT0014.severity = suggestion
 ```
 
 Retirer la baisse restaure le défaut : à partir de là, une nouvelle suppression

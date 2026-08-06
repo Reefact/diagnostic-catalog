@@ -57,17 +57,19 @@ claim a consumer will read as one.
   [a real restore asserts](tools/packaging/verify-consumption.sh) rather than the package merely
   claiming it.
 
-  `DCAT0001`, `DCAT0006` and `DCAT0007` ship as **errors**. They are what a consumer references a
-  catalogue for, and a codebase where half the suppressions are magic strings does not have the
-  guarantee — it has it where somebody remembered. Those addressed to a catalogue's *author*
-  (`DCAT0002`–`DCAT0004`, `DCAT0011`–`DCAT0013`, `DCAT0015`) stay warnings, and so do `DCAT0009` and
-  `DCAT0014` — the latter reports a suppression that is otherwise entirely correct, and failing a
-  build over a missing sentence is a thing to raise deliberately rather than to inherit. `DCAT0015`
-  is a warning for a different reason: it is the one diagnostic that reads a fact from outside the
-  compilation, so it can be wrong in ways the others cannot. `DCAT0005`
-  alone is `Info`: it is the one rule reporting something its author cannot act on. Every severity is
-  overridable per id and per path in `.editorconfig`
-  ([ADR-0027](doc/adr/0027-ship-the-use-site-diagnostics-as-errors.en.md)); the
+  **Nine of the thirteen ship as errors**, and the tier is decided by what the diagnostic says about
+  the code rather than by who reads the message
+  ([ADR-0040](doc/adr/0040-grade-every-dcat-diagnostic-by-what-it-says.en.md), superseding the
+  audience split of [ADR-0027](doc/adr/0027-ship-the-use-site-diagnostics-as-errors.en.md) and the
+  provisional warning [ADR-0039](doc/adr/0039-require-a-justification-on-every-suppression.en.md)
+  gave `DCAT0014`). An **error** means this library's mandatory contract is unmet, the suppression is
+  incorrect or has no effect, or the package does not deliver what it promises: the suppression
+  itself (`DCAT0001`, `DCAT0006`, `DCAT0007`), the structural contract a rule declaration must meet
+  (`DCAT0002`–`DCAT0004`), a suppression every tool in the chain discards (`DCAT0009`), a missing
+  justification (`DCAT0014`), and a catalogue package that checks nobody (`DCAT0015`). A **warning**
+  means the code works today and stays liable to drift or misleads its reader — `DCAT0011`,
+  `DCAT0012`, `DCAT0013`. `DCAT0005` alone is `Info`: the one rule reporting something its author
+  cannot act on. Every severity is overridable per id and per path in `.editorconfig`; the
   [configuration guide](doc/guide/configuration.en.md) gives the two lines that downgrade `DCAT0006`
   and `DCAT0014` while an existing codebase catches up. Both arrive on the first build after the
   reference: `DCAT0006` on every literal suppression a catalogue can match, `DCAT0014` on every

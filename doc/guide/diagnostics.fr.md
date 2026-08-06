@@ -13,27 +13,44 @@ droit de la masquer, si bien que référencer n'importe quel catalogue les activ
 ([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md)) ; référencer
 `DiagnosticCatalog` seul est la façon d'être vérifié sans aucun catalogue.
 
-Ils se répartissent en deux groupes. Les diagnostics de **déclaration** regardent une règle que vous
-avez déclarée ; vous ne les voyez que si vous écrivez un catalogue. Les diagnostics de **site
-d'utilisation** regardent une suppression que vous avez écrite, ce qui concerne la plupart des gens.
+Ils se répartissent en trois groupes selon ce qu'ils regardent. Les diagnostics de **déclaration**
+regardent une règle que vous avez déclarée ; vous ne les voyez que si vous écrivez un catalogue. Les
+diagnostics de **site d'utilisation** regardent une suppression que vous avez écrite, ce qui concerne
+la plupart des gens. L'**empaquetage** regarde le paquet de catalogue que vous êtes sur le point de
+publier.
 
-| Identifiant | Regarde | Titre | Défaut | Correctif |
+| Identifiant | Regarde | Titre | Sévérité par défaut | Correctif |
 | --- | --- | --- | --- | --- |
 | [`DCAT0001`](#dcat0001) | site d'utilisation | `Category` et `Id` doivent référencer la même règle | **Erreur** | deux, non classés |
-| [`DCAT0002`](#dcat0002) | déclaration | Une règle doit être déclarée comme classe statique non générique | Avertissement | oui, sous condition |
-| [`DCAT0003`](#dcat0003) | déclaration | Une règle doit exposer une constante `string` publique nommée `Id` | Avertissement | oui, sous condition |
-| [`DCAT0004`](#dcat0004) | déclaration | Une règle doit exposer une constante `string` publique nommée `Category` | Avertissement | oui, sous condition |
+| [`DCAT0002`](#dcat0002) | déclaration | Une règle doit être déclarée comme classe statique non générique | **Erreur** | oui, sous condition |
+| [`DCAT0003`](#dcat0003) | déclaration | Une règle doit exposer une constante `string` publique nommée `Id` | **Erreur** | oui, sous condition |
+| [`DCAT0004`](#dcat0004) | déclaration | Une règle doit exposer une constante `string` publique nommée `Category` | **Erreur** | oui, sous condition |
 | [`DCAT0005`](#dcat0005) | déclaration | Le nom du type de règle devrait correspondre à son `Id` | Info | — |
 | [`DCAT0006`](#dcat0006) | site d'utilisation | Utiliser une référence de catalogue plutôt que des littéraux | **Erreur** | oui |
 | [`DCAT0007`](#dcat0007) | site d'utilisation | La suppression mêle une référence de catalogue et un littéral | **Erreur** | oui, sous condition |
-| [`DCAT0009`](#dcat0009) | site d'utilisation | `UnconditionalSuppressMessage` n'accepte que les identifiants `IL####` | Avertissement | — |
+| [`DCAT0009`](#dcat0009) | site d'utilisation | `UnconditionalSuppressMessage` n'accepte que les identifiants `IL####` | **Erreur** | — |
 | [`DCAT0011`](#dcat0011) | déclaration | La catégorie d'une règle doit référencer une constante de catégorie déclarée | Avertissement | — |
 | [`DCAT0012`](#dcat0012) | déclaration | Un identifiant de règle devrait s'écrire `nameof` | Avertissement | oui, sous condition |
 | [`DCAT0013`](#dcat0013) | déclaration | Le nom du type de règle ne dit pas son `Id` | Avertissement | — |
-| [`DCAT0014`](#dcat0014) | site d'utilisation | Une suppression doit porter une justification | Avertissement | — |
-| [`DCAT0015`](#dcat0015) | empaquetage | Un paquet de catalogue doit embarquer l'opt-in des analyseurs | Avertissement | — |
+| [`DCAT0014`](#dcat0014) | site d'utilisation | Une suppression doit porter une justification | **Erreur** | — |
+| [`DCAT0015`](#dcat0015) | empaquetage | Un paquet de catalogue doit embarquer l'opt-in des analyseurs | **Erreur** | — |
 
 `DCAT0008` et `DCAT0010` sont spécifiés mais délibérément hors de la 1.0.
+
+**La sévérité dit de quelle sorte de défaut il s'agit, jamais qui lit le message**
+([ADR-0040](../adr/0040-grade-every-dcat-diagnostic-by-what-it-says.fr.md)) :
+
+* **Erreur** — le contrat obligatoire n'est pas satisfait, la suppression est incorrecte ou sans
+  effet, ou le paquet ne fournit pas ce qu'il promet. Neuf identifiants, et aucun ne signale une ligne
+  qui fonctionne.
+* **Avertissement** — le code fonctionne aujourd'hui et reste sujet à dérive (`DCAT0011`, `DCAT0012`)
+  ou trompe qui lit le site d'utilisation (`DCAT0013`).
+* **Info** — `DCAT0005` seul : une exception légitime que personne ne peut réparer, signalée pour que
+  la frontière imposée un cran plus loin par `DCAT0013` soit visible plutôt que silencieuse.
+
+Chacun reste redéfinissable par identifiant et par chemin dans `.editorconfig`, ce qui est la façon
+dont une migration échelonne les deux qui arrivent à la première build après le référencement d'un
+catalogue — voir [Les configurer](#les-configurer).
 
 ---
 
@@ -44,8 +61,10 @@ d'utilisation** regardent une suppression que vous avez écrite, ce qui concerne
 **La catégorie et l'identifiant viennent de deux règles différentes.**
 
 ```csharp
-[SuppressMessage(SonarRule.S1144.Category, SonarRule.S2094.Id)]
-//               ^^^^^ de S1144           ^^^^^ de S2094
+[SuppressMessage(
+    SonarRule.S1144.Category,       // de S1144
+    SonarRule.S2094.Id,             // de S2094
+    Justification = "Appelé par le sérialiseur.")]
 ```
 
 Copier-coller, presque toujours : vous avez dupliqué une suppression qui marchait et changé une
@@ -72,8 +91,8 @@ en l'état, là où corriger l'identifiant le change.
 membres référencés, et toujours rien de supprimé :
 
 ```csharp
-[SuppressMessage(SonarRule.S1144.Id, SonarRule.S1144.Category)]   // intervertis
-[SuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.HelpLinkUri)]
+[SuppressMessage(SonarRule.S1144.Id, SonarRule.S1144.Category, Justification = "…")]      // intervertis
+[SuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.HelpLinkUri, Justification = "…")]
 ```
 
 Un type de règle porte plus que la paire : la complétion propose donc tous ses membres dans une même
@@ -87,7 +106,7 @@ règle n'est pas à la portée d'un outil.
 **Ces littéraux correspondent à une règle que votre projet voit.**
 
 ```csharp
-[SuppressMessage("Major Code Smell", "S1144")]
+[SuppressMessage("Major Code Smell", "S1144", Justification = "Appelé par le sérialiseur.")]
 ```
 
 Signalé uniquement quand une règle connue correspond à la paire : une base de code qui n'a adopté
@@ -98,7 +117,10 @@ L'identifiant est tronqué au premier deux-points avant l'appariement, exactemen
 Roslyn, si bien que la forme générée par *Supprimer → Dans la source* de Visual Studio est reconnue :
 
 ```csharp
-[SuppressMessage("Major Code Smell", "S1144:Unused private members should be removed")]
+[SuppressMessage(
+    "Major Code Smell",
+    "S1144:Unused private members should be removed",
+    Justification = "Appelé par le sérialiseur.")]
 ```
 
 Le suffixe est abandonné par le correctif. Il dupliquait le titre de la règle, que le catalogue porte
@@ -119,7 +141,7 @@ automatique — choisir entre les deux vous revient.
 **Une moitié migrée, une moitié encore littérale.**
 
 ```csharp
-[SuppressMessage(SonarRule.S1144.Category, "S1144")]
+[SuppressMessage(SonarRule.S1144.Category, "S1144", Justification = "Appelé par le sérialiseur.")]
 ```
 
 L'état à moitié fait le plus courant, et le seul où la règle visée est connue sans ambiguïté :
@@ -137,7 +159,10 @@ une migration.
 **Une règle non `IL` utilisée dans `UnconditionalSuppressMessage`.**
 
 ```csharp
-[UnconditionalSuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.Id)]
+[UnconditionalSuppressMessage(
+    SonarRule.S1144.Category,
+    SonarRule.S1144.Id,
+    Justification = "Conservé pour le trimmer ; la cible de réflexion est préservée par un descripteur.")]
 ```
 
 Cet attribut est lu par le *trimmer*, depuis votre assemblage compilé, bien après que le compilateur
@@ -150,12 +175,20 @@ qu'il honore *effectivement* sont laissés tranquilles — y compris sa propre f
 `IL2026:FriendlyName`. Les signaler reviendrait à vous demander de changer quelque chose qui
 fonctionne.
 
+Il sous-détecte : un identifiant atteint au travers d'une constante intermédiaire lui échappe. C'est
+une forme dont il ne dit **rien**, et ce n'est délibérément pas une raison d'adopter une sévérité plus
+discrète — une forme que l'analyseur ne voit pas est un faux négatif, et elle ne dit rien de la
+certitude de celles qui sont signalées
+([ADR-0040](../adr/0040-grade-every-dcat-diagnostic-by-what-it-says.fr.md)).
+
 ### `DCAT0014`
 
 **La suppression ne dit jamais pourquoi elle est là.**
 
+<!-- dcat-doc:missing-justification le déclencheur de DCAT0014 ; la raison absente EST ce que ce bloc montre -->
+
 ```csharp
-[SuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.Id)]
+[SuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.Id)]   // incorrect : aucune Justification
 ```
 
 Tout le reste de cette page porte sur *quel* diagnostic une ligne fait taire. Celui-ci porte sur
@@ -187,8 +220,10 @@ signalés comme tels.
 le seul diagnostic d'ici qui n'a besoin de rien du catalogue : une suppression littérale fait taire un
 avertissement exactement comme une référence, et en dit exactement aussi peu sur le pourquoi.
 
+<!-- dcat-doc:missing-justification le même déclencheur de DCAT0014, écrit entièrement en littéraux -->
+
 ```csharp
-[SuppressMessage("Usage", "xUnit1004")]   // signalé, même sans le moindre catalogue en vue
+[SuppressMessage("Usage", "xUnit1004")]   // incorrect, et signalé sans le moindre catalogue en vue
 ```
 
 Cette ligne compte plus qu'il n'y paraît. [`DCAT0006`](#dcat0006) ne signale une paire littérale que
@@ -211,11 +246,12 @@ posent la même question, et une ligne d'`.editorconfig` fait taire celle dont v
 qui ne se lit pas dans le code
 ([ADR-0018](../adr/0018-a-code-fix-never-decides-what-only-the-author-can.fr.md)).
 
-Il est livré en `Avertissement` et non en erreur, contrairement à ses trois voisins de site
-d'utilisation : il signale des lignes par ailleurs entièrement correctes, et il les signale dès le
-premier build suivant la référence plutôt qu'après une migration — un codebase ne doit pas voir son
-build tomber du jour au lendemain sur chaque suppression écrite avant l'existence de cette règle. Une
-ligne d'`.editorconfig` la relève le jour où vous le voulez.
+**Il est livré en `Erreur`**, parce qu'une justification fait partie du contrat et n'en est pas
+l'ornement ([ADR-0040](../adr/0040-grade-every-dcat-diagnostic-by-what-it-says.fr.md)). Il signale
+dès la première build suivant la référence plutôt qu'après une migration : une base de code existante
+le rencontre donc sur toutes ses suppressions d'un coup — ce que `DCAT0006` fait exactement de même,
+sur la même build, et la même ligne d'`.editorconfig` échelonne les deux le temps que vous écriviez
+les raisons que vous n'avez jamais écrites.
 
 ---
 
@@ -224,9 +260,10 @@ ligne d'`.editorconfig` la relève le jour où vous le voulez.
 Ceux-ci se déclenchent sur du code qui déclare des règles. Voir
 [le guide de l'auteur de catalogue](authoring-a-catalogue.fr.md).
 
-Ils se répartissent en deux groupes. `DCAT0002`, `DCAT0003`, `DCAT0004` et `DCAT0011` disent que la
-règle est **inutilisable ou sans ancrage** ; `DCAT0005`, `DCAT0012` et `DCAT0013` disent qu'elle
-fonctionne et que son nom ne dit pas ce qu'elle est.
+Ils se répartissent en deux groupes, et cette séparation *est* la sévérité. `DCAT0002`, `DCAT0003` et
+`DCAT0004` disent que la règle est **inutilisable** — elle ne publie rien qu'une suppression puisse
+nommer — et sont donc des erreurs. `DCAT0005`, `DCAT0011`, `DCAT0012` et `DCAT0013` disent qu'elle
+fonctionne et qu'elle est sans ancrage ou mal nommée, et ne le sont donc pas.
 
 Ceux qui proposent un correctif le proposent **quand la réparation est déjà écrite dans le code**, et
 se taisent sinon. Cette ligne n'est pas de la prudence pour elle-même : un correctif qui devinerait
@@ -439,8 +476,8 @@ supprimé. Un outil qui en choisirait une déciderait laquelle des deux était l
 **Votre catalogue publie des règles et n'active aucun analyseur pour qui le référence.**
 
 ```
-warning DCAT0015: 'Contoso.Rules' packs no build/Contoso.Rules.props,
-                  so referencing this catalogue checks nobody
+error DCAT0015: 'Contoso.Rules' packs no build/Contoso.Rules.props,
+                so referencing this catalogue checks nobody
 ```
 
 Un catalogue livre les analyseurs `DCAT` en embarquant `build/<son propre identifiant de
@@ -460,7 +497,8 @@ la seule personne qui peut y mettre fin.
 
 **Deux choses le distinguent de tous les autres `DCAT`.**
 
-Il lit un fait **extérieur à la compilation**. Qu'un `.csproj` embarque un fichier ne figure dans
+Il lit un fait **extérieur à la compilation**, et c'est pourquoi il a une échappatoire plutôt qu'une
+sévérité plus discrète. Qu'un `.csproj` embarque un fichier ne figure dans
 aucun arbre syntaxique : le build classe donc l'empaquetage et publie son verdict à l'analyseur.
 Reconnaître comment le fichier a été déclaré revient à apparier la façon dont il a été *écrit*, et il
 y a plus d'une orthographe — si le vôtre est arrangé d'une manière que l'appariement ne voit pas,
@@ -472,10 +510,13 @@ dites-le et vous serez cru :
 </PropertyGroup>
 ```
 
-Et il est signalé en **fin de compilation**, ce qui le place dans votre build et dans la CI plutôt que
-sous votre curseur : l'IDE ne fait remonter les diagnostics de fin de compilation qu'en analyse de
-solution complète. Le défaut est une ligne manquante dans un fichier projet, c'est donc le bon
-endroit.
+Et il est signalé **pendant la production du paquet** — au cours de `dotnet pack`, en fin de
+compilation. Pas pendant un `dotnet build` ordinaire, et cette frontière est porteuse : MSBuild marque
+tout projet comme empaquetable par défaut, si bien qu'une application console ou une bibliothèque
+interne qui déclare ses propres règles se verrait autrement demander d'embarquer un fichier props pour
+un paquet que personne ne publiera jamais. Il vous atteint donc dans le job de release et dans sa
+répétition, là où un paquet se fabrique, plutôt que sous votre curseur — de toute façon l'IDE ne fait
+remonter les diagnostics de fin de compilation qu'en analyse de solution complète.
 
 **Aucun correctif.** La réparation est dans un fichier projet, qui n'est pas un document que la
 couche de correctifs édite.
@@ -484,68 +525,74 @@ couche de correctifs édite.
 
 ## Les configurer
 
-Mécanismes Roslyn standards, aucun format propriétaire :
+Mécanismes Roslyn standards, aucun format propriétaire.
+
+Neuf des treize sont déjà livrés en erreur : la plupart des projets n'écrivent donc **rien**. Ce qui
+mérite d'être écrit, c'est la rampe — les deux identifiants qui atterrissent sur tous les fichiers
+d'une base de code existante le jour où elle référence un catalogue :
 
 ```ini
 # .editorconfig
 [*.cs]
 
-# Une suppression que le trimmer jette. Pas une erreur par défaut uniquement
-# parce que DCAT0009 rate encore un identifiant atteint via une constante.
-dotnet_diagnostic.DCAT0009.severity = error
+# Migrer une base de code existante. Les deux arrivent à la première build :
+# DCAT0006 sur chaque suppression littérale qu'un catalogue peut apparier,
+# DCAT0014 sur chaque suppression qui n'a jamais dit pourquoi elle existe.
+# Visibles dans l'IDE, hors du build ; supprimez chaque ligne quand son
+# arriéré a disparu.
+dotnet_diagnostic.DCAT0006.severity = suggestion
+dotnet_diagnostic.DCAT0014.severity = suggestion
+```
 
-# Une suppression qui ne dit jamais pourquoi. Livrée en avertissement parce
-# qu'elle signale des lignes par ailleurs correctes ; relevez-la quand toutes
-# les vôtres portent une raison.
-dotnet_diagnostic.DCAT0014.severity = error
+Les trois avertissements vont dans l'autre sens — relevez-les si vous publiez un catalogue et
+préférez ne pas fusionner une règle dont la catégorie peut dériver ou dont le nom ne dit pas ce
+qu'elle supprime :
 
-# Déclarer des règles — vous n'en avez besoin que si vous publiez un catalogue.
-dotnet_diagnostic.DCAT0002.severity = error
-dotnet_diagnostic.DCAT0003.severity = error
-dotnet_diagnostic.DCAT0004.severity = error
+```ini
 dotnet_diagnostic.DCAT0011.severity = error
 dotnet_diagnostic.DCAT0012.severity = error
 dotnet_diagnostic.DCAT0013.severity = error
-dotnet_diagnostic.DCAT0015.severity = error
 
 # Un nom qui n'aurait pas pu dire son id. Haussez-le si vous préférez revoir
 # chacune de ces déclarations plutôt que de la laisser passer.
 dotnet_diagnostic.DCAT0005.severity = warning
-
-# Migrer un codebase existant : visible dans l'IDE, hors du build.
-# Supprimez la ligne quand le dernier littéral a disparu.
-dotnet_diagnostic.DCAT0006.severity = suggestion
 ```
 
-`DCAT0001`, `DCAT0006` et `DCAT0007` sont déjà des erreurs, donc rien ci-dessus ne les
-relève — le seul des trois à toucher est le dernier, et seulement le temps de migrer
-([ADR-0027](../adr/0027-ship-the-use-site-diagnostics-as-errors.fr.md)).
+Les valeurs acceptées sont celles de Roslyn : `error`, `warning`, `suggestion`, `silent`, `none`,
+`default`. Cantonnez une section à un chemin de la façon ordinaire d'`.editorconfig` quand du code
+généré ou un dossier hérité demande un traitement différent ;
+[Adopter un catalogue](adopting-a-catalogue.fr.md) est la stratégie que cela soutient.
 
-La catégorie est `DiagnosticCatalog`, vous pouvez donc aussi les régler tous d'un coup :
+La catégorie est `DiagnosticCatalog`, vous pouvez donc aussi les régler tous d'un coup — utile comme
+plancher, avec une exception par identifiant par-dessus, puisque la clé par identifiant l'emporte :
 
 ```ini
 dotnet_analyzer_diagnostic.category-DiagnosticCatalog.severity = error
+dotnet_diagnostic.DCAT0006.severity = suggestion
 ```
 
-Cantonnez une section à un chemin de la façon ordinaire d'`.editorconfig` quand du code généré ou un
-dossier hérité demande un traitement différent.
-
-Cette même clé réglée sur `none` est la façon de tout **désactiver**. Puisque les analyseurs sont
-livrés dans `DiagnosticCatalog`, il ne reste aucune référence de paquet à décliner : un projet qui
-veut les marqueurs et aucune vérification le dit ici plutôt que dans ses dépendances
-([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md)).
+**Les faire taire et ne pas les charger sont deux choses différentes.** Cette même clé de catégorie
+réglée sur `none` laisse les analyseurs tourner et jette tout ce qu'ils signalent ; poser la propriété
+MSBuild `EnableDiagnosticCatalogAnalyzers` à `false` les empêche d'être chargés dans ce projet ; et la
+même propriété à `true` les demande depuis un projet qui n'atteint un catalogue qu'au travers d'une
+bibliothèque. [Configuration](configuration.fr.md#les-trois-leviers-et-ce-que-chacun-fait-vraiment)
+les met côte à côte, parce qu'ils répondent à trois questions différentes et se confondent facilement.
 
 ## Ce qui n'est délibérément pas vérifié
 
 Les analyseurs vérifient qu'une suppression est **structurellement cohérente** — qu'elle nomme une
 vraie règle, de façon cohérente. Ils ne font pas, et ne feront pas :
 
-* valider une chaîne arbitraire. `[SuppressMessage("Usage", "S1144")]` avec une mauvaise catégorie ne
-  correspond à aucune règle connue et n'est signalé par rien. Ce qui rend une mauvaise catégorie
-  impossible, c'est la *constante*, que le compilateur vérifie — ces diagnostics vous amènent aux
-  constantes et vous y maintiennent ;
+* valider une chaîne arbitraire. `[SuppressMessage("Usage", "S1144", Justification = "…")]` associe
+  une catégorie à un identifiant qu'aucun catalogue de la compilation ne déclare ensemble, et **aucun
+  diagnostic d'ici ne juge cette paire** : `DCAT0001` compare deux membres d'une règle que cette
+  compilation voit, et deux chaînes ne lui offrent rien à comparer. `DCAT0014` signale toujours la
+  même ligne si elle ne porte pas de justification — c'est une autre question, posée à toute
+  suppression — donc « rien ne le signale » n'est vrai que de la paire. Ce qui rend une mauvaise
+  catégorie impossible, c'est la *constante*, que le compilateur vérifie — ces diagnostics vous amènent
+  aux constantes et vous y maintiennent ;
 * juger si supprimer une règle *à cet endroit* était raisonnable. `DCAT0014` exige qu'une
-  `Justification` soit écrite et la lit pour sa seule longueur — ce qu'elle dit est pesé par des
+  `Justification` soit **présente** et la lit pour sa seule longueur — ce qu'elle dit est pesé par des
   humains, jamais par ces analyseurs ;
 * atteindre `#pragma warning disable` ou les clés de gravité d'`.editorconfig`, qui prennent du texte
   nu hors du modèle de compilation C#. Aucune constante ne peut jamais y être substituée.
