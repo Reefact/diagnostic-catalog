@@ -85,10 +85,12 @@ this catalogue and the identifier is checked either way.
 <PackageReference Include="DiagnosticCatalog.Trimming" Version="1.0.0" />
 ```
 
-This package only supplies the constants. The checks that validate rule declarations and their use
-sites ship separately in `DiagnosticCatalog.Analyzers` — including **`DCAT0009`**, which reports an
-`UnconditionalSuppressMessage` whose identifier is not `IL####`. That diagnostic shipped before this
-catalogue did: the check existed, and there were no constants to feed it.
+That is the only reference you need. This package depends on `DiagnosticCatalog`, which carries
+the `DCAT` analyzers and code fixes beside its attributes, so referencing this catalogue is what
+switches on the checks that validate rule declarations and their use sites — **`DCAT0009`**
+included, which reports an `UnconditionalSuppressMessage` whose identifier is not `IL####`. That
+diagnostic shipped before this catalogue did: the check existed, and there were no constants to
+feed it.
 
 ## What is in the package
 

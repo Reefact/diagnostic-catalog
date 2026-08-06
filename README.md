@@ -125,40 +125,53 @@ That is the whole of it. Break the reference on purpose — `SonarRule.S1145` �
 stops, where the string it replaced would have compiled into a suppression that quietly did
 nothing.
 
-A catalogue is constants and nothing else: applying it adds no runtime behaviour and no
-assembly to load. [The zero-footprint guarantee](doc/guide/zero-footprint.en.md) states what
-reaches the assembly you ship, and what the test actually asserts.
+**One reference, checks included.** Every catalogue depends on `DiagnosticCatalog`, which carries
+the `DCAT` analyzers and their code fixes beside the marker attributes, so a catalogue reference is
+what turns the checking on and there is no second package to add
+([ADR-0037](doc/adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md)). Reference
+`DiagnosticCatalog` on its own if you want the checks and no catalogue.
+
+The analyzers run inside the compiler and nowhere else, so at runtime a catalogue is still
+constants and nothing else: no behaviour, and no assembly for your application to load.
+`tools/packaging/verify-consumption.sh` restores the package as a consumer would and asserts that
+the analyzer assemblies stay out of the output folder that `DiagnosticCatalog.dll` reaches.
+[The zero-footprint guarantee](doc/guide/zero-footprint.en.md) states what reaches the assembly you
+ship, and what the test actually asserts.
 
 Ten minutes end to end, with the reference broken on purpose, is
 [Getting started](doc/guide/getting-started.en.md).
 
 ## 📈 Adopting it where suppressions already exist
 
-A codebase that already suppresses rules does not rewrite them by hand. Reference
-`DiagnosticCatalog.Analyzers` beside the catalogue:
+A codebase that already suppresses rules does not rewrite them by hand — and there is nothing more
+to reference: the catalogue above carried the analyzers in with it.
 
-```xml
-<PackageReference Include="DiagnosticCatalog.Analyzers" Version="1.0.0" PrivateAssets="all" />
-```
-
-It reports `DCAT0006` on a suppression written as literals when a catalogue in the compilation
+`DCAT0006` reports a suppression written as literals when a catalogue in the compilation
 declares that rule, and offers the correction. *Fix all occurrences* then applies it across a
 document, a project or the whole solution in one pass, adding each rule's `using` as it goes.
 
-Two more things make the migration survivable:
+Three more things make the migration survivable:
 
-* **Ramp the severity.** `DCAT0006` starts as a suggestion. Turn it up per folder as you convert,
-  rather than meeting every occurrence at once —
+* **Ramp the severity.** `DCAT0006` ships as an error
+  ([ADR-0027](doc/adr/0027-ship-the-use-site-diagnostics-as-errors.en.md)), so the build that adds
+  the catalogue meets every literal suppression it can match at once. Turn it down to a suggestion
+  in `.editorconfig`, then back up folder by folder as you convert —
   [Adopting a catalogue](doc/guide/adopting-a-catalogue.en.md) has the order to convert in.
 * **Ask what a rule is.** `dcat explain <catalogue.dll> S1144` prints the rule's category, its
   help link, and the exact `[SuppressMessage]` line to paste — fully qualified, so it compiles
   wherever it lands.
+* **Keep it to yourself if you ship a library.** A catalogue you reference reaches whoever
+  references you, diagnostics included; `PrivateAssets="all"` on your own reference stops it at
+  your boundary. Both are measured by `tools/packaging/verify-consumption.sh` — "the analyzer
+  reaches a consumer two hops from the foundation", and "a library can decline to pass the
+  analyzer on".
 
 ## 🧭 What it does not do
 
 * It cannot check a rule **no catalogue in your compilation declares**. A suppression naming an
   analyzer you have no catalogue for stays a pair of strings, and nothing reports it.
-* It changes **nothing about which rules fire**. A catalogue is constants; severities stay in
+* It changes **nothing about which of your analyzers' rules fire**. A catalogue is constants; the
+  `DCAT` checks it brings along are the only diagnostics added, and every severity stays in
   `.editorconfig` — see [Configuration](doc/guide/configuration.en.md).
 * A handful of suppressions in one project does not need any of this.
   [When not to use this](doc/guide/when-not-to-use.en.md) is written to talk you out of it where
@@ -185,9 +198,8 @@ The [documentation map](doc/guide/README.en.md) ([français](doc/guide/README.fr
 page of every track. Each exists in English and in French — the banner at the top of a page
 switches between them.
 
-Per-package pages:
+Per-project pages:
 [`DiagnosticCatalog`](src/DiagnosticCatalog/README.en.md) ·
-[`.Analyzers`](src/DiagnosticCatalog.Analyzers/README.en.md) ·
 [`.Self`](src/DiagnosticCatalog.Self/README.en.md) ·
 [`.Sonar`](src/DiagnosticCatalog.Sonar/README.en.md) ·
 [`.NetAnalyzers`](src/DiagnosticCatalog.NetAnalyzers/README.en.md) ·
@@ -206,13 +218,12 @@ Per-package pages:
 
 ## 🧰 The packages
 
-Beside the vendor catalogues above, four packages make up the toolkit. Each rides a
+Beside the vendor catalogues above, three packages make up the toolkit. Each rides a
 [release train](CONTRIBUTING.md) of its own and versions at its own pace:
 
 | Package | What it is for | Train |
 | --- | --- | --- |
-| **`DiagnosticCatalog`** | The `[DiagnosticRule]`, `[DiagnosticCategory]` and `[assembly: CatalogSource]` markers. Reference it to declare a catalogue **of your own** — for your analyzers, or for an internal ruleset. Referencing it declares rules; it performs no checking. | `lib` |
-| **`DiagnosticCatalog.Analyzers`** | The checking: diagnostics that read a rule declaration against the structural contract, and a suppression against the rule it names, with the code fixes that turn a literal into a catalogue reference. A build-time dependency — these assemblies never reach your runtime. | `lib` |
+| **`DiagnosticCatalog`** | The `[DiagnosticRule]`, `[DiagnosticCategory]` and `[assembly: CatalogSource]` markers, and the checking that goes with them: diagnostics that read a rule declaration against the structural contract, and a suppression against the rule it names, with the code fixes that turn a literal into a catalogue reference. Reference it to declare a catalogue **of your own** — for your analyzers, or for an internal ruleset — or on its own for the checks with no catalogue. Every catalogue depends on it, so referencing any of them brings the checking along ([ADR-0037](doc/adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md)). The analyzer assemblies are build-time only and never reach your runtime. | `lib` |
 | **`DiagnosticCatalog.Self`** | The `DCATxxxx` rules those analyzers report, catalogued the same way — so that suppressing one of *this* library's own diagnostics is a checked reference rather than the magic string everything here exists to remove. | `lib` |
 | **`DiagnosticCatalog.Cli`**, the `dcat` tool | The generator, as a .NET tool. Point it at an analyzer package or at assemblies on disk and it writes a catalogue the same way this repository writes the ones above. | `cli` |
 
@@ -325,6 +336,9 @@ foundation:
 ```xml
 <PackageReference Include="DiagnosticCatalog" Version="1.0.0" />
 ```
+
+That reference brings the analyzers as well as the attributes, so the rules you declare are read
+against the contract as you write them.
 
 A rule is a static, non-generic class marked `[DiagnosticRule]`, with two mandatory
 public constants — and the category is reached through a class of its own:

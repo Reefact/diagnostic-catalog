@@ -13,8 +13,8 @@ The commonest report, and it has four causes with the same appearance.
 ```mermaid
 flowchart TB
     S["no DCAT diagnostic anywhere"]
-    S --> Q1{"is DiagnosticCatalog.Analyzers<br/>referenced?"}
-    Q1 -- "no" --> A1["that package carries the diagnostics.<br/>A catalogue alone gives constants."]
+    S --> Q1{"is a catalogue, or<br/>DiagnosticCatalog itself,<br/>referenced?"}
+    Q1 -- "no" --> A1["the diagnostics ship inside DiagnosticCatalog.<br/>Nothing references it, nothing runs."]
     Q1 -- "yes" --> Q2{"is it PrivateAssets=all<br/>on a package you CONSUME?"}
     Q2 -- "yes" --> A2["analyzers do not flow from<br/>a dependency that hides them"]
     Q2 -- "no" --> Q3{"do you reference a catalogue<br/>describing the rules you suppress?"}
@@ -24,10 +24,20 @@ flowchart TB
     Q4 -- "no" --> A5["check .editorconfig severity"]
 ```
 
-**The analyzers are a separate package.** Referencing `DiagnosticCatalog.Sonar` gives you constants,
-and a misspelled rule is a compile error — that is the whole guarantee and it needs no analyzer. What
-finds the suppressions you have *not* converted is `DiagnosticCatalog.Analyzers`, and a catalogue
-does not bring it along. Nothing is reported until you reference it yourself.
+**The analyzers are not a package you add.** Referencing `DiagnosticCatalog.Sonar` gives you
+constants, and a misspelled rule is a compile error — that is the whole guarantee and it needs no
+analyzer. What finds the suppressions you have *not* converted rides inside `DiagnosticCatalog`,
+which every catalogue depends on and none may hide
+([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md)), so a catalogue
+reference is enough. Where neither is in the graph, no analyzer is loaded and nothing reports.
+
+**A dependency that hides the foundation hides the analyzers with it.** They arrive through
+`DiagnosticCatalog`, so `PrivateAssets="all"` on a reference to it — or to a catalogue, one hop
+further out — withholds both. That is legitimate on a library, which owes its consumers no attribute
+and may decline to impose analysis on them; on a catalogue it is a defect, because the same lever
+takes `[DiagnosticRule]` away as well and
+[`CS0246`](#cs0246-the-type-or-namespace-name-diagnosticrule-could-not-be-found) is what its
+consumers get instead.
 
 **`DCAT0006` is silent by design when it knows nothing.** It reports a literal pair only when a rule
 the compilation can see matches it. A codebase with no catalogue stays completely quiet — which is
@@ -99,10 +109,14 @@ Usually because a catalogue you reference hid it:
 Add `DiagnosticCatalog` yourself, and — if it is your catalogue — stop hiding it. See
 [packaging a catalogue](packaging-a-catalogue.en.md#reference-the-foundation-the-ordinary-way).
 
+Hiding it costs more than the attribute: the `DCAT` analyzers ride in the same package, so that
+catalogue's consumers are unchecked as well as unable to declare rules. One package, one lever.
+
 ## `DCAT0006` fires on hundreds of files at once
 
-Expected, on the day you add the analyzers to an existing codebase. It reports every literal
-suppression a catalogue reference could replace, and after you add the catalogue, all of them qualify.
+Expected, on the day you add a catalogue to an existing codebase — the reference brings the
+analyzers with it. It reports every literal suppression a catalogue reference could replace, and
+after you add the catalogue, all of them qualify.
 
 Under `TreatWarningsAsErrors` that fails the build immediately. Lower it to `suggestion`, migrate,
 then raise it — [adopting a catalogue](adopting-a-catalogue.en.md) is the whole procedure.

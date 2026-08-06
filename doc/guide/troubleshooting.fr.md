@@ -13,8 +13,8 @@ Le signalement le plus fréquent, et il a quatre causes de même apparence.
 ```mermaid
 flowchart TB
     S["aucun diagnostic DCAT nulle part"]
-    S --> Q1{"DiagnosticCatalog.Analyzers<br/>est-il référencé ?"}
-    Q1 -- "non" --> A1["ce paquet porte les diagnostics.<br/>Un catalogue seul donne des constantes."]
+    S --> Q1{"un catalogue, ou<br/>DiagnosticCatalog lui-même,<br/>est-il référencé ?"}
+    Q1 -- "non" --> A1["les diagnostics voyagent dans DiagnosticCatalog.<br/>Rien ne le référence, rien ne tourne."]
     Q1 -- "oui" --> Q2{"est-ce PrivateAssets=all<br/>sur un paquet que vous CONSOMMEZ ?"}
     Q2 -- "oui" --> A2["les analyseurs ne coulent pas depuis<br/>une dépendance qui les masque"]
     Q2 -- "non" --> Q3{"référencez-vous un catalogue<br/>décrivant les règles supprimées ?"}
@@ -24,11 +24,21 @@ flowchart TB
     Q4 -- "non" --> A5["vérifiez la gravité dans .editorconfig"]
 ```
 
-**Les analyseurs sont un paquet séparé.** Référencer `DiagnosticCatalog.Sonar` vous donne des
-constantes, et une règle mal orthographiée est une erreur de compilation — c'est toute la garantie et
-elle n'a besoin d'aucun analyseur. Ce qui trouve les suppressions que vous n'avez *pas* converties,
-c'est `DiagnosticCatalog.Analyzers`, et un catalogue ne l'amène pas avec lui. Rien n'est signalé tant
-que vous ne le référencez pas vous-même.
+**Les analyseurs ne sont pas un paquet à ajouter.** Référencer `DiagnosticCatalog.Sonar` vous donne
+des constantes, et une règle mal orthographiée est une erreur de compilation — c'est toute la
+garantie et elle n'a besoin d'aucun analyseur. Ce qui trouve les suppressions que vous n'avez *pas*
+converties voyage dans `DiagnosticCatalog`, dont chaque catalogue dépend et qu'aucun n'a le droit de
+masquer ([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md)) : une
+référence de catalogue suffit donc. Là où ni l'un ni l'autre n'est dans le graphe, aucun analyseur
+n'est chargé et rien ne signale.
+
+**Une dépendance qui masque la fondation masque les analyseurs avec elle.** Ils arrivent par
+`DiagnosticCatalog` : `PrivateAssets="all"` sur une référence vers lui — ou vers un catalogue, un
+saut plus loin — retient donc les deux. C'est légitime sur une bibliothèque, qui ne doit aucun
+attribut à ses consommateurs et peut refuser de leur imposer l'analyse ; sur un catalogue c'est un
+défaut, car le même levier retire aussi `[DiagnosticRule]` et
+[`CS0246`](#cs0246-the-type-or-namespace-name-diagnosticrule-could-not-be-found) est ce que ses
+consommateurs obtiennent à la place.
 
 **`DCAT0006` est muet par conception quand il ne sait rien.** Il ne signale une paire littérale que
 lorsqu'une règle visible par la compilation lui correspond. Une base de code sans catalogue reste
@@ -102,11 +112,15 @@ Généralement parce qu'un catalogue que vous référencez l'a masquée :
 Ajoutez `DiagnosticCatalog` vous-même, et — si c'est votre catalogue — cessez de la masquer. Voyez
 [empaqueter un catalogue](packaging-a-catalogue.fr.md#référencez-la-fondation-de-la-façon-ordinaire).
 
+La masquer coûte plus que l'attribut : les analyseurs `DCAT` voyagent dans le même paquet, si bien
+que les consommateurs de ce catalogue sont non vérifiés en plus d'être incapables de déclarer des
+règles. Un seul paquet, un seul levier.
+
 ## `DCAT0006` se déclenche sur des centaines de fichiers d'un coup
 
-Attendu, le jour où vous ajoutez les analyseurs à une base existante. Il signale chaque suppression
-littérale qu'une référence de catalogue pourrait remplacer, et après l'ajout du catalogue, toutes
-remplissent la condition.
+Attendu, le jour où vous ajoutez un catalogue à une base existante — la référence amène les
+analyseurs avec elle. Il signale chaque suppression littérale qu'une référence de catalogue pourrait
+remplacer, et après l'ajout du catalogue, toutes remplissent la condition.
 
 Sous `TreatWarningsAsErrors`, cela casse le build immédiatement. Descendez-le à `suggestion`, migrez,
 puis remontez-le — [adopter un catalogue](adopting-a-catalogue.fr.md) donne toute la procédure.

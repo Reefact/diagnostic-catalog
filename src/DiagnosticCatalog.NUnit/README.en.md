@@ -54,8 +54,10 @@ naming a category the rule no longer carries — silently, and for as long as th
 <PackageReference Include="DiagnosticCatalog.NUnit" Version="1.0.0" />
 ```
 
-This package only supplies the constants. The checks that validate rule declarations and
-their use sites ship separately in `DiagnosticCatalog.Analyzers`.
+That is the only reference you need. This package depends on `DiagnosticCatalog`, which carries
+the `DCAT` analyzers and code fixes beside its attributes, so referencing this catalogue is what
+switches on the checks that validate rule declarations and their use sites. A literal suppression
+a catalogue reference would replace is an error by default, and a code fix rewrites it for you.
 
 ## What is in the package
 

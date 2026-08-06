@@ -15,8 +15,7 @@ body:
     attributes:
       label: Which package?
       options:
-        - DiagnosticCatalog (the markers)
-        - DiagnosticCatalog.Analyzers (the DCAT diagnostics and code fixes)
+        - DiagnosticCatalog (the markers, the DCAT diagnostics and the code fixes)
         - DiagnosticCatalog.Sonar
         - DiagnosticCatalog.NetAnalyzers
         - DiagnosticCatalog.StyleCop

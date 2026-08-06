@@ -18,7 +18,7 @@ So the repository publishes on **fifteen independent lines**
 
 | Train | Tag prefix | Scopes | What it publishes |
 | --- | --- | --- | --- |
-| `lib` | `lib-v` | `core`, `analyzers` | The foundation, its analyzers, and the catalogue of their own rules |
+| `lib` | `lib-v` | `core`, `analyzers` | The foundation, carrying its analyzers, and the catalogue of their own rules |
 | `cli` | `cli-v` | `cli`, `cataloggen` | The `dcat` .NET tool |
 | `sonar` | `sonar-v` | `sonar` | The SonarQube rule catalogue |
 | `netanalyzers` | `netanalyzers-v` | `netanalyzers` | The Microsoft .NET analyzer rule catalogue |
@@ -57,13 +57,12 @@ absent from its own release.
 
 A value matching no train fails the pack — on every pull request, rather than at release time.
 
-## Two projects on purpose have none
+## Three projects on purpose have none
 
 ```mermaid
 flowchart TB
     subgraph LIB["lib"]
         F["DiagnosticCatalog"]
-        A["DiagnosticCatalog.Analyzers"]
         SELF["DiagnosticCatalog.Self"]
     end
     subgraph CLIT["cli"]
@@ -108,9 +107,11 @@ flowchart TB
     subgraph BA["bannedapi"]
         BAC["DiagnosticCatalog.BannedApi"]
     end
-    CF["DiagnosticCatalog.CodeFixes<br/><i>no train — bundled into the analyzers' package</i>"]
+    A["DiagnosticCatalog.Analyzers<br/><i>no train — bundled into the foundation's package</i>"]
+    CF["DiagnosticCatalog.CodeFixes<br/><i>no train — bundled into the same one</i>"]
     GEN["eng/CatalogGen<br/><i>no train — bundled into dcat</i>"]
-    A -. "packs" .-> CF
+    F -. "packs" .-> A
+    F -. "packs" .-> CF
     C -. "packs" .-> GEN
     SO -- "PackageReference" --> F
     NA -- "PackageReference" --> F
@@ -128,10 +129,17 @@ flowchart TB
     SELF -- "PackageReference" --> F
 ```
 
-`DiagnosticCatalog.CodeFixes` and `eng/CatalogGen` declare no train **deliberately**. Each is bundled
-into another project's package rather than published on its own, and declaring a train would make each
-packable with a version nobody would ever reference. `tools/trains.sh` leaves an untrained project
-alone by design.
+`DiagnosticCatalog.Analyzers`, `DiagnosticCatalog.CodeFixes` and `eng/CatalogGen` declare no train
+**deliberately**. Each is bundled into another project's package rather than published on its own,
+and declaring a train would make each packable with a version nobody would ever reference.
+`tools/trains.sh` leaves an untrained project alone by design.
+
+The analyzers joined that shape rather than starting in it. They were on `lib` beside the
+foundation, which meant one tag, one version and no independence to buy — so the second package
+identity bought nothing and cost a second name every catalogue author had to remember. Folding them
+in makes *referencing a catalogue means being checked* a property of the dependency graph
+([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md)). The project, the
+assembly and the `analyzers` commit scope are unchanged; only the package identity is gone.
 
 ## The rule that follows
 
@@ -146,8 +154,9 @@ Depend on another train through a `PackageReference` to a version actually on nu
 here take the foundation as a package even though its source sits in the same repository — and why the
 foundation had to ship first, before any catalogue could depend on it.
 
-The one shape the rule blesses is the untrained project above: `DiagnosticCatalog.Analyzers` reaches
-`CodeFixes` by `ProjectReference` precisely because `CodeFixes` publishes nothing of its own.
+The one shape the rule blesses is the untrained project above: `DiagnosticCatalog` reaches the
+analyzers and the code fixes by `ProjectReference` precisely because neither publishes anything of
+its own.
 
 The rule is checked on every pack, which the release rehearsal runs on every pull request.
 

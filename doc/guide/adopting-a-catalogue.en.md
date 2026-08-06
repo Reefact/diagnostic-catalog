@@ -6,15 +6,18 @@
 For anyone with more suppressions than they want to convert by hand. How to go from a few hundred
 literals to checked references without a week of red builds.
 
-> **What this page needs.** The bulk conversion described below is `DiagnosticCatalog.Analyzers`,
-> referenced beside the catalogue. A catalogue never brings it along — the checking is a choice its
-> consumer makes — so add it yourself; [the packages](https://github.com/Reefact/diagnostic-catalog#-the-packages)
-> states what each one is for. The manual path at the end is what remains without it.
+> **What this page needs.** Nothing beside the catalogue. The bulk conversion described below is the
+> `DCAT` analyzers, and they ship inside `DiagnosticCatalog`, which every catalogue depends on and
+> none may hide — so the catalogue reference is what switches the checking on
+> ([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md)); reference
+> `DiagnosticCatalog` on its own if you want the checks and no catalogue. The manual path at the end
+> is for a catalogue released before that decision.
 
 ## The day-one problem
 
-You reference a catalogue, you reference the analyzers, you build — and `DCAT0006` fires on **every
-literal suppression that matches a rule you now have**. Not a sample. All of them, at once.
+You reference a catalogue, you build — and `DCAT0006` fires on **every literal suppression that
+matches a rule you now have**. Not a sample. All of them, at once. The catalogue is the only
+reference involved: it brought the analyzers with it.
 
 That is not a defect. It is the diagnostic doing exactly what it is for: it reports a suppression
 that a catalogue reference could replace, and after you add the catalogue, every one of them
@@ -22,7 +25,7 @@ qualifies. A version that trickled would be a version that never finished.
 
 And `DCAT0006` ships as an **error**
 ([ADR-0027](../adr/0027-ship-the-use-site-diagnostics-as-errors.en.md)), so this does not wait for a
-`<TreatWarningsAsErrors>` to bite: the build that added the package is the build that failed, with
+`<TreatWarningsAsErrors>` to bite: the build that added the catalogue is the build that failed, with
 hundreds of errors, in code nobody touched. Teams reasonably conclude the library is not ready.
 
 Which is why the first line of the ramp below is not optional on an existing codebase. It is the one
@@ -49,7 +52,8 @@ dotnet_diagnostic.DCAT0006.severity = suggestion
 ```
 
 A suggestion appears in the IDE as a lightbulb and in `dotnet build` as nothing. The build that adds
-the package is green, and the migration starts when you decide rather than when the package arrives.
+the catalogue is green, and the migration starts when you decide rather than when the package
+arrives.
 
 **While migrating — leave the other three alone.**
 
@@ -75,7 +79,7 @@ which is what keeps the codebase converted after the person who converted it mov
 
 ## Converting
 
-Build once with the analyzers referenced and every convertible suppression carries a fix. In Visual
+Build once with the catalogue referenced and every convertible suppression carries a fix. In Visual
 Studio and Rider, *Fix all occurrences* applies it across a **document**, a **project** or the
 **solution** in one step.
 
@@ -130,8 +134,8 @@ converted area is locked at `error` as it lands, so the boundary only ever moves
 
 You do not have to exclude it, and this is the one thing about the adoption that is free.
 
-`ConfigureGeneratedCodeAnalysis` is per-**analyzer**, not per-diagnostic, and this package ships two
-classes precisely so the two groups can differ:
+`ConfigureGeneratedCodeAnalysis` is per-**analyzer**, not per-diagnostic, and the checking is
+written as two classes precisely so the two groups can differ:
 
 | Analyzer | Diagnostics | Runs on generated code |
 | --- | --- | --- |
@@ -181,9 +185,13 @@ dotnet_diagnostic.S1144.severity = none   # plain text, outside the C# compilati
 If a large share of your suppressions are `#pragma`, the conversion will feel thin — see
 [when not to use this](when-not-to-use.en.md).
 
-## Without the analyzers package
+## Without the analyzers
 
-Until it is published, the mechanised path is not available. What still works:
+A catalogue carries them, so the mechanised path is normally there. Two cases where it is not: a
+catalogue release older than
+[ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md), whose dependency on
+`DiagnosticCatalog` resolves to a version carrying the attributes alone, and a project that has set
+`DCAT0006` to `none`. What still works:
 
 * **Convert as you touch.** Rewrite a suppression when you are already editing its file. This reaches
   the code that actually changes, and costs nothing extra.

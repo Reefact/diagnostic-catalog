@@ -12,7 +12,7 @@ ressemble à une seule idée. Chaque séparation ici est imposée par quelque ch
 flowchart TB
     subgraph SRC["src/ — ce qui est publié"]
         F["DiagnosticCatalog<br/><i>3 fichiers : les marqueurs</i>"]
-        A["DiagnosticCatalog.Analyzers<br/><i>les diagnostics DCAT</i>"]
+        A["DiagnosticCatalog.Analyzers<br/><i>les diagnostics DCAT — aucun paquet propre</i>"]
         CF["DiagnosticCatalog.CodeFixes<br/><i>les correctifs — aucun paquet propre</i>"]
         SELF["DiagnosticCatalog.Self"]
         S["DiagnosticCatalog.Sonar"]
@@ -29,7 +29,8 @@ flowchart TB
         PA["DiagnosticCatalog.PublicApi"]
         BA["DiagnosticCatalog.BannedApi"]
         CLI["DiagnosticCatalog.Cli<br/><i>livré sous le nom dcat</i>"]
-        A -. "embarque" .-> CF
+        F -. "empaquette les deux" .-> A
+        F -. "empaquette les deux" .-> CF
         S --> F
         N --> F
         T --> F
@@ -70,13 +71,24 @@ assemblages d'analyseur *sans* Workspaces, si bien qu'un assemblage d'analyseur 
 ce qui se lit exactement comme une base de code propre.
 
 `DiagnosticCatalog.CodeFixes` existe donc pour porter la dépendance Workspaces, et il ne déclare
-**aucun train de release** : l'assemblage est embarqué dans le paquet de `DiagnosticCatalog.Analyzers`
-plutôt que publié seul. Déclarer un train le rendrait empaquetable et lui donnerait une version que
-personne ne référencerait jamais.
+**aucun train de release**. `DiagnosticCatalog.Analyzers` non plus, depuis
+l'[ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md) : les deux
+assemblages sont empaquetés dans le paquet `DiagnosticCatalog`, sous `analyzers/dotnet/cs/`, à côté
+du dossier `lib/` qui porte les marqueurs. Les projets, les assemblages et les espaces de noms
+gardent leurs noms — seule la seconde identité de paquet a disparu. Déclarer un train sur l'un ou
+l'autre le rendrait à nouveau empaquetable et lui donnerait une version que personne ne
+référencerait jamais.
+
+Tous deux étaient déjà sur le train `lib` : la séparation n'achetait donc aucune indépendance — un
+même tag les livrait tous les deux, au même numéro, pour toujours. Ce qu'elle coûtait, c'était un
+second nom qu'un consommateur devait trouver, et treize catalogues livrés sans que rien ne vérifie
+leurs consommateurs. Les replier fait de *référencer un catalogue, c'est être vérifié* une propriété
+du graphe de dépendances qui existe déjà — chaque catalogue dépend de la fondation et n'a pas le
+droit de la masquer.
 
 C'est la seule forme de projet pour laquelle
 [ADR-0007](../adr/0007-depend-across-trains-through-published-packages.fr.md) bénit une
-`ProjectReference` — le projet analyseur ordonne la compilation et empaquette la sortie.
+`ProjectReference` — `DiagnosticCatalog` ordonne la compilation des deux et empaquette leur sortie.
 
 ### Les deux classes d'analyseur
 

@@ -76,7 +76,7 @@ still a compile-time constant, and still folds to `"Major Code Smell"` in the co
 ```mermaid
 flowchart TB
     subgraph PUB["The vendor catalogues"]
-        F["DiagnosticCatalog<br/><i>the markers</i>"]
+        F["DiagnosticCatalog<br/><i>the markers, and the DCAT diagnostics</i>"]
         S["DiagnosticCatalog.Sonar"]
         N["DiagnosticCatalog.NetAnalyzers"]
         T["DiagnosticCatalog.StyleCop"]
@@ -104,29 +104,31 @@ flowchart TB
         PA --> F
         BA --> F
     end
-    subgraph TOOLS["The toolkit, referenced when you want it"]
-        A["DiagnosticCatalog.Analyzers<br/><i>the DCAT diagnostics + fixes</i>"]
+    subgraph TOOLS["The rest of the toolkit"]
         SELF["DiagnosticCatalog.Self<br/><i>the DCAT rules, catalogued</i>"]
         CLI["dcat<br/><i>the generator, as a tool</i>"]
         SELF --> F
     end
     YOU["your project"] --> S
-    A -. "checks" .-> YOU
+    F -. "checks" .-> YOU
     CLI -. "generates" .-> S
     CLI -. "generates" .-> SELF
 ```
 
-**`DiagnosticCatalog`** carries three attributes and nothing else: `[DiagnosticRule]`,
-`[DiagnosticCategory]`, `[assembly: CatalogSource]`. You reference it to declare a catalogue of your
-own. A catalogue you consume references it for you.
+**`DiagnosticCatalog`** carries three attributes — `[DiagnosticRule]`, `[DiagnosticCategory]`,
+`[assembly: CatalogSource]` — and, beside them, the `DCAT` analyzers and their code fixes
+([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md)). You reference it
+to declare a catalogue of your own, or on its own to be checked with no catalogue at all. A
+catalogue you consume references it for you, which is how the checking arrives with it.
 
 **The vendor catalogues** are constants. Referencing one gives you compile-checked references
 to that analyzer's rules — which is the whole guarantee, and it comes from the C# compiler rather
 than from anything this library runs.
 
-**`DiagnosticCatalog.Analyzers`** is the extra: diagnostics that find the suppressions you have
-*not* migrated, catch a pair naming two different rules, and offer the fixes that rewrite them. It
-is genuinely additional rather than foundational — see the next section.
+**The `DCAT` diagnostics** are the extra: they find the suppressions you have *not* migrated, catch
+a pair naming two different rules, and offer the fixes that rewrite them. They are genuinely
+additional rather than foundational — see the next section — and there is no second package to
+reference for them.
 
 **`DiagnosticCatalog.Self`** is the `DCAT` rules as a catalogue, so that suppressing one of this
 library's own diagnostics is a checked reference too.
@@ -142,11 +144,11 @@ and are not all out yet.
 | Reference | What you get |
 | --- | --- |
 | a vendor catalogue | Compile-checked constants. A misspelled rule is `CS0117`. A retired rule is `CS0618`. Rename and *Find All References* work. |
-| a vendor catalogue **on its own** | That, and nothing else. A catalogue depends on the foundation and never on `DiagnosticCatalog.Analyzers`: the checking is a choice its consumer makes, not one the catalogue makes for them. |
-| `DiagnosticCatalog.Analyzers`, referenced beside it | `DCAT0006` on every literal suppression it can replace, with a fix; `DCAT0001` on a mismatched pair; `DCAT0007` on a half-migrated one; `DCAT0009` on a trimmer suppression the trimmer will discard. |
+| a vendor catalogue, **and nothing added beside it** | That, and the checking: `DCAT0006` on every literal suppression it can replace, with a fix; `DCAT0001` on a mismatched pair; `DCAT0007` on a half-migrated one; `DCAT0009` on a trimmer suppression the trimmer will discard. A catalogue depends on the foundation and may not hide it, and the foundation is where the analyzers live. |
+| `DiagnosticCatalog` **on its own** | The markers, so you can declare rules of your own, and those same diagnostics — the reference to write when you want the checking and no catalogue. |
 
 The distinction matters more than a footnote. **The core guarantee needs no analyzer**: it is the
-compiler resolving a member. What the analyzer package adds is *finding the code that has not been
+compiler resolving a member. What the analyzers add is *finding the code that has not been
 converted yet*, which is a migration aid rather than the mechanism.
 
 [The packages](https://github.com/Reefact/diagnostic-catalog#-the-packages) in the repository README states what each

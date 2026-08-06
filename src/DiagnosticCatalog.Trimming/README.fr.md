@@ -87,11 +87,12 @@ deux au travers de ce catalogue et l'identifiant est vérifié dans les deux cas
 <PackageReference Include="DiagnosticCatalog.Trimming" Version="1.0.0" />
 ```
 
-Ce paquet ne fournit que les constantes. Les vérifications qui valident les déclarations de règles et
-leurs sites d'utilisation sont livrées à part dans `DiagnosticCatalog.Analyzers` — y compris
-**`DCAT0009`**, qui signale un `UnconditionalSuppressMessage` dont l'identifiant n'est pas `IL####`.
-Ce diagnostic est arrivé avant ce catalogue : la vérification existait, et il n'y avait aucune
-constante à lui donner.
+C'est la seule référence dont vous avez besoin. Ce paquet dépend de `DiagnosticCatalog`, qui porte
+les analyseurs `DCAT` et leurs correctifs à côté de ses attributs, si bien que référencer ce
+catalogue est ce qui active les vérifications qui valident les déclarations de règles et leurs
+sites d'utilisation — **`DCAT0009`** compris, qui signale un `UnconditionalSuppressMessage` dont
+l'identifiant n'est pas `IL####`. Ce diagnostic est arrivé avant ce catalogue : la vérification
+existait, et il n'y avait aucune constante à lui donner.
 
 ## Ce que contient le paquet
 

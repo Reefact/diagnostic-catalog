@@ -19,7 +19,7 @@ Le dépôt publie donc sur **quinze lignes indépendantes**
 
 | Train | Préfixe de tag | Scopes | Ce qu'il publie |
 | --- | --- | --- | --- |
-| `lib` | `lib-v` | `core`, `analyzers` | La fondation, ses analyseurs, et le catalogue de leurs propres règles |
+| `lib` | `lib-v` | `core`, `analyzers` | La fondation, qui porte ses analyseurs, et le catalogue de leurs propres règles |
 | `cli` | `cli-v` | `cli`, `cataloggen` | L'outil .NET `dcat` |
 | `sonar` | `sonar-v` | `sonar` | Le catalogue de règles SonarQube |
 | `netanalyzers` | `netanalyzers-v` | `netanalyzers` | Le catalogue de règles des analyseurs .NET de Microsoft |
@@ -61,13 +61,12 @@ silencieusement absent de sa propre release.
 Une valeur ne correspondant à aucun train fait échouer l'empaquetage — à chaque pull request, plutôt
 qu'au moment de la release.
 
-## Deux projets n'en ont aucun, exprès
+## Trois projets n'en ont aucun, exprès
 
 ```mermaid
 flowchart TB
     subgraph LIB["lib"]
         F["DiagnosticCatalog"]
-        A["DiagnosticCatalog.Analyzers"]
         SELF["DiagnosticCatalog.Self"]
     end
     subgraph CLIT["cli"]
@@ -112,9 +111,11 @@ flowchart TB
     subgraph BA["bannedapi"]
         BAC["DiagnosticCatalog.BannedApi"]
     end
-    CF["DiagnosticCatalog.CodeFixes<br/><i>aucun train — embarqué dans le paquet des analyseurs</i>"]
+    A["DiagnosticCatalog.Analyzers<br/><i>aucun train — embarqué dans le paquet de la fondation</i>"]
+    CF["DiagnosticCatalog.CodeFixes<br/><i>aucun train — embarqué dans le même</i>"]
     GEN["eng/CatalogGen<br/><i>aucun train — embarqué dans dcat</i>"]
-    A -. "empaquette" .-> CF
+    F -. "empaquette" .-> A
+    F -. "empaquette" .-> CF
     C -. "empaquette" .-> GEN
     SO -- "PackageReference" --> F
     NA -- "PackageReference" --> F
@@ -132,10 +133,19 @@ flowchart TB
     SELF -- "PackageReference" --> F
 ```
 
-`DiagnosticCatalog.CodeFixes` et `eng/CatalogGen` ne déclarent **délibérément** aucun train. Chacun est
-embarqué dans le paquet d'un autre projet plutôt que publié seul, et déclarer un train les rendrait
-empaquetables avec une version que personne ne référencerait jamais. `tools/trains.sh` laisse un
-projet sans train tranquille, par conception.
+`DiagnosticCatalog.Analyzers`, `DiagnosticCatalog.CodeFixes` et `eng/CatalogGen` ne déclarent
+**délibérément** aucun train. Chacun est embarqué dans le paquet d'un autre projet plutôt que publié
+seul, et déclarer un train les rendrait empaquetables avec une version que personne ne référencerait
+jamais. `tools/trains.sh` laisse un projet sans train tranquille, par conception.
+
+Les analyseurs ont rejoint cette forme plutôt que d'y naître. Ils étaient sur `lib` à côté de la
+fondation, soit un seul tag, une seule version et aucune indépendance à acheter — la seconde
+identité de paquet n'achetait donc rien et coûtait un second nom que chaque auteur de catalogue
+devait retenir. Les y replier fait de *référencer un catalogue, c'est être vérifié* une propriété du
+graphe de dépendances
+([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md)). Le projet,
+l'assemblage et le scope de commit `analyzers` sont inchangés ; seule l'identité de paquet a
+disparu.
 
 ## La règle qui s'ensuit
 
@@ -150,9 +160,9 @@ Dépendez d'un autre train par une `PackageReference` vers une version réelleme
 catalogues d'ici prennent la fondation en paquet alors même que sa source est dans le même dépôt — et
 pourquoi la fondation a dû sortir en premier, avant qu'aucun catalogue puisse en dépendre.
 
-La seule forme que la règle bénit est le projet sans train ci-dessus :
-`DiagnosticCatalog.Analyzers` atteint `CodeFixes` par `ProjectReference` précisément parce que
-`CodeFixes` ne publie rien en propre.
+La seule forme que la règle bénit est le projet sans train ci-dessus : `DiagnosticCatalog` atteint
+les analyseurs et les correctifs par `ProjectReference` précisément parce que ni l'un ni l'autre ne
+publie quoi que ce soit en propre.
 
 La règle est vérifiée à chaque empaquetage, que la répétition de release exécute à chaque pull request.
 
