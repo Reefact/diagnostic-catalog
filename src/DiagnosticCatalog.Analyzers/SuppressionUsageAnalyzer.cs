@@ -10,7 +10,8 @@ using Microsoft.CodeAnalysis.Diagnostics;
 namespace DiagnosticCatalog.Analyzers;
 
 /// <summary>
-/// Checks the suppressions that reference diagnostic rules: DCAT0001, DCAT0006, DCAT0007 and DCAT0009.
+/// Checks the suppressions that reference diagnostic rules: DCAT0001, DCAT0006, DCAT0007, DCAT0009 and
+/// DCAT0014.
 /// </summary>
 /// <remarks>
 /// Separate from the definition analyzer because ConfigureGeneratedCodeAnalysis is per-ANALYZER and the
@@ -26,7 +27,8 @@ public sealed class SuppressionUsageAnalyzer : DiagnosticAnalyzer
             Descriptors.MembersFromDifferentRules,
             Descriptors.ReplaceableStringLiterals,
             Descriptors.MixedReferenceAndLiteral,
-            Descriptors.NonIlUnconditionalSuppression);
+            Descriptors.NonIlUnconditionalSuppression,
+            Descriptors.MissingJustification);
 
     /// <inheritdoc />
     public override void Initialize(AnalysisContext context)
@@ -40,10 +42,10 @@ public sealed class SuppressionUsageAnalyzer : DiagnosticAnalyzer
         context.RegisterCompilationStartAction(start =>
         {
             // Lazy, and §13.1 requires it. Building the index sweeps the metadata of every referenced
-            // assembly that could hold a rule; DCAT0001, DCAT0007 and DCAT0009 resolve everything from
-            // the attribute itself, so a project whose suppressions are already catalogue references —
-            // or half migrated — never pays for the sweep at all. Lazy<T>'s default mode is thread-safe,
-            // which matters under the concurrent execution enabled above.
+            // assembly that could hold a rule; DCAT0001, DCAT0007, DCAT0009 and DCAT0014 resolve
+            // everything from the attribute itself, so a project whose suppressions are already
+            // catalogue references — or half migrated — never pays for the sweep at all. Lazy<T>'s
+            // default mode is thread-safe, which matters under the concurrent execution enabled above.
             Lazy<RuleIndex> index = new(() => RuleIndex.Build(start.Compilation));
 
             // A syntax node action, because AttributeData folds the constants away and takes the field
@@ -64,12 +66,14 @@ public sealed class SuppressionUsageAnalyzer : DiagnosticAnalyzer
         // attribute is discarded, and vice versa.
         //
         // The first three partition the pair by what its two halves are, so at most one can fire:
-        // two references is DCAT0001's, two values is DCAT0006's, one of each is DCAT0007's. Only
-        // DCAT0009 can accompany another, because it asks a different question entirely.
+        // two references is DCAT0001's, two values is DCAT0006's, one of each is DCAT0007's. The last
+        // two can accompany another, because each asks a different question entirely — whether the
+        // trimmer will honour the identifier, and whether the line says why it exists.
         ReportIncoherentPair(context, attribute, pair.Category, pair.CheckId);
         ReportReplaceableLiterals(context, attribute, pair.Category, pair.CheckId, index);
         ReportMixedPair(context, attribute, pair.Category, pair.CheckId);
         ReportNonIlIdentifier(context, attribute, attributeName, pair.CheckId);
+        ReportMissingJustification(context, attribute, pair.CheckId);
     }
 
     private static void ReportMixedPair(
@@ -260,4 +264,67 @@ public sealed class SuppressionUsageAnalyzer : DiagnosticAnalyzer
             attribute.GetLocation(),
             checkId.Value));
     }
+
+    private static void ReportMissingJustification(
+        SyntaxNodeAnalysisContext context,
+        AttributeSyntax attribute,
+        SuppressionArgument checkId)
+    {
+        // EVERY suppression, and not only the ones that reference a catalogue (ADR-0039). This is the
+        // one diagnostic here whose question does not depend on the catalogue at all: a literal
+        // suppression silences a warning exactly as a reference does, and says exactly as little
+        // about why. Restricting it to references would have left the gap open precisely where a
+        // codebase has adopted the least — and DCAT0006 does not close it, because it reports only
+        // the literals a known rule matches.
+        //
+        // What that costs is real and is stated where it is felt: referencing the analyzers reports
+        // every unjustified suppression at once. It is why the rule ships as a warning rather than an
+        // error, and why the adoption guide lowers it beside DCAT0006 for the length of a migration.
+        //
+        // The identifier slot names what is silenced, because Roslyn matches a suppression on that
+        // slot alone. An identifier resolving to nothing — `null`, which compiles — silences nothing,
+        // so there is nothing to justify and nothing this could name.
+        string? silenced = Silenced(checkId);
+
+        if (silenced is null) { return; }
+
+        JustificationState state = Justification.Read(attribute, context.SemanticModel);
+
+        if (state == JustificationState.Written) { return; }
+
+        // No fix, and none is possible: what belongs there is the one thing in the attribute that
+        // cannot be read off the code, so offering to write it would be ADR-0018's exact prohibition
+        // — a lightbulb deciding something only the author knows.
+        context.ReportDiagnostic(Diagnostic.Create(
+            Descriptors.MissingJustification,
+            attribute.GetLocation(),
+            silenced,
+            Fault(state)));
+    }
+
+    /// <summary>What the identifier slot says is being silenced, or null when it says nothing.</summary>
+    private static string? Silenced(SuppressionArgument checkId) =>
+        checkId.Kind switch
+        {
+            // The rule that DECLARES it, as DCAT0007 names one too: a reference is read as the rule
+            // it points at rather than as the string that rule folds to.
+            SuppressionArgumentKind.RuleMember => checkId.RuleType!.Name,
+
+            // Truncated at the first colon, exactly as Roslyn truncates it before matching (§3.3), so
+            // the suffixed form Visual Studio generates names the rule it actually silences rather
+            // than repeating a title back at its author.
+            SuppressionArgumentKind.ConstantValue => CheckId.Normalise(checkId.Value!),
+
+            _ => null,
+        };
+
+    /// <summary>What the DCAT0014 message says is wrong with the justification.</summary>
+    private static string Fault(JustificationState state) =>
+        state switch
+        {
+            JustificationState.Blank => "carries a blank Justification",
+            JustificationState.Placeholder =>
+                "still carries the \"" + Justification.Placeholder + "\" placeholder",
+            _ => "carries no Justification",
+        };
 }

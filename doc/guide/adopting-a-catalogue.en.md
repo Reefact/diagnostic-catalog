@@ -9,7 +9,7 @@ literals to checked references without a week of red builds.
 > **What this page needs.** Nothing beside the catalogue. The bulk conversion described below is the
 > `DCAT` analyzers, and they ship inside `DiagnosticCatalog`, which every catalogue depends on and
 > none may hide — so the catalogue reference is what switches the checking on
-> ([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md)); reference
+> ([ADR-0039](../adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md)); reference
 > `DiagnosticCatalog` on its own if you want the checks and no catalogue. The manual path at the end
 > is for a catalogue released before that decision.
 
@@ -55,7 +55,7 @@ A suggestion appears in the IDE as a lightbulb and in `dotnet build` as nothing.
 the catalogue is green, and the migration starts when you decide rather than when the package
 arrives.
 
-**While migrating — leave the other three alone.**
+**While migrating — leave the other four alone.**
 
 `DCAT0001` and `DCAT0007` are errors already, and they should stay that way. They mean a suppression
 is *not doing what it looks like*: a pair naming two different rules, or a half-converted one. Both
@@ -67,6 +67,28 @@ matters to you.
 ```ini
 dotnet_diagnostic.DCAT0009.severity = error
 ```
+
+**`DCAT0014` arrives on day one, beside `DCAT0006`.** It asks that a suppression say why it exists,
+and it asks it of *every* suppression — a literal one included, whether or not any catalogue
+describes the rule it names. So the first build after you reference the package reports every
+suppression in your codebase that never carried a `Justification`, converted or not.
+
+It ships as a warning rather than an error for exactly that reason, so that first build is still
+green. Two ways to meet it, and the second is the usual one:
+
+```ini
+# Keep it visible while you work through the backlog, then delete the line.
+dotnet_diagnostic.DCAT0014.severity = suggestion
+```
+
+The honest way is to write the reasons as you convert. You are already editing each suppression to
+migrate its pair, the code is in front of you, and whoever suppressed it is often still reachable —
+which will not be true in six months. A line being converted reports both diagnostics at once, and
+applying the `DCAT0006` fix leaves `DCAT0014` standing: converting a suppression does not answer the
+question it never answered.
+
+If you already run StyleCop's `SA1404`, you will see both — they ask the same question, and one
+`.editorconfig` line silences whichever you do not want.
 
 **When you finish — delete the line.**
 
@@ -139,7 +161,7 @@ written as two classes precisely so the two groups can differ:
 
 | Analyzer | Diagnostics | Runs on generated code |
 | --- | --- | --- |
-| `SuppressionUsageAnalyzer` | `DCAT0001`, `DCAT0006`, `DCAT0007`, `DCAT0009` | **no** |
+| `SuppressionUsageAnalyzer` | `DCAT0001`, `DCAT0006`, `DCAT0007`, `DCAT0009`, `DCAT0014` | **no** |
 | `DiagnosticRuleDefinitionAnalyzer` | `DCAT0002`–`DCAT0005`, `DCAT0011`–`DCAT0013` | **yes** |
 
 Use-site diagnostics stay out of generated files because a suppression in one is not the author's to
@@ -189,7 +211,7 @@ If a large share of your suppressions are `#pragma`, the conversion will feel th
 
 A catalogue carries them, so the mechanised path is normally there. Two cases where it is not: a
 catalogue release older than
-[ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md), whose dependency on
+[ADR-0039](../adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md), whose dependency on
 `DiagnosticCatalog` resolves to a version carrying the attributes alone, and a project that has set
 `DCAT0006` to `none`. What still works:
 

@@ -307,8 +307,11 @@ internal static class ArgumentDecoration
 {
     private const string Loader = "DiagnosticCatalog.Usage.SyntaxForms.ArgumentDecoration";
 
-    /// <summary>No justification at all: the pair is the whole attribute.</summary>
-    [SuppressMessage(SonarRule.S4487.Category, SonarRule.S4487.Id)]
+    /// <summary>The smallest attribute the analyzers leave alone: the pair, and a reason.</summary>
+    // The pair on its own used to sit here. DCAT0014 reports it now — what is suppressed was checked
+    // and why it is suppressed was not written down — so the bare form belongs in the unit tests,
+    // where the expectation can be stated, and this keeps the floor beneath it.
+    [SuppressMessage(SonarRule.S4487.Category, SonarRule.S4487.Id, Justification = "Read by the debugger only.")]
     internal static int Bare() => 22;
 
     /// <summary>A justification built with <c>nameof</c>.</summary>

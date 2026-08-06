@@ -91,7 +91,7 @@ public sealed class MarkerRecognitionTests
 
             public sealed class Consumer
             {
-                [SuppressMessage("Usage", "VN0001")]
+                [SuppressMessage("Usage", "VN0001", Justification = "j")]
                 public void Method() { }
             }
             """,

@@ -40,16 +40,22 @@ The accepted values are Roslyn's own: `error`, `warning`, `suggestion`, `silent`
 | `DCAT0011` | Warning | `error` if you publish a catalogue — one spelling per category is the point |
 | `DCAT0012` | Warning | `error` if you publish a catalogue — the repair is mechanical |
 | `DCAT0013` | Warning | `error` if you publish a catalogue and want every name to say its rule |
+| `DCAT0014` | Warning | `suggestion` while an existing codebase catches up, then `error` |
 
-The distinction that matters when you pick: `DCAT0006` reports *work not yet done*, and the others
-report *something already wrong* — except `DCAT0005`, which reports something that is right and could
-not have been written otherwise. Only the first belongs at `suggestion` for a while — and it is what
-a codebase with existing literal suppressions wants on the day it references the package, since the
-default turns every one of them into a build error. Delete the line when the last literal is gone.
+The distinction that matters when you pick: `DCAT0006` and `DCAT0014` report *work not yet done*, and
+the others report *something already wrong* — except `DCAT0005`, which reports something that is right
+and could not have been written otherwise. Those two are the ones that belong at `suggestion` for a
+while, and both usually do. They arrive together, on the day a codebase references the package:
+`DCAT0006` turns every literal suppression it recognises into a build error, and `DCAT0014` reports
+every suppression that never carried a reason, literal or not. Delete each line when its backlog is
+gone.
 
-The three use-site defaults are errors on purpose. A codebase where half the suppressions are magic
-strings does not have the guarantee this library exists to provide; it has it where someone
-remembered. A warning would leave that to memory.
+Three of the five use-site defaults are errors on purpose. A codebase where half the suppressions are
+magic strings does not have the guarantee this library exists to provide; it has it where someone
+remembered. A warning would leave that to memory. The other two say something narrower — a suppression
+the trimmer discards (`DCAT0009`), and one that never says why it is there (`DCAT0014`) — and both
+report lines that resolve correctly, which is why they arrive quieter and are worth raising once your
+codebase is clean.
 
 ## Severity, for all of them at once
 
@@ -98,7 +104,7 @@ per-diagnostic, and the two groups need opposite settings:
 
 | Analyzer | Diagnostics | On generated code |
 | --- | --- | --- |
-| `SuppressionUsageAnalyzer` | `DCAT0001`, `DCAT0006`, `DCAT0007`, `DCAT0009` | **not reported** |
+| `SuppressionUsageAnalyzer` | `DCAT0001`, `DCAT0006`, `DCAT0007`, `DCAT0009`, `DCAT0014` | **not reported** |
 | `DiagnosticRuleDefinitionAnalyzer` | `DCAT0002`–`DCAT0005`, `DCAT0011`–`DCAT0013` | **reported** |
 
 A suppression inside a generated file is not the author's to fix, so reporting it would flood every
@@ -174,9 +180,9 @@ alternative to silencing `DCAT0006` in `.editorconfig`.
 One number worth knowing, because it decides whether the answer is "nothing".
 
 `DCAT0006` needs to know which rules exist, which means sweeping the metadata of every referenced
-assembly that could hold one. That index is built **lazily**, on first use. `DCAT0001`, `DCAT0007`
-and `DCAT0009` resolve everything from the attribute in front of them and never touch it — for
-`DCAT0007` the rule is named by the argument already migrated, which is what makes its correction
+assembly that could hold one. That index is built **lazily**, on first use. `DCAT0001`, `DCAT0007`,
+`DCAT0009` and `DCAT0014` resolve everything from the attribute in front of them and never touch it —
+for `DCAT0007` the rule is named by the argument already migrated, which is what makes its correction
 the fully deterministic one.
 
 The consequence: **a project whose suppressions are already catalogue references never pays for the

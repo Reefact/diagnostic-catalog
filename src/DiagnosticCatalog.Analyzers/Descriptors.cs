@@ -90,6 +90,29 @@ internal static class Descriptors
             + "a stricter pattern, so identifiers ILLink does honour — including its IL####:FriendlyName "
             + "form — are left alone.");
 
+    internal static readonly DiagnosticDescriptor MissingJustification = new(
+        id: DiagnosticIds.MissingJustification,
+        title: "A suppression must carry a justification",
+        messageFormat: "This suppression of '{0}' {1}: nothing records why the diagnostic is silenced",
+        category: Category,
+        // Warning, and NOT Error, for the reason DCAT0013 is one: the rule is new, and unlike its
+        // three use-site neighbours it reports on suppressions that are otherwise entirely correct.
+        // Shipping it as an error would fail the build of every project that adopted a catalogue
+        // before this rule existed, over lines nothing had ever asked about. It earns a release
+        // first; one line of .editorconfig raises it for anyone who wants it now.
+        defaultSeverity: DiagnosticSeverity.Warning,
+        isEnabledByDefault: true,
+        description:
+            "The pair says WHICH diagnostic is silenced and the compiler now checks it; nothing says "
+            + "WHY, and no tool can recover it later — the warning is gone, and the reason it was "
+            + "acceptable lives in the head of whoever wrote the line. Presence is all that is asked: "
+            + "the value is read for its length, never for its meaning, so this judges no justification "
+            + "and rejects none for being thin. The one non-blank value it does refuse is the IDE's own "
+            + "\"<Pending>\" placeholder, which is that tool's word for a justification nobody has "
+            + "written yet. Every suppression is held to it, a literal one included: silencing a warning "
+            + "without saying why costs the same whether or not the pair has been migrated, and the "
+            + "codebases that have migrated least are the ones the question is worth asking of most.");
+
     internal static readonly DiagnosticDescriptor InvalidRuleType = new(
         id: DiagnosticIds.InvalidRuleType,
         title: "A diagnostic rule must be declared as a static non-generic class",

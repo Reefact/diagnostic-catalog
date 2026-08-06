@@ -10,7 +10,7 @@ quelques centaines de littéraux à des références vérifiées sans une semain
 > ci-dessous, ce sont les analyseurs `DCAT`, et ils sont livrés dans `DiagnosticCatalog`, dont
 > chaque catalogue dépend et qu'aucun n'a le droit de masquer — la référence au catalogue est ce qui
 > active la vérification
-> ([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md)) ; référencez
+> ([ADR-0039](../adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md)) ; référencez
 > `DiagnosticCatalog` seul si vous voulez les vérifications sans catalogue. Le chemin manuel de la
 > fin est pour un catalogue publié avant cette décision.
 
@@ -58,7 +58,7 @@ Une suggestion apparaît dans l'IDE sous forme d'ampoule et dans `dotnet build` 
 build qui ajoute le catalogue est vert, et la migration démarre quand vous le décidez plutôt que
 quand le paquet arrive.
 
-**Pendant la migration — ne touchez pas aux trois autres.**
+**Pendant la migration — ne touchez pas aux quatre autres.**
 
 `DCAT0001` et `DCAT0007` sont déjà des erreurs, et doivent le rester. Ils signifient qu'une
 suppression *ne fait pas ce qu'elle a l'air de faire* : une paire nommant deux règles différentes, ou
@@ -71,6 +71,29 @@ vous.
 ```ini
 dotnet_diagnostic.DCAT0009.severity = error
 ```
+
+**`DCAT0014` arrive dès le jour un, à côté de `DCAT0006`.** Il demande qu'une suppression dise
+pourquoi elle existe, et il le demande à *toute* suppression — une suppression littérale comprise,
+qu'un catalogue décrive ou non la règle qu'elle nomme. Le premier build suivant la référence au paquet
+signale donc chaque suppression de votre codebase qui n'a jamais porté de `Justification`, convertie
+ou non.
+
+Il est livré en avertissement plutôt qu'en erreur exactement pour cette raison : ce premier build
+reste vert. Deux façons d'y répondre, et la seconde est l'habituelle :
+
+```ini
+# Le garder visible le temps de traiter l'arriéré, puis supprimer la ligne.
+dotnet_diagnostic.DCAT0014.severity = suggestion
+```
+
+La façon honnête est d'écrire les raisons au fil de la conversion. Vous éditez déjà chaque suppression
+pour migrer sa paire, le code est devant vous, et la personne qui a supprimé est souvent encore
+joignable — ce qui ne sera plus vrai dans six mois. Une ligne en cours de conversion signale les deux
+diagnostics d'un coup, et appliquer le correctif de `DCAT0006` laisse `DCAT0014` debout : convertir
+une suppression ne répond pas à la question à laquelle elle n'a jamais répondu.
+
+Si vous faites déjà tourner `SA1404` de StyleCop, vous verrez les deux — elles posent la même
+question, et une ligne d'`.editorconfig` fait taire celle dont vous ne voulez pas.
 
 **Quand vous avez fini — supprimez la ligne.**
 
@@ -147,7 +170,7 @@ Vous n'avez pas à l'exclure, et c'est la seule chose gratuite de cette adoption
 
 | Analyseur | Diagnostics | Tourne sur le code généré |
 | --- | --- | --- |
-| `SuppressionUsageAnalyzer` | `DCAT0001`, `DCAT0006`, `DCAT0007`, `DCAT0009` | **non** |
+| `SuppressionUsageAnalyzer` | `DCAT0001`, `DCAT0006`, `DCAT0007`, `DCAT0009`, `DCAT0014` | **non** |
 | `DiagnosticRuleDefinitionAnalyzer` | `DCAT0002`–`DCAT0005`, `DCAT0011`–`DCAT0013` | **oui** |
 
 Les diagnostics de site d'utilisation restent hors des fichiers générés parce qu'une suppression dans
@@ -201,7 +224,7 @@ Si une grande part de vos suppressions sont des `#pragma`, la conversion vous pa
 
 Un catalogue les porte : le chemin mécanisé est donc normalement là. Deux cas où il ne l'est pas :
 une version de catalogue antérieure à
-[ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md), dont la dépendance à
+[ADR-0039](../adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md), dont la dépendance à
 `DiagnosticCatalog` se résout vers une version qui ne portait que les attributs, et un projet qui a
 mis `DCAT0006` à `none`. Ce qui fonctionne quand même :
 

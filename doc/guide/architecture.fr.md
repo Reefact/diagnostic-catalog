@@ -99,7 +99,7 @@ groupes ont besoin de réglages opposés.
 | Analyseur | Diagnostics | Code généré |
 | --- | --- | --- |
 | `DiagnosticRuleDefinitionAnalyzer` | `DCAT0002`–`DCAT0005`, `DCAT0011`–`DCAT0013` | **analysé** — un catalogue généré est ce qu'il existe pour vérifier |
-| `SuppressionUsageAnalyzer` | `DCAT0001`, `DCAT0006`, `DCAT0007`, `DCAT0009` | **ignoré** — une suppression dans un fichier généré n'est pas à l'auteur de la corriger |
+| `SuppressionUsageAnalyzer` | `DCAT0001`, `DCAT0006`, `DCAT0007`, `DCAT0009`, `DCAT0014` | **ignoré** — une suppression dans un fichier généré n'est pas à l'auteur de la corriger |
 
 Inverser les drapeaux échoue de façon asymétrique, ce que le code dit à voix haute : sur l'analyseur
 de site d'utilisation c'est bruyant — chaque fichier généré s'allume — et sur l'analyseur de
