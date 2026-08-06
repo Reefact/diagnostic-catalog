@@ -153,6 +153,25 @@ remplacer, et après l'ajout du catalogue, toutes remplissent la condition.
 Sous `TreatWarningsAsErrors`, cela casse le build immédiatement. Descendez-le à `suggestion`, migrez,
 puis remontez-le — [adopter un catalogue](adopting-a-catalogue.fr.md) donne toute la procédure.
 
+## `DCAT0014` se déclenche sur des centaines de fichiers d'un coup
+
+Attendu aussi, sur ce même premier build, et pour une raison plus large que `DCAT0006` : il demande à
+toute suppression pourquoi elle existe, littérale comprise, et n'attend donc pas qu'un catalogue
+reconnaisse la règle. Une base de code qui n'a jamais écrit de justifications les rencontre toutes
+d'un coup.
+
+C'est un **avertissement**, le build reste donc vert là où `DCAT0006` l'aurait fait tomber.
+Abaissez-le à `suggestion` le temps de traiter l'arriéré, et écrivez les raisons au fil de la
+conversion — vous éditez déjà chaque suppression pour migrer sa paire, et la personne qui a supprimé
+est souvent encore joignable, ce qui ne sera plus vrai dans six mois.
+
+```ini
+dotnet_diagnostic.DCAT0014.severity = suggestion
+```
+
+Si vous faites déjà tourner `SA1404` de StyleCop, vous verrez les deux : elles posent la même
+question, et une ligne d'`.editorconfig` fait taire celle dont vous ne voulez pas.
+
 ## `DCAT0006` apparaît mais ne propose aucun correctif
 
 Deux catalogues décrivent la même règle. Choisir entre eux est une décision sur le paquet dont ce

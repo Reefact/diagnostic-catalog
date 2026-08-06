@@ -216,6 +216,13 @@ qui la réécrit est la façon dont une base de code adopte un catalogue en prat
 [SuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.Id, Justification = "kept for reflection")]
 ```
 
+Un dernier tombe sur cette même compilation, et c'est un **avertissement** plutôt qu'une erreur :
+`DCAT0014` signale une suppression qui ne porte aucune `Justification`. Il le demande à toute
+suppression, littérale comprise, et n'attend donc pas, contrairement à `DCAT0006`, qu'un catalogue
+reconnaisse la règle. La présence est tout ce qu'il vérifie — la valeur est lue pour sa longueur,
+jamais pour son sens. Abaissez-le dans `.editorconfig` le temps d'écrire les raisons, exactement
+comme vous abaissez `DCAT0006` le temps de convertir les paires.
+
 *Corriger toutes les occurrences* l'applique à un document, un projet ou une solution en une
 étape, et le `using` dont la référence a besoin est ajouté pour vous. Tout le reste de l'attribut
 est laissé exactement tel qu'écrit — `Justification`, `Scope`, `Target` et `MessageId` sont à vous.

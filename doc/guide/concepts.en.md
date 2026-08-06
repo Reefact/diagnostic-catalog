@@ -144,7 +144,7 @@ and are not all out yet.
 | Reference | What you get |
 | --- | --- |
 | a vendor catalogue | Compile-checked constants. A misspelled rule is `CS0117`. A retired rule is `CS0618`. Rename and *Find All References* work. |
-| a vendor catalogue, **and nothing added beside it** | That, and the checking: `DCAT0006` on every literal suppression it can replace, with a fix; `DCAT0001` on a mismatched pair; `DCAT0007` on a half-migrated one; `DCAT0009` on a trimmer suppression the trimmer will discard. A catalogue depends on the foundation and may not hide it, and the foundation is where the analyzers live. |
+| a vendor catalogue, **and nothing added beside it** | That, and the checking: `DCAT0006` on every literal suppression it can replace, with a fix; `DCAT0001` on a mismatched pair; `DCAT0007` on a half-migrated one; `DCAT0009` on a trimmer suppression the trimmer will discard; `DCAT0014` on any suppression that never says why it is there. A catalogue depends on the foundation and may not hide it, and the foundation is where the analyzers live. |
 | `DiagnosticCatalog` **on its own** | The markers, so you can declare rules of your own, and those same diagnostics — the reference to write when you want the checking and no catalogue. |
 
 The distinction matters more than a footnote. **The core guarantee needs no analyzer**: it is the

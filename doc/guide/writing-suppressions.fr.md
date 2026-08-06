@@ -154,7 +154,7 @@ correction est de revenir en arrière. L'alias passe à l'échelle ; celui-ci no
 
 ## Ce dont on va vous parler, et pourquoi
 
-Quatre diagnostics peuvent apparaître sur une suppression. Référence complète dans
+Cinq diagnostics peuvent apparaître sur une suppression. Référence complète dans
 [le guide des diagnostics](diagnostics.fr.md) ; voici ce que chacun signifie en pratique.
 
 **`DCAT0001` — les deux arguments viennent de règles différentes.**
@@ -190,6 +190,28 @@ votre décision, pas celle d'une ampoule.
 vous avez écrite ne fait donc rien, et rien d'autre dans la chaîne d'outils ne vous l'aurait jamais
 dit.
 
+**`DCAT0014` — la suppression ne dit jamais pourquoi.**
+
+```csharp
+[SuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.Id)]   // aucune Justification
+```
+
+Les quatre ci-dessus portent sur *quel* diagnostic une ligne fait taire. Celui-ci porte sur l'autre
+moitié, et c'est celle que rien ne retrouve après coup : l'avertissement a disparu, il ne reste donc
+rien à réexaminer, et la raison pour laquelle il était acceptable n'a vécu que dans la tête de qui a
+écrit l'attribut.
+
+**La présence est tout ce qu'il demande.** La valeur est lue pour sa longueur, jamais pour son sens —
+une raison d'un mot le satisfait, et une que vous auriez mieux rédigée aussi. Juger ce que *dit* une
+justification est une question humaine et le reste. L'unique valeur refusée est `"<Pending>"`, le
+marqueur que Visual Studio écrit quand il génère une suppression pour vous : c'est le mot de l'outil
+pour *pas encore rempli*.
+
+Il tient **toute** suppression, y compris une suppression entièrement écrite en littéraux — un
+littéral fait taire un avertissement exactement comme une référence. Aucun correctif n'est proposé,
+parce que ce qui doit y figurer est la seule partie de l'attribut qu'un outil ne peut pas lire dans
+votre code ([ADR-0039](../adr/0039-require-a-justification-on-every-suppression.fr.md)).
+
 ## Les transformer en erreurs de build
 
 Les trois qui regardent un site d'usage sont des erreurs par défaut ; les autres des avertissements.
@@ -211,6 +233,15 @@ Cela a un coût qu'il vaut mieux connaître avant de référencer un catalogue. 
 existante, `DCAT0006` se déclenche sur **toutes** les suppressions littérales d'un coup, et étant une
 erreur il casse le build ce jour-là — `TreatWarningsAsErrors` n'y est plus pour rien. Descendez-le à
 `suggestion`, migrez à votre rythme, puis supprimez la ligne.
+
+`DCAT0014` arrive sur ce même premier build, et pose sa question à toutes vos suppressions plutôt
+qu'aux seules qu'un catalogue sait apparier. C'est un **avertissement**, le build reste donc vert —
+mais sur une base de code qui n'a jamais écrit de justifications, il n'est pas discret. La même ligne
+l'abaisse le temps de rattraper :
+
+```ini
+dotnet_diagnostic.DCAT0014.severity = suggestion
+```
 
 ## Ce que ça laisse dans mon application
 

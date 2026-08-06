@@ -157,6 +157,10 @@ Three more things make the migration survivable:
   the catalogue meets every literal suppression it can match at once. Turn it down to a suggestion
   in `.editorconfig`, then back up folder by folder as you convert —
   [Adopting a catalogue](doc/guide/adopting-a-catalogue.en.md) has the order to convert in.
+  `DCAT0014` lands on that same build and asks a wider question — why each suppression exists, of
+  every one of them rather than only the ones a catalogue matches
+  ([ADR-0039](doc/adr/0039-require-a-justification-on-every-suppression.en.md)). It is a warning, so
+  nothing fails; the same line lowers it while you write the reasons you never wrote.
 * **Ask what a rule is.** `dcat explain <catalogue.dll> S1144` prints the rule's category, its
   help link, and the exact `[SuppressMessage]` line to paste — fully qualified, so it compiles
   wherever it lands.

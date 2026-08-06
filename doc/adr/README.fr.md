@@ -234,4 +234,4 @@ Matériel de support, optionnel :
 | [ADR-0036](0036-exclude-from-coverage-what-no-report-describes.fr.md) | Exclure de la couverture ce qu'aucun rapport de couverture ne décrit | Accepted |
 | [ADR-0037](0037-ship-the-analyzers-inside-the-foundation-package.fr.md) | Embarquer les analyzers dans le paquet de la fondation | Accepted |
 | [ADR-0038](0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.fr.md) | Arrêter les analyzers au projet qui référence un catalogue | Accepted |
-| [ADR-0039](0039-require-a-justification-on-every-suppression.fr.md) | Exiger une justification sur toute suppression | Proposed |
+| [ADR-0039](0039-require-a-justification-on-every-suppression.fr.md) | Exiger une justification sur toute suppression | Accepted |
