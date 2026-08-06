@@ -79,9 +79,10 @@ The `DCAT` diagnostics below come with that same line. They ship inside `Diagnos
 every catalogue depends on and none may hide, so the reference above is also what finds the
 suppressions you have *not* converted yet
 ([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md)). If you want the
-checks and no catalogue, reference `DiagnosticCatalog` on its own; if you publish a library and
-would rather not hand its diagnostics to whoever references you, `PrivateAssets="all"` on your own
-catalogue reference stops them at your boundary.
+checks and no catalogue, reference `DiagnosticCatalog` on its own. And if you publish a library,
+there is nothing to arrange: the checks reach the project that referenced the catalogue and stop
+there, so whoever references you is not analysed by a catalogue they never chose
+([ADR-0038](../adr/0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.en.md)).
 
 ### 2. Write the suppression
 

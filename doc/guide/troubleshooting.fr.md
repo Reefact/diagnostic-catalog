@@ -8,20 +8,25 @@ symptômes d'abord, la cause ensuite.
 
 ## Rien n'est signalé du tout
 
-Le signalement le plus fréquent, et il a quatre causes de même apparence.
+Le signalement le plus fréquent, et il a six causes de même apparence.
 
 ```mermaid
 flowchart TB
     S["aucun diagnostic DCAT nulle part"]
-    S --> Q1{"un catalogue, ou<br/>DiagnosticCatalog lui-même,<br/>est-il référencé ?"}
-    Q1 -- "non" --> A1["les diagnostics voyagent dans DiagnosticCatalog.<br/>Rien ne le référence, rien ne tourne."]
-    Q1 -- "oui" --> Q2{"est-ce PrivateAssets=all<br/>sur un paquet que vous CONSOMMEZ ?"}
-    Q2 -- "oui" --> A2["les analyseurs ne coulent pas depuis<br/>une dépendance qui les masque"]
-    Q2 -- "non" --> Q3{"référencez-vous un catalogue<br/>décrivant les règles supprimées ?"}
-    Q3 -- "non" --> A3["DCAT0006 ne signale que les règles qu'il voit.<br/>Pas de catalogue, pas de correspondance, silence voulu."]
-    Q3 -- "oui" --> Q4{"le fichier est-il généré ?"}
-    Q4 -- "oui" --> A4["les diagnostics de site d'utilisation ne tournent<br/>pas sur du code généré, délibérément"]
-    Q4 -- "non" --> A5["vérifiez la gravité dans .editorconfig"]
+    S --> Q1{"CE projet référence-t-il un catalogue,<br/>ou DiagnosticCatalog ?"}
+    Q1 -- "non, seulement un paquet qui le fait" --> A6["les vérifications s'arrêtent au projet qui a<br/>référencé un catalogue. Posez<br/>EnableDiagnosticCatalogAnalyzers=true"]
+    Q1 -- "pas du tout" --> A1["les diagnostics voyagent dans DiagnosticCatalog.<br/>Rien ne le référence, rien ne tourne."]
+    Q1 -- "oui" --> Q2{"EnableDiagnosticCatalogAnalyzers<br/>est-il posé à false ?"}
+    Q2 -- "oui" --> A7["c'est le retrait volontaire.<br/>Retirez-le, ou posez-le à true."]
+    Q2 -- "non" --> Q3{"est-ce PrivateAssets=all<br/>sur un paquet que vous CONSOMMEZ ?"}
+    Q3 -- "oui" --> A2["les analyseurs ne coulent pas depuis<br/>une dépendance qui les masque"]
+    Q3 -- "non" --> Q4{"est-ce un catalogue tiers<br/>sans props d'opt-in ?"}
+    Q4 -- "oui" --> A8["un catalogue qui n'en embarque pas ne vérifie<br/>personne. Référencez DiagnosticCatalog vous-même."]
+    Q4 -- "non" --> Q5{"référencez-vous un catalogue<br/>décrivant les règles supprimées ?"}
+    Q5 -- "non" --> A3["DCAT0006 ne signale que les règles qu'il voit.<br/>Pas de catalogue, pas de correspondance, silence voulu."]
+    Q5 -- "oui" --> Q6{"le fichier est-il généré ?"}
+    Q6 -- "oui" --> A4["les diagnostics de site d'utilisation ne tournent<br/>pas sur du code généré, délibérément"]
+    Q6 -- "non" --> A5["vérifiez la gravité dans .editorconfig"]
 ```
 
 **Les analyseurs ne sont pas un paquet à ajouter.** Référencer `DiagnosticCatalog.Sonar` vous donne
@@ -32,11 +37,34 @@ masquer ([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package
 référence de catalogue suffit donc. Là où ni l'un ni l'autre n'est dans le graphe, aucun analyseur
 n'est chargé et rien ne signale.
 
+**Les vérifications s'arrêtent au projet qui a référencé un catalogue.** Un projet qui n'en atteint
+un qu'à travers un autre paquet — une bibliothèque ayant pris un catalogue pour ses propres
+suppressions — n'est délibérément pas analysé par lui, puisqu'il n'a choisi ni l'un ni l'autre
+([ADR-0038](../adr/0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.fr.md)). C'est
+la réponse quand une solution a des diagnostics dans un projet et le silence dans le suivant.
+Référencez le catalogue là où vous voulez les vérifications, ou réclamez-les sans référence :
+
+```xml
+<PropertyGroup>
+  <EnableDiagnosticCatalogAnalyzers>true</EnableDiagnosticCatalogAnalyzers>
+</PropertyGroup>
+```
+
+**La même propriété est le retrait volontaire** : un `false` posé n'importe où sur son chemin — y
+compris dans un `Directory.Build.props` deux dossiers plus haut — produit un silence sans autre
+symptôme. Cela vaut la peine de le chercher avant tout le reste de cette liste.
+
+**Un catalogue tiers peut n'embarquer aucun opt-in.** Un catalogue livre les analyseurs en
+embarquant `build/<son propre identifiant de paquet>.props` ; celui qui ne le fait pas est muet pour
+ses consommateurs, et ressemble en tout point à une base de code sans rien à signaler. Référencez
+`DiagnosticCatalog` vous-même pour récupérer les vérifications, et signalez-le à son auteur —
+[Empaqueter un catalogue](packaging-a-catalogue.fr.md#embarquez-lopt-in-qui-fait-vérifier-vos-consommateurs)
+donne les trois lignes qui lui manquent.
+
 **Une dépendance qui masque la fondation masque les analyseurs avec elle.** Ils arrivent par
 `DiagnosticCatalog` : `PrivateAssets="all"` sur une référence vers lui — ou vers un catalogue, un
-saut plus loin — retient donc les deux. C'est légitime sur une bibliothèque, qui ne doit aucun
-attribut à ses consommateurs et peut refuser de leur imposer l'analyse ; sur un catalogue c'est un
-défaut, car le même levier retire aussi `[DiagnosticRule]` et
+saut plus loin — retient donc les deux. Sur un catalogue c'est un défaut, car le même levier retire
+aussi `[DiagnosticRule]` et
 [`CS0246`](#cs0246-the-type-or-namespace-name-diagnosticrule-could-not-be-found) est ce que ses
 consommateurs obtiennent à la place.
 

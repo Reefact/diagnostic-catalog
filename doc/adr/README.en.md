@@ -233,4 +233,5 @@ Optional supporting material:
 | [ADR-0035](0035-badge-a-shared-prefix-catalogue-with-its-subject.en.md) | Badge a catalogue whose rule prefix is already in service with its subject instead | Accepted |
 | [ADR-0036](0036-exclude-from-coverage-what-no-report-describes.en.md) | Exclude from coverage what no coverage report describes | Accepted |
 | [ADR-0037](0037-ship-the-analyzers-inside-the-foundation-package.en.md) | Ship the analyzers inside the foundation package | Accepted |
+| [ADR-0038](0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.en.md) | Stop the analyzers at the project that references a catalogue | Proposed |
 | [ADR-0039](0039-require-a-justification-on-every-suppression.en.md) | Require a justification on every suppression | Proposed |

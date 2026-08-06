@@ -164,11 +164,13 @@ Trois choses de plus rendent la migration tenable :
 * **Demander ce qu'est une règle.** `dcat explain <catalogue.dll> S1144` affiche la catégorie de
   la règle, son lien d'aide, et la ligne `[SuppressMessage]` exacte à coller — pleinement
   qualifiée, donc elle compile où qu'elle atterrisse.
-* **Le garder pour vous si vous livrez une bibliothèque.** Un catalogue que vous référencez atteint
-  quiconque vous référence, diagnostics compris ; `PrivateAssets="all"` sur votre propre référence
-  l'arrête à votre frontière. Les deux sont mesurés par
-  `tools/packaging/verify-consumption.sh` — « the analyzer reaches a consumer two hops from the
-  foundation », et « a library can decline to pass the analyzer on ».
+* **Rien à garder pour vous si vous livrez une bibliothèque.** Un catalogue que vous référencez
+  *vous* vérifie et s'arrête là : une application qui référence votre bibliothèque n'est pas
+  analysée par un catalogue qu'elle n'a jamais choisi, et vous n'écrivez rien pour cela
+  ([ADR-0038](adr/0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.fr.md)).
+  Mesuré par `tools/packaging/verify-consumption.sh` sous l'intitulé « the analyzer does NOT reach a
+  consumer two hops out ». Un projet qui *veut* les vérifications de plus loin pose
+  `EnableDiagnosticCatalogAnalyzers` à `true`.
 
 ## 🧭 Ce que cela ne fait pas
 

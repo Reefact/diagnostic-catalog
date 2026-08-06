@@ -142,11 +142,13 @@ running it under bash would let a bashism pass CI and fail on a contributor's ma
 
 `tools/packaging/verify-consumption.sh` is the same kind of gap seen from the other end, and it runs
 from the release rehearsal rather than from `run.sh` because it needs real `.nupkg` files first. Its
-twelve checks restore the packages as a consumer would: that a consumer of a catalogue is checked at
-all, that `DiagnosticCatalog.dll` reaches their output folder while the analyzer assemblies do not,
-that two catalogues deliver exactly one analyzer instance, and that the flow survives a second hop
-through a library — which nothing compiled in-process against project references can observe
-([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md)).
+eighteen checks restore the packages as a consumer would: that a consumer of a catalogue is checked
+at all, that `DiagnosticCatalog.dll` reaches their output folder while the analyzer assemblies do
+not, that two catalogues deliver exactly one analyzer instance, and that the flow does **not**
+survive a second hop through a library — which nothing compiled in-process against project
+references can observe
+([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md),
+[ADR-0038](../adr/0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.en.md)).
 
 ## Adding a test for a new diagnostic
 

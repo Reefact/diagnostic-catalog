@@ -1,0 +1,43 @@
+<Project>
+
+  <!--
+    The gate of ADR-0038. The analyzer assemblies sit in dcat-analyzers/ rather than in
+    analyzers/dotnet/cs/, so NuGet resolves nothing on its own and this file is the ONLY thing that
+    ever hands them to a compiler. What that costs is exactly what it buys: the flow stops being
+    NuGet's and becomes ours, so it can end where we say it ends rather than at the edge of the
+    dependency graph.
+
+    buildTransitive/ and NOT build/. This file has to reach a project that references a CATALOGUE,
+    where the foundation is a transitive dependency and a build/ folder is never imported. It is
+    also the only copy: measured, a package carrying buildTransitive/ has its build/ folder ignored
+    entirely — for direct consumers too — so a second copy under build/ would simply never be read.
+
+    ONE condition rather than a property plus an item group, because MSBuild evaluates every
+    property before any item, and a property condition may therefore not read @(PackageReference).
+    At evaluation time rather than inside a target, so a design-time build sees the analyzers and
+    the IDE offers the code fixes.
+
+      first clause    something asked for the analyzers, and that something is normally a
+                      catalogue: every catalogue packs build/<its own id>.props
+                      (Directory.Build.targets), which NuGet imports for a DIRECT reference and for
+                      nothing further out. That is what stops an application inheriting
+                      error-severity diagnostics from a library that merely used a catalogue for
+                      its own suppressions.
+
+      second clause   the foundation referenced directly, with no catalogue in sight — a catalogue
+                      author declaring rules of their own, who wants the definition diagnostics.
+                      @(PackageReference) holds the building project's own references, so this is
+                      the one place that case can be recognised.
+
+    Both clauses READ EnableDiagnosticCatalogAnalyzers and neither assigns it, so a project that
+    set it means it: true to be checked by a catalogue it only reaches indirectly, false to keep a
+    catalogue and decline the analysis. That second lever is the one a single package took away
+    (ADR-0037's fifth negative consequence) and this arrangement gives back, without asking anyone
+    to silence a diagnostic in .editorconfig.
+  -->
+  <ItemGroup Condition="'$(EnableDiagnosticCatalogAnalyzers)' == 'true' or ('$(EnableDiagnosticCatalogAnalyzers)' == '' and '@(PackageReference->WithMetadataValue('Identity','DiagnosticCatalog'))' != '')">
+    <Analyzer Include="$(MSBuildThisFileDirectory)../dcat-analyzers/DiagnosticCatalog.Analyzers.dll" />
+    <Analyzer Include="$(MSBuildThisFileDirectory)../dcat-analyzers/DiagnosticCatalog.CodeFixes.dll" />
+  </ItemGroup>
+
+</Project>

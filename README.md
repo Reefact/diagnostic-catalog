@@ -160,11 +160,13 @@ Three more things make the migration survivable:
 * **Ask what a rule is.** `dcat explain <catalogue.dll> S1144` prints the rule's category, its
   help link, and the exact `[SuppressMessage]` line to paste — fully qualified, so it compiles
   wherever it lands.
-* **Keep it to yourself if you ship a library.** A catalogue you reference reaches whoever
-  references you, diagnostics included; `PrivateAssets="all"` on your own reference stops it at
-  your boundary. Both are measured by `tools/packaging/verify-consumption.sh` — "the analyzer
-  reaches a consumer two hops from the foundation", and "a library can decline to pass the
-  analyzer on".
+* **Nothing to keep to yourself if you ship a library.** A catalogue you reference checks *you*
+  and stops there: an application referencing your library is not analysed by a catalogue it never
+  chose, and you write nothing to get that
+  ([ADR-0038](doc/adr/0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.en.md)).
+  Measured by `tools/packaging/verify-consumption.sh` as "the analyzer does NOT reach a consumer two
+  hops out". A project that *wants* the checks from further out sets
+  `EnableDiagnosticCatalogAnalyzers` to `true`.
 
 ## 🧭 What it does not do
 

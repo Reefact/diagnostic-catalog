@@ -98,7 +98,7 @@ claim a consumer will read as one.
 
 * **The analyzers ship inside `DiagnosticCatalog` rather than beside it.** The 0.1.0 notes below
   announced them as a package of their own, `DiagnosticCatalog.Analyzers`; that package identity is
-  gone, and the assemblies now travel in the foundation's `analyzers/dotnet/cs/` folder next to its
+  gone, and the assemblies now travel in the foundation's `dcat-analyzers/` folder next to its
   `lib/`. The project, the assembly and the namespace keep their names — only the packaging moved
   ([ADR-0037](doc/adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md)). Nothing breaks
   for anyone: `DiagnosticCatalog.Analyzers` was never published, so no `.csproj` anywhere names it.
@@ -113,11 +113,30 @@ claim a consumer will read as one.
 
   Measured rather than assumed, by
   [`tools/packaging/verify-consumption.sh`](tools/packaging/verify-consumption.sh) on every pull
-  request: a catalogue propagates the analyzers to its own consumers by default, a consumer of two
-  catalogues is handed exactly one analyzer instance rather than one per catalogue, and the
-  analyzer travels a second hop — an application referencing a library that took a catalogue for
-  its own suppressions is checked too, unless that library writes `PrivateAssets="all"` on its own
-  reference.
+  request: a catalogue delivers the analyzers to its own consumers, a consumer of two catalogues is
+  handed exactly one analyzer instance rather than one per catalogue, and the analyzer stops there.
+
+* **The checks stop at the project that references a catalogue.** An application referencing a
+  library that took a catalogue for its own suppressions is no longer analysed by it — it chose
+  neither, and `DCAT0006` is an error, so under the arrangement above its build failed on its own
+  suppressions with nothing in its own project file to point at. The analyzer assemblies moved out
+  of `analyzers/dotnet/cs/`, where NuGet resolves them as an asset and an asset flows down the whole
+  graph, into `dcat-analyzers/`, where only the foundation's own
+  `buildTransitive/DiagnosticCatalog.targets` reaches them; each catalogue packs a three-line
+  `build/<its id>.props` that turns them on, which NuGet imports for a direct reference and for
+  nothing further out
+  ([ADR-0038](doc/adr/0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.en.md)).
+
+  Consumers of the catalogues published here need change nothing. A **third-party** catalogue must
+  now ship that props file to have its consumers checked —
+  [Packaging a catalogue](doc/guide/packaging-a-catalogue.en.md#ship-the-opt-in-that-checks-your-consumers)
+  has it.
+
+* **`EnableDiagnosticCatalogAnalyzers` turns the analysis on or off from the consuming project.**
+  `false` keeps a catalogue and declines its diagnostics, which one package could not previously
+  offer — `PrivateAssets="all"` withheld `[DiagnosticRule]` along with them, so the only opt-out was
+  silencing the category in `.editorconfig`. `true` asks for the checks from a project that reaches
+  a catalogue only through a library. Both directions are measured.
 
 * **`PrivateAssets="all"` on a catalogue's reference to the foundation now withholds
   `[DiagnosticRule]` as well as the analyzers.** One package means one lever, so declining to

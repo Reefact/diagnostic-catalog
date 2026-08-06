@@ -1,0 +1,28 @@
+<Project>
+
+  <!--
+    Packed into EVERY catalogue this repository publishes, as build/<that catalogue's id>.props,
+    by the rule in Directory.Build.targets. NuGet imports a package's build/ folder for a DIRECT
+    reference and for nothing further out, and that asymmetry is the whole mechanism of ADR-0038:
+    referencing a catalogue is a request to be checked, and referencing something that merely
+    happens to use one is not.
+
+    One file, packed under thirteen names, rather than thirteen files: a catalogue joining the set
+    later carries it without anyone remembering, which is the property ADR-0037 was written to buy
+    and this keeps.
+
+    The condition means the consuming project's own value wins whichever order MSBuild reads the
+    two in. A consumer writing false in their .csproj or their Directory.Build.props keeps the
+    catalogue and declines the analysis.
+
+    The property is READ by buildTransitive/DiagnosticCatalog.targets in the foundation, which is
+    where the analyzer assemblies actually live. A catalogue carries this file and no analyzer of
+    its own, so a consumer of several catalogues is still checked by exactly one analyzer, at the
+    single version NuGet unified for the foundation — the failure mode that ruled out folding a
+    copy into each catalogue.
+  -->
+  <PropertyGroup>
+    <EnableDiagnosticCatalogAnalyzers Condition="'$(EnableDiagnosticCatalogAnalyzers)' == ''">true</EnableDiagnosticCatalogAnalyzers>
+  </PropertyGroup>
+
+</Project>

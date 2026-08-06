@@ -49,15 +49,24 @@ run-time reflection over your catalogue resolves, and they lose the checks along
 it — a consumer written the ordinary way stops compiling rather than merely going
 unchecked. Both halves of that are measured against a real restore by
 `tools/packaging/verify-consumption.sh`, in the checks
-`PrivateAssets="all" is what stops a catalogue propagating it` and
-`hiding the foundation also withholds the attribute assembly`.
+`a catalogue hiding the foundation delivers no analyzer either` and
+`a catalogue hiding the foundation withholds the attribute assembly`.
 
-Take no position and the analyzers reach your consumers on their own — the check
-`a catalogue that takes no position propagates the analyzer` — which is how every
-catalogue in this repository is written. The project that should decline is a
-**library** that took a catalogue for its own suppressions: it owes nobody the
-attribute, and `PrivateAssets="all"` on its reference is what keeps it from handing
-the diagnostics to applications that never chose the catalogue.
+A catalogue also packs `build/<its own package id>.props`, setting
+`EnableDiagnosticCatalogAnalyzers`, and that is what delivers the analyzers to its
+consumers — the check `a catalogue delivers the analyzer to its own consumer`. NuGet
+imports a package's `build/` folder for a direct reference and for nothing further out,
+so the checks reach the project that referenced the catalogue and stop there: an
+application referencing a **library** that took a catalogue for its own suppressions is
+not analysed by a catalogue it never chose, and the library writes nothing to arrange
+that
+([ADR-0038](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/adr/0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.en.md)).
+[Packaging a catalogue](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/packaging-a-catalogue.en.md)
+has the file.
+
+A consuming project overrules that in either direction with the same property:
+`false` keeps the catalogue and declines the analysis, `true` asks for the checks from
+further out than a direct reference.
 
 ## Declaring a rule
 

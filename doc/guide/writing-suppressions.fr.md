@@ -87,9 +87,11 @@ Les diagnostics `DCAT` ci-dessous viennent avec cette même ligne. Ils sont livr
 `DiagnosticCatalog`, dont chaque catalogue dépend et qu'aucun n'a le droit de masquer : la référence
 ci-dessus est donc aussi ce qui trouve les suppressions que vous n'avez *pas* encore converties
 ([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md)). Si vous voulez les
-vérifications sans catalogue, référencez `DiagnosticCatalog` seul ; si vous publiez une bibliothèque
-et préférez ne pas refiler ses diagnostics à qui vous référence, `PrivateAssets="all"` sur votre
-propre référence de catalogue les arrête à votre frontière.
+vérifications sans catalogue, référencez `DiagnosticCatalog` seul. Et si vous publiez une
+bibliothèque, il n'y a rien à arranger : les vérifications atteignent le projet qui a référencé le
+catalogue et s'y arrêtent, si bien que qui vous référence n'est pas analysé par un catalogue qu'il
+n'a jamais choisi
+([ADR-0038](../adr/0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.fr.md)).
 
 ### 2. Écrire la suppression
 

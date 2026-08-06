@@ -48,20 +48,40 @@
     here is what makes "referencing a catalogue means being checked" a property of the dependency graph
     rather than of thirteen references somebody has to remember.
 
-    analyzers/dotnet/cs/, never lib/. An assembly in lib/ would be compiled against and would become a
-    runtime dependency of the consuming application, which docs §16 forbids in its opening line.
+    ADR-0038 keeps that sentence and bounds it: referencing a catalogue means being checked, and
+    referencing a library that happens to use one does not. See the packaging comment below.
+
+    dcat-analyzers/, never lib/ and — since ADR-0038 — never analyzers/dotnet/cs/ either. An assembly
+    in lib/ would be compiled against and would become a runtime dependency of the consuming
+    application, which docs §16 forbids in its opening line. An assembly in analyzers/dotnet/cs/ is
+    resolved by NuGet as an asset, and a NuGet asset flows down the WHOLE graph: that is what handed
+    error-severity diagnostics to an application two hops out, which had chosen neither the catalogue
+    nor the library that took it. dcat-analyzers/ is a folder NuGet resolves nothing from, so the only
+    thing that ever hands these to a compiler is buildTransitive/DiagnosticCatalog.targets, packed
+    below, which stops where a catalogue's own build/ folder stops.
+
     IncludeBuildOutput stays true here, unlike the analyzer project that used to pack itself: this
     package genuinely has a lib/, because DiagnosticCatalog.dll is the one assembly a consumer compiles
     against.
 
     The pdbs travel beside their assemblies rather than in the symbol package, so anyone debugging an
     analyzer inside a compiler host finds them where the host looks.
+
+    NU5100 is the warning for an assembly outside lib/, and it is telling the truth: these are not
+    reference assemblies and nothing should compile against them. Suppressed on these four items only.
   -->
+  <PropertyGroup>
+    <NoWarn>$(NoWarn);NU5100</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
-    <None Include="$(AnalyzersOutputPath)DiagnosticCatalog.Analyzers.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-    <None Include="$(AnalyzersOutputPath)DiagnosticCatalog.Analyzers.pdb" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-    <None Include="$(CodeFixesOutputPath)DiagnosticCatalog.CodeFixes.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-    <None Include="$(CodeFixesOutputPath)DiagnosticCatalog.CodeFixes.pdb" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <None Include="$(AnalyzersOutputPath)DiagnosticCatalog.Analyzers.dll" Pack="true" PackagePath="dcat-analyzers" Visible="false" />
+    <None Include="$(AnalyzersOutputPath)DiagnosticCatalog.Analyzers.pdb" Pack="true" PackagePath="dcat-analyzers" Visible="false" />
+    <None Include="$(CodeFixesOutputPath)DiagnosticCatalog.CodeFixes.dll" Pack="true" PackagePath="dcat-analyzers" Visible="false" />
+    <None Include="$(CodeFixesOutputPath)DiagnosticCatalog.CodeFixes.pdb" Pack="true" PackagePath="dcat-analyzers" Visible="false" />
+    <!-- The gate itself. Its own file documents why it is in buildTransitive/ and why there is no
+         build/ copy beside it. -->
+    <None Include="buildTransitive\DiagnosticCatalog.targets" Pack="true" PackagePath="buildTransitive" Visible="false" />
     <!-- The released list of diagnostics, at the package root: a consumer deciding whether to upgrade
          reads it without unpacking the analyzer. -->
     <None Include="..\DiagnosticCatalog.Analyzers\AnalyzerReleases.Shipped.md" Pack="true" PackagePath="/" Visible="false" />

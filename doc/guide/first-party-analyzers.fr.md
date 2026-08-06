@@ -135,16 +135,21 @@ référençant **rien d'autre que la fondation** qui le rend sûr à prendre en 
 traîne Roslyn chez chaque consommateur est un paquet que les équipes déclinent.
 
 Il y a une chose que `Contoso.Rules` transmet, et qu'il doit transmettre : la vérification `DCAT`.
-Les analyseurs sont livrés dans `DiagnosticCatalog` : quiconque consomme votre catalogue voit donc
-ses suppressions vérifiées contre lui
-([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md)) — une suppression
-littérale nommant l'une de vos règles est signalée et se voit proposer un correctif, sans qu'il
-référence quoi que ce soit d'autre. Cela ne lui coûte aucune dépendance à l'exécution : ces
-assemblages vivent dans le dossier `analyzers/` du paquet, que le compilateur charge et que le build
-ne copie jamais, ce qu'asserte `tools/packaging/verify-consumption.sh` sous « the analyzer assembly
-stays out of the output folder ». N'allez pas vous y soustraire avec `PrivateAssets="all"` : cela
-masquerait `[DiagnosticRule]` à vos consommateurs en même temps que les analyseurs, et leur build
-cesserait de compiler au lieu de simplement n'être plus vérifié.
+Les analyseurs sont livrés dans `DiagnosticCatalog` et votre catalogue les active pour qui le
+référence
+([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md),
+[ADR-0038](../adr/0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.fr.md)) — une
+suppression littérale nommant l'une de vos règles est signalée et se voit proposer un correctif, sans
+qu'il référence quoi que ce soit d'autre. Les activer, c'est le fichier props de trois lignes
+d'[Empaqueter un catalogue](packaging-a-catalogue.fr.md#embarquez-lopt-in-qui-fait-vérifier-vos-consommateurs),
+et votre catalogue ne vérifie personne tant qu'il n'en embarque pas.
+
+Cela ne lui coûte aucune dépendance à l'exécution : ces assemblages n'atteignent jamais un dossier
+`lib/` et le build ne les copie jamais, ce qu'asserte `tools/packaging/verify-consumption.sh` sous
+« the analyzer assembly stays out of the output folder ». Un consommateur qui veut votre catalogue
+sans ses diagnostics pose `EnableDiagnosticCatalogAnalyzers` à `false` ; n'allez pas le lui arranger
+avec `PrivateAssets="all"` sur la fondation, car cela masquerait aussi `[DiagnosticRule]` et son
+build cesserait de compiler au lieu de simplement n'être plus vérifié.
 
 Si vous livrez les deux depuis un dépôt à une version, vous n'avez besoin d'aucun attribut de
 [provenance](concepts.fr.md#provenance--un-catalogue-est-un-instantané) — `[assembly: CatalogSource]`

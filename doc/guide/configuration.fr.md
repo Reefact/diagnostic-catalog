@@ -131,8 +131,9 @@ Pas de l'`.editorconfig`, mais la configuration que l'on rate le plus souvent.
 | --- | --- | --- |
 | Vous écrivez des suppressions | `DiagnosticCatalog.Sonar` (ou un autre catalogue) | référence ordinaire — les vérifications viennent avec |
 | Vous voulez les vérifications sans catalogue | `DiagnosticCatalog` | référence ordinaire |
-| Vous publiez un catalogue | `DiagnosticCatalog` | **référence ordinaire — jamais `PrivateAssets="all"`** |
-| Vous publiez une bibliothèque qui référence un catalogue | ce catalogue | `PrivateAssets="all"`, sinon vos consommateurs sont vérifiés aussi |
+| Vous voulez un catalogue sans l'analyse | ce catalogue | référence ordinaire, plus `EnableDiagnosticCatalogAnalyzers=false` |
+| Vous publiez un catalogue | `DiagnosticCatalog` | **référence ordinaire — jamais `PrivateAssets="all"`** — plus le props d'opt-in |
+| Vous publiez une bibliothèque qui référence un catalogue | ce catalogue | rien ; vos consommateurs n'en sont pas vérifiés |
 
 ```xml
 <PackageReference Include="DiagnosticCatalog.Sonar" Version="0.1.0" />
@@ -153,25 +154,30 @@ asserte qu'ils restent hors du dossier de sortie que `DiagnosticCatalog.dll`, lu
 non plus, parce qu'un seul paquet ne fait désormais qu'un seul levier.
 [Empaqueter un catalogue](packaging-a-catalogue.fr.md) dit ce qu'un catalogue doit à ses
 consommateurs ; le même script mesure les deux moitiés de cette défaillance, la seconde sous
-l'intitulé « hiding the foundation also withholds the attribute assembly ».
+l'intitulé « a catalogue hiding the foundation withholds the attribute assembly ».
 
-Ce que la propre référence d'un catalogue à la fondation décide pour les consommateurs de ce
-catalogue — mesuré contre une vraie restauration plutôt que lu dans la documentation de NuGet, qui
-dit le contraire ([NuGet/Home#13813](https://github.com/NuGet/Home/issues/13813)) :
+**Décliner n'est pas une façon d'être poli** — pour un catalogue. `PrivateAssets="all"` voulait dire
+« vérifié par rien » ; il veut dire « ne compile pas », ce que le lecteur reçoit comme un paquet
+cassé plutôt que comme un choix que vous avez fait.
 
-| Un catalogue référençant `DiagnosticCatalog` avec | Les analyseurs tournent pour ses consommateurs | `[DiagnosticRule]` s'y résout |
-| --- | --- | --- |
-| pas de `PrivateAssets` | **oui** | oui |
-| `PrivateAssets="none"` | oui | oui |
-| `PrivateAssets="all"` | non | **non** |
+**La propriété est le levier, et il appartient au consommateur.** Depuis
+l'[ADR-0038](../adr/0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.fr.md), les
+analyseurs atteignent le projet qui a référencé un catalogue et s'y arrêtent : une **bibliothèque**
+n'a donc besoin d'aucun levier, puisqu'une application qui la référence n'est pas analysée par un
+catalogue qu'elle n'a jamais choisi. Ce qu'apporte `EnableDiagnosticCatalogAnalyzers`, ce sont les
+deux exceptions, et c'est une simple propriété MSBuild :
 
-**Décliner n'est pas une façon d'être poli.** La dernière ligne voulait dire « vérifié par rien » ;
-elle veut maintenant dire « ne compile pas », ce que le lecteur reçoit comme un paquet cassé plutôt
-que comme un choix que vous avez fait. C'est une **bibliothèque** qui a un vrai levier : elle ne
-doit l'attribut à personne, si bien que `PrivateAssets="all"` sur sa propre référence de catalogue
-retient la dépendance et les diagnostics à sa frontière. Sans cela l'analyseur franchit aussi ce
-second saut — asserté sous les intitulés « the analyzer reaches a consumer two hops from the
-foundation » et « a library can decline to pass the analyzer on ».
+```xml
+<PropertyGroup>
+  <!-- garder le catalogue, décliner l'analyse ; [DiagnosticRule] résout toujours -->
+  <EnableDiagnosticCatalogAnalyzers>false</EnableDiagnosticCatalogAnalyzers>
+</PropertyGroup>
+```
+
+Posez-la à `true` et un projet est vérifié par un catalogue qu'il n'atteint qu'à travers une
+bibliothèque. Les deux sens sont mesurés — « a direct consumer can opt OUT » et « a consumer two
+hops out can opt IN » — de même que le fait que se retirer conserve l'assemblage d'attributs, ce qui
+en fait une vraie alternative à faire taire `DCAT0006` dans l'`.editorconfig`.
 
 ## Ce que coûte le fait d'avoir les analyseurs activés
 

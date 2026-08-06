@@ -129,8 +129,9 @@ Not `.editorconfig`, but the configuration people get wrong most often.
 | --- | --- | --- |
 | You write suppressions | `DiagnosticCatalog.Sonar` (or another catalogue) | ordinary reference — the checks come with it |
 | You want the checks and no catalogue | `DiagnosticCatalog` | ordinary reference |
-| You publish a catalogue | `DiagnosticCatalog` | **ordinary reference — never `PrivateAssets="all"`** |
-| You publish a library that references a catalogue | that catalogue | `PrivateAssets="all"`, or your consumers are checked too |
+| You want a catalogue and not the analysis | that catalogue | ordinary reference, plus `EnableDiagnosticCatalogAnalyzers=false` |
+| You publish a catalogue | `DiagnosticCatalog` | **ordinary reference — never `PrivateAssets="all"`** — plus the opt-in props |
+| You publish a library that references a catalogue | that catalogue | nothing; your consumers are not checked by it |
 
 ```xml
 <PackageReference Include="DiagnosticCatalog.Sonar" Version="0.1.0" />
@@ -152,22 +153,27 @@ your package already had — and they are unchecked as well, because one package
 same script measures both halves of that failure, the second of them as "hiding the foundation also
 withholds the attribute assembly".
 
-What a catalogue's own reference to the foundation decides for that catalogue's consumers — measured
-against a real restore rather than read from NuGet's documentation, which says the opposite
-([NuGet/Home#13813](https://github.com/NuGet/Home/issues/13813)):
+**Declining is not a way of being polite** — for a catalogue. `PrivateAssets="all"` used to mean
+"checked by nothing"; it means "does not compile", which the reader meets as a broken package rather
+than as a choice you made.
 
-| A catalogue referencing `DiagnosticCatalog` with | The analyzers run for its consumers | `[DiagnosticRule]` resolves for them |
-| --- | --- | --- |
-| no `PrivateAssets` | **yes** | yes |
-| `PrivateAssets="none"` | yes | yes |
-| `PrivateAssets="all"` | no | **no** |
+**The property is the lever, and it is the consumer's.** Since
+[ADR-0038](../adr/0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.en.md) the
+analyzers reach the project that referenced a catalogue and stop there, so a **library** needs no
+lever at all: an application referencing it is not analysed by a catalogue it never chose. What
+`EnableDiagnosticCatalogAnalyzers` buys is the two exceptions, and it is a plain MSBuild property:
 
-**Declining is not a way of being polite.** The last row used to mean "checked by nothing"; it now
-means "does not compile", which the reader meets as a broken package rather than as a choice you
-made. A **library** is what has a real lever: it owes its consumers no attribute, so
-`PrivateAssets="all"` on its own catalogue reference keeps the dependency and the diagnostics at its
-boundary. Without it the analyzer travels that second hop too — asserted as "the analyzer reaches a
-consumer two hops from the foundation" and "a library can decline to pass the analyzer on".
+```xml
+<PropertyGroup>
+  <!-- keep the catalogue, decline the analysis; [DiagnosticRule] still resolves -->
+  <EnableDiagnosticCatalogAnalyzers>false</EnableDiagnosticCatalogAnalyzers>
+</PropertyGroup>
+```
+
+Set it to `true` instead and a project is checked by a catalogue it reaches only through a library.
+Both directions are measured — "a direct consumer can opt OUT" and "a consumer two hops out can opt
+IN" — and so is the fact that opting out keeps the attribute assembly, which is what makes it a real
+alternative to silencing `DCAT0006` in `.editorconfig`.
 
 ## What it costs to have the analyzers on
 
