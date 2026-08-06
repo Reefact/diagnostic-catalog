@@ -17,3 +17,4 @@ DCAT0011 | DiagnosticCatalog | Warning | A diagnostic rule's category must refer
 DCAT0012 | DiagnosticCatalog | Warning | A rule identifier should be written as nameof
 DCAT0013 | DiagnosticCatalog | Warning | The diagnostic rule type name does not say its Id
 DCAT0014 | DiagnosticCatalog | Warning | A suppression must carry a justification
+DCAT0015 | DiagnosticCatalog | Warning | A catalogue package must ship the analyzer opt-in

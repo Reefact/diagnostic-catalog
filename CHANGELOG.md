@@ -47,8 +47,9 @@ claim a consumer will read as one.
   catalogue reference would replace (`DCAT0006`), a suppression left half migrated (`DCAT0007`), an
   `UnconditionalSuppressMessage` the trimmer silently discards (`DCAT0009`), a category that reaches
   no declared constant (`DCAT0011`), an identifier written as a literal where `nameof` would not
-  drift (`DCAT0012`), and a suppression that never says why it is there — any
-  suppression, a literal one included (`DCAT0014`). The
+  drift (`DCAT0012`), a suppression that never says why it is there — any
+  suppression, a literal one included (`DCAT0014`) — and a catalogue package that publishes rules
+  and turns no analyzer on for whoever references it (`DCAT0015`). The
   [diagnostics guide](doc/guide/diagnostics.en.md) is the inventory, and is held to the shipped set
   by the documentation tests; a count written here would be a second inventory that nothing checks.
   The assemblies are
@@ -59,9 +60,11 @@ claim a consumer will read as one.
   `DCAT0001`, `DCAT0006` and `DCAT0007` ship as **errors**. They are what a consumer references a
   catalogue for, and a codebase where half the suppressions are magic strings does not have the
   guarantee — it has it where somebody remembered. Those addressed to a catalogue's *author*
-  (`DCAT0002`–`DCAT0004`, `DCAT0011`–`DCAT0013`) stay warnings, and so do `DCAT0009` and `DCAT0014`
-  — the latter reports a suppression that is otherwise entirely correct, and failing a build over a
-  missing sentence is a thing to raise deliberately rather than to inherit. `DCAT0005`
+  (`DCAT0002`–`DCAT0004`, `DCAT0011`–`DCAT0013`, `DCAT0015`) stay warnings, and so do `DCAT0009` and
+  `DCAT0014` — the latter reports a suppression that is otherwise entirely correct, and failing a
+  build over a missing sentence is a thing to raise deliberately rather than to inherit. `DCAT0015`
+  is a warning for a different reason: it is the one diagnostic that reads a fact from outside the
+  compilation, so it can be wrong in ways the others cannot. `DCAT0005`
   alone is `Info`: it is the one rule reporting something its author cannot act on. Every severity is
   overridable per id and per path in `.editorconfig`
   ([ADR-0027](doc/adr/0027-ship-the-use-site-diagnostics-as-errors.en.md)); the

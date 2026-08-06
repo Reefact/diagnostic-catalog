@@ -10,7 +10,7 @@ quelques centaines de littéraux à des références vérifiées sans une semain
 > ci-dessous, ce sont les analyseurs `DCAT`, et ils sont livrés dans `DiagnosticCatalog`, dont
 > chaque catalogue dépend et qu'aucun n'a le droit de masquer — la référence au catalogue est ce qui
 > active la vérification
-> ([ADR-0039](../adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md)) ; référencez
+> ([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md)) ; référencez
 > `DiagnosticCatalog` seul si vous voulez les vérifications sans catalogue. Le chemin manuel de la
 > fin est pour un catalogue publié avant cette décision.
 
@@ -224,7 +224,7 @@ Si une grande part de vos suppressions sont des `#pragma`, la conversion vous pa
 
 Un catalogue les porte : le chemin mécanisé est donc normalement là. Deux cas où il ne l'est pas :
 une version de catalogue antérieure à
-[ADR-0039](../adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md), dont la dépendance à
+[ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md), dont la dépendance à
 `DiagnosticCatalog` se résout vers une version qui ne portait que les attributs, et un projet qui a
 mis `DCAT0006` à `none`. Ce qui fonctionne quand même :
 

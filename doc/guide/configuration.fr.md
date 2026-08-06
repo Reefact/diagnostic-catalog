@@ -42,6 +42,7 @@ Les valeurs acceptées sont celles de Roslyn : `error`, `warning`, `suggestion`,
 | `DCAT0012` | Avertissement | `error` si vous publiez un catalogue — la réparation est mécanique |
 | `DCAT0013` | Avertissement | `error` si vous publiez un catalogue et voulez que chaque nom dise sa règle |
 | `DCAT0014` | Avertissement | `suggestion` le temps qu'un codebase existant rattrape, puis `error` |
+| `DCAT0015` | Avertissement | `error` si vous publiez un catalogue — en livrer un qui ne vérifie personne est la défaillance qu'il nomme |
 
 La distinction qui compte au moment de choisir : `DCAT0006` et `DCAT0014` signalent *du travail pas
 encore fait*, et les autres signalent *quelque chose de déjà faux* — sauf `DCAT0005`, qui signale
@@ -107,7 +108,7 @@ par diagnostic, et que les deux groupes ont besoin de réglages opposés :
 | Analyseur | Diagnostics | Sur le code généré |
 | --- | --- | --- |
 | `SuppressionUsageAnalyzer` | `DCAT0001`, `DCAT0006`, `DCAT0007`, `DCAT0009`, `DCAT0014` | **non signalés** |
-| `DiagnosticRuleDefinitionAnalyzer` | `DCAT0002`–`DCAT0005`, `DCAT0011`–`DCAT0013` | **signalés** |
+| `DiagnosticRuleDefinitionAnalyzer` | `DCAT0002`–`DCAT0005`, `DCAT0011`–`DCAT0013`, `DCAT0015` | **signalés** |
 
 Une suppression dans un fichier généré n'est pas à l'auteur de la corriger : la signaler noierait
 chaque fichier généré sous un travail que personne ne peut faire. Une *déclaration de règle* dans un

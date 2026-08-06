@@ -943,6 +943,7 @@ implementing one later cannot reuse a number this document has already spent.
 | `DCAT0012` | definition | A rule identifier should be written as nameof | Warning | yes |
 | `DCAT0013` | definition | The diagnostic rule type name does not say its Id | Warning | yes |
 | `DCAT0014` | use site | A suppression must carry a justification | Warning | yes |
+| `DCAT0015` | packaging | A catalogue package must ship the analyzer opt-in | Warning | yes |
 
 Definition diagnostics (`DCAT0002`–`DCAT0005`, `DCAT0011`–`DCAT0013`) only fire on
 source the compiler can see. A malformed rule inside a *referenced assembly*
@@ -1289,6 +1290,47 @@ them from the first build after the package is referenced rather than after a
 migration — shipping it as an error would fail that build on every undocumented
 suppression a codebase already had. One `.editorconfig` line raises it, and the
 adoption guide names the line that lowers it while a backlog is worked through.
+
+---
+
+### 11.15 `DCAT0015` — a catalogue package ships no analyzer opt-in
+
+Reported when a project **publishes a package**, **declares at least one rule**,
+and **packs no `build/<its own package id>.props`**. Such a catalogue delivers no
+`DCAT` analyzer to whoever references it (§16.3, ADR-0038): the package compiles,
+publishes, and gives its consumers the constants, while never reporting the
+suppressions they have not converted.
+
+Reported **once per compilation**, at compilation end, with no location. A
+packaging omission is one omission; anchoring it on a rule type would repeat it
+per rule and point at a declaration that is correct.
+
+**The only diagnostic in §11 whose trigger is not in the compilation.** Whether a
+`.csproj` packs a file is carried by no syntax tree, symbol or metadata
+reference. The build classifies the packaging and publishes the verdict through
+`CompilerVisibleProperty`, which the SDK writes into the generated AnalyzerConfig;
+the analyzer reads `build_property.DiagnosticCatalogAnalyzerOptIn` and
+`build_property.PackageId`.
+
+Two consequences follow, and both are requirements rather than notes:
+
+* **An absent or unrecognised verdict must read as "not measured".** A project
+  built without the foundation's targets says nothing, and a diagnostic about
+  silence that fired there would be reporting on every project that never opted
+  into being measured.
+* **A verdict a project states itself must be believed.** Recognising the opt-in
+  means matching how the file was declared, and MSBuild offers more than one
+  spelling of the same packaging. A catalogue setting
+  `DiagnosticCatalogAnalyzerOptIn` to `packed` is not classified.
+
+**No fix.** The repair is a line in a project file, which is not a document the
+code-fix layer edits.
+
+**Severity.** `Warning`, with the other definition diagnostics: it addresses
+whoever authors a catalogue, and §11's use-site errors are for consumers. It is
+also the one diagnostic here that reads something outside the compilation, so it
+can be wrong in ways the others cannot, and a wrong error stops a build that is
+otherwise correct C#.
 
 ---
 
@@ -1773,7 +1815,7 @@ graph. Every catalogue depends on `DiagnosticCatalog` and may not hide it, becau
 the attribute assembly whether they asked for it or not, and the audience that wanted analyzers and
 nothing else does not exist among them. One package therefore carries both halves, and referencing
 any catalogue delivers both
-([ADR-0039](adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md)):
+([ADR-0037](adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md)):
 
 ```text
 DiagnosticCatalog.nupkg                    (DevelopmentDependency = false)
@@ -1872,7 +1914,7 @@ Three further consequences:
   NuGet unifies across the graph. That is the check which would fail had the analyzers been folded
   into each catalogue instead: a gate would then add them **by path**, MSBuild would have nothing to
   unify, and the compiler would be handed two
-  ([ADR-0039](adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md),
+  ([ADR-0037](adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md),
   [ADR-0038](adr/0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.en.md)).
 
 A consumer who wants the checks and no catalogue at all references `DiagnosticCatalog` itself
@@ -1898,7 +1940,7 @@ dotnet_diagnostic.DCAT0009.severity = error
 dotnet_diagnostic.DCAT0011.severity = error
 dotnet_diagnostic.DCAT0012.severity = error
 dotnet_diagnostic.DCAT0013.severity = error
-dotnet_diagnostic.DCAT0014.severity = error
+dotnet_diagnostic.DCAT0015.severity = error
 ```
 
 The sample overrides every rule to show that every rule is reachable; it is not a
@@ -1922,7 +1964,7 @@ implementation must split into two:
 
 | Analyzer class | Diagnostics | Generated-code flags |
 | --- | --- | --- |
-| `DiagnosticRuleDefinitionAnalyzer` | `DCAT0002`–`DCAT0005`, `DCAT0011`–`DCAT0013` | `Analyze \| ReportDiagnostics` |
+| `DiagnosticRuleDefinitionAnalyzer` | `DCAT0002`–`DCAT0005`, `DCAT0011`–`DCAT0013`, `DCAT0015` | `Analyze \| ReportDiagnostics` |
 | `SuppressionUsageAnalyzer` | `DCAT0001`, `DCAT0006`–`DCAT0010`, `DCAT0014` | `None` |
 
 Rule definitions produced by an external tool must additionally be validated

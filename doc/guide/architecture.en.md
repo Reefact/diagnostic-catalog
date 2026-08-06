@@ -95,7 +95,7 @@ need opposite settings.
 
 | Analyzer | Diagnostics | Generated code |
 | --- | --- | --- |
-| `DiagnosticRuleDefinitionAnalyzer` | `DCAT0002`–`DCAT0005`, `DCAT0011`–`DCAT0013` | **analysed** — a generated catalogue is what it exists to check |
+| `DiagnosticRuleDefinitionAnalyzer` | `DCAT0002`–`DCAT0005`, `DCAT0011`–`DCAT0013`, `DCAT0015` | **analysed** — a generated catalogue is what it exists to check |
 | `SuppressionUsageAnalyzer` | `DCAT0001`, `DCAT0006`, `DCAT0007`, `DCAT0009`, `DCAT0014` | **skipped** — a suppression in a generated file is not the author's to fix |
 
 Getting the flags backwards fails asymmetrically, which the code says out loud: on the use-site

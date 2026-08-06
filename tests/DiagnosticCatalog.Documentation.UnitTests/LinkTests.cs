@@ -80,6 +80,41 @@ public sealed class LinkTests
         }
     }
 
+    /// <summary>
+    /// A link written <c>[ADR-NNNN](…/NNNN-….md)</c> must name the record it points at.
+    /// </summary>
+    /// <remarks>
+    /// The failure this exists for is invisible to both tests around it: the label says one ADR and
+    /// the address opens another, so the link resolves, the anchor resolves, and the reader is
+    /// silently handed the wrong decision. Twelve of these reached <c>main</c> at once — a rename
+    /// that moved the labels and not the addresses — and nothing anywhere reported them.
+    /// </remarks>
+    [Theory]
+    [MemberData(nameof(LinkedDocuments))]
+    public void Every_adr_link_names_the_record_it_points_at(string path)
+    {
+        MarkdownDocument document = Repository.Require(path);
+
+        foreach (MarkdownLink link in document.Links)
+        {
+            Match label = Regex.Match(link.Text, @"^ADR-(\d{4})$", RegexOptions.None, MatchTimeout);
+            if (!label.Success) { continue; }
+
+            Match target = Regex.Match(
+                link.PathPart, @"(?:^|/)(\d{4})-", RegexOptions.None, MatchTimeout);
+
+            // Prose that says ADR-0007 while linking somewhere that is not an ADR file at all is a
+            // different mistake, and not one this can judge from a number.
+            if (!target.Success) { continue; }
+
+            Assert.True(
+                label.Groups[1].Value == target.Groups[1].Value,
+                $"{path}: the link \"{link.Text}\" points at {link.Target}, which is " +
+                $"ADR-{target.Groups[1].Value}. The label and the address name different records, so " +
+                "the link works and takes the reader to the wrong decision.");
+        }
+    }
+
     [Theory]
     [MemberData(nameof(LinkedDocuments))]
     public void Every_anchor_resolves(string path)

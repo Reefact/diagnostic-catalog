@@ -973,6 +973,7 @@ numéro que ce document a déjà dépensé.
 | `DCAT0012` | déclaration | A rule identifier should be written as nameof | Warning | oui |
 | `DCAT0013` | déclaration | The diagnostic rule type name does not say its Id | Warning | oui |
 | `DCAT0014` | utilisation | A suppression must carry a justification | Warning | oui |
+| `DCAT0015` | empaquetage | A catalogue package must ship the analyzer opt-in | Warning | oui |
 
 Les diagnostics de définition (`DCAT0002`–`DCAT0005`, `DCAT0011`–`DCAT0013`) ne se
 déclenchent que sur du code source visible par le compilateur. Une règle mal formée
@@ -1345,6 +1346,47 @@ référence au paquet plutôt qu'après une migration — le livrer en erreur fe
 tomber ce build sur chaque suppression non documentée que le codebase avait déjà.
 Une ligne d'`.editorconfig` la hausse, et le guide d'adoption nomme celle qui
 l'abaisse le temps de traiter un arriéré.
+
+---
+
+### 11.15 `DCAT0015` — un paquet de catalogue sans opt-in des analyseurs
+
+Signalé lorsqu'un projet **publie un paquet**, **déclare au moins une règle** et
+**n'embarque pas `build/<son propre identifiant de paquet>.props`**. Un tel
+catalogue ne livre aucun analyseur `DCAT` à qui le référence (§16.3, ADR-0038) :
+le paquet compile, se publie et donne les constantes à ses consommateurs, sans
+jamais signaler les suppressions qu'ils n'ont pas converties.
+
+Signalé **une fois par compilation**, en fin de compilation, sans emplacement. Une
+omission d'empaquetage est une seule omission ; l'ancrer sur un type de règle la
+répéterait à chaque règle et désignerait une déclaration correcte.
+
+**Le seul diagnostic du §11 dont le déclencheur n'est pas dans la compilation.**
+Qu'un `.csproj` embarque un fichier n'est porté par aucun arbre syntaxique, aucun
+symbole, aucune référence de métadonnées. Le build classe l'empaquetage et publie
+le verdict via `CompilerVisibleProperty`, que le SDK écrit dans l'AnalyzerConfig
+généré ; l'analyseur lit `build_property.DiagnosticCatalogAnalyzerOptIn` et
+`build_property.PackageId`.
+
+Deux conséquences suivent, et ce sont des exigences plutôt que des remarques :
+
+* **Un verdict absent ou non reconnu doit se lire « non mesuré ».** Un projet
+  construit sans les cibles de la fondation ne dit rien, et un diagnostic sur le
+  silence qui s'y déclencherait signalerait tous les projets qui n'ont jamais
+  demandé à être mesurés.
+* **Un verdict qu'un projet énonce lui-même doit être cru.** Reconnaître l'opt-in
+  revient à apparier la façon dont le fichier a été déclaré, et MSBuild offre plus
+  d'une orthographe du même empaquetage. Un catalogue qui pose
+  `DiagnosticCatalogAnalyzerOptIn` à `packed` n'est pas classé.
+
+**Aucune correction.** La réparation est une ligne dans un fichier projet, qui
+n'est pas un document que la couche de correctifs édite.
+
+**Sévérité.** `Warning`, avec les autres diagnostics de définition : il s'adresse
+à qui rédige un catalogue, et les erreurs de site d'utilisation du §11 sont pour
+les consommateurs. C'est aussi le seul diagnostic d'ici qui lit quelque chose
+d'extérieur à la compilation, il peut donc se tromper là où les autres ne le
+peuvent pas, et une erreur à tort arrête un build par ailleurs correct.
 
 ---
 
@@ -1854,7 +1896,7 @@ que `[DiagnosticRule]` doit se résoudre pour ses propres consommateurs (§7.2) 
 catalogue reçoit donc l'assembly d'attributs qu'il l'ait demandée ou non, et le public qui voulait
 les analyzers et rien d'autre n'existe pas parmi eux. Un seul package porte donc les deux moitiés,
 et référencer n'importe quel catalogue les livre toutes les deux
-([ADR-0039](adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md)) :
+([ADR-0037](adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md)) :
 
 ```text
 DiagnosticCatalog.nupkg                    (DevelopmentDependency = false)
@@ -1959,7 +2001,7 @@ Trois autres conséquences :
   l'unique fondation, dont NuGet unifie l'identité sur tout le graphe. C'est le contrôle qui
   échouerait si les analyzers avaient été repliés dans chaque catalogue : un portail les ajouterait
   alors **par chemin**, MSBuild n'aurait rien à unifier, et le compilateur en recevrait deux
-  ([ADR-0039](adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md),
+  ([ADR-0037](adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md),
   [ADR-0038](adr/0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.fr.md)).
 
 Un consommateur qui veut les vérifications sans aucun catalogue référence `DiagnosticCatalog`
@@ -1985,7 +2027,7 @@ dotnet_diagnostic.DCAT0009.severity = error
 dotnet_diagnostic.DCAT0011.severity = error
 dotnet_diagnostic.DCAT0012.severity = error
 dotnet_diagnostic.DCAT0013.severity = error
-dotnet_diagnostic.DCAT0014.severity = error
+dotnet_diagnostic.DCAT0015.severity = error
 ```
 
 L'exemple surcharge toutes les règles pour montrer que toutes sont atteignables ;
@@ -2010,7 +2052,7 @@ classe `DiagnosticAnalyzer`. L'implémentation doit se scinder en deux :
 
 | Classe d'analyzer | Diagnostics | Flags code généré |
 | --- | --- | --- |
-| `DiagnosticRuleDefinitionAnalyzer` | `DCAT0002`–`DCAT0005`, `DCAT0011`–`DCAT0013` | `Analyze \| ReportDiagnostics` |
+| `DiagnosticRuleDefinitionAnalyzer` | `DCAT0002`–`DCAT0005`, `DCAT0011`–`DCAT0013`, `DCAT0015` | `Analyze \| ReportDiagnostics` |
 | `SuppressionUsageAnalyzer` | `DCAT0001`, `DCAT0006`–`DCAT0010`, `DCAT0014` | `None` |
 
 Les définitions de règles produites par un outil externe doivent en outre être

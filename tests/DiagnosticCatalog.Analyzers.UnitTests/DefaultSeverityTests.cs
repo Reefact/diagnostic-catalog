@@ -60,6 +60,12 @@ public sealed class DefaultSeverityTests
             // rule existed, over lines nothing had asked about. Warning until it has a release
             // behind it, exactly as DCAT0013 is.
             ["DCAT0014"] = DiagnosticSeverity.Warning,
+
+            // Packaging, and the only diagnostic here whose trigger is outside the compilation: the
+            // build classifies how the project packs and the analyzer reads the verdict. That is a
+            // way of being wrong the others do not have, and a wrong error stops a build that is
+            // otherwise correct C#.
+            ["DCAT0015"] = DiagnosticSeverity.Warning,
         };
 
     private static IEnumerable<DiagnosticDescriptor> Shipped =>

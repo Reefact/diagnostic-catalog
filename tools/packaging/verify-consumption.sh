@@ -190,6 +190,28 @@ catalogue() {
   mkdir -p "$dir"
   cp "$work/NuGet.config" "$dir/"
 
+  # A rule, so the fixture is a catalogue rather than an empty package that merely depends on the
+  # foundation. DCAT0015 reports a project that PUBLISHES rules without the opt-in, so without this
+  # the packaging classification below would have nothing to fire on and the check would pass by
+  # describing nothing. Deliberately well-formed: any other definition diagnostic reported here would
+  # be noise in a log the DCAT0015 checks grep.
+  cat > "$dir/Rule.cs" <<'RULE'
+using DiagnosticCatalog;
+
+[DiagnosticCategory]
+internal static class Categories
+{
+    public const string Usage = "Usage";
+}
+
+[DiagnosticRule]
+public static class S1144
+{
+    public const string Id = nameof(S1144);
+    public const string Category = Categories.Usage;
+}
+RULE
+
   private=''
   optin=''
   case "$2" in
@@ -329,6 +351,21 @@ build ConsumerSilent
 
 check 'a catalogue shipping no opt-in leaves its consumer unchecked' \
   no "$(reported ConsumerSilent)"
+
+# And that the author is TOLD, which is the whole of DCAT0015 and the half no unit test can reach.
+# CatalogueOptInTests hands the analyzer a verdict directly; what is measured here is MSBuild
+# producing that verdict from a real project, in the pack that would have published the silence.
+#
+# Both directions, because a classifier that answered "missing" for everything would pass the first
+# check and fail the second.
+told() {
+  if grep -q 'DCAT0015' "$work/pack-$1.log"; then printf 'yes\n'; else printf 'no\n'; fi
+}
+
+check 'a catalogue shipping no opt-in is told so while packing' \
+  yes "$(told Acme.Catalog.Silent)"
+check 'a catalogue shipping the opt-in is not told' \
+  no "$(told Acme.Catalog.A)"
 
 # A catalogue that hides the foundation hides BOTH halves, because there is one package and one
 # lever. This consumer had to declare its own marker to compile at all — it is choosing the §7.2

@@ -42,4 +42,5 @@ internal static class DiagnosticIds
     internal const string RuleTypeNameDoesNotSayId = "DCAT0013";
 
     internal const string MissingJustification = "DCAT0014";
+    internal const string MissingAnalyzerOptIn = "DCAT0015";
 }

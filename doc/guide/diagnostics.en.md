@@ -9,7 +9,7 @@ For anyone who saw a `DCATxxxx` and wants to know what it means. Every diagnosti
 That assembly ships inside the `DiagnosticCatalog` package rather than in one of its own, so nothing
 has to be referenced to get these. Every catalogue depends on the foundation and may not hide it, so
 referencing any catalogue turns them on
-([ADR-0039](../adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md)); referencing
+([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md)); referencing
 `DiagnosticCatalog` alone is the way to be checked with no catalogue at all.
 
 They fall into two groups. **Definition** diagnostics look at a rule you declared; you only see them
@@ -30,6 +30,7 @@ people.
 | [`DCAT0012`](#dcat0012) | definition | A rule identifier should be written as `nameof` | Warning | yes, conditionally |
 | [`DCAT0013`](#dcat0013) | definition | The diagnostic rule type name does not say its `Id` | Warning | — |
 | [`DCAT0014`](#dcat0014) | use site | A suppression must carry a justification | Warning | — |
+| [`DCAT0015`](#dcat0015) | packaging | A catalogue package must ship the analyzer opt-in | Warning | — |
 
 `DCAT0008` and `DCAT0010` are specified but deliberately not in 1.0.
 
@@ -410,6 +411,50 @@ picked one would be deciding which of them was the typo.
 
 ---
 
+### `DCAT0015`
+
+**Your catalogue publishes rules and turns no analyzer on for the people who reference it.**
+
+```
+warning DCAT0015: 'Contoso.Rules' packs no build/Contoso.Rules.props,
+                  so referencing this catalogue checks nobody
+```
+
+A catalogue delivers the `DCAT` analyzers by packing `build/<its own package id>.props`, which sets
+`EnableDiagnosticCatalogAnalyzers`. NuGet imports a package's `build/` folder for a **direct**
+reference and for nothing further out, and that asymmetry is what keeps an application from being
+analysed by a catalogue it reached through some library
+([ADR-0038](../adr/0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.en.md)). The
+file is three lines, and
+[Packaging a catalogue](packaging-a-catalogue.en.md#ship-the-opt-in-that-checks-your-consumers) has
+them.
+
+Without it your package still compiles, still publishes, and still gives your consumers the
+constants. What it never does is report the suppressions they have not converted — and a codebase
+nothing checks looks exactly like one with nothing to report. That is the silence this whole library
+exists to remove, so it is reported to the only person who can end it.
+
+**Two things make this one unlike every other `DCAT`.**
+
+It reads a fact from **outside the compilation**. Whether a `.csproj` packs a file is not in any
+syntax tree, so the build classifies the packaging and publishes its verdict to the analyzer.
+Recognising how the file was declared means matching how it was *written*, and there is more than one
+spelling — so if yours is arranged in a way the match cannot see, say so and be believed:
+
+```xml
+<PropertyGroup>
+  <DiagnosticCatalogAnalyzerOptIn>packed</DiagnosticCatalogAnalyzerOptIn>
+</PropertyGroup>
+```
+
+And it is reported at **compilation end**, which puts it in your build and in CI rather than under
+your cursor: the IDE surfaces compilation-end diagnostics only under full-solution analysis. The
+defect is a missing line in a project file, so that is the right place for it.
+
+**No fix.** The repair is in a project file, which is not a document the code-fix layer edits.
+
+---
+
 ## Configuring them
 
 Standard Roslyn mechanisms, no proprietary format:
@@ -433,6 +478,7 @@ dotnet_diagnostic.DCAT0004.severity = error
 dotnet_diagnostic.DCAT0011.severity = error
 dotnet_diagnostic.DCAT0012.severity = error
 dotnet_diagnostic.DCAT0013.severity = error
+dotnet_diagnostic.DCAT0015.severity = error
 
 # A name that could not have said its id. Raise it if you would rather review
 # every such declaration than let it pass.
@@ -459,7 +505,7 @@ needs different treatment.
 That same key set to `none` is how you turn the whole set **off**. Since the analyzers ship inside
 `DiagnosticCatalog`, there is no package reference left to decline: a project that wants the markers
 and none of the checking says so here rather than in its dependencies
-([ADR-0039](../adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md)).
+([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md)).
 
 ## What is deliberately not checked
 

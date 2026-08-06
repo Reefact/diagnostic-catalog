@@ -59,12 +59,18 @@ internal static class AnalyzerHarness
     /// PrivateAssets="all": the marker is unresolvable in their compilation, although the catalogue's
     /// metadata still carries it.
     /// </param>
+    /// <param name="buildProperties">
+    /// MSBuild properties the build would have published through CompilerVisibleProperty, keyed WITHOUT
+    /// the build_property. prefix. Null means a build that said nothing, which is what every other test
+    /// here compiles under and what DCAT0015 must stay silent for.
+    /// </param>
     internal static async Task<ImmutableArray<Diagnostic>> RunAsync(
         DiagnosticAnalyzer analyzer,
         string source,
         string? referencedSource = null,
         bool referenceMayUseFoundation = true,
-        bool consumerMayUseFoundation = true)
+        bool consumerMayUseFoundation = true,
+        IReadOnlyDictionary<string, string>? buildProperties = null)
     {
         // Self-check one: an analyzer declaring nothing can report nothing, and would make every
         // expectation below vacuous.
@@ -95,8 +101,12 @@ internal static class AnalyzerHarness
             compileErrors.IsEmpty,
             "the snippet must compile; it reported: " + string.Join("; ", compileErrors.Select(d => d.ToString())));
 
+        AnalyzerOptions options = new(
+            ImmutableArray<AdditionalText>.Empty,
+            new BuildPropertyProvider(buildProperties ?? new Dictionary<string, string>()));
+
         ImmutableArray<Diagnostic> reported = await compilation
-            .WithAnalyzers(ImmutableArray.Create(analyzer))
+            .WithAnalyzers(ImmutableArray.Create(analyzer), options)
             .GetAnalyzerDiagnosticsAsync()
             .ConfigureAwait(false);
 
@@ -211,4 +221,43 @@ internal static class AnalyzerHarness
     }
 
     private const string FoundationAssemblyFileName = "DiagnosticCatalog.dll";
+
+    /// <summary>
+    /// Stands in for what the SDK writes into the generated AnalyzerConfig from
+    /// <c>CompilerVisibleProperty</c>. The <c>build_property.</c> prefix is added here rather than in
+    /// every test, so a test states the MSBuild property name a reader would recognise.
+    /// </summary>
+    private sealed class BuildPropertyProvider : AnalyzerConfigOptionsProvider
+    {
+        private readonly Options _global;
+
+        internal BuildPropertyProvider(IReadOnlyDictionary<string, string> properties)
+        {
+            Dictionary<string, string> prefixed = new(StringComparer.Ordinal);
+            foreach (KeyValuePair<string, string> property in properties)
+            {
+                prefixed["build_property." + property.Key] = property.Value;
+            }
+
+            _global = new Options(prefixed);
+        }
+
+        public override AnalyzerConfigOptions GlobalOptions => _global;
+
+        public override AnalyzerConfigOptions GetOptions(SyntaxTree tree) => Options.Empty;
+
+        public override AnalyzerConfigOptions GetOptions(AdditionalText textFile) => Options.Empty;
+
+        private sealed class Options : AnalyzerConfigOptions
+        {
+            internal static readonly Options Empty = new(new Dictionary<string, string>(StringComparer.Ordinal));
+
+            private readonly Dictionary<string, string> _values;
+
+            internal Options(Dictionary<string, string> values) => _values = values;
+
+            public override bool TryGetValue(string key, out string value) =>
+                _values.TryGetValue(key, out value!);
+        }
+    }
 }
