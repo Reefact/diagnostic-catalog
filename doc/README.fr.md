@@ -126,43 +126,61 @@ public sealed class ReportSerializer
 C'est tout. Cassez la référence exprès — `SonarRule.S1145` — et la compilation s'arrête, là où
 la chaîne qu'elle remplace se serait compilée en une suppression qui ne faisait rien, en silence.
 
-Un catalogue, ce sont des constantes et rien d'autre : l'appliquer n'ajoute aucun comportement à
-l'exécution ni aucun assemblage à charger. [La garantie d'empreinte nulle](guide/zero-footprint.fr.md)
-énonce ce qui atteint l'assemblage que vous livrez, et ce que le test vérifie réellement.
+**Une seule référence, vérifications comprises.** Chaque catalogue dépend de `DiagnosticCatalog`,
+qui porte les analyseurs `DCAT` et leurs correctifs à côté des attributs marqueurs : référencer un
+catalogue est ce qui active la vérification, et il n'y a pas de second paquet à ajouter
+([ADR-0037](adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md)). Référencez
+`DiagnosticCatalog` seul si vous voulez les vérifications sans catalogue.
+
+Les analyseurs tournent dans le compilateur et nulle part ailleurs : à l'exécution, un catalogue
+reste des constantes et rien d'autre — aucun comportement, et aucun assemblage à charger pour votre
+application. `tools/packaging/verify-consumption.sh` restaure le paquet comme le ferait un
+consommateur et vérifie que les assemblages d'analyse restent hors du dossier de sortie que
+`DiagnosticCatalog.dll`, lui, atteint.
+[La garantie d'empreinte nulle](guide/zero-footprint.fr.md) énonce ce qui atteint l'assemblage que
+vous livrez, et ce que le test vérifie réellement.
 
 Dix minutes de bout en bout, avec la référence cassée exprès, c'est
 [Démarrer](guide/getting-started.fr.md).
 
 ## 📈 L'adopter là où des suppressions existent déjà
 
-Une base de code qui supprime déjà des règles ne les réécrit pas à la main. Référencez
-`DiagnosticCatalog.Analyzers` à côté du catalogue :
+Une base de code qui supprime déjà des règles ne les réécrit pas à la main — et il n'y a rien de
+plus à référencer : le catalogue ci-dessus a emmené les analyseurs avec lui.
 
-```xml
-<PackageReference Include="DiagnosticCatalog.Analyzers" Version="1.0.0" PrivateAssets="all" />
-```
-
-Il signale `DCAT0006` sur une suppression écrite en littéraux lorsqu'un catalogue de la
+`DCAT0006` signale une suppression écrite en littéraux lorsqu'un catalogue de la
 compilation déclare cette règle, et propose la correction. *Corriger toutes les occurrences*
 l'applique ensuite à un document, un projet ou la solution entière en une passe, en ajoutant le
 `using` de chaque règle au passage.
 
-Deux choses de plus rendent la migration tenable :
+Trois choses de plus rendent la migration tenable :
 
-* **Monter la sévérité par paliers.** `DCAT0006` commence en suggestion. Montez-la dossier par
-  dossier à mesure que vous convertissez, plutôt que de rencontrer toutes les occurrences d'un
-  coup — [Adopter un catalogue](guide/adopting-a-catalogue.fr.md) donne l'ordre de conversion.
+* **Monter la sévérité par paliers.** `DCAT0006` est livré en erreur
+  ([ADR-0027](adr/0027-ship-the-use-site-diagnostics-as-errors.fr.md)), si bien que la compilation
+  qui ajoute le catalogue rencontre d'un coup toutes les suppressions littérales qu'il sait
+  reconnaître. Descendez-le en suggestion dans `.editorconfig`, puis remontez-le dossier par
+  dossier à mesure que vous convertissez —
+  [Adopter un catalogue](guide/adopting-a-catalogue.fr.md) donne l'ordre de conversion.
 * **Demander ce qu'est une règle.** `dcat explain <catalogue.dll> S1144` affiche la catégorie de
   la règle, son lien d'aide, et la ligne `[SuppressMessage]` exacte à coller — pleinement
   qualifiée, donc elle compile où qu'elle atterrisse.
+* **Rien à garder pour vous si vous livrez une bibliothèque.** Un catalogue que vous référencez
+  *vous* vérifie et s'arrête là : une application qui référence votre bibliothèque n'est pas
+  analysée par un catalogue qu'elle n'a jamais choisi, et vous n'écrivez rien pour cela
+  ([ADR-0038](adr/0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.fr.md)).
+  Mesuré par `tools/packaging/verify-consumption.sh` sous l'intitulé « the analyzer does NOT reach a
+  consumer two hops out ». Un projet qui *veut* les vérifications de plus loin pose
+  `EnableDiagnosticCatalogAnalyzers` à `true`.
 
 ## 🧭 Ce que cela ne fait pas
 
 * Cela ne peut pas vérifier une règle **qu'aucun catalogue de votre compilation ne déclare**. Une
   suppression nommant un analyseur pour lequel vous n'avez pas de catalogue reste une paire de
   chaînes, et rien ne le signale.
-* Cela ne change **rien à quelles règles se déclenchent**. Un catalogue, ce sont des constantes ;
-  les sévérités restent dans `.editorconfig` — voir [la configuration](guide/configuration.fr.md).
+* Cela ne change **rien à quelles règles de vos analyseurs se déclenchent**. Un catalogue, ce sont
+  des constantes ; les vérifications `DCAT` qu'il apporte sont les seuls diagnostics ajoutés, et
+  toutes les sévérités restent dans `.editorconfig` — voir
+  [la configuration](guide/configuration.fr.md).
 * Une poignée de suppressions dans un seul projet n'a besoin de rien de tout cela.
   [Quand ne pas l'utiliser](guide/when-not-to-use.fr.md) est écrit pour vous en dissuader là où il
   le faut, et [les alternatives](guide/alternatives.fr.md) couvre ce qui existe par ailleurs.
@@ -190,9 +208,8 @@ La [carte de la documentation](guide/README.fr.md) ([English](guide/README.en.md
 les pages de toutes les pistes. Chacune existe en anglais et en français — la bannière en haut
 d'une page bascule de l'une à l'autre.
 
-Pages par paquet :
+Pages par projet :
 [`DiagnosticCatalog`](../src/DiagnosticCatalog/README.fr.md) ·
-[`.Analyzers`](../src/DiagnosticCatalog.Analyzers/README.fr.md) ·
 [`.Self`](../src/DiagnosticCatalog.Self/README.fr.md) ·
 [`.Sonar`](../src/DiagnosticCatalog.Sonar/README.fr.md) ·
 [`.NetAnalyzers`](../src/DiagnosticCatalog.NetAnalyzers/README.fr.md) ·
@@ -211,13 +228,12 @@ Pages par paquet :
 
 ## 🧰 Les paquets
 
-À côté des catalogues d'éditeurs ci-dessus, quatre paquets composent la boîte à outils. Chacun
+À côté des catalogues d'éditeurs ci-dessus, trois paquets composent la boîte à outils. Chacun
 roule sur un [train de release](../CONTRIBUTING.md) à lui et se versionne à son propre rythme :
 
 | Paquet | À quoi il sert | Train |
 | --- | --- | --- |
-| **`DiagnosticCatalog`** | Les marqueurs `[DiagnosticRule]`, `[DiagnosticCategory]` et `[assembly: CatalogSource]`. Référencez-le pour déclarer un catalogue **à vous** — pour vos analyseurs, ou pour un jeu de règles interne. Le référencer déclare des règles ; il n'effectue aucune vérification. | `lib` |
-| **`DiagnosticCatalog.Analyzers`** | La vérification : des diagnostics qui confrontent une déclaration de règle au contrat structurel, et une suppression à la règle qu'elle nomme, avec les correctifs qui transforment un littéral en référence de catalogue. Une dépendance de compilation — ces assemblages n'atteignent jamais votre exécution. | `lib` |
+| **`DiagnosticCatalog`** | Les marqueurs `[DiagnosticRule]`, `[DiagnosticCategory]` et `[assembly: CatalogSource]`, et la vérification qui va avec : des diagnostics qui confrontent une déclaration de règle au contrat structurel, et une suppression à la règle qu'elle nomme, avec les correctifs qui transforment un littéral en référence de catalogue. Référencez-le pour déclarer un catalogue **à vous** — pour vos analyseurs, ou pour un jeu de règles interne — ou seul, pour les vérifications sans catalogue. Chaque catalogue en dépend, donc en référencer un quelconque emmène la vérification avec lui ([ADR-0037](adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md)). Les assemblages d'analyse sont de compilation seulement et n'atteignent jamais votre exécution. | `lib` |
 | **`DiagnosticCatalog.Self`** | Les règles `DCATxxxx` que ces analyseurs signalent, cataloguées de la même façon — de sorte que supprimer un diagnostic de *cette* bibliothèque soit une référence vérifiée plutôt que la chaîne magique que tout ceci existe pour supprimer. | `lib` |
 | **`DiagnosticCatalog.Cli`**, l'outil `dcat` | Le générateur, en outil .NET. Pointez-le vers un paquet d'analyseurs ou vers des assemblages sur disque et il écrit un catalogue comme ce dépôt écrit ceux ci-dessus. | `cli` |
 
@@ -332,6 +348,9 @@ Référencez la fondation :
 ```xml
 <PackageReference Include="DiagnosticCatalog" Version="1.0.0" />
 ```
+
+Cette référence apporte aussi les analyseurs, si bien que les règles que vous déclarez sont
+confrontées au contrat à mesure que vous les écrivez.
 
 Une règle est une classe statique, non générique, marquée `[DiagnosticRule]`, avec deux
 constantes publiques obligatoires — et la catégorie est atteinte via une classe à elle :

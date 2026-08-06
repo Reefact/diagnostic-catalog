@@ -7,6 +7,9 @@ Déclarez les règles de diagnostic d'un analyseur sous forme de constantes fort
 référencées, pour que `SuppressMessageAttribute` prenne des références vérifiées à la
 compilation plutôt que des chaînes magiques.
 
+Un seul paquet, les deux moitiés : les attributs avec lesquels un catalogue se déclare, et
+les analyseurs `DCAT` et leurs correctifs qui vérifient ce que vous écrivez avec.
+
 ## Le problème
 
 Les **deux** arguments de `SuppressMessageAttribute` sont des chaînes magiques, et rien
@@ -32,7 +35,8 @@ ni `"Code Smell"`, ni `"Maintainability"`.
 Sonar, les règles CA de .NET, StyleCop, les règles IDE de Roslyn et celles de xUnit sont déjà
 empaquetées sous `DiagnosticCatalog.Sonar`, `DiagnosticCatalog.NetAnalyzers`, `DiagnosticCatalog.StyleCop`
 `DiagnosticCatalog.CodeStyle` et `DiagnosticCatalog.Xunit`. Ce paquet-ci est ce qu'il vous faut pour
-déclarer un catalogue à vous.
+déclarer un catalogue à vous — et référencer l'un de ceux-là vous l'apporte déjà, avec les
+vérifications qu'il porte.
 
 ## Installation
 
@@ -41,12 +45,30 @@ déclarer un catalogue à vous.
 ```
 
 N'ajoutez **pas** `PrivateAssets="all"` si votre projet publie un catalogue destiné à
-d'autres : le paquet doit leur parvenir pour qu'ils puissent déclarer leurs propres règles,
-et pour que la réflexion à l'exécution sur votre catalogue continue de fonctionner. Les
-vérifications, elles, survivent à un attribut non résolu — les analyseurs reconnaissent le
-nom de métadonnées pleinement qualifié `DiagnosticCatalog.DiagnosticRuleAttribute`, ce qui
-est exactement le mode de défaillance silencieuse que ce choix visait à supprimer — mais ne
-comptez pas dessus.
+d'autres. Un seul paquet porte les deux moitiés, donc le cacher les cache toutes les deux :
+vos consommateurs perdent `[DiagnosticRule]`, dont ils ont besoin pour déclarer leurs propres
+règles et que la réflexion à l'exécution sur votre catalogue résout, et ils perdent les
+vérifications avec — un consommateur écrit de la façon ordinaire cesse de compiler au lieu de
+simplement passer inaperçu. Les deux moitiés de cela sont mesurées contre une restauration
+réelle par `tools/packaging/verify-consumption.sh`, dans les vérifications
+`a catalogue hiding the foundation delivers no analyzer either` et
+`a catalogue hiding the foundation withholds the attribute assembly`.
+
+Un catalogue embarque aussi `build/<son propre identifiant de paquet>.props`, qui pose
+`EnableDiagnosticCatalogAnalyzers`, et c'est ce qui livre les analyseurs à ses
+consommateurs — la vérification `a catalogue delivers the analyzer to its own consumer`.
+NuGet importe le dossier `build/` d'un paquet pour une référence directe et pour rien
+au-delà : les vérifications atteignent donc le projet qui a référencé le catalogue et s'y
+arrêtent. Une application qui référence une **bibliothèque** ayant pris un catalogue pour
+ses propres suppressions n'est pas analysée par un catalogue qu'elle n'a jamais choisi, et
+la bibliothèque n'écrit rien pour l'obtenir
+([ADR-0038](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/adr/0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.fr.md)).
+[Empaqueter un catalogue](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/packaging-a-catalogue.fr.md)
+donne le fichier.
+
+Un projet consommateur passe outre dans les deux sens avec la même propriété : `false` garde
+le catalogue et décline l'analyse, `true` réclame les vérifications de plus loin qu'une
+référence directe.
 
 ## Déclarer une règle
 
@@ -149,27 +171,130 @@ analyseur lui-même. Un paquet de catalogue autonome devrait s'en tenir aux cha�
 Le texte localisé (`LocalizableString`, descripteurs adossés à un resx) sort du modèle `const` ;
 les fichiers de ressources restent le bon outil pour les chaînes traduites.
 
-## Ce que ce paquet n'est pas
+## Les vérifications qui viennent avec
 
-Ce paquet contient **les attributs uniquement** — `[DiagnosticRule]` et
-`[assembly: CatalogSource]`. Il ne vérifie rien.
+Les analyseurs `DCAT` et leurs correctifs sont livrés **à l'intérieur de ce paquet**, sous
+`analyzers/dotnet/cs/`, à côté de `lib/`. Il n'y a rien d'autre à référencer : ils arrivent avec
+la fondation, et la fondation arrive avec chaque catalogue bâti dessus.
 
-Les analyseurs qui valident les déclarations de règles, vérifient que `Category` et `Id`
-proviennent de la même règle, et proposent de remplacer les littéraux de chaîne par des
-références de catalogue sont livrés à part :
+Ils vérifient deux choses : qu'une **déclaration** de règle satisfait le contrat structurel — sa
+forme, son `Id`, sa `Category`, la façon dont cette catégorie est atteinte et ce que dit le nom
+de son type — et qu'une **suppression** qui en référence une est cohérente : deux arguments qui
+ne nomment pas la `Category` d'une règle et l'`Id` de cette même règle, une suppression à moitié
+migrée mêlant une référence et un littéral, un littéral qu'une référence de catalogue
+remplacerait, et un `UnconditionalSuppressMessage` que le trimmer jette.
 
-```xml
-<PackageReference Include="DiagnosticCatalog.Analyzers" Version="..." PrivateAssets="all" />
+Un projet qui consomme un catalogue et ne déclare aucune règle à lui ne voit que le second
+ensemble. Les diagnostics de déclaration ne signalent que les types marqués `[DiagnosticRule]` et
+rendent la main immédiatement sur tout le reste.
+
+Un assembly d'analyse ne devient jamais une dépendance d'exécution de l'application
+consommatrice : `tools/packaging/verify-consumption.sh` restaure ce paquet comme le fait un
+consommateur et vérifie que `DiagnosticCatalog.Analyzers.dll` et `DiagnosticCatalog.CodeFixes.dll`
+restent hors du dossier de sortie tandis que `DiagnosticCatalog.dll` y parvient. Appliquer
+`[DiagnosticRule]` n'ajoute pas non plus de comportement à l'exécution — le runtime résout les
+types d'attributs paresseusement, donc `DiagnosticCatalog.dll` n'est jamais chargée à moins que
+quelque chose ne fasse de la réflexion sur les types de règles.
+
+Les analyseurs n'ont jamais besoin du *type* de l'attribut, seulement de son nom : ils
+reconnaissent `DiagnosticCatalog.DiagnosticRuleAttribute` par son nom de métadonnées pleinement
+qualifié. Un projet qui déclare son propre `internal sealed class DiagnosticRuleAttribute` dans
+l'espace de noms `DiagnosticCatalog` est donc vérifié exactement comme celui qui a pris le paquet.
+Ce que cela ne fait pas, c'est livrer les analyseurs — ceux-là arrivent avec ce paquet, et un
+projet qui l'a caché n'a ni l'un ni l'autre.
+
+## Migrer une base de code existante
+
+Adopter un catalogue n'est pas un changement discret : les diagnostics de site d'utilisation sont
+des erreurs par défaut (`DCAT0001`, `DCAT0006` et `DCAT0007`), donc une suppression littérale
+qu'une référence de catalogue remplacerait casse la compilation au lieu d'avertir. Le correctif
+qui la réécrit est la façon dont une base de code adopte un catalogue en pratique :
+
+```csharp
+[SuppressMessage("Major Code Smell", "S1144", Justification = "kept for reflection")]
+// devient
+[SuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.Id, Justification = "kept for reflection")]
 ```
 
-Appliquer `[DiagnosticRule]` n'introduit aucun comportement à l'exécution. Le runtime résout
-les types d'attributs paresseusement, donc `DiagnosticCatalog.dll` n'est jamais chargée à
-moins que quelque chose ne fasse de la réflexion sur les types de règles.
+*Corriger toutes les occurrences* l'applique à un document, un projet ou une solution en une
+étape, et le `using` dont la référence a besoin est ajouté pour vous. Tout le reste de l'attribut
+est laissé exactement tel qu'écrit — `Justification`, `Scope`, `Target` et `MessageId` sont à vous.
 
-Si vous ne voulez aucune dépendance de paquet du tout, les analyseurs reconnaissent l'attribut
-par son nom de métadonnées pleinement qualifié. Déclarer votre propre
-`internal sealed class DiagnosticRuleAttribute` dans l'espace de noms `DiagnosticCatalog`
-fonctionne tout aussi bien.
+Deux comportements à connaître avant de le lancer :
+
+* **Le suffixe de nom convivial est retiré.** Visual Studio écrit
+  `"S1144:Unused private members should be removed"` ; le correctif reconnaît cette forme et
+  remplace le tout par la référence. La prose ne vivait dans la suppression que parce que rien
+  d'autre ne la portait — la documentation propre à la règle s'en charge désormais.
+* **Quand deux catalogues décrivent la même règle, aucun correctif n'est proposé.** Le diagnostic
+  apparaît quand même, donc rien n'est caché, mais choisir entre les deux vous revient.
+
+Une suppression laissée à moitié migrée — une référence, un littéral — est signalée elle aussi, et
+complétée depuis la règle que l'argument déjà migré nomme :
+
+```csharp
+[SuppressMessage(SonarRule.S1144.Category, "S1144", Justification = "kept for reflection")]
+// devient
+[SuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.Id, Justification = "kept for reflection")]
+```
+
+Seul le littéral est réécrit ; quelle que soit l'orthographe que vous avez choisie de l'autre
+côté, un alias compris, elle est laissée intacte. Et si le littéral nomme quelque chose que la
+règle référencée ne nomme pas — `"S9999"` à côté de `SonarRule.S1144.Category` — vous obtenez le
+diagnostic et aucun correctif. Compléter celui-là ferait taire une autre règle que celle qui est
+tue aujourd'hui, et c'est une décision qui vous revient, pas à une ampoule.
+
+## Quand les deux arguments nomment des règles différentes
+
+Ce cas-là reçoit **deux** correctifs et aucune recommandation :
+
+```text
+Use SonarRule.S1144.Id        — keep the category, correct the identifier
+Use SonarRule.S2094.Category  — keep the identifier, correct the category
+```
+
+Vous seul savez laquelle des deux moitiés était la faute de frappe, donc aucune n'est proposée par
+défaut. Bon à savoir pendant que vous choisissez : Roslyn apparie une suppression sur
+l'**identifiant seul** et ne regarde jamais la catégorie, si bien que corriger la catégorie laisse
+exactement en l'état ce qui est supprimé, tandis que corriger l'identifiant le change.
+
+## Correctifs pour une règle écrite à la main
+
+Un catalogue est normalement généré, et du code généré satisfait le contrat par construction. Quand
+vous en écrivez un vous-même, des correctifs sont là pour la partie mécanique :
+
+```csharp
+[DiagnosticRule]
+public sealed class JD0007                      // → Rendre 'JD0007' static
+{
+    private static readonly string Id = "JD0007";   // → Faire de 'Id' une constante publique
+                                                    // → Déclarer 'public const string Category'
+}
+```
+
+Chacun n'est proposé **que là où la réparation est déjà écrite dans le code**. `static` n'est pas
+proposé pour un type générique, pour une `struct`, ni pour une classe portant un membre d'instance
+— le mot-clé n'y compilerait pas, et retirer ce qui l'en empêche est un changement de votre
+conception plutôt qu'une réparation de celle-ci. Une classe `partial` est refusée elle aussi : les
+parties que le correctif ne voit pas sont celles qui décident.
+
+Les réparations de membres corrigent des modificateurs et jamais la valeur. Un `const int Id`, une
+chaîne vide, un initialiseur qui n'est pas constant — ceux-là sont signalés sans correctif, parce
+que le code ne dit rien de ce que vous vouliez.
+
+> **Celui auquel réfléchir avant d'appuyer.** *Déclarer 'public const string Category'* écrit
+> `"TODO"`. C'est une vraie chaîne, donc `DCAT0004` cesse d'être signalé — vous avez échangé un
+> avertissement contre un marqueur. Une catégorie que personne ne remplit est fausse pour toujours
+> et invisible dans toutes les compilations, parce que Roslyn apparie une suppression sur son
+> identifiant seul. `Id` est différent : il est écrit `nameof(JD0007)`, lu sur la déclaration
+> plutôt qu'inventé.
+
+## Ce que les analyseurs ne font pas
+
+Ils ne valident pas une chaîne arbitraire. `[SuppressMessage("Usage", "S1144")]` avec la mauvaise
+catégorie ne correspond à aucune règle connue, et rien n'est signalé — le mécanisme qui rend une
+catégorie fausse impossible est la constante elle-même, que le compilateur vérifie. Ces analyseurs
+vous amènent aux constantes et vous y maintiennent.
 
 ## Consigner d'où vient un catalogue
 
@@ -219,6 +344,22 @@ Pour déclarer un catalogue, dans l'ordre où le travail se fait :
 - [**Empaqueter un catalogue**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/packaging-a-catalogue.fr.md)
   — quoi référencer, ce qui se propage à vos consommateurs, et ce que nuget.org fait de votre
   README.
+
+Pour les vérifications que ce paquet apporte avec lui :
+
+- [**Les diagnostics `DCAT`**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/diagnostics.fr.md)
+  — chaque identifiant que ces analyseurs signalent, ce qui le déclenche, pourquoi il existe, si un
+  correctif est proposé, et la clé `.editorconfig` qui le configure.
+- [**Configuration**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/configuration.fr.md)
+  — les sévérités, le commutateur par catégorie, le code généré, et l'erreur de `PrivateAssets`
+  qui fait tout taire.
+- [**Adopter un catalogue sur une base de code existante**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/adopting-a-catalogue.fr.md)
+  — la montée en sévérité et dans quel ordre convertir, quand la migration ci-dessus est vaste.
+- [**Le contrat de règle**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/rule-contract.fr.md)
+  — les cinq exigences contre lesquelles une déclaration est vérifiée, et chaque forme syntaxique
+  qu'un site d'utilisation peut prendre.
+- [**Dépannage**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/troubleshooting.fr.md)
+  — par symptôme, à commencer par « rien n'est signalé du tout ».
 
 La [**carte de la documentation**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/README.fr.md)
 choisit une page selon ce que vous cherchez à faire ; chaque guide existe en anglais et en français.

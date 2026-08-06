@@ -7,6 +7,12 @@ Pour quiconque a vu passer un `DCATxxxx` et veut savoir ce qu'il signifie. Chaqu
 `DiagnosticCatalog.Analyzers` signale : ce qui le déclenche, pourquoi il existe, comment le
 configurer.
 
+Cet assemblage est livré dans le paquet `DiagnosticCatalog` plutôt que dans un paquet à lui : il n'y
+a donc rien à référencer pour les obtenir. Chaque catalogue dépend de la fondation et n'a pas le
+droit de la masquer, si bien que référencer n'importe quel catalogue les active
+([ADR-0039](../adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md)) ; référencer
+`DiagnosticCatalog` seul est la façon d'être vérifié sans aucun catalogue.
+
 Ils se répartissent en deux groupes. Les diagnostics de **déclaration** regardent une règle que vous
 avez déclarée ; vous ne les voyez que si vous écrivez un catalogue. Les diagnostics de **site
 d'utilisation** regardent une suppression que vous avez écrite, ce qui concerne la plupart des gens.
@@ -101,8 +107,11 @@ Si **deux** catalogues décrivent la même règle, vous obtenez le diagnostic et
 automatique — choisir entre les deux vous revient.
 
 > **Sur l'adoption.** Celui-ci se déclenche sur toutes les suppressions littérales d'un coup, le jour
-> où vous ajoutez un catalogue. Sous `TreatWarningsAsErrors`, cela casse le build immédiatement.
-> Descendez-le à `suggestion`, migrez avec *Corriger toutes les occurrences*, puis remontez-le.
+> où vous ajoutez un catalogue — et le catalogue amène l'analyseur avec lui, aucune seconde
+> référence ne s'interpose. C'est une **erreur** par défaut
+> ([ADR-0027](../adr/0027-ship-the-use-site-diagnostics-as-errors.fr.md)) : le build qui ajoute le
+> catalogue est donc le build qui casse. Descendez-le à `suggestion`, migrez avec *Corriger toutes
+> les occurrences*, puis remontez-le.
 
 ### `DCAT0007`
 
@@ -142,7 +151,7 @@ fonctionne.
 
 ### `DCAT0014`
 
-**La suppression nomme une règle et ne dit jamais pourquoi.**
+**La suppression ne dit jamais pourquoi elle est là.**
 
 ```csharp
 [SuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.Id)]
@@ -195,16 +204,17 @@ Une ligne en cours de migration est donc signalée deux fois — `DCAT0006` pour
 la raison — et c'est délibéré : convertir une suppression ne répond pas à la question à laquelle elle
 n'a jamais répondu. Si vous faites déjà tourner `SA1404` de StyleCop, vous verrez les deux ; elles
 posent la même question, et une ligne d'`.editorconfig` fait taire celle dont vous ne voulez pas
-([ADR-0037](../adr/0037-require-a-justification-on-every-suppression.fr.md)).
+([ADR-0039](../adr/0039-require-a-justification-on-every-suppression.fr.md)).
 
 **Aucun correctif, et aucun n'est possible.** Ce qui doit y figurer est la seule chose de l'attribut
 qui ne se lit pas dans le code
 ([ADR-0018](../adr/0018-a-code-fix-never-decides-what-only-the-author-can.fr.md)).
 
 Il est livré en `Avertissement` et non en erreur, contrairement à ses trois voisins de site
-d'utilisation : il signale des lignes par ailleurs entièrement correctes, et un projet qui a adopté un
-catalogue avant que cette règle n'existe ne doit pas voir son build tomber du jour au lendemain à
-cause d'elles. Une ligne d'`.editorconfig` la relève le jour où vous le voulez.
+d'utilisation : il signale des lignes par ailleurs entièrement correctes, et il les signale dès le
+premier build suivant la référence plutôt qu'après une migration — un codebase ne doit pas voir son
+build tomber du jour au lendemain sur chaque suppression écrite avant l'existence de cette règle. Une
+ligne d'`.editorconfig` la relève le jour où vous le voulez.
 
 ---
 
@@ -469,6 +479,11 @@ dotnet_analyzer_diagnostic.category-DiagnosticCatalog.severity = error
 
 Cantonnez une section à un chemin de la façon ordinaire d'`.editorconfig` quand du code généré ou un
 dossier hérité demande un traitement différent.
+
+Cette même clé réglée sur `none` est la façon de tout **désactiver**. Puisque les analyseurs sont
+livrés dans `DiagnosticCatalog`, il ne reste aucune référence de paquet à décliner : un projet qui
+veut les marqueurs et aucune vérification le dit ici plutôt que dans ses dépendances
+([ADR-0039](../adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md)).
 
 ## Ce qui n'est délibérément pas vérifié
 

@@ -12,7 +12,7 @@ like one idea. Every split here is forced by something; this page says by what.
 flowchart TB
     subgraph SRC["src/ — what is published"]
         F["DiagnosticCatalog<br/><i>3 files: the markers</i>"]
-        A["DiagnosticCatalog.Analyzers<br/><i>the DCAT diagnostics</i>"]
+        A["DiagnosticCatalog.Analyzers<br/><i>the DCAT diagnostics — no package of its own</i>"]
         CF["DiagnosticCatalog.CodeFixes<br/><i>the fixes — no package of its own</i>"]
         SELF["DiagnosticCatalog.Self"]
         S["DiagnosticCatalog.Sonar"]
@@ -29,7 +29,8 @@ flowchart TB
         PA["DiagnosticCatalog.PublicApi"]
         BA["DiagnosticCatalog.BannedApi"]
         CLI["DiagnosticCatalog.Cli<br/><i>ships as dcat</i>"]
-        A -. "bundles" .-> CF
+        F -. "packs both" .-> A
+        F -. "packs both" .-> CF
         S --> F
         N --> F
         T --> F
@@ -69,12 +70,22 @@ analyzers**, and the rule is not decorative: the command-line compiler loads ana
 load — and an analyzer that fails to load reports nothing, which reads exactly like a clean codebase.
 
 So `DiagnosticCatalog.CodeFixes` exists to hold the Workspaces dependency, and it declares **no
-release train**: the assembly is bundled into `DiagnosticCatalog.Analyzers`' package rather than
-published on its own. Declaring a train would make it packable and give it a version nobody would ever
-reference.
+release train**. Neither does `DiagnosticCatalog.Analyzers`, since
+[ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md): both assemblies are
+packed into the `DiagnosticCatalog` package, under `analyzers/dotnet/cs/`, beside the `lib/` folder
+that carries the markers. The projects, the assemblies and the namespaces keep their names — only
+the second package identity is gone. Declaring a train on either would make it packable again and
+give it a version nobody would ever reference.
+
+Both were already on the `lib` train, so the split bought no independence: one tag shipped both, at
+one number, forever. What it cost was a second name a consumer had to find, and thirteen catalogues
+shipped with nothing checking their consumers. Folding them in makes *referencing a catalogue means
+being checked* a property of the dependency graph that already exists — every catalogue depends on
+the foundation and is forbidden from hiding it.
 
 This is the one project shape [ADR-0007](../adr/0007-depend-across-trains-through-published-packages.en.md)
-blesses for a `ProjectReference` — the analyzer project both orders the build and packs the output.
+blesses for a `ProjectReference` — `DiagnosticCatalog` orders the build of both and packs their
+output.
 
 ### The two analyzer classes
 

@@ -30,8 +30,8 @@ project:
 ## [Unreleased]
 
 The first preview of the whole set, prepared and not yet published: the foundation
-moves from 0.1.0 to a 1.0 line, and this train ships two packages for the first
-time — the analyzers that check the contract, and the catalogue of their own rules.
+moves from 0.1.0 to a 1.0 line and now carries the analyzers that check the
+contract, and the train ships a catalogue of their own rules for the first time.
 
 The `lib` train's last published version is `0.1.0`. Nothing below has a tag, an
 `AnalyzerReleases.Shipped.md` entry or a `PublicAPI.Shipped.txt` line, which is why
@@ -40,11 +40,11 @@ claim a consumer will read as one.
 
 ### Added
 
-* **`DiagnosticCatalog.Analyzers`** — the checking. A suppression whose two arguments do not name one
-  rule's `Category` and that same rule's `Id` (`DCAT0001`), a rule declaration that fails the
-  structural contract (`DCAT0002`–`DCAT0004`), a rule type whose name cannot say its identifier
-  (`DCAT0005`) or could and does not (`DCAT0013`), string literals a catalogue reference would
-  replace (`DCAT0006`), a suppression left half migrated (`DCAT0007`), an
+* **The checking**, now inside the `DiagnosticCatalog` package (ADR-0037). A suppression whose two
+  arguments do not name one rule's `Category` and that same rule's `Id` (`DCAT0001`), a rule
+  declaration that fails the structural contract (`DCAT0002`–`DCAT0004`), a rule type whose name
+  cannot say its identifier (`DCAT0005`) or could and does not (`DCAT0013`), string literals a
+  catalogue reference would replace (`DCAT0006`), a suppression left half migrated (`DCAT0007`), an
   `UnconditionalSuppressMessage` the trimmer silently discards (`DCAT0009`), a category that reaches
   no declared constant (`DCAT0011`), an identifier written as a literal where `nameof` would not
   drift (`DCAT0012`), and a suppression that never says why it is there — any
@@ -56,8 +56,8 @@ claim a consumer will read as one.
   [a real restore asserts](tools/packaging/verify-consumption.sh) rather than the package merely
   claiming it.
 
-  `DCAT0001`, `DCAT0006` and `DCAT0007` ship as **errors**. They are what a consumer references the
-  package for, and a codebase where half the suppressions are magic strings does not have the
+  `DCAT0001`, `DCAT0006` and `DCAT0007` ship as **errors**. They are what a consumer references a
+  catalogue for, and a codebase where half the suppressions are magic strings does not have the
   guarantee — it has it where somebody remembered. Those addressed to a catalogue's *author*
   (`DCAT0002`–`DCAT0004`, `DCAT0011`–`DCAT0013`) stay warnings, and so do `DCAT0009` and `DCAT0014`
   — the latter reports a suppression that is otherwise entirely correct, and failing a build over a
@@ -93,6 +93,57 @@ claim a consumer will read as one.
   [catalogue authors](doc/guide/authoring-a-catalogue.en.md), and a
   [reference for every `DCAT` diagnostic](doc/guide/diagnostics.en.md) including its `.editorconfig`
   configuration.
+
+### Changed
+
+* **The analyzers ship inside `DiagnosticCatalog` rather than beside it.** The 0.1.0 notes below
+  announced them as a package of their own, `DiagnosticCatalog.Analyzers`; that package identity is
+  gone, and the assemblies now travel in the foundation's `dcat-analyzers/` folder next to its
+  `lib/`. The project, the assembly and the namespace keep their names — only the packaging moved
+  ([ADR-0037](doc/adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md)). Nothing breaks
+  for anyone: `DiagnosticCatalog.Analyzers` was never published, so no `.csproj` anywhere names it.
+
+  What that buys is the reason for it. Every catalogue package already depends on
+  `DiagnosticCatalog` and may not hide it, so referencing **any** catalogue —
+  `DiagnosticCatalog.Sonar`, `.Xunit`, any of the thirteen — now delivers the diagnostics and the
+  code fixes, with no second reference to write, to review, or to remember when the fourteenth
+  catalogue is added. Someone who wants the checking without a catalogue references
+  `DiagnosticCatalog` itself. Before this, thirteen catalogues shipped with nothing checking their
+  consumers.
+
+  Measured rather than assumed, by
+  [`tools/packaging/verify-consumption.sh`](tools/packaging/verify-consumption.sh) on every pull
+  request: a catalogue delivers the analyzers to its own consumers, a consumer of two catalogues is
+  handed exactly one analyzer instance rather than one per catalogue, and the analyzer stops there.
+
+* **The checks stop at the project that references a catalogue.** An application referencing a
+  library that took a catalogue for its own suppressions is no longer analysed by it — it chose
+  neither, and `DCAT0006` is an error, so under the arrangement above its build failed on its own
+  suppressions with nothing in its own project file to point at. The analyzer assemblies moved out
+  of `analyzers/dotnet/cs/`, where NuGet resolves them as an asset and an asset flows down the whole
+  graph, into `dcat-analyzers/`, where only the foundation's own
+  `buildTransitive/DiagnosticCatalog.targets` reaches them; each catalogue packs a three-line
+  `build/<its id>.props` that turns them on, which NuGet imports for a direct reference and for
+  nothing further out
+  ([ADR-0038](doc/adr/0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.en.md)).
+
+  Consumers of the catalogues published here need change nothing. A **third-party** catalogue must
+  now ship that props file to have its consumers checked —
+  [Packaging a catalogue](doc/guide/packaging-a-catalogue.en.md#ship-the-opt-in-that-checks-your-consumers)
+  has it.
+
+* **`EnableDiagnosticCatalogAnalyzers` turns the analysis on or off from the consuming project.**
+  `false` keeps a catalogue and declines its diagnostics, which one package could not previously
+  offer — `PrivateAssets="all"` withheld `[DiagnosticRule]` along with them, so the only opt-out was
+  silencing the category in `.editorconfig`. `true` asks for the checks from a project that reaches
+  a catalogue only through a library. Both directions are measured.
+
+* **`PrivateAssets="all"` on a catalogue's reference to the foundation now withholds
+  `[DiagnosticRule]` as well as the analyzers.** One package means one lever, so declining to
+  impose analysis is no longer a polite opt-out: a consumer written the ordinary way stops
+  compiling rather than merely going unchecked, which is the §7.2 failure
+  [the troubleshooting guide](doc/guide/troubleshooting.en.md) already describes. No catalogue in
+  this repository is written that way; the check that measures it is in the script named above.
 
 ### Fixed
 

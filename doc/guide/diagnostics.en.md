@@ -6,6 +6,12 @@
 For anyone who saw a `DCATxxxx` and wants to know what it means. Every diagnostic
 `DiagnosticCatalog.Analyzers` reports: what triggers it, why it exists, and how to configure it.
 
+That assembly ships inside the `DiagnosticCatalog` package rather than in one of its own, so nothing
+has to be referenced to get these. Every catalogue depends on the foundation and may not hide it, so
+referencing any catalogue turns them on
+([ADR-0039](../adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md)); referencing
+`DiagnosticCatalog` alone is the way to be checked with no catalogue at all.
+
 They fall into two groups. **Definition** diagnostics look at a rule you declared; you only see them
 if you write a catalogue. **Use-site** diagnostics look at a suppression you wrote, which is most
 people.
@@ -96,9 +102,12 @@ XML documentation.
 If **two** catalogues describe the same rule, you get the diagnostic and no automatic fix — choosing
 between them is yours.
 
-> **On adoption.** This fires on every literal suppression at once, the day you add a catalogue.
-> Under `TreatWarningsAsErrors` that fails the build immediately. Lower it to `suggestion`, migrate
-> with *Fix all occurrences*, then raise it.
+> **On adoption.** This fires on every literal suppression at once, the day you add a catalogue —
+> and the catalogue brings the analyzer with it, so there is no second reference standing between
+> you and that. It is an **error** by default
+> ([ADR-0027](../adr/0027-ship-the-use-site-diagnostics-as-errors.en.md)), so the build that adds
+> the catalogue is the build that fails. Lower it to `suggestion`, migrate with *Fix all
+> occurrences*, then raise it.
 
 ### `DCAT0007`
 
@@ -135,7 +144,7 @@ telling you to change something that works.
 
 ### `DCAT0014`
 
-**The suppression names a rule and never says why.**
+**The suppression never says why it is there.**
 
 ```csharp
 [SuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.Id)]
@@ -184,15 +193,16 @@ A line being migrated therefore reports twice — `DCAT0006` for the pair, this 
 that is deliberate: converting a suppression does not answer the question it never answered. If you
 already run StyleCop's `SA1404`, you will see both; they ask the same question, and one
 `.editorconfig` line silences whichever you do not want
-([ADR-0037](../adr/0037-require-a-justification-on-every-suppression.en.md)).
+([ADR-0039](../adr/0039-require-a-justification-on-every-suppression.en.md)).
 
 **No fix, and none is possible.** What belongs there is the one thing in the attribute that cannot be
 read off the code ([ADR-0018](../adr/0018-a-code-fix-never-decides-what-only-the-author-can.en.md)).
 
 It ships as a `Warning` rather than an error, unlike its three use-site neighbours: it reports lines
-that are otherwise entirely correct, and a project that adopted a catalogue before this rule existed
-should not have its build fail on them overnight. One line of `.editorconfig` raises it the day you
-want it to.
+that are otherwise entirely correct, and it reports them from the first build after the reference
+rather than after a migration — a codebase should not have its build fail overnight on every
+suppression it wrote before this rule existed. One line of `.editorconfig` raises it the day you want
+it to.
 
 ---
 
@@ -445,6 +455,11 @@ dotnet_analyzer_diagnostic.category-DiagnosticCatalog.severity = error
 
 Scope a section to a path in the ordinary `.editorconfig` way when generated code or a legacy folder
 needs different treatment.
+
+That same key set to `none` is how you turn the whole set **off**. Since the analyzers ship inside
+`DiagnosticCatalog`, there is no package reference left to decline: a project that wants the markers
+and none of the checking says so here rather than in its dependencies
+([ADR-0039](../adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md)).
 
 ## What is deliberately not checked
 

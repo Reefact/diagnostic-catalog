@@ -1,7 +1,7 @@
-# ADR-0037 | Require a justification on every suppression
+# ADR-0039 | Require a justification on every suppression
 
 🌍 **Languages:**  
-🇬🇧 English (this file) | 🇫🇷 [Français](./0037-require-a-justification-on-every-suppression.fr.md)
+🇬🇧 English (this file) | 🇫🇷 [Français](./0039-require-a-justification-on-every-suppression.fr.md)
 
 **Status:** Proposed
 **Proposed:** 2026-08-06

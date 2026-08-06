@@ -132,6 +132,22 @@ The analyzer referencing the catalogue is what makes the loop possible. The cata
 **nothing but the foundation** is what makes it safe to depend on: a package that drags Roslyn into
 every consumer is a package teams decline.
 
+One thing `Contoso.Rules` does hand on, and should: the `DCAT` checking. The analyzers ship inside
+`DiagnosticCatalog` and your catalogue turns them on for whoever references it
+([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md),
+[ADR-0038](../adr/0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.en.md)) — a
+literal suppression naming one of your rules is reported and offered a fix, without them referencing
+anything else. Turning them on is the three-line props file in
+[Packaging a catalogue](packaging-a-catalogue.en.md#ship-the-opt-in-that-checks-your-consumers), and
+your catalogue is not checking anybody until it ships one.
+
+It costs them no runtime dependency: those assemblies never reach a `lib/` folder and the build
+never copies them, which `tools/packaging/verify-consumption.sh` asserts under "the analyzer
+assembly stays out of the output folder". A consumer who wants your catalogue and not its
+diagnostics sets `EnableDiagnosticCatalogAnalyzers` to `false`; do not reach for
+`PrivateAssets="all"` on the foundation to arrange that for them, because it would hide
+`[DiagnosticRule]` as well and their build would stop compiling rather than merely go unchecked.
+
 If you ship both from one repository at one version, you need no
 [provenance](concepts.en.md#provenance-a-catalogue-is-a-snapshot) attribute — `[assembly:
 CatalogSource]` records which upstream release a mirror reflects, and a first-party catalogue mirrors

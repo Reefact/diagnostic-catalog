@@ -41,6 +41,27 @@ un pour [les analyseurs .NET](https://www.nuget.org/packages/DiagnosticCatalog.N
 (`MSTESTxxxx`) et un pour [les avertissements de trimming et AOT](https://www.nuget.org/packages/DiagnosticCatalog.Trimming)
 (`ILxxxx`). Référencez-en plusieurs si vous exécutez plusieurs analyseurs.
 
+Cette unique référence active aussi les vérifications : chaque catalogue dépend de
+`DiagnosticCatalog`, qui porte les analyseurs `DCAT` et leurs correctifs à côté des attributs
+marqueurs, et qu'aucun catalogue n'a le droit de masquer
+([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md)). Il n'y a pas de
+second paquet à ajouter — et si vous voulez les vérifications sans aucun catalogue,
+`DiagnosticCatalog` seul est la réponse.
+
+Une conséquence tombe dès la toute première compilation. `DCAT0006` signale chaque suppression
+littérale qui correspond à une règle que vous avez désormais, en **erreur** : une base de code qui
+en a déjà quelques centaines les rencontre toutes d'un coup. Descendez-le d'abord, et la visite
+reste une visite :
+
+```ini
+# .editorconfig
+[*.cs]
+dotnet_diagnostic.DCAT0006.severity = suggestion
+```
+
+[Adopter un catalogue](adopting-a-catalogue.fr.md) est ce dont cette ligne est la première étape ;
+l'étape 4 y revient.
+
 ## 2. Réécrire une suppression
 
 Trouvez une suppression que vous avez déjà. Elle ressemble à ceci :
@@ -105,16 +126,17 @@ Vous avez maintenant une suppression vérifiée et, très probablement, quelques
 encore des chaînes. Trois options honnêtes :
 
 * **Les laisser.** Un catalogue est utile une suppression à la fois. Rien ne se dégrade parce que le
-  reste du fichier est encore en littéraux.
+  reste du fichier est encore en littéraux — mais la ligne de gravité de l'étape 1 reste, puisque
+  `DCAT0006` les signale toutes.
 * **Convertir au fil de l'eau.** Réécrivez une suppression quand vous éditez déjà son fichier. Cela
   ne coûte rien de plus et touche le code qui bouge.
-* **Convertir en masse.** C'est à cela que sert `DiagnosticCatalog.Analyzers` — il signale chaque
+* **Convertir en masse.** C'est à cela que servent les analyseurs `DCAT` — ils signalent chaque
   suppression littérale qui correspond à une règle que vous avez, avec un correctif qui la réécrit et
   ajoute le `using`, et **Corriger toutes les occurrences** l'applique à un projet ou une solution en
   une étape.
 
-  Un catalogue n'amène pas ce paquet avec lui : la vérification est un choix que fait son
-  consommateur, donc référencez `DiagnosticCatalog.Analyzers` vous-même quand vous le voulez.
+  Ils sont déjà dans votre compilation : le catalogue les a amenés avec lui, et il n'y a rien
+  d'autre à référencer.
 
 Laquelle choisir est le sujet de la section adoption d'[Écrire des suppressions que le compilateur
 vérifie](writing-suppressions.fr.md).

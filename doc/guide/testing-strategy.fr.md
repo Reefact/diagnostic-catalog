@@ -152,6 +152,16 @@ La suite est invoquée avec `sh` plutôt que `bash` : chaque script porte un she
 l'exécuter sous bash laisserait passer un bashisme en CI pour le faire échouer sur la machine d'un
 contributeur.
 
+`tools/packaging/verify-consumption.sh` est le même genre de trou vu par l'autre bout, et il tourne
+depuis la répétition de release plutôt que depuis `run.sh` parce qu'il lui faut d'abord de vrais
+`.nupkg`. Ses dix-huit vérifications restaurent les paquets comme le ferait un consommateur : que le
+consommateur d'un catalogue soit vérifié tout court, que `DiagnosticCatalog.dll` atteigne son
+dossier de sortie quand les assemblages d'analyse n'y arrivent pas, que deux catalogues livrent
+exactement une instance d'analyseur, et que le flux ne survive **pas** à un second saut par une
+bibliothèque — ce que rien de compilé en processus contre des références de projet ne peut observer
+([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md),
+[ADR-0038](../adr/0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.fr.md)).
+
 ## Ajouter un test pour un nouveau diagnostic
 
 1. **Écrivez les assertions d'abord**, si le contrat n'est pas évident. Leur valeur est le moment

@@ -73,6 +73,11 @@ dotnet_analyzer_diagnostic.category-DiagnosticCatalog.severity = error
 dotnet_diagnostic.DCAT0006.severity = suggestion
 ```
 
+The category switch is also the answer for a reader who wants a catalogue's constants and none of its
+diagnostics. Since the checking ships inside the package every catalogue depends on, no arrangement
+of references delivers one without the other, and `none` on the category is what expresses that
+choice.
+
 ## Severity, per path
 
 `.editorconfig` sections are ordinary path patterns, and the most specific match wins. This is how a
@@ -93,9 +98,9 @@ dotnet_diagnostic.DCAT0006.severity = none
 
 ## Generated code
 
-**You do not have to configure this, and the default is not uniform.** The package ships two analyzer
-classes because `ConfigureGeneratedCodeAnalysis` is per-**analyzer** rather than per-diagnostic, and
-the two groups need opposite settings:
+**You do not have to configure this, and the default is not uniform.** The checking is written as
+two analyzer classes because `ConfigureGeneratedCodeAnalysis` is per-**analyzer** rather than
+per-diagnostic, and the two groups need opposite settings:
 
 | Analyzer | Diagnostics | On generated code |
 | --- | --- | --- |
@@ -122,35 +127,53 @@ Not `.editorconfig`, but the configuration people get wrong most often.
 
 | Who you are | Reference | How |
 | --- | --- | --- |
-| You write suppressions | `DiagnosticCatalog.Sonar` (or another catalogue) | ordinary reference |
-| You write suppressions and want the checks | `DiagnosticCatalog.Analyzers` | `PrivateAssets="all"` |
-| You publish a catalogue | `DiagnosticCatalog` | **ordinary reference — never `PrivateAssets="all"`** |
+| You write suppressions | `DiagnosticCatalog.Sonar` (or another catalogue) | ordinary reference — the checks come with it |
+| You want the checks and no catalogue | `DiagnosticCatalog` | ordinary reference |
+| You want a catalogue and not the analysis | that catalogue | ordinary reference, plus `EnableDiagnosticCatalogAnalyzers=false` |
+| You publish a catalogue | `DiagnosticCatalog` | **ordinary reference — never `PrivateAssets="all"`** — plus the opt-in props |
+| You publish a library that references a catalogue | that catalogue | nothing; your consumers are not checked by it |
 
 ```xml
 <PackageReference Include="DiagnosticCatalog.Sonar" Version="0.1.0" />
-<PackageReference Include="DiagnosticCatalog.Analyzers" Version="0.1.0" PrivateAssets="all" />
 ```
 
-`PrivateAssets="all"` on the analyzers is right: analysis assemblies must not become runtime
-dependencies of whatever consumes you.
+That single line is the whole of it. The `DCAT` analyzers and their code fixes ship inside
+`DiagnosticCatalog`, which every catalogue depends on, so there is no second reference to write and
+no `PrivateAssets` to get right on it
+([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md)). The analysis
+assemblies still do not become a runtime dependency of whatever consumes you:
+`tools/packaging/verify-consumption.sh` restores the package as a consumer would and asserts that
+they stay out of the output folder `DiagnosticCatalog.dll` does reach.
 
 `PrivateAssets="all"` on the **foundation**, from inside a catalogue you publish, is the one to
-avoid. Your consumers then cannot resolve `DiagnosticRuleAttribute` in their own source, so anyone
-declaring rules of their own gets `CS0246` until they add a dependency your package already had.
-The analyzers still find the rules in your catalogue — that is asserted, and
-[packaging a catalogue](packaging-a-catalogue.en.md) says what the guarantee rests on — so the
-failure is loud rather than silent. Avoid it anyway: it misstates what your package needs.
+avoid, and it costs more than it used to. Your consumers cannot resolve `DiagnosticRuleAttribute` in
+their own source, so anyone declaring rules of their own gets `CS0246` until they add a dependency
+your package already had — and they are unchecked as well, because one package now means one lever.
+[Packaging a catalogue](packaging-a-catalogue.en.md) says what a catalogue owes its consumers; the
+same script measures both halves of that failure, the second of them as "hiding the foundation also
+withholds the attribute assembly".
 
-If a catalogue references the analyzers, they reach that catalogue's own consumers — measured against
-a real restore rather than read from NuGet's documentation, which says the opposite:
+**Declining is not a way of being polite** — for a catalogue. `PrivateAssets="all"` used to mean
+"checked by nothing"; it means "does not compile", which the reader meets as a broken package rather
+than as a choice you made.
 
-| A catalogue referencing `DiagnosticCatalog.Analyzers` with | The analyzers run for its consumers |
-| --- | --- |
-| no `PrivateAssets` | **yes** |
-| `PrivateAssets="none"` | yes |
-| `PrivateAssets="all"` | no |
+**The property is the lever, and it is the consumer's.** Since
+[ADR-0038](../adr/0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.en.md) the
+analyzers reach the project that referenced a catalogue and stop there, so a **library** needs no
+lever at all: an application referencing it is not analysed by a catalogue it never chose. What
+`EnableDiagnosticCatalogAnalyzers` buys is the two exceptions, and it is a plain MSBuild property:
 
-**Silence propagates.** If you would rather not impose analysis downstream, say so explicitly.
+```xml
+<PropertyGroup>
+  <!-- keep the catalogue, decline the analysis; [DiagnosticRule] still resolves -->
+  <EnableDiagnosticCatalogAnalyzers>false</EnableDiagnosticCatalogAnalyzers>
+</PropertyGroup>
+```
+
+Set it to `true` instead and a project is checked by a catalogue it reaches only through a library.
+Both directions are measured — "a direct consumer can opt OUT" and "a consumer two hops out can opt
+IN" — and so is the fact that opting out keeps the attribute assembly, which is what makes it a real
+alternative to silencing `DCAT0006` in `.editorconfig`.
 
 ## What it costs to have the analyzers on
 
