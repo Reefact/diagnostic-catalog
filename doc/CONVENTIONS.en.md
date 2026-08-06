@@ -89,8 +89,8 @@ cross-language link a lookup.
 ## Every page carries the same three things
 
 The first two bind every document under `doc/` — the guide, the specification, the decision records.
-The third binds [`doc/guide/`](guide/) only: it is the folder that has a reading order, and the
-navigation footer is what expresses it.
+The third binds [`doc/guide/`](guide/) only: it is the folder that has reading orders, and the
+navigation footer is what expresses them.
 
 ### 1. One H1, then the language banner
 
@@ -144,27 +144,44 @@ The last block of the file:
 
 * The middle link is always present and always points at the map — `README.en.md` or `README.fr.md`
   in the same folder. The map itself is the exception: it *is* the table of contents, so its footer
-  carries only a link back out to the project README and a link forward to the first page.
-* `←` is absent on the first page of the reading order; `→` is absent on the last. The map is not a
-  step in that order — it is the way in — so the first page's `←` is genuinely absent rather than
-  pointing back at a table of contents its `↑` already offers.
+  carries only a link back out to the project README and a link forward to the first page of the
+  default track.
+* `←` is absent on the first page of a **track**; `→` is absent on its last. The map is not a step
+  in a track — it is the way in — so the first page's `←` is genuinely absent rather than pointing
+  back at a table of contents its `↑` already offers, and the last page's absent `→` is what says
+  the reader has finished what they came for rather than sending them into the next track.
 * The link text is the target page's own title, so a reader knows what they are about to open.
 * `<div align="center">` rather than a Markdown construct: GitHub strips most inline styling from
   Markdown but honours this, and it is what the sibling project
   [`first-class-errors`](https://github.com/Reefact/first-class-errors) uses. Matching it means a
   reader moving between the two repositories meets one convention.
 
-*Checked, and this is the strict one:* the footers of all English pages must describe **one total
-order** — every page reachable, exactly one page with no predecessor, exactly one with no successor,
+*Checked, and this is the strict one:* every English page sits on exactly one track, and each
+track's footers must describe **one total order** — its pages reachable in the order the map lists,
 no cycle, and every `←` the exact inverse of the corresponding `→`. The French pages must describe
-the same order. A page added without being threaded into the chain fails, which is what stops the
-set from growing an orphan nobody links.
+the same tracks in the same order. A page added without being threaded into a track fails, which is
+what stops the set from growing an orphan nobody links.
 
-## The reading order is the map's order
+## The tracks are the map's tracks
 
-[`guide/README.en.md`](guide/README.en.md) is the documentation map: it groups pages by what the
-reader is trying to do, and its order is the order the footers thread. Adding a page means adding it
-to the map **and** to the chain; the test compares the two and fails if they disagree.
+[`guide/README.en.md`](guide/README.en.md) is the documentation map. It groups the pages into
+**tracks** — one short reading order per reason to be here — and each track is declared with a
+marker and a numbered list:
+
+```markdown
+<!-- track: using -->
+
+1. [Why magic strings fail](the-problem.en.md) — …
+2. [Getting started](getting-started.en.md) — …
+```
+
+The marker's id is the same word in both languages, which is what lets the two maps be compared at
+all; the heading above it is prose and is translated. The footers thread what the lists say, and the
+test compares the two and fails if they disagree.
+
+Tracks rather than one chain because one chain made every reader everybody's reader: the last page a
+consumer needed sent them onward into publishing a catalogue, and the only page with no `→` was the
+last page of the internals.
 
 ## Writing rules
 
@@ -316,6 +333,7 @@ nothing uses covers whatever gets written there next.
 1. Write `doc/guide/<name>.en.md` with the banner, the audience line and the footer.
 2. Write `doc/guide/<name>.fr.md` in the same commit. A page merged with "French to follow" does not
    get its French, and the parity test declines to let it try.
-3. Insert it into the reading order: add a row to the map, and adjust the `←`/`→` of its two
-   neighbours in both languages.
+3. Insert it into a track: add a numbered entry under that track's marker in the map, and adjust
+   the `←`/`→` of its two neighbours, in both languages. Exactly one track, or the page acquires two
+   predecessors.
 4. Run `dotnet test -c Release` and read what the documentation tests say.

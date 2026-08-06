@@ -187,5 +187,5 @@ because a catalogue is a snapshot and its age decides whether its answer can be 
 ---
 
 <div align="center">
-<a href="./packaging-a-catalogue.en.md">← Packaging a catalogue</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./dcat-reference.en.md">The dcat reference →</a>
+<a href="./README.en.md">↑ Table of contents</a> · <a href="./dcat-reference.en.md">The `dcat` reference →</a>
 </div>

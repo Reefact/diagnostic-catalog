@@ -142,5 +142,5 @@ Two things are sometimes offered as alternatives and solve different problems:
 ---
 
 <div align="center">
-<a href="./when-not-to-use.en.md">← When not to use this</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./writing-suppressions.en.md">Writing suppressions that the compiler checks →</a>
+<a href="./when-not-to-use.en.md">← When not to use this</a> · <a href="./README.en.md">↑ Table of contents</a>
 </div>

@@ -210,7 +210,7 @@ cela — les deux partent d'un dépôt à une version.
 
 Si vous reflétez à l'échelle, ce dépôt génère treize catalogues de cette façon et publie le
 générateur comme outil. Les catalogues Sonar, analyseurs .NET et StyleCop sous `src/` sont ce à quoi
-la sortie ressemble avec 465, 318 et 193 règles ; la méthode est au §14 de
+la sortie ressemble avec 456, 318 et 197 règles ; la méthode est au §14 de
 [la spécification](../specification.fr.md).
 
 ## Où regarder ensuite
@@ -224,5 +224,5 @@ la sortie ressemble avec 465, 318 et 193 règles ; la méthode est au §14 de
 ---
 
 <div align="center">
-<a href="./zero-footprint.fr.md">← La garantie d'empreinte nulle</a> · <a href="./README.fr.md">↑ Table des matières</a> · <a href="./first-party-analyzers.fr.md">Boucler la boucle avec votre propre analyseur →</a>
+<a href="./README.fr.md">↑ Table des matières</a> · <a href="./first-party-analyzers.fr.md">Boucler la boucle avec votre propre analyseur →</a>
 </div>

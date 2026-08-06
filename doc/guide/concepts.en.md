@@ -187,5 +187,5 @@ Two consequences follow, and both shape how catalogues are versioned:
 ---
 
 <div align="center">
-<a href="./the-problem.en.md">← Why magic strings fail</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./when-not-to-use.en.md">When not to use this →</a>
+<a href="./getting-started.en.md">← Getting started</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./writing-suppressions.en.md">Writing suppressions that the compiler checks →</a>
 </div>

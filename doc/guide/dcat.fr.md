@@ -198,5 +198,5 @@ parce qu'un catalogue est un instantané et que son âge décide si sa réponse 
 ---
 
 <div align="center">
-<a href="./packaging-a-catalogue.fr.md">← Empaqueter un catalogue</a> · <a href="./README.fr.md">↑ Table des matières</a> · <a href="./dcat-reference.fr.md">La référence dcat →</a>
+<a href="./README.fr.md">↑ Table des matières</a> · <a href="./dcat-reference.fr.md">La référence `dcat` →</a>
 </div>

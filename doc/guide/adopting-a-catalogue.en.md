@@ -206,5 +206,5 @@ Until it is published, the mechanised path is not available. What still works:
 ---
 
 <div align="center">
-<a href="./writing-suppressions.en.md">← Writing suppressions that the compiler checks</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./configuration.en.md">Configuration →</a>
+<a href="./README.en.md">↑ Table of contents</a> · <a href="./diagnostics.en.md">The `DCAT` diagnostics →</a>
 </div>

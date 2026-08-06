@@ -159,5 +159,5 @@ humain peut relire plutôt que fusionner à l'aveugle.
 ---
 
 <div align="center">
-<a href="./dcat-reference.fr.md">← La référence dcat</a> · <a href="./README.fr.md">↑ Table des matières</a> · <a href="./ci-integration.fr.md">Tenir un catalogue à jour →</a>
+<a href="./dcat-reference.fr.md">← La référence `dcat`</a> · <a href="./README.fr.md">↑ Table des matières</a> · <a href="./ci-integration.fr.md">Tenir un catalogue à jour →</a>
 </div>

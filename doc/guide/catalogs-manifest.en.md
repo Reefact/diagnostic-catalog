@@ -154,5 +154,5 @@ merge blind. [Keeping a catalogue current](ci-integration.en.md) is the pattern.
 ---
 
 <div align="center">
-<a href="./dcat-reference.en.md">← The dcat reference</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./ci-integration.en.md">Keeping a catalogue current →</a>
+<a href="./dcat-reference.en.md">← The `dcat` reference</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./ci-integration.en.md">Keeping a catalogue current →</a>
 </div>

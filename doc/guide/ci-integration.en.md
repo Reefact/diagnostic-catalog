@@ -171,5 +171,5 @@ breaks — and "nothing breaks" is precisely the property that makes it invisibl
 ---
 
 <div align="center">
-<a href="./catalogs-manifest.en.md">← The catalogue manifest</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./diagnostics.en.md">The DCAT diagnostics →</a>
+<a href="./catalogs-manifest.en.md">← The catalogue manifest</a> · <a href="./README.en.md">↑ Table of contents</a>
 </div>

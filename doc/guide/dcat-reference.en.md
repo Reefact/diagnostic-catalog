@@ -184,5 +184,5 @@ newer.
 ---
 
 <div align="center">
-<a href="./dcat.en.md">← The dcat tool</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./catalogs-manifest.en.md">The catalogue manifest →</a>
+<a href="./dcat.en.md">← The `dcat` tool</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./catalogs-manifest.en.md">The catalogue manifest →</a>
 </div>

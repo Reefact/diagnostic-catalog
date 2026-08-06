@@ -204,7 +204,7 @@ one repository at one version.
 
 If you are mirroring at scale, this repository generates thirteen catalogues that way and publishes the
 generator as a tool. The Sonar, .NET-analyzers and StyleCop catalogues under `src/` are what the
-output looks like with 465, 318 and 193 rules; the method is in §14 of
+output looks like with 456, 318 and 197 rules; the method is in §14 of
 [the specification](../specification.en.md).
 
 ## Where to look next
@@ -218,5 +218,5 @@ output looks like with 465, 318 and 193 rules; the method is in §14 of
 ---
 
 <div align="center">
-<a href="./zero-footprint.en.md">← The zero-footprint guarantee</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./first-party-analyzers.en.md">Closing the loop with your own analyzer →</a>
+<a href="./README.en.md">↑ Table of contents</a> · <a href="./first-party-analyzers.en.md">Closing the loop with your own analyzer →</a>
 </div>

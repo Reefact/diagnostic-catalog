@@ -180,5 +180,5 @@ and disappears when there is not.
 ---
 
 <div align="center">
-<a href="./adopting-a-catalogue.en.md">← Adopting a catalogue on an existing codebase</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./zero-footprint.en.md">The zero-footprint guarantee →</a>
+<a href="./writing-suppressions.en.md">← Writing suppressions that the compiler checks</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./zero-footprint.en.md">The zero-footprint guarantee →</a>
 </div>

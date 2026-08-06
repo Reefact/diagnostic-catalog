@@ -105,5 +105,5 @@ reaches your application, and a test asserts it.
 ---
 
 <div align="center">
-<a href="./concepts.en.md">← Core concepts</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./alternatives.en.md">The alternatives →</a>
+<a href="./zero-footprint.en.md">← The zero-footprint guarantee</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./alternatives.en.md">The alternatives →</a>
 </div>

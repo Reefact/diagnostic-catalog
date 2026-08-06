@@ -176,5 +176,5 @@ rien ne casse — et « rien ne casse » est précisément la propriété qui la
 ---
 
 <div align="center">
-<a href="./catalogs-manifest.fr.md">← Le manifeste de catalogues</a> · <a href="./README.fr.md">↑ Table des matières</a> · <a href="./diagnostics.fr.md">Les diagnostics DCAT →</a>
+<a href="./catalogs-manifest.fr.md">← Le manifeste de catalogues</a> · <a href="./README.fr.md">↑ Table des matières</a>
 </div>
