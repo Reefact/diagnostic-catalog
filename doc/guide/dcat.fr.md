@@ -6,10 +6,10 @@
 Pour quiconque génère un catalogue plutôt que de l'écrire à la main. Ce que fait l'outil, quelle
 source lui désigner, et la décision de conception qui explique l'essentiel de son comportement.
 
-> **Pas encore sur nuget.org.** `dcat` est construit dans ce dépôt et roule sur le train `cli`
-> ([ADR-0017](../adr/0017-publish-the-generator-as-a-cli-on-its-own-release-train.fr.md)) ; le prochain
-> tag l'expédiera. D'ici là, `dotnet run --project src/DiagnosticCatalog.Cli -- <args>` exécute le
-> même outil depuis un clone.
+> **Depuis un clone aussi.** `dcat` roule sur un train `cli` à lui
+> ([ADR-0017](../adr/0017-publish-the-generator-as-a-cli-on-its-own-release-train.fr.md)). Dans ce
+> dépôt, `dotnet run --project src/DiagnosticCatalog.Cli -- <args>` exécute le même outil sans
+> l'installer.
 
 ```bash
 dotnet tool install --global DiagnosticCatalog.Cli

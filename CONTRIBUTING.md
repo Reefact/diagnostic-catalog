@@ -160,17 +160,19 @@ already describes four of those (`nupkg`, `projects`, `solution`, `assemblies`) 
    `<!-- mirror:begin --> … <!-- mirror:end -->`. The generator writes which
    upstream release the catalogue reflects between those markers, and
    `DocumentedMirrorTests` fails a document that carries none: a banner the
-   generator cannot reach states nothing. That test lists the catalogues by hand,
-   so add the new one to its theory data.
-5. **Name the other catalogues and the foundation** in that README, and add the
-   catalogue to the repository README. A catalogue's README *is* its page on
+   generator cannot reach states nothing. It discovers the catalogues from the
+   manifest in step 1, so there is no second list to add the newcomer to.
+5. **Point at the central index and the foundation** from that README, and add the
+   catalogue to that index. A catalogue's README *is* its page on
    nuget.org, and a package page has no siblings beside it — a reader landing
-   there from a search sees that catalogue and nothing else.
-   `DocumentedSiblingsTests` reads the manifest from step 1 and fails every
-   README that has not heard of the newcomer, in both directions. Name the
-   package id; link it only once it is published, since an address cannot be
-   pointed at a version that does not exist
-   ([ADR-0007](doc/adr/0007-depend-across-trains-through-published-packages.en.md)).
+   there from a search sees that catalogue and nothing else — so every catalogue
+   README points at **one** central index instead of listing its siblings: the
+   *ready-made catalogues* table in the repository README, and its French half in
+   [`doc/README.fr.md`](doc/README.fr.md). Add the newcomer's row there, in both
+   languages. `CatalogueIndexTests` reads the manifest from step 1 and fails an
+   index that has not heard of it, a catalogue README that does not link the index
+   for its own language, and any nuget.org address naming a package this
+   repository does not publish.
 6. **Draw its icon**, as a 512×512 `icon.png` beside the `.csproj`. The badge on
    it carries the **prefix of the rules the catalogue mirrors**, never the
    vendor's name — StyleCop's reads `SA` and not `SC`,
@@ -179,8 +181,13 @@ already describes four of those (`nupkg`, `projects`, `solution`, `assemblies`) 
    distinguishes one catalogue from the next. **Three letters at most**: a
    longer prefix is abbreviated — `xUnit` becomes `XU`, `MSTEST` becomes `MST` —
    because the type shrinks to fit and a six-letter badge lands at under 5px on
-   that listing, which reads as nothing at all
-   ([ADR-0033](doc/adr/0033-cap-the-badge-at-three-letters.en.md)). You do not
+   that listing, which reads as nothing at all. **And if that prefix is already
+   worn** by a catalogue here — three of them mirror `RS` rules — the newcomer's
+   badge names the subject of the package it mirrors instead, and the prefix stays
+   where it is: `DiagnosticCatalog.Roslyn` keeps `RS`, `.PublicApi` reads `API`,
+   `.BannedApi` reads `BAN`. Both halves are
+   [ADR-0035](doc/adr/0035-badge-a-shared-prefix-catalogue-with-its-subject.en.md),
+   the record in force. You do not
    draw it: add the badge to the table in `tools/icon/badges.py` — a catalogue
    missing from it fails *Check the catalogue icons*, which is the step that
    would otherwise be silent — and run

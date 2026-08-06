@@ -32,6 +32,8 @@ Le dépôt publie donc sur **quinze lignes indépendantes**
 | `aspnetcore` | `aspnetcore-v` | `aspnetcore` | Le catalogue de règles ASP.NET Core et Blazor |
 | `syslib` | `syslib-v` | `syslib` | Le catalogue de règles des générateurs de source du runtime .NET |
 | `roslyn` | `roslyn-v` | `roslyn` | Le catalogue de règles d'écriture d'analyseurs Roslyn |
+| `publicapi` | `publicapi-v` | `publicapi` | Le catalogue de règles de suivi d'API publique |
+| `bannedapi` | `bannedapi-v` | `bannedapi` | Le catalogue de règles d'API bannies |
 
 Ce tableau vit une seule fois, dans [`tools/trains.sh`](../../tools/trains.sh). Les scripts
 d'empaquetage et de notes de version le **sourcent** : ce qu'une release publie et ce que ses notes

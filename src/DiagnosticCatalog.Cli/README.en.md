@@ -236,9 +236,10 @@ names the file, the entry and the key either way:
 error: catalogs.json: catalogs[2]: "namespace" is missing.
 ```
 
-`--summary` writes a Markdown report of what changed — rules added,
-recategorised, retitled, retired — which is what makes a scheduled regeneration
-open a pull request a human can review rather than merge blind.
+`--summary` writes a Markdown report of every change to what the catalogue
+publishes, with the rule-level ones — added, recategorised, retitled, relinked,
+retired, declared again — named one by one. That is what makes a scheduled
+regeneration open a pull request a human can review rather than merge blind.
 
 ## Checking a catalogue is still true
 

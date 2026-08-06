@@ -158,18 +158,19 @@ Trois caractères est ici un plafond, pas un constat : un préfixe plus long est
 devient `XU`, `MSTEST` devient `MST`. Le texte rétrécit pour dégager les coins de la plaque, si bien
 que le mot qui tient exactement est le mot que personne ne peut lire ; mesuré sur les catalogues
 publiés ici, un badge de six lettres tombe sous les 5px dans cette liste quand un badge de trois en
-tient 9,8. Le raisonnement est [ADR-0033](../adr/0033-cap-the-badge-at-three-letters.fr.md), qui
-supersède [ADR-0032](../adr/0032-badge-a-catalogues-icon-with-its-rule-prefix.fr.md) sur ce seul
-point.
+tient 9,8. Le document en vigueur est
+l'[ADR-0035](../adr/0035-badge-a-shared-prefix-catalogue-with-its-subject.fr.md) ; le plafond
+lui-même a d'abord été énoncé par l'[ADR-0033](../adr/0033-cap-the-badge-at-three-letters.fr.md),
+que l'ADR-0035 supersède et dont il conserve le plafond, et le choix de ce que dit le badge par
+l'[ADR-0032](../adr/0032-badge-a-catalogues-icon-with-its-rule-prefix.fr.md) avant lui.
 
 **Et le préfixe peut déjà être pris.** Trois catalogues d'ici reflètent des règles `RS`, donc la
 règle ci-dessus ne peut pas donner le même badge aux trois — le sigle ne varie pas, donc des badges
 identiques sont des fichiers identiques, ce que `PackageIconTests` refuse. Lorsqu'un préfixe est déjà
 porté, le badge du nouveau venu nomme à la place le sujet du paquet qu'il reflète, et le préfixe
 reste au catalogue qui le publie déjà : `DiagnosticCatalog.Roslyn` garde `RS`, tandis que
-`DiagnosticCatalog.PublicApi` lit `API` et `DiagnosticCatalog.BannedApi` lit `BAN`. C'est
-l'[ADR-0035](../adr/0035-badge-a-shared-prefix-catalogue-with-its-subject.fr.md), qui supersède
-l'ADR-0033 sur ce point et laisse son plafond de trois lettres debout.
+`DiagnosticCatalog.PublicApi` lit `API` et `DiagnosticCatalog.BannedApi` lit `BAN`. C'est la
+seconde moitié de l'ADR-0035.
 
 Il vaut la peine de savoir jusqu'où porte la vérification qui l'entoure, car elle est plus étroite
 qu'il n'y paraît. `PackageIconTests` fait échouer un catalogue qui ne porte pas son propre

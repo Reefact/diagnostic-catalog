@@ -35,7 +35,7 @@ sequenceDiagram
     J->>J: compute the catalogue, compare with the file
     alt nothing moved
         J-->>R: no change — the file is left untouched
-    else a rule added, recategorised or retired
+    else anything the catalogue publishes moved
         J->>R: open a pull request carrying the rules diff
         R->>M: a published contract changed — read the diff
         M->>R: merge, or reject

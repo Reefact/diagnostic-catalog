@@ -122,13 +122,13 @@
         "TRANSITIVELY through Microsoft.CodeAnalysis.CSharp, so anyone writing an analyzer runs them",
         "without having asked — the same shape as xUnit's and MSTest's.",
         "",
-        "Only THIS package is read, not Microsoft.CodeAnalysis.PublicApiAnalyzers or",
-        "BannedApiAnalyzers, though all three carry the RS prefix. Their ids partition cleanly",
-        "(RS00xx there, RS10xx and RS20xx here), but the badge would not: ADR-0032 puts the rule",
-        "prefix on it and ADR-0033 caps it at three letters, so two catalogues of RS rules would want",
-        "the same two letters and PackageIconTests asserts that no two icons match. Reading several",
-        "packages into ONE catalogue has no manifest shape either — `package` is a single string,",
-        "unlike `projects` and `assemblies`. Cataloguing RS00xx therefore needs a decision first."
+        "Only THIS package is read. Microsoft.CodeAnalysis.PublicApiAnalyzers and",
+        "BannedApiAnalyzers carry the RS prefix too, and each has an entry of its own below: their",
+        "ids partition cleanly (RS00xx and RS0030/0031/0035 there, RS10xx and RS20xx here), and",
+        "reading several packages into ONE catalogue has no manifest shape anyway — `package` is a",
+        "single string, unlike `projects` and `assemblies`. What the three of them share is the",
+        "badge, and ADR-0035 decides it: the prefix stays with the catalogue already publishing it,",
+        "so this one keeps RS and the other two name their subject."
       ],
       "package": "Microsoft.CodeAnalysis.Analyzers",
       "namespace": "DiagnosticCatalog.Roslyn",
@@ -150,10 +150,9 @@
         "",
         "SEPARATE from DiagnosticCatalog.Roslyn rather than merged into it. The ids do not collide",
         "-- RS00xx here, RS10xx and RS20xx there -- and merging has no manifest shape anyway, since",
-        "`package` is a single string unlike `projects` and `assemblies`. What blocked this entry",
-        "until now was the badge: ADR-0032 puts the rule prefix on it and ADR-0033 caps it at three",
-        "letters, so both catalogues wanted `RS`, and PackageIconTests asserts no two icons match.",
-        "Settled by giving this one `API`."
+        "`package` is a single string unlike `projects` and `assemblies`. The badge is what the two",
+        "of them do share: PackageIconTests asserts no two icons match, and ADR-0035 leaves RS with",
+        "DiagnosticCatalog.Roslyn and names this one after its subject, `API`."
       ],
       "package": "Microsoft.CodeAnalysis.PublicApiAnalyzers",
       "namespace": "DiagnosticCatalog.PublicApi",
@@ -172,9 +171,9 @@
         "",
         "Completes the RS family: RS00xx public-API tracking is DiagnosticCatalog.PublicApi, RS10xx",
         "and RS20xx analyzer authoring is DiagnosticCatalog.Roslyn, and RS0030/0031/0035 are here.",
-        "Three catalogues rather than one because `package` is a single string; the badge collision",
-        "ADR-0032/0033 leaves unresolved was settled by the maintainer, catalogue by catalogue -- RS,",
-        "API, and BAN."
+        "Three catalogues rather than one because `package` is a single string; the badge each wears",
+        "follows ADR-0035 -- RS stays with the catalogue already publishing it, and the other two",
+        "name their subject: API, and BAN."
       ],
       "package": "Microsoft.CodeAnalysis.BannedApiAnalyzers",
       "namespace": "DiagnosticCatalog.BannedApi",

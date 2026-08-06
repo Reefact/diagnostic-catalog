@@ -6,12 +6,10 @@
 For anyone with more suppressions than they want to convert by hand. How to go from a few hundred
 literals to checked references without a week of red builds.
 
-> **Where this stands today.** The bulk conversion described below is
-> `DiagnosticCatalog.Analyzers`, and that package **has no version on nuget.org yet**. Everything on
-> this page about severities, scoping and ordering applies the day it ships; until then the manual
-> path at the end is what is available.
-> [Project status](https://github.com/Reefact/diagnostic-catalog#-project-status) is the current
-> answer.
+> **What this page needs.** The bulk conversion described below is `DiagnosticCatalog.Analyzers`,
+> referenced beside the catalogue. A catalogue never brings it along — the checking is a choice its
+> consumer makes — so add it yourself; [the packages](https://github.com/Reefact/diagnostic-catalog#-the-packages)
+> states what each one is for. The manual path at the end is what remains without it.
 
 ## The day-one problem
 

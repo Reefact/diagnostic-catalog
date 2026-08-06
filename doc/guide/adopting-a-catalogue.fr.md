@@ -6,12 +6,11 @@
 Pour quiconque a plus de suppressions qu'il ne veut en convertir à la main. Comment passer de
 quelques centaines de littéraux à des références vérifiées sans une semaine de builds rouges.
 
-> **Où en est-on aujourd'hui.** La conversion en masse décrite ci-dessous, c'est
-> `DiagnosticCatalog.Analyzers`, et ce paquet **n'a pas encore de version sur nuget.org**. Tout ce que
-> cette page dit des gravités, du cantonnement et de l'ordre s'appliquera le jour où il sortira ; d'ici
-> là, c'est le chemin manuel de la fin qui est disponible.
-> [L'état du projet](https://github.com/Reefact/diagnostic-catalog#-project-status) est la réponse à
-> jour.
+> **Ce que cette page suppose.** La conversion en masse décrite ci-dessous, c'est
+> `DiagnosticCatalog.Analyzers`, référencé à côté du catalogue. Un catalogue ne l'amène jamais avec
+> lui — la vérification est un choix que fait son consommateur — donc ajoutez-le vous-même ;
+> [les paquets](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/README.fr.md#-les-paquets) disent à quoi sert
+> chacun. Le chemin manuel de la fin est ce qui reste sans lui.
 
 ## Le problème du premier jour
 

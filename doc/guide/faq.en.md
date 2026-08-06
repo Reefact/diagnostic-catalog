@@ -124,8 +124,8 @@ Not for the guarantee. A misspelled rule is a compile error because `SonarRule.S
 the compiler resolves — no analyzer involved.
 
 `DiagnosticCatalog.Analyzers` finds the suppressions you have **not** converted yet, catches a pair
-naming two different rules, and offers the fixes. It is a migration aid rather than the mechanism —
-and it has no version on nuget.org today.
+naming two different rules, and offers the fixes. It is a migration aid rather than the mechanism,
+and a catalogue never brings it along: referencing it is a choice you make.
 
 ## Why is `dcat` a separate tool rather than a source generator?
 

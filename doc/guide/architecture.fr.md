@@ -26,6 +26,8 @@ flowchart TB
         AS["DiagnosticCatalog.AspNetCore"]
         SY["DiagnosticCatalog.Syslib"]
         RO["DiagnosticCatalog.Roslyn"]
+        PA["DiagnosticCatalog.PublicApi"]
+        BA["DiagnosticCatalog.BannedApi"]
         CLI["DiagnosticCatalog.Cli<br/><i>livré sous le nom dcat</i>"]
         A -. "embarque" .-> CF
         S --> F
@@ -39,6 +41,8 @@ flowchart TB
         AS --> F
         SY --> F
         RO --> F
+        PA --> F
+        BA --> F
         SELF --> F
     end
     subgraph ENG["eng/ — outillage de compilation"]
@@ -47,10 +51,7 @@ flowchart TB
         GEN --> W
     end
     CLI --> GEN
-    GEN -. "génère" .-> S
-    GEN -. "génère" .-> N
-    GEN -. "génère" .-> T
-    GEN -. "génère" .-> SELF
+    GEN -. "génère chaque catalogue ci-dessus" .-> SRC
     A -. "ses descripteurs sont ce que Self reflète" .-> SELF
 ```
 
