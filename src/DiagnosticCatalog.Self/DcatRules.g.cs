@@ -15,7 +15,7 @@ using DiagnosticCatalog;
 [assembly: CatalogSource(
     source:        "DiagnosticCatalog.Analyzers",
     sourceVersion: "1.0.0",
-    generatedOn:   "2026-08-02")]
+    generatedOn:   "2026-08-06")]
 
 namespace DiagnosticCatalog.Self;
 
@@ -162,6 +162,17 @@ public static class DcatRule
     {
         /// <summary>The canonical identifier of this diagnostic.</summary>
         public const string Id = nameof(DCAT0013);
+
+        /// <summary>The category declared by the analyzer's DiagnosticDescriptor.</summary>
+        public const string Category = DcatCategory.DiagnosticCatalog;
+    }
+
+    /// <summary>A suppression must carry a justification.</summary>
+    [DiagnosticRule]
+    public static class DCAT0014
+    {
+        /// <summary>The canonical identifier of this diagnostic.</summary>
+        public const string Id = nameof(DCAT0014);
 
         /// <summary>The category declared by the analyzer's DiagnosticDescriptor.</summary>
         public const string Category = DcatCategory.DiagnosticCatalog;

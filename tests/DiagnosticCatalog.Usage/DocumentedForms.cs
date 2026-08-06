@@ -259,14 +259,15 @@ namespace DiagnosticCatalog.Usage.DocumentedForms.UseSites
         internal static int Resolve() => 3;
     }
 
-    /// <summary>A coherent suppression carrying no justification at all.</summary>
-    // writing-suppressions.en.md, "Two things this cannot help with" — "this checks that a suppression
-    // is **structurally coherent** [...] It has no opinion on whether suppressing that rule *there* was
-    // a good idea. That judgement stays yours, which is what `Justification` is for." Nothing requires
-    // the property to be present, and its absence is not a defect these analyzers know about.
-    internal static class NoJustification
+    /// <summary>A coherent suppression whose justification says very little.</summary>
+    // diagnostics.en.md, `DCAT0014` — "presence is the whole contract: the value is read for its
+    // length, never for its meaning". DCAT0014 asks for the property and stops there, so a reason this
+    // thin is silent while an absent one is reported. The line matters more than it looks: a check
+    // that started weighing what a justification SAYS would report here, and specification §5 rules
+    // that out.
+    internal static class ThinJustification
     {
-        [SuppressMessage(SonarRule.S3903.Category, SonarRule.S3903.Id)]
+        [SuppressMessage(SonarRule.S3903.Category, SonarRule.S3903.Id, Justification = "Interop shim.")]
         internal static int Unnamespaced() => 4;
     }
 

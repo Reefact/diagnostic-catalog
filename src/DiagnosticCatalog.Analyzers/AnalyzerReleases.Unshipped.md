@@ -16,3 +16,4 @@ DCAT0009 | DiagnosticCatalog | Warning | UnconditionalSuppressMessage only accep
 DCAT0011 | DiagnosticCatalog | Warning | A diagnostic rule's category must reference a declared category constant
 DCAT0012 | DiagnosticCatalog | Warning | A rule identifier should be written as nameof
 DCAT0013 | DiagnosticCatalog | Warning | The diagnostic rule type name does not say its Id
+DCAT0014 | DiagnosticCatalog | Warning | A suppression must carry a justification

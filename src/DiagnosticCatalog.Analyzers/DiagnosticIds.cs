@@ -40,4 +40,6 @@ internal static class DiagnosticIds
     internal const string IdNotWrittenAsNameOf = "DCAT0012";
 
     internal const string RuleTypeNameDoesNotSayId = "DCAT0013";
+
+    internal const string MissingJustification = "DCAT0014";
 }

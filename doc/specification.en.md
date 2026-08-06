@@ -266,7 +266,8 @@ The first version must not:
 * replace `SuppressMessageAttribute`;
 * introduce a proprietary suppression attribute;
 * decide whether a suppression is functionally legitimate;
-* assess the semantic quality of a justification;
+* assess the semantic quality of a justification — §11.14 requires one to be
+  written and reads no further than its length;
 * download third-party vendor catalogues automatically;
 * ship the Sonar, Microsoft or StyleCop rules themselves;
 * impose a base class on rules;
@@ -941,6 +942,7 @@ implementing one later cannot reuse a number this document has already spent.
 | `DCAT0011` | definition | A diagnostic rule's category must reference a declared category constant | Warning | yes |
 | `DCAT0012` | definition | A rule identifier should be written as nameof | Warning | yes |
 | `DCAT0013` | definition | The diagnostic rule type name does not say its Id | Warning | yes |
+| `DCAT0014` | use site | A suppression must carry a justification | Warning | yes |
 
 Definition diagnostics (`DCAT0002`–`DCAT0005`, `DCAT0011`–`DCAT0013`) only fire on
 source the compiler can see. A malformed rule inside a *referenced assembly*
@@ -1226,6 +1228,55 @@ above them. The rule is new and has one known false-positive shape behind it —
 friendly-name form of §11.5 — so it earns a release before being allowed to stop a
 build. A catalogue author wanting it stricter raises it in `.editorconfig`, which
 is what reporting it at all provides.
+
+### 11.14 `DCAT0014` — suppression without a justification
+
+Reported at the use site when a suppression naming a catalogue rule carries no
+`Justification`, or carries one that is blank.
+
+```csharp
+[SuppressMessage(SomeRules.RULE001.Category, SomeRules.RULE001.Id)]   // reported
+```
+
+Every other use-site diagnostic in this document checks WHICH diagnostic a line
+silences. This one checks that the line says WHY, which is the half no tool can
+reconstruct afterwards: the warning is gone, and the reason it was acceptable
+exists only in the head of whoever wrote the attribute.
+
+**Presence, never quality.** The value is read for its length. §5 rules out
+assessing what a justification says and §24 rules out validating one
+intelligently; both remain in force, and this diagnostic is deliberately the
+weakest check that still closes the gap. A one-word reason satisfies it.
+
+**One non-blank value is refused**: `"<Pending>"`, the placeholder the IDE writes
+when it generates a suppression. It is matched exactly and case-sensitively —
+recognising a tool's own token for "not written yet" is reading a marker, whereas
+ruling on `"n/a"` or `"obvious"` would be reading prose. `Justification = null`
+is blank, as is any string of whitespace.
+
+**Trigger condition.** At least one of the two positional arguments resolves to a
+member of a `[DiagnosticRule]` type. The restriction is §11.9's, for §11.9's
+reason: a suppression written entirely in values is `DCAT0006`'s business, and
+requiring justifications there would report every hand-written suppression in a
+project that has adopted no catalogue. The two hand over — once the pair is
+migrated, this takes the line. Applies to both attributes of §9.1; the trimmer's
+carries the same property.
+
+**Location.** The whole attribute, as every use-site diagnostic reports.
+
+**Reported alongside other faults.** The question is independent of the pair's
+state, so an incoherent or half-migrated suppression that also says nothing
+reports both.
+
+**No code fix**, and none is possible: what belongs there is the one part of the
+attribute that cannot be read off the code, which is ADR-0018's exact
+prohibition.
+
+**Severity.** `Warning`, and not `Error` like the three use-site rules ADR-0027
+promoted. It reports lines that are otherwise entirely correct — the pair
+resolves and the compiler checks it — so shipping it as an error would fail the
+build of every project that adopted a catalogue before this rule existed. One
+`.editorconfig` line raises it.
 
 ---
 
@@ -1790,6 +1841,7 @@ dotnet_diagnostic.DCAT0009.severity = error
 dotnet_diagnostic.DCAT0011.severity = error
 dotnet_diagnostic.DCAT0012.severity = error
 dotnet_diagnostic.DCAT0013.severity = error
+dotnet_diagnostic.DCAT0014.severity = error
 ```
 
 The sample overrides every rule to show that every rule is reachable; it is not a
@@ -1814,7 +1866,7 @@ implementation must split into two:
 | Analyzer class | Diagnostics | Generated-code flags |
 | --- | --- | --- |
 | `DiagnosticRuleDefinitionAnalyzer` | `DCAT0002`–`DCAT0005`, `DCAT0011`–`DCAT0013` | `Analyze \| ReportDiagnostics` |
-| `SuppressionUsageAnalyzer` | `DCAT0001`, `DCAT0006`–`DCAT0010` | `None` |
+| `SuppressionUsageAnalyzer` | `DCAT0001`, `DCAT0006`–`DCAT0010`, `DCAT0014` | `None` |
 
 Rule definitions produced by an external tool must additionally be validated
 by generator tests, compilation tests, and source manifest validation.
@@ -1907,7 +1959,14 @@ reference, a binary breaking change in either direction.
 * an intermediate constant (§10.6);
 * `SuppressMessageAttribute`;
 * `UnconditionalSuppressMessageAttribute` with an `IL####` rule;
-* `UnconditionalSuppressMessageAttribute` with a non-IL rule → `DCAT0009`.
+* `UnconditionalSuppressMessageAttribute` with a non-IL rule → `DCAT0009`;
+* a pair naming a rule and carrying no `Justification` → `DCAT0014`;
+* a `Justification` that is empty, whitespace, `null` or the IDE placeholder →
+  `DCAT0014`;
+* a `Justification` of one word, and one reached through a constant (must report
+  nothing: §11.14 requires presence and reads no further);
+* a pair written entirely in values, carrying no `Justification` (must not report
+  `DCAT0014`).
 
 ### 21.3 String literal tests
 
@@ -2047,6 +2106,7 @@ upstream must be marked `[Obsolete]`, never deleted.
   (§3.5), including `:FriendlyName` normalisation;
 * mixed reference/literal detection and its deterministic fix (`DCAT0007`);
 * the `IL####` guard for `UnconditionalSuppressMessage` (`DCAT0009`);
+* the justification requirement (`DCAT0014`) — presence only, per §11.14;
 * the declared-category requirement (`DCAT0011`);
 * `SuppressMessageAttribute` support;
 * `UnconditionalSuppressMessageAttribute` support, scoped per §9.1;

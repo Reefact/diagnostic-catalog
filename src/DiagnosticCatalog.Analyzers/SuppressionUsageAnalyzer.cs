@@ -10,7 +10,8 @@ using Microsoft.CodeAnalysis.Diagnostics;
 namespace DiagnosticCatalog.Analyzers;
 
 /// <summary>
-/// Checks the suppressions that reference diagnostic rules: DCAT0001, DCAT0006, DCAT0007 and DCAT0009.
+/// Checks the suppressions that reference diagnostic rules: DCAT0001, DCAT0006, DCAT0007, DCAT0009 and
+/// DCAT0014.
 /// </summary>
 /// <remarks>
 /// Separate from the definition analyzer because ConfigureGeneratedCodeAnalysis is per-ANALYZER and the
@@ -26,7 +27,8 @@ public sealed class SuppressionUsageAnalyzer : DiagnosticAnalyzer
             Descriptors.MembersFromDifferentRules,
             Descriptors.ReplaceableStringLiterals,
             Descriptors.MixedReferenceAndLiteral,
-            Descriptors.NonIlUnconditionalSuppression);
+            Descriptors.NonIlUnconditionalSuppression,
+            Descriptors.MissingJustification);
 
     /// <inheritdoc />
     public override void Initialize(AnalysisContext context)
@@ -64,12 +66,14 @@ public sealed class SuppressionUsageAnalyzer : DiagnosticAnalyzer
         // attribute is discarded, and vice versa.
         //
         // The first three partition the pair by what its two halves are, so at most one can fire:
-        // two references is DCAT0001's, two values is DCAT0006's, one of each is DCAT0007's. Only
-        // DCAT0009 can accompany another, because it asks a different question entirely.
+        // two references is DCAT0001's, two values is DCAT0006's, one of each is DCAT0007's. The last
+        // two can accompany another, because each asks a different question entirely — whether the
+        // trimmer will honour the identifier, and whether the line says why it exists.
         ReportIncoherentPair(context, attribute, pair.Category, pair.CheckId);
         ReportReplaceableLiterals(context, attribute, pair.Category, pair.CheckId, index);
         ReportMixedPair(context, attribute, pair.Category, pair.CheckId);
         ReportNonIlIdentifier(context, attribute, attributeName, pair.CheckId);
+        ReportMissingJustification(context, attribute, pair.Category, pair.CheckId);
     }
 
     private static void ReportMixedPair(
@@ -260,4 +264,47 @@ public sealed class SuppressionUsageAnalyzer : DiagnosticAnalyzer
             attribute.GetLocation(),
             checkId.Value));
     }
+
+    private static void ReportMissingJustification(
+        SyntaxNodeAnalysisContext context,
+        AttributeSyntax attribute,
+        SuppressionArgument category,
+        SuppressionArgument checkId)
+    {
+        // A catalogue rule on at least one side, exactly as DCAT0009 asks for a rule rather than any
+        // constant, and for the same reason: a suppression written entirely in values is DCAT0006's
+        // business first, and asking it for a justification would fire on every hand-written
+        // suppression in a codebase that has adopted no catalogue — the audience this package is not
+        // addressed to. Whoever wants the requirement everywhere already has StyleCop's SA1404. Once
+        // the pair is migrated this takes over, so the two together leave nothing standing.
+        //
+        // The identifier slot names the rule when both are available: Roslyn matches a suppression on
+        // the identifier alone, so it is the half that decides what this line silences.
+        INamedTypeSymbol? ruleType = checkId.RuleType ?? category.RuleType;
+
+        if (ruleType is null) { return; }
+
+        JustificationState state = Justification.Read(attribute, context.SemanticModel);
+
+        if (state == JustificationState.Written) { return; }
+
+        // No fix, and none is possible: what belongs there is the one thing in the attribute that
+        // cannot be read off the code, so offering to write it would be ADR-0018's exact prohibition
+        // — a lightbulb deciding something only the author knows.
+        context.ReportDiagnostic(Diagnostic.Create(
+            Descriptors.MissingJustification,
+            attribute.GetLocation(),
+            ruleType.Name,
+            Fault(state)));
+    }
+
+    /// <summary>What the DCAT0014 message says is wrong with the justification.</summary>
+    private static string Fault(JustificationState state) =>
+        state switch
+        {
+            JustificationState.Blank => "carries a blank Justification",
+            JustificationState.Placeholder =>
+                "still carries the \"" + Justification.Placeholder + "\" placeholder",
+            _ => "carries no Justification",
+        };
 }

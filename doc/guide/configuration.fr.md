@@ -41,17 +41,24 @@ Les valeurs acceptées sont celles de Roslyn : `error`, `warning`, `suggestion`,
 | `DCAT0011` | Avertissement | `error` si vous publiez un catalogue — une seule écriture par catégorie, c'est tout l'objet |
 | `DCAT0012` | Avertissement | `error` si vous publiez un catalogue — la réparation est mécanique |
 | `DCAT0013` | Avertissement | `error` si vous publiez un catalogue et voulez que chaque nom dise sa règle |
+| `DCAT0014` | Avertissement | `error` une fois que chacune de vos suppressions porte une raison ; `suggestion` tant que non |
 
-La distinction qui compte au moment de choisir : `DCAT0006` signale *du travail pas encore fait*, et
-les autres signalent *quelque chose de déjà faux* — sauf `DCAT0005`, qui signale quelque chose de
-correct et qui n'aurait pas pu s'écrire autrement. Seul le premier a sa place à `suggestion`
-pendant un temps — et c'est ce que veut un codebase avec des suppressions littérales existantes le
-jour où il référence le paquet, puisque le défaut les transforme toutes en erreurs de build. Supprimez
-la ligne quand le dernier littéral a disparu.
+La distinction qui compte au moment de choisir : `DCAT0006` et `DCAT0014` signalent *du travail pas
+encore fait*, et les autres signalent *quelque chose de déjà faux* — sauf `DCAT0005`, qui signale
+quelque chose de correct et qui n'aurait pas pu s'écrire autrement. Ce sont ces deux-là qui ont leur
+place à `suggestion` pendant un temps, et seul `DCAT0006` a d'ordinaire besoin d'y être : c'est ce que
+veut un codebase avec des suppressions littérales existantes le jour où il référence le paquet,
+puisque le défaut les transforme toutes en erreurs de build. Supprimez la ligne quand le dernier
+littéral a disparu. `DCAT0014` arrive déjà en avertissement et n'appelle pas ce repli — ne l'abaissez
+que si un arriéré de suppressions sans raison noie la sortie de build que vous lisiez.
 
-Les trois défauts côté usage sont des erreurs à dessein. Un codebase où la moitié des suppressions
-sont des chaînes magiques n'a pas la garantie que cette bibliothèque existe pour fournir ; il l'a là
-où quelqu'un y a pensé. Un avertissement laisserait cela à la mémoire.
+Trois des cinq défauts côté usage sont des erreurs à dessein. Un codebase où la moitié des
+suppressions sont des chaînes magiques n'a pas la garantie que cette bibliothèque existe pour
+fournir ; il l'a là où quelqu'un y a pensé. Un avertissement laisserait cela à la mémoire. Les deux
+autres disent quelque chose de plus étroit — une suppression que le *trimmer* jette (`DCAT0009`), et
+une qui ne dit jamais pourquoi elle est là (`DCAT0014`) — et toutes deux signalent des lignes qui se
+résolvent correctement, d'où leur arrivée plus discrète et l'intérêt de les relever une fois votre
+codebase propre.
 
 ## Gravité, pour tous d'un coup
 

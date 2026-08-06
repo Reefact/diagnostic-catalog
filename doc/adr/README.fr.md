@@ -232,3 +232,4 @@ Matériel de support, optionnel :
 | [ADR-0034](0034-pair-every-package-readme-in-english-and-french.fr.md) | Apparier chaque README de paquet en anglais et en français | Accepted |
 | [ADR-0035](0035-badge-a-shared-prefix-catalogue-with-its-subject.fr.md) | Badger avec son sujet un catalogue dont le préfixe de règle est déjà en service | Accepted |
 | [ADR-0036](0036-exclude-from-coverage-what-no-report-describes.fr.md) | Exclure de la couverture ce qu'aucun rapport de couverture ne décrit | Accepted |
+| [ADR-0037](0037-require-a-justification-on-every-catalogue-referenced-suppression.fr.md) | Exiger une justification sur toute suppression référençant un catalogue | Proposed |

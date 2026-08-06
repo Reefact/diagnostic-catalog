@@ -53,6 +53,13 @@ public sealed class DefaultSeverityTests
             // Use site, but still under-detecting: it misses an identifier reached through a constant,
             // so promoting it would fail builds unevenly for a reason the author cannot see.
             ["DCAT0009"] = DiagnosticSeverity.Warning,
+
+            // Use site, and the one that reports a suppression which is otherwise entirely correct:
+            // the pair resolves, the compiler checks it, and only the reason is missing. Shipping it
+            // as an error would fail the build of every project that adopted a catalogue before the
+            // rule existed, over lines nothing had asked about. Warning until it has a release
+            // behind it, exactly as DCAT0013 is.
+            ["DCAT0014"] = DiagnosticSeverity.Warning,
         };
 
     private static IEnumerable<DiagnosticDescriptor> Shipped =>

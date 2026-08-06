@@ -51,7 +51,7 @@ dotnet_diagnostic.DCAT0006.severity = suggestion
 A suggestion appears in the IDE as a lightbulb and in `dotnet build` as nothing. The build that adds
 the package is green, and the migration starts when you decide rather than when the package arrives.
 
-**While migrating — leave the other three alone.**
+**While migrating — leave the other four alone.**
 
 `DCAT0001` and `DCAT0007` are errors already, and they should stay that way. They mean a suppression
 is *not doing what it looks like*: a pair naming two different rules, or a half-converted one. Both
@@ -62,6 +62,17 @@ matters to you.
 
 ```ini
 dotnet_diagnostic.DCAT0009.severity = error
+```
+
+`DCAT0014` is the one that arrives *with* the conversion rather than before it. It asks that a
+suppression say why it exists, and it fires only once a slot references a catalogue rule — so a
+suppression you convert today starts reporting it tomorrow if nobody ever wrote a `Justification`.
+It ships as a warning for exactly that reason, and the honest way to meet it is to write the reasons
+as you convert, while the code and the person who suppressed it are still in front of you. If the
+backlog is large enough to bury the rest of your build output, lower it and work through it:
+
+```ini
+dotnet_diagnostic.DCAT0014.severity = suggestion
 ```
 
 **When you finish — delete the line.**
@@ -135,7 +146,7 @@ classes precisely so the two groups can differ:
 
 | Analyzer | Diagnostics | Runs on generated code |
 | --- | --- | --- |
-| `SuppressionUsageAnalyzer` | `DCAT0001`, `DCAT0006`, `DCAT0007`, `DCAT0009` | **no** |
+| `SuppressionUsageAnalyzer` | `DCAT0001`, `DCAT0006`, `DCAT0007`, `DCAT0009`, `DCAT0014` | **no** |
 | `DiagnosticRuleDefinitionAnalyzer` | `DCAT0002`–`DCAT0005`, `DCAT0011`–`DCAT0013` | **yes** |
 
 Use-site diagnostics stay out of generated files because a suppression in one is not the author's to
