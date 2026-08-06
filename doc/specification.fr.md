@@ -1896,7 +1896,7 @@ que `[DiagnosticRule]` doit se résoudre pour ses propres consommateurs (§7.2) 
 catalogue reçoit donc l'assembly d'attributs qu'il l'ait demandée ou non, et le public qui voulait
 les analyzers et rien d'autre n'existe pas parmi eux. Un seul package porte donc les deux moitiés,
 et référencer n'importe quel catalogue les livre toutes les deux
-([ADR-0039](adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md)) :
+([ADR-0037](adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md)) :
 
 ```text
 DiagnosticCatalog.nupkg                    (DevelopmentDependency = false)
@@ -2001,7 +2001,7 @@ Trois autres conséquences :
   l'unique fondation, dont NuGet unifie l'identité sur tout le graphe. C'est le contrôle qui
   échouerait si les analyzers avaient été repliés dans chaque catalogue : un portail les ajouterait
   alors **par chemin**, MSBuild n'aurait rien à unifier, et le compilateur en recevrait deux
-  ([ADR-0039](adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md),
+  ([ADR-0037](adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md),
   [ADR-0038](adr/0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.fr.md)).
 
 Un consommateur qui veut les vérifications sans aucun catalogue référence `DiagnosticCatalog`

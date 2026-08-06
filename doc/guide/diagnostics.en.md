@@ -9,7 +9,7 @@ For anyone who saw a `DCATxxxx` and wants to know what it means. Every diagnosti
 That assembly ships inside the `DiagnosticCatalog` package rather than in one of its own, so nothing
 has to be referenced to get these. Every catalogue depends on the foundation and may not hide it, so
 referencing any catalogue turns them on
-([ADR-0039](../adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md)); referencing
+([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md)); referencing
 `DiagnosticCatalog` alone is the way to be checked with no catalogue at all.
 
 They fall into two groups. **Definition** diagnostics look at a rule you declared; you only see them
@@ -505,7 +505,7 @@ needs different treatment.
 That same key set to `none` is how you turn the whole set **off**. Since the analyzers ship inside
 `DiagnosticCatalog`, there is no package reference left to decline: a project that wants the markers
 and none of the checking says so here rather than in its dependencies
-([ADR-0039](../adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md)).
+([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md)).
 
 ## What is deliberately not checked
 

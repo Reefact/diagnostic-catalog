@@ -9,7 +9,7 @@ literals to checked references without a week of red builds.
 > **What this page needs.** Nothing beside the catalogue. The bulk conversion described below is the
 > `DCAT` analyzers, and they ship inside `DiagnosticCatalog`, which every catalogue depends on and
 > none may hide — so the catalogue reference is what switches the checking on
-> ([ADR-0039](../adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md)); reference
+> ([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md)); reference
 > `DiagnosticCatalog` on its own if you want the checks and no catalogue. The manual path at the end
 > is for a catalogue released before that decision.
 
@@ -211,7 +211,7 @@ If a large share of your suppressions are `#pragma`, the conversion will feel th
 
 A catalogue carries them, so the mechanised path is normally there. Two cases where it is not: a
 catalogue release older than
-[ADR-0039](../adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md), whose dependency on
+[ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md), whose dependency on
 `DiagnosticCatalog` resolves to a version carrying the attributes alone, and a project that has set
 `DCAT0006` to `none`. What still works:
 

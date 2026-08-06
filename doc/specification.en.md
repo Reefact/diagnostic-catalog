@@ -1815,7 +1815,7 @@ graph. Every catalogue depends on `DiagnosticCatalog` and may not hide it, becau
 the attribute assembly whether they asked for it or not, and the audience that wanted analyzers and
 nothing else does not exist among them. One package therefore carries both halves, and referencing
 any catalogue delivers both
-([ADR-0039](adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md)):
+([ADR-0037](adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md)):
 
 ```text
 DiagnosticCatalog.nupkg                    (DevelopmentDependency = false)
@@ -1914,7 +1914,7 @@ Three further consequences:
   NuGet unifies across the graph. That is the check which would fail had the analyzers been folded
   into each catalogue instead: a gate would then add them **by path**, MSBuild would have nothing to
   unify, and the compiler would be handed two
-  ([ADR-0039](adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md),
+  ([ADR-0037](adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md),
   [ADR-0038](adr/0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.en.md)).
 
 A consumer who wants the checks and no catalogue at all references `DiagnosticCatalog` itself

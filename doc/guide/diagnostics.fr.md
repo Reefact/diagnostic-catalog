@@ -10,7 +10,7 @@ configurer.
 Cet assemblage est livré dans le paquet `DiagnosticCatalog` plutôt que dans un paquet à lui : il n'y
 a donc rien à référencer pour les obtenir. Chaque catalogue dépend de la fondation et n'a pas le
 droit de la masquer, si bien que référencer n'importe quel catalogue les active
-([ADR-0039](../adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md)) ; référencer
+([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md)) ; référencer
 `DiagnosticCatalog` seul est la façon d'être vérifié sans aucun catalogue.
 
 Ils se répartissent en deux groupes. Les diagnostics de **déclaration** regardent une règle que vous
@@ -533,7 +533,7 @@ dossier hérité demande un traitement différent.
 Cette même clé réglée sur `none` est la façon de tout **désactiver**. Puisque les analyseurs sont
 livrés dans `DiagnosticCatalog`, il ne reste aucune référence de paquet à décliner : un projet qui
 veut les marqueurs et aucune vérification le dit ici plutôt que dans ses dépendances
-([ADR-0039](../adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md)).
+([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md)).
 
 ## Ce qui n'est délibérément pas vérifié
 
