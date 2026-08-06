@@ -171,7 +171,7 @@ Automation finds the change; a human accepts it.
 ## Why must `--solution` projects declare a property?
 
 Because guessing is not close enough. Measured on this repository: "references `Microsoft.CodeAnalysis`"
-matches eight projects of which one is an analyzer; "declares a `DiagnosticAnalyzer` subclass" matches
+matches nine projects of which one is an analyzer; "declares a `DiagnosticAnalyzer` subclass" matches
 three of which one is an analyzer — the other two are fixtures, one written to *fail* construction,
 one in an assembly written not to load whole.
 

@@ -121,7 +121,7 @@ dcat generate --solution MySolution.slnx \
 
 **Rien n'est déduit, et c'est tout l'intérêt.** Lesquels des projets d'une solution
 produisent des analyseurs ne se devine pas de l'extérieur. Mesuré sur le dépôt de cet outil
-lui-même, *référence `Microsoft.CodeAnalysis`* correspond à huit projets dont un est un
+lui-même, *référence `Microsoft.CodeAnalysis`* correspond à neuf projets dont un est un
 analyseur ; *déclare un `DiagnosticAnalyzer`* correspond à trois, et deux de ceux-là sont des
 fixtures — l'une écrite pour échouer à la construction, l'autre dans un assembly écrit pour
 ne pas se charger entièrement. Lire le mauvais ensemble n'est pas un désagrément ici :
