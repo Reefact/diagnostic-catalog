@@ -442,7 +442,7 @@ public static class JustDummiesRules
 
 `nameof(JD0007)` à l'intérieur de `JD0007` résout vers le nom du type conteneur
 et constitue une expression constante valide. L'utiliser rend `DCAT0005` et
-`DCAT0012` structurellement inviolables, et c'est la forme que `DCAT0011`
+`DCAT0013` structurellement inviolables, et c'est la forme que `DCAT0012`
 réclame.
 
 ### 7.4 Nommage du conteneur
