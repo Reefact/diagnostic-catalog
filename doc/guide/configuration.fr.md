@@ -188,5 +188,5 @@ quelque chose à trouver, et disparaît quand il n'y en a plus.
 ---
 
 <div align="center">
-<a href="./adopting-a-catalogue.fr.md">← Adopter un catalogue sur une base de code existante</a> · <a href="./README.fr.md">↑ Table des matières</a> · <a href="./zero-footprint.fr.md">La garantie d'empreinte nulle →</a>
+<a href="./writing-suppressions.fr.md">← Écrire des suppressions que le compilateur vérifie</a> · <a href="./README.fr.md">↑ Table des matières</a> · <a href="./zero-footprint.fr.md">La garantie d'empreinte nulle →</a>
 </div>

@@ -164,5 +164,5 @@ l'endroit où va la réponse.
 ---
 
 <div align="center">
-<a href="./getting-started.fr.md">← Démarrer</a> · <a href="./README.fr.md">↑ Table des matières</a> · <a href="./concepts.fr.md">Concepts →</a>
+<a href="./README.fr.md">↑ Table des matières</a> · <a href="./getting-started.fr.md">Démarrer →</a>
 </div>

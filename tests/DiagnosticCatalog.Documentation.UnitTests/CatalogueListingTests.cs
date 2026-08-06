@@ -7,8 +7,8 @@ using Xunit;
 namespace DiagnosticCatalog.Documentation.UnitTests;
 
 /// <summary>
-/// Every vendor catalogue the generator produces is listed in the project README — in both halves —
-/// and the number each half states in prose is the number of catalogues it actually lists.
+/// Every vendor catalogue the generator produces is listed in the project README's central index —
+/// in both halves — and that index lists nothing else.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -19,10 +19,15 @@ namespace DiagnosticCatalog.Documentation.UnitTests;
 /// looking, which is the same outcome as never having generated it.
 /// </para>
 /// <para>
-/// The count is the second half of the same problem, and the more brittle one. The table's size is
-/// written out in words beside it — "These seven are generated" — and again inside the <c>dcat</c> row
-/// that counts what the repository writes. Both are prose, both are updated by hand, and both are
-/// wrong the moment a catalogue lands without them. Nothing else in the repository reads them.
+/// That table is the CENTRAL INDEX: every catalogue's own README points at it instead of listing its
+/// siblings, so it is the one page a reader is sent to from thirteen package pages. Both halves are
+/// marked with <c>&lt;!-- catalogue-index:begin --&gt;</c> so the check reads a delimited region
+/// rather than guessing which of a document's tables is the one that claims to be exhaustive.
+/// </para>
+/// <para>
+/// The size of the table is deliberately NOT written out in prose beside it. A number spelled in
+/// words is a second statement of what the rows already say, updated by hand and wrong the moment a
+/// catalogue lands without it — and it tells a reader nothing the table does not.
 /// </para>
 /// <para>
 /// The catalogues are read from <c>eng/catalogs.json</c> rather than from the <c>&lt;ReleaseTrain&gt;</c>
@@ -53,18 +58,10 @@ public sealed class CatalogueListingTests
 
     private static IReadOnlyList<Catalogue> Generated => CatalogueManifest.Vendor;
 
-    /// <summary>
-    /// How each half writes the size of its catalogue table. Anchored on the sentence rather than on
-    /// the table, because the number is what goes stale and the sentence is where it is written; a
-    /// half whose sentence no longer matches is reported rather than skipped, so rewording it cannot
-    /// quietly retire the check.
-    /// </summary>
-    private static readonly Dictionary<string, string> CountSentences =
-        new(StringComparer.Ordinal)
-        {
-            [ProjectReadme] = "These\\s+(?<count>[A-Za-z]+)\\s+are\\s+\\*\\*generated\\*\\*",
-            [ProjectReadmeTranslation] = "Ces\\s+(?<count>[A-Za-z]+)(?:-là)?\\s+sont\\s+\\*\\*générés\\*\\*",
-        };
+    /// <summary>The markers delimiting the central index inside each half.</summary>
+    private const string IndexBegin = "<!-- catalogue-index:begin -->";
+
+    private const string IndexEnd = "<!-- catalogue-index:end -->";
 
     public static TheoryData<string> ReadmeHalves() => [ProjectReadme, ProjectReadmeTranslation];
 
@@ -73,7 +70,7 @@ public sealed class CatalogueListingTests
     public void Every_generated_catalogue_is_listed(string path)
     {
         MarkdownDocument readme = Repository.Require(path);
-        IReadOnlyList<string> listed = PackagesListed(readme);
+        IReadOnlyList<string> listed = PackagesIndexed(readme);
 
         List<Catalogue> missing = Generated
             .Where(catalogue => !listed.Contains(catalogue.Namespace, StringComparer.Ordinal))
@@ -94,29 +91,18 @@ public sealed class CatalogueListingTests
 
     [Theory]
     [MemberData(nameof(ReadmeHalves))]
-    public void The_count_stated_matches_the_catalogues_listed(string path)
+    public void The_index_lists_nothing_this_repository_does_not_generate(string path)
     {
         MarkdownDocument readme = Repository.Require(path);
 
-        Match sentence = ProseFigures.Require(
-            readme,
-            CountSentences[path],
-            "the sentence saying how many catalogues it lists",
-            $"{nameof(CatalogueListingTests)}.{nameof(CountSentences)}");
-
-        string word = sentence.Groups["count"].Value;
-        int stated = ProseFigures.Read(word, path, nameof(CatalogueListingTests));
-
-        int listed = PackagesListed(readme)
-            .Count(package => Generated.Any(catalogue =>
-                string.Equals(catalogue.Namespace, package, StringComparison.Ordinal)));
-
-        Assert.True(
-            stated == listed,
-            $"{path} says \"{word}\" catalogues are generated and lists {listed}.\n" +
-            "The table is the half a reader counts, so the sentence is usually the one to fix — " +
-            "unless a catalogue was added to eng/catalogs.json and never given a row, which " +
-            $"{nameof(Every_generated_catalogue_is_listed)} reports separately.");
+        foreach (string package in PackagesIndexed(readme))
+        {
+            Assert.True(
+                Generated.Any(catalogue => string.Equals(catalogue.Namespace, package, StringComparison.Ordinal)),
+                $"{path} indexes {package} among the ready-made catalogues, and eng/catalogs.json " +
+                "generates no such catalogue. Thirteen package pages send their reader to this table, " +
+                "so a row here that resolves to nothing is a dead end reached from all of them.");
+        }
     }
 
     /// <summary>
@@ -140,26 +126,40 @@ public sealed class CatalogueListingTests
             MarkdownDocument readme = Repository.Require(path);
 
             Assert.True(
-                PackagesListed(readme).Count > 0,
-                $"{path} carries no package table row this can read. The rows are matched as a first " +
-                "cell holding a bold, backticked package name; a table written another way leaves " +
-                "every catalogue unchecked in this half.");
+                PackagesIndexed(readme).Count > 0,
+                $"{path} carries no row inside its {IndexBegin} … {IndexEnd} block that this can read. " +
+                "The rows are matched as a first cell holding a bold, backticked package name; a table " +
+                "written another way, or markers that moved, leave every catalogue unchecked here.");
         }
     }
 
     /// <summary>
-    /// The packages a half names in the first cell of a table row — the shape both package tables use
-    /// and the Project status table does not, which is what keeps a package counted once. The row for
-    /// <c>dcat</c> carries prose after the name; anchoring on the cell rather than on the whole row is
-    /// what lets it through.
+    /// The packages the central index names in the first cell of a table row.
     /// </summary>
-    private static List<string> PackagesListed(MarkdownDocument readme)
+    /// <remarks>
+    /// Read from BETWEEN the markers rather than from the whole document. Both halves carry a second
+    /// package table — the toolkit — and a check that swept the page would count the foundation and
+    /// the tool among the catalogues, then report every one of them as ungenerated. The markers say
+    /// which table claims to be exhaustive, so nothing has to be inferred from the prose around it.
+    /// </remarks>
+    private static List<string> PackagesIndexed(MarkdownDocument readme)
     {
+        int start = readme.Text.IndexOf(IndexBegin, StringComparison.Ordinal);
+        int end = readme.Text.IndexOf(IndexEnd, StringComparison.Ordinal);
+
+        Assert.True(
+            start >= 0 && end > start,
+            $"{readme.Path} carries no {IndexBegin} … {IndexEnd} block. That block is the central " +
+            "index every catalogue's README points at, and without it nothing here can tell which " +
+            "table claims to list them all.");
+
         List<string> packages = [];
 
-        foreach (Match row in ProseFigures.Sweep(
-                     readme,
-                     "^\\|\\s*\\*\\*`(?<package>DiagnosticCatalog(?:\\.[A-Za-z]+)?)`\\*\\*"))
+        foreach (Match row in Regex.Matches(
+                     readme.Text.Substring(start, end - start),
+                     "^\\|\\s*\\*\\*`(?<package>DiagnosticCatalog(?:\\.[A-Za-z]+)?)`\\*\\*",
+                     RegexOptions.Multiline,
+                     TimeSpan.FromSeconds(10)))
         {
             packages.Add(row.Groups["package"].Value);
         }

@@ -92,8 +92,8 @@ document et ferait de chaque lien inter-langues une recherche.
 ## Chaque page porte les trois mêmes choses
 
 Les deux premières lient tout document sous `doc/` — le guide, la spécification, les décisions
-d'architecture. La troisième ne lie que [`doc/guide/`](guide/) : c'est le dossier qui a un ordre de
-lecture, et le pied de navigation est ce qui l'exprime.
+d'architecture. La troisième ne lie que [`doc/guide/`](guide/) : c'est le dossier qui a des ordres
+de lecture, et le pied de navigation est ce qui les exprime.
 
 ### 1. Un H1, puis le bandeau de langue
 
@@ -148,11 +148,12 @@ Le dernier bloc du fichier :
 * Le lien du milieu est toujours présent et pointe toujours vers la carte — `README.en.md` ou
   `README.fr.md` dans le même dossier. La carte elle-même fait exception : elle *est* la table des
   matières, donc son pied ne porte qu'un lien de retour vers le README du projet et un lien vers la
-  première page.
-* `←` est absent sur la première page de l'ordre de lecture ; `→` est absent sur la dernière. La
-  carte n'est pas une étape de cet ordre — elle en est l'entrée — si bien que le `←` de la première
-  page est réellement absent plutôt que de renvoyer vers une table des matières que son `↑` propose
-  déjà.
+  première page de la piste par défaut.
+* `←` est absent sur la première page d'une **piste** ; `→` est absent sur sa dernière. La carte
+  n'est pas une étape d'une piste — elle en est l'entrée — si bien que le `←` de la première page
+  est réellement absent plutôt que de renvoyer vers une table des matières que son `↑` propose
+  déjà, et le `→` absent de la dernière page est ce qui dit au lecteur qu'il a fini ce pour quoi il
+  était venu plutôt que de l'envoyer dans la piste suivante.
 * Le texte du lien est le titre de la page visée, pour que le lecteur sache ce qu'il s'apprête à
   ouvrir.
 * `<div align="center">` plutôt qu'une construction Markdown : GitHub retire la plupart des styles
@@ -160,18 +161,33 @@ Le dernier bloc du fichier :
   [`first-class-errors`](https://github.com/Reefact/first-class-errors). S'y aligner fait qu'un
   lecteur passant d'un dépôt à l'autre ne rencontre qu'une seule convention.
 
-*Vérifié, et c'est la vérification stricte :* les pieds de toutes les pages anglaises doivent décrire
-**un ordre total** — chaque page atteignable, exactement une page sans prédécesseur, exactement une
-sans successeur, aucun cycle, et chaque `←` l'inverse exact du `→` correspondant. Les pages
-françaises doivent décrire le même ordre. Une page ajoutée sans être enfilée dans la chaîne échoue,
-et c'est ce qui empêche le jeu de faire pousser une orpheline que personne ne lie.
+*Vérifié, et c'est la vérification stricte :* chaque page anglaise siège sur exactement une piste,
+et les pieds de chaque piste doivent décrire **un ordre total** — ses pages atteignables dans
+l'ordre que la carte liste, aucun cycle, et chaque `←` l'inverse exact du `→` correspondant. Les
+pages françaises doivent décrire les mêmes pistes dans le même ordre. Une page ajoutée sans être
+enfilée dans une piste échoue, et c'est ce qui empêche le jeu de faire pousser une orpheline que
+personne ne lie.
 
-## L'ordre de lecture est celui de la carte
+## Les pistes sont celles de la carte
 
-[`guide/README.fr.md`](guide/README.fr.md) est la carte de la documentation : elle groupe les pages
-par ce que le lecteur cherche à faire, et son ordre est celui que les pieds enfilent. Ajouter une
-page veut dire l'ajouter à la carte **et** à la chaîne ; le test compare les deux et échoue si elles
-divergent.
+[`guide/README.fr.md`](guide/README.fr.md) est la carte de la documentation. Elle groupe les pages
+en **pistes** — un ordre de lecture court par raison d'être ici — et chaque piste est déclarée par
+un marqueur et une liste numérotée :
+
+```markdown
+<!-- track: using -->
+
+1. [Pourquoi les chaînes magiques échouent](the-problem.fr.md) — …
+2. [Démarrer](getting-started.fr.md) — …
+```
+
+L'identifiant du marqueur est le même mot dans les deux langues, et c'est ce qui permet de comparer
+les deux cartes ; le titre au-dessus est de la prose et se traduit. Les pieds enfilent ce que les
+listes disent, et le test compare les deux et échoue si elles divergent.
+
+Des pistes plutôt qu'une chaîne unique parce qu'une chaîne unique faisait de chaque lecteur le
+lecteur de tout le monde : la dernière page dont un consommateur avait besoin l'envoyait vers la
+publication d'un catalogue, et la seule page sans `→` était la dernière page des internes.
 
 ## Règles de rédaction
 
@@ -331,6 +347,7 @@ plus échoue aussi — une exemption que rien n'utilise couvre ce qui sera écri
 1. Écrivez `doc/guide/<nom>.en.md` avec le bandeau, la phrase de public et le pied.
 2. Écrivez `doc/guide/<nom>.fr.md` dans le même commit. Une page fusionnée avec « le français
    suivra » n'obtient pas son français, et le test de parité refuse de la laisser essayer.
-3. Insérez-la dans l'ordre de lecture : ajoutez une ligne à la carte, et ajustez les `←`/`→` de ses
-   deux voisines dans les deux langues.
+3. Insérez-la dans une piste : ajoutez une entrée numérotée sous le marqueur de cette piste dans la
+   carte, et ajustez les `←`/`→` de ses deux voisines, dans les deux langues. Exactement une piste,
+   sinon la page acquiert deux prédécesseurs.
 4. Lancez `dotnet test -c Release` et lisez ce que disent les tests de documentation.

@@ -19,27 +19,25 @@ namespace DiagnosticCatalog.Catalogs.UnitTests;
 public sealed class DocumentedMirrorTests
 {
     /// <summary>
-    /// A catalogue's project folder and the generated source inside it. Listed rather than
-    /// discovered: a new catalogue whose documents were never marked would otherwise be absent from
-    /// the theory and pass by not being tested, which is the one outcome these must not allow.
+    /// A vendor catalogue's project folder and the generated source inside it, discovered from
+    /// <c>eng/catalogs.json</c> — see <see cref="CatalogueRoster"/> for why it is not a list.
     /// </summary>
-    public static TheoryData<string, string> Catalogues() =>
-        new()
+    /// <remarks>
+    /// The vendor catalogues only. <c>DiagnosticCatalog.Self</c> mirrors this repository's own
+    /// analyzers rather than an upstream release, ships on the <c>lib</c> train with them, and keeps
+    /// no changelog of its own — so a banner naming "the release it mirrors" would be naming this
+    /// repository to itself.
+    /// </remarks>
+    public static TheoryData<string, string> Catalogues()
+    {
+        TheoryData<string, string> catalogues = [];
+        foreach (CatalogueEntry catalogue in CatalogueRoster.Vendor)
         {
-            { "DiagnosticCatalog.Sonar", "SonarRules.g.cs" },
-            { "DiagnosticCatalog.NetAnalyzers", "NetAnalyzersRules.g.cs" },
-            { "DiagnosticCatalog.StyleCop", "StyleCopRules.g.cs" },
-            { "DiagnosticCatalog.CodeStyle", "CodeStyleRules.g.cs" },
-            { "DiagnosticCatalog.Xunit", "XunitRules.g.cs" },
-            { "DiagnosticCatalog.NUnit", "NUnitRules.g.cs" },
-            { "DiagnosticCatalog.MSTest", "MSTestRules.g.cs" },
-            { "DiagnosticCatalog.Trimming", "TrimRules.g.cs" },
-            { "DiagnosticCatalog.AspNetCore", "AspNetCoreRules.g.cs" },
-            { "DiagnosticCatalog.Syslib", "SyslibRules.g.cs" },
-            { "DiagnosticCatalog.Roslyn", "RoslynRules.g.cs" },
-            { "DiagnosticCatalog.PublicApi", "PublicApiRules.g.cs" },
-            { "DiagnosticCatalog.BannedApi", "BannedApiRules.g.cs" },
-        };
+            catalogues.Add(catalogue.Folder, catalogue.GeneratedFile);
+        }
+
+        return catalogues;
+    }
 
     [Theory]
     [MemberData(nameof(Catalogues))]

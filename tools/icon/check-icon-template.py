@@ -12,10 +12,12 @@ shipped icons and reproduces them — and a claim in a comment is exactly the ki
 repository does not leave unchecked. Two things can break it, both silently: somebody edits
 the template, or somebody draws a new catalogue's icon by hand instead of exporting it.
 Neither is visible to PackageIconTests, which asserts that no two catalogues ship the SAME
-icon and never asks what any of them looks like (ADR-0032).
+icon and never asks what any of them looks like (ADR-0035, the record in force, which carries
+that trade forward from ADR-0032).
 
 WHAT IT DOES NOT CHECK. The badge lettering. The plate's interior is excluded from the
-comparison, so what the letters say stays a matter for review — the trade ADR-0032 records.
+comparison, so what the letters say stays a matter for review — the trade ADR-0032 first
+recorded and ADR-0035 still stands on.
 What draws them is no longer a mystery, though: render-icon.py sets them, from the font the
 template names, so a badge that differs is one somebody drew by hand.
 

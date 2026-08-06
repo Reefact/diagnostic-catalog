@@ -35,7 +35,7 @@ sequenceDiagram
     J->>J: compute the catalogue, compare with the file
     alt nothing moved
         J-->>R: no change — the file is left untouched
-    else a rule added, recategorised or retired
+    else anything the catalogue publishes moved
         J->>R: open a pull request carrying the rules diff
         R->>M: a published contract changed — read the diff
         M->>R: merge, or reject
@@ -171,5 +171,5 @@ breaks — and "nothing breaks" is precisely the property that makes it invisibl
 ---
 
 <div align="center">
-<a href="./catalogs-manifest.en.md">← The catalogue manifest</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./diagnostics.en.md">The DCAT diagnostics →</a>
+<a href="./catalogs-manifest.en.md">← The catalogue manifest</a> · <a href="./README.en.md">↑ Table of contents</a>
 </div>

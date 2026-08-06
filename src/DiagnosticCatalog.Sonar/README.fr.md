@@ -174,7 +174,7 @@ version. Si votre projet référence un `SonarAnalyzer.CSharp` bien plus récent
 ## Comment il reste à jour
 
 Un workflow nocturne régénère chaque catalogue depuis son paquet amont et ouvre une pull request
-quand quelque chose a réellement bougé — règles ajoutées, recatégorisées, retirées en amont. Il ne
+quand quoi que ce soit que le catalogue publie a bougé. Il ne
 publie jamais : une catégorie ou un identifiant qui a changé en amont change un contrat publié, et
 comme la plateforme ne lit jamais la catégorie d'une suppression, une valeur fausse fusionnée sans
 relecture ne produirait de symptôme nulle part. Un humain lit le diff.
@@ -213,42 +213,16 @@ référencer une constante. Ce paquet ne couvre que les règles d'analyse `Sxxxx
 
 ## Voir aussi
 
-Treize catalogues frères sont générés depuis ce dépôt de la même façon, chacun lu depuis les descripteurs
-d'un seul analyseur :
+Chaque catalogue publié par ce dépôt est listé au même endroit — choisissez celui qui correspond à
+un analyseur que vous exécutez :
 
-- [`DiagnosticCatalog.NetAnalyzers`](https://www.nuget.org/packages/DiagnosticCatalog.NetAnalyzers)
-  — les règles d'analyse de code .NET (`CAxxxx`).
-- [`DiagnosticCatalog.StyleCop`](https://www.nuget.org/packages/DiagnosticCatalog.StyleCop)
-  — les règles StyleCop.Analyzers (`SAxxxx`).
-- [`DiagnosticCatalog.CodeStyle`](https://www.nuget.org/packages/DiagnosticCatalog.CodeStyle)
-  — les règles de style de code IDE de Roslyn (`IDExxxx`).
-- [`DiagnosticCatalog.Xunit`](https://www.nuget.org/packages/DiagnosticCatalog.Xunit)
-  — les règles xunit.analyzers (`xUnitxxxx`).
-- [`DiagnosticCatalog.NUnit`](https://www.nuget.org/packages/DiagnosticCatalog.NUnit)
-  — les règles NUnit.Analyzers (`NUnitxxxx`).
-- [`DiagnosticCatalog.MSTest`](https://www.nuget.org/packages/DiagnosticCatalog.MSTest)
-  — les règles MSTest.Analyzers (`MSTESTxxxx`).
-- [`DiagnosticCatalog.Trimming`](https://www.nuget.org/packages/DiagnosticCatalog.Trimming)
-  — les avertissements de trimming, Native AOT et fichier unique (`ILxxxx`).
-- [`DiagnosticCatalog.AspNetCore`](https://www.nuget.org/packages/DiagnosticCatalog.AspNetCore)
-  — les règles ASP.NET Core et Blazor (`ASPxxxx`, `BLxxxx`).
-- [`DiagnosticCatalog.Syslib`](https://www.nuget.org/packages/DiagnosticCatalog.Syslib)
-  — les diagnostics des générateurs de source du runtime .NET (`SYSLIB1xxx`).
-- [`DiagnosticCatalog.Roslyn`](https://www.nuget.org/packages/DiagnosticCatalog.Roslyn)
-  — les règles d'écriture d'analyseurs Roslyn (`RS1xxx`, `RS2xxx`).
-- [`DiagnosticCatalog.PublicApi`](https://www.nuget.org/packages/DiagnosticCatalog.PublicApi)
-  — les règles de suivi d'API publique (`RS00xx`).
-- [`DiagnosticCatalog.BannedApi`](https://www.nuget.org/packages/DiagnosticCatalog.BannedApi)
-  — les règles d'API bannies (`RS0030`, `RS0031`, `RS0035`).
-- [`DiagnosticCatalog.Self`](https://www.nuget.org/packages/DiagnosticCatalog.Self)
-  — les règles `DCATxxxx` de cette bibliothèque, pour supprimer un diagnostic que les analyseurs de
-  catalogue signalent eux-mêmes.
+**[Les catalogues disponibles](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/README.fr.md#-les-catalogues-disponibles)**
 
 **Vous voulez un catalogue à vous ?** Les règles de votre analyseur, ou un jeu de règles interne, se
 déclarent exactement comme celles-ci : une classe statique de constantes marquée `[DiagnosticRule]`,
-référencée par les consommateurs plutôt que retapée. Ce marqueur est livré dans
-[`DiagnosticCatalog`](https://www.nuget.org/packages/DiagnosticCatalog), la fondation sur laquelle ce
-catalogue est bâti, et son README en est le guide.
+référencée par les consommateurs au lieu d'être retapée. Ce marqueur est livré par
+[`DiagnosticCatalog`](https://www.nuget.org/packages/DiagnosticCatalog), la fondation sur laquelle ce catalogue est
+bâti, et son README est le guide.
 
 ## Documentation
 

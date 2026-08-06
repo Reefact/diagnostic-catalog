@@ -113,11 +113,8 @@ encore des chaînes. Trois options honnêtes :
   ajoute le `using`, et **Corriger toutes les occurrences** l'applique à un projet ou une solution en
   une étape.
 
-  **Ce paquet n'a pas encore de version sur nuget.org.** Il est construit dans le dépôt et roule sur
-  le train `lib` : le prochain tag l'expédiera. D'ici là, la conversion en masse est un
-  chercher-remplacer.
-  [L'état du projet](https://github.com/Reefact/diagnostic-catalog#-project-status) est la réponse à
-  jour.
+  Un catalogue n'amène pas ce paquet avec lui : la vérification est un choix que fait son
+  consommateur, donc référencez `DiagnosticCatalog.Analyzers` vous-même quand vous le voulez.
 
 Laquelle choisir est le sujet de la section adoption d'[Écrire des suppressions que le compilateur
 vérifie](writing-suppressions.fr.md).
@@ -160,5 +157,5 @@ Cela vaut d'être nommé, parce que la plupart des outillages réclament tout ce
 ---
 
 <div align="center">
-<a href="./README.fr.md">↑ Table des matières</a> · <a href="./the-problem.fr.md">Pourquoi les chaînes magiques échouent →</a>
+<a href="./the-problem.fr.md">← Pourquoi les chaînes magiques échouent</a> · <a href="./README.fr.md">↑ Table des matières</a> · <a href="./concepts.fr.md">Concepts →</a>
 </div>

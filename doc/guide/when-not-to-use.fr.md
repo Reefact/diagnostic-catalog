@@ -110,5 +110,5 @@ cela. Aucune dépendance n'atteint votre application, et un test l'asserte.
 ---
 
 <div align="center">
-<a href="./concepts.fr.md">← Concepts</a> · <a href="./README.fr.md">↑ Table des matières</a> · <a href="./alternatives.fr.md">Les alternatives →</a>
+<a href="./zero-footprint.fr.md">← La garantie d'empreinte nulle</a> · <a href="./README.fr.md">↑ Table des matières</a> · <a href="./alternatives.fr.md">Les alternatives →</a>
 </div>

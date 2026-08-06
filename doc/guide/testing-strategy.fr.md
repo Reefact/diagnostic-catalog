@@ -6,6 +6,12 @@
 Pour quiconque ajoute un test, ou se demande pourquoi il y a sept projets de test. Chacun existe
 parce que quelque chose que les autres ne peuvent pas atteindre échouerait sinon en silence.
 
+Trois autres projets siègent sous [`tests/`](../../tests) et n'assertent rien eux-mêmes :
+`DiagnosticCatalog.Usage` est un consommateur dont la suite d'empreinte nulle inspecte la
+compilation ([ADR-0030](../adr/0030-keep-the-usage-suite-out-of-the-sonar-analysis.fr.md)), et
+`CatalogGen.AbsentContract` et `CatalogGen.PartialLoadFixture` sont des assemblages d'analyseurs
+compilés pour que les tests du générateur échouent dessus.
+
 ## Les sept projets
 
 | Projet | Asserte | Tourne sur |

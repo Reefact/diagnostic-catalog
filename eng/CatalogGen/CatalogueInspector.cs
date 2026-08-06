@@ -6,9 +6,24 @@ namespace CatalogGen;
 /// One rule as a compiled catalogue publishes it.
 /// </summary>
 /// <param name="Container">
-/// The class the rule is nested in, which is how a consumer names it: a suppression is written
-/// <c>StyleCopRule.SA1000.Category</c>, never <c>SA1000.Category</c>. Carried because the whole
-/// value of explaining a rule is producing a line that can be copied rather than retyped.
+/// The name of the class the rule is nested in, or empty when it is declared at namespace level.
+/// A fact about the shape of the catalogue; the spelling a use site writes is
+/// <see cref="Reference"/>, which is not built from this.
+/// </param>
+/// <param name="Reference">
+/// The rule type as C# has to be written to reach it from anywhere: <c>global::</c>, the namespace,
+/// every enclosing type in order, and the type's own name, each segment escaped where C# would
+/// otherwise read it as a keyword.
+/// <para>
+/// Carried whole rather than assembled by the caller, because every way of assembling it is a way
+/// of getting it wrong and none of them fails loudly. A reference missing the namespace compiles in
+/// the file the catalogue was written in and nowhere else; one carrying only the immediate declaring
+/// type drops the levels above it; one built by concatenating a namespace that is empty starts with
+/// a dot. What a reader copies out of <c>dcat explain</c> has to bind in THEIR file, which imports
+/// nothing on this catalogue's account — so the reference depends on no <c>using</c> at all, and
+/// <c>global::</c> is what makes that true even where a consumer has a namespace of their own that
+/// shadows the first segment.
+/// </para>
 /// </param>
 /// <param name="TypeName">
 /// The rule TYPE's own name, which is what a use site writes — <c>ACME_0003</c>, never the
@@ -22,7 +37,8 @@ namespace CatalogGen;
 /// </para>
 /// </param>
 public sealed record CataloguedRule(
-    string Id, string TypeName, string Container, string Category, string HelpLinkUri, bool Retired);
+    string Id, string TypeName, string Container, string Reference, string Category, string HelpLinkUri,
+    bool Retired);
 
 /// <summary>
 /// What a compiled catalogue assembly declares.
@@ -104,10 +120,57 @@ public static class CatalogueInspector
             Constant(type, "Id") ?? type.Name,
             type.Name,
             type.DeclaringType?.Name ?? string.Empty,
+            ReferenceTo(type),
             Constant(type, "Category") ?? string.Empty,
             Constant(type, "HelpLinkUri") ?? string.Empty,
             HasAttribute(type.GetCustomAttributesData(), ObsoleteMarker)));
     }
+
+    /// <summary>
+    /// The type, spelled as C# reaches it from a file that has imported nothing.
+    /// </summary>
+    /// <remarks>
+    /// Built from the metadata rather than from <see cref="Type.FullName"/>, which spells a nested
+    /// type <c>Outer+Inner</c> — a name the runtime accepts and the compiler does not — and would
+    /// need unpicking anyway. <see cref="Type.Namespace"/> is the outermost enclosing type's for a
+    /// nested one, which is exactly what a reference needs, and null for the global namespace, where
+    /// there is no prefix at all.
+    /// </remarks>
+    private static string ReferenceTo(Type type)
+    {
+        List<string> nesting = [];
+        for (Type? current = type; current is not null; current = current.DeclaringType)
+            nesting.Insert(0, Writable(current.Name));
+
+        string @namespace = type.Namespace ?? string.Empty;
+        IEnumerable<string> segments = @namespace.Length == 0
+            ? nesting
+            : @namespace.Split('.').Select(Writable).Concat(nesting);
+
+        return "global::" + string.Join(".", segments);
+    }
+
+    /// <summary>One identifier, as C# accepts it.</summary>
+    /// <remarks>
+    /// Metadata has no keywords, so a namespace called <c>class</c> or a type called <c>event</c> is
+    /// an ordinary name to every reader here and unwritable in C# without the escape. Only RESERVED
+    /// words are escaped: a contextual keyword — <c>var</c>, <c>record</c>, <c>value</c> — is a legal
+    /// identifier already, and prefixing it would be noise in a line meant to be copied.
+    /// </remarks>
+    private static string Writable(string identifier) => Reserved.Contains(identifier) ? "@" + identifier : identifier;
+
+    /// <summary>C#'s reserved words, which are a closed set fixed by the language.</summary>
+    private static readonly HashSet<string> Reserved = new(StringComparer.Ordinal)
+    {
+        "abstract", "as", "base", "bool", "break", "byte", "case", "catch", "char", "checked", "class",
+        "const", "continue", "decimal", "default", "delegate", "do", "double", "else", "enum", "event",
+        "explicit", "extern", "false", "finally", "fixed", "float", "for", "foreach", "goto", "if",
+        "implicit", "in", "int", "interface", "internal", "is", "lock", "long", "namespace", "new",
+        "null", "object", "operator", "out", "override", "params", "private", "protected", "public",
+        "readonly", "ref", "return", "sbyte", "sealed", "short", "sizeof", "stackalloc", "static",
+        "string", "struct", "switch", "this", "throw", "true", "try", "typeof", "uint", "ulong",
+        "unchecked", "unsafe", "ushort", "using", "virtual", "void", "volatile", "while",
+    };
 
     private static (string?, string?, string?) ReadProvenance(Assembly assembly)
     {

@@ -76,12 +76,10 @@ That is the only line you need for the guarantee itself. A misspelled rule is no
 because `SonarRule.S1144.Id` is a member the compiler resolves — no analyzer is involved in that.
 
 The `DCAT` diagnostics below are a separate package, `DiagnosticCatalog.Analyzers`, and they are what
-finds the suppressions you have *not* converted yet. **It has no version on nuget.org today**, so a
-catalogue does not bring it along — nothing can reference a package that has never been published
-([ADR-0007](../adr/0007-depend-across-trains-through-published-packages.en.md)). It rides the `lib`
-train, so the next tag there ships it;
-[project status](https://github.com/Reefact/diagnostic-catalog#-project-status) is the current
-answer.
+finds the suppressions you have *not* converted yet. A catalogue does not bring it along: the
+checking is a choice its consumer makes, not one the catalogue makes for them. Reference it beside
+the catalogue when you want it, normally with `PrivateAssets="all"` so it stays out of what you
+publish.
 
 ### 2. Write the suppression
 
@@ -237,5 +235,5 @@ rule *there* was a good idea. That judgement stays yours, which is what `Justifi
 ---
 
 <div align="center">
-<a href="./alternatives.en.md">← The alternatives</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./adopting-a-catalogue.en.md">Adopting a catalogue on an existing codebase →</a>
+<a href="./concepts.en.md">← Core concepts</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./configuration.en.md">Configuration →</a>
 </div>

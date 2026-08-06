@@ -6,10 +6,10 @@
 For anyone generating a catalogue rather than hand-writing one. What the tool does, which source to
 point it at, and the one design decision that explains most of its behaviour.
 
-> **Not on nuget.org yet.** `dcat` is built in this repository and rides the `cli` train
-> ([ADR-0017](../adr/0017-publish-the-generator-as-a-cli-on-its-own-release-train.en.md)); the next tag
-> there ships it. Until then, `dotnet run --project src/DiagnosticCatalog.Cli -- <args>` runs the same
-> tool from a clone.
+> **From a clone as well.** `dcat` rides the `cli` train of its own
+> ([ADR-0017](../adr/0017-publish-the-generator-as-a-cli-on-its-own-release-train.en.md)). Inside
+> this repository, `dotnet run --project src/DiagnosticCatalog.Cli -- <args>` runs the same tool
+> without installing it.
 
 ```bash
 dotnet tool install --global DiagnosticCatalog.Cli
@@ -187,5 +187,5 @@ because a catalogue is a snapshot and its age decides whether its answer can be 
 ---
 
 <div align="center">
-<a href="./packaging-a-catalogue.en.md">← Packaging a catalogue</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./dcat-reference.en.md">The dcat reference →</a>
+<a href="./README.en.md">↑ Table of contents</a> · <a href="./dcat-reference.en.md">The `dcat` reference →</a>
 </div>

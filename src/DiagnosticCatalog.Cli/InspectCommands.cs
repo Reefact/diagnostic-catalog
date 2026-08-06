@@ -95,18 +95,23 @@ internal sealed class ExplainCommand : Command<ExplainSettings>
 
         // The point of the catalogue, spelled out: this is the line the reader came for, and it is
         // the one that is worth copying rather than retyping from memory.
+        //
+        // Written so that it depends on NOTHING already being in the reader's file. Every name is
+        // fully qualified from the global namespace — the attribute included, which lives in
+        // System.Diagnostics.CodeAnalysis and is imported in far fewer files than the ones that
+        // suppress something. A fragment needing two using directives to build is one that fails on
+        // arrival for most of the people who copy it, and it fails as a name that "does not exist"
+        // rather than as anything pointing back here.
+        //
+        // The rule's own segment is its TYPE name, not its identifier. They are the same string for
+        // almost every rule, which is why writing the identifier read as correct — but §8.2's
+        // blessed exception, an identifier C# will not accept as a type name, leaves the two apart:
+        // "MeridianRule.MRD-0100.Category" is not C#, and this is the one line this command exists
+        // to produce. CataloguedRule.Reference carries the whole spelling, escaping included.
         Console.WriteLine();
-        // The TYPE's name, not the identifier. They are the same string for almost every rule, which
-        // is why writing the identifier here read as correct — but §8.2's blessed exception, an
-        // identifier C# will not accept as a type name, leaves the two apart, and there this line
-        // named something that does not exist. "MeridianRule.MRD-0100.Category" is not C#, and it is
-        // the one line this command exists to produce.
-        string qualified = rule.Container.Length > 0
-            ? $"{rule.Container}.{rule.TypeName}"
-            : rule.TypeName;
-        Console.WriteLine("[SuppressMessage(");
-        Console.WriteLine($"    {qualified}.Category,");
-        Console.WriteLine($"    {qualified}.Id,");
+        Console.WriteLine("[global::System.Diagnostics.CodeAnalysis.SuppressMessage(");
+        Console.WriteLine($"    {rule.Reference}.Category,");
+        Console.WriteLine($"    {rule.Reference}.Id,");
         Console.WriteLine("    Justification = \"…\")]");
 
         return ExitCodes.Success;

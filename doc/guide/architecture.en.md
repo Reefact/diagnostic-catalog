@@ -26,6 +26,8 @@ flowchart TB
         AS["DiagnosticCatalog.AspNetCore"]
         SY["DiagnosticCatalog.Syslib"]
         RO["DiagnosticCatalog.Roslyn"]
+        PA["DiagnosticCatalog.PublicApi"]
+        BA["DiagnosticCatalog.BannedApi"]
         CLI["DiagnosticCatalog.Cli<br/><i>ships as dcat</i>"]
         A -. "bundles" .-> CF
         S --> F
@@ -39,6 +41,8 @@ flowchart TB
         AS --> F
         SY --> F
         RO --> F
+        PA --> F
+        BA --> F
         SELF --> F
     end
     subgraph ENG["eng/ — build-time only"]
@@ -47,10 +51,7 @@ flowchart TB
         GEN --> W
     end
     CLI --> GEN
-    GEN -. "generates" .-> S
-    GEN -. "generates" .-> N
-    GEN -. "generates" .-> T
-    GEN -. "generates" .-> SELF
+    GEN -. "generates every catalogue above" .-> SRC
     A -. "its descriptors are what Self mirrors" .-> SELF
 ```
 
@@ -172,11 +173,11 @@ shows up as a red build.
 
 * [**Inside the generator**](generator-internals.en.md) — the pipeline, step by step.
 * [**Release trains**](release-trains.en.md) — how a project joins one, and the rule that follows.
-* [**The testing strategy**](testing-strategy.en.md) — what each of the seven test projects asserts,
+* [**The testing strategy**](testing-strategy.en.md) — what each test project asserts,
   and which run on the .NET Framework CLR.
 
 ---
 
 <div align="center">
-<a href="./glossary.en.md">← Glossary</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./generator-internals.en.md">Inside the generator →</a>
+<a href="./README.en.md">↑ Table of contents</a> · <a href="./generator-internals.en.md">Inside the generator →</a>
 </div>

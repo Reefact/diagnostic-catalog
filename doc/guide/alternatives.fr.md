@@ -146,5 +146,5 @@ Deux choses sont parfois proposées comme alternatives et résolvent d'autres pr
 ---
 
 <div align="center">
-<a href="./when-not-to-use.fr.md">← Quand ne pas s'en servir</a> · <a href="./README.fr.md">↑ Table des matières</a> · <a href="./writing-suppressions.fr.md">Écrire des suppressions que le compilateur vérifie →</a>
+<a href="./when-not-to-use.fr.md">← Quand ne pas s'en servir</a> · <a href="./README.fr.md">↑ Table des matières</a>
 </div>

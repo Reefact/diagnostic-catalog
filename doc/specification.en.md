@@ -11,26 +11,25 @@ version: when it and the French translation diverge, this document wins. The
 
 ## 1. Document status
 
-This specification defines the first version of the foundation library
-provisionally named `DiagnosticCatalog`. The final product name may change
-without invalidating the architecture described here.
+This specification is the normative definition of `DiagnosticCatalog` as it ships
+at **1.0**. Everything here describes the library, the analyzers, the generator
+and the packaging as they exist in this repository; where a statement and the
+code disagree, the code is what is right and the statement is the defect.
 
-**Revision 4** adds catalogue provenance (§7.6) and turns generated catalogues
-from a planned evolution into a specified, implemented one (§14.1, §14.2), with
-`DiagnosticCatalog.Sonar` as the reference implementation. It also corrects §2.1,
-which framed only `checkId` as a magic string: both arguments are, and they
-differ in failure mode rather than in kind.
+The name is settled: `DiagnosticCatalog` is what the packages are published
+under, and it is not provisional (Appendix B1).
 
-**Revision 3** reframed the value proposition around `checkId`
-(§2), records the verified behaviour of the .NET suppression pipeline (§3) —
-including the fact that `SuppressMessageAttribute` is never emitted into
-metadata by default (§3.4), which invalidated one of revision 2's own tests —
-corrects the status of `UnconditionalSuppressMessageAttribute` (§9), pins down
-the analyzer implementation path (§10), adds four diagnostics (§11), and splits
-the NuGet packaging in two (§16). Every behavioural claim about the .NET
-platform is sourced in [Appendix A](#appendix-a--verified-platform-behaviour);
-unresolved design questions are listed in
-[Appendix B](#appendix-b--open-decisions).
+It is a living document rather than a changelog. It is amended when the design
+changes, and the reasoning behind a change is recorded once as an
+[architecture decision record](adr/) rather than as a revision note here — which
+is what keeps this document a statement of the current design instead of a stack
+of revisions somebody has to reconcile while reading.
+
+Two appendices carry what the body leans on.
+[Appendix A](#appendix-a--verified-platform-behaviour) records every behavioural
+claim about the .NET platform against the source it was checked in, and
+[Appendix B](#appendix-b--decisions-taken) the design questions that were open
+while the library was being built, each with the answer it was given.
 
 ---
 
@@ -542,7 +541,7 @@ Like `DiagnosticRuleAttribute`, this attribute must never be made
 `[Conditional]` (§3.4): it is read from metadata, which is the whole point.
 A later analyzer can use it to report a catalogue whose snapshot has aged past a
 configured threshold, or whose `SourceVersion` no longer matches the analyzer
-package the project actually references. Neither check is in the MVP.
+package the project actually references. Neither check ships in 1.0 (§24).
 
 The attribute is meant for *generated* catalogues. A first-party catalogue
 maintained by hand next to its own analyzer needs no provenance record: the two
@@ -918,9 +917,16 @@ a blind spot.
 
 ## 11. Foundation diagnostics
 
-The provisional diagnostic prefix is `DCAT`.
+The diagnostic prefix is `DCAT`, and it is settled: it was checked against the
+known community prefixes before publication, because a released id is a contract
+nobody renames (§23) and there is no registry to consult afterwards
+(Appendix B2).
 
-| Id | Target | Title | Default severity | MVP |
+**Shipped** says whether 1.0 implements the diagnostic. The two that do not were
+specified and deliberately left out (§24); they keep their ids so that
+implementing one later cannot reuse a number this document has already spent.
+
+| Id | Target | Title | Default severity | Shipped |
 | --- | --- | --- | --- | --- |
 | `DCAT0001` | use site | Category and Id must reference the same diagnostic rule | Error | yes |
 | `DCAT0002` | definition | A diagnostic rule must be declared as a static non-generic class | Warning | yes |
@@ -1336,6 +1342,28 @@ has a repair the code determines: §11.5 has two renderings this specification
 declines to choose between, and §11.13 has two repairs that change different
 things — a published type name, or which diagnostic is suppressed.
 
+### 12.5 Fixing every occurrence
+
+Every fix above is offered at the **document**, **project** and **solution**
+scopes. A codebase adopts a catalogue by meeting hundreds of literal
+suppressions at once (§3.5), and converting them one invocation at a time is not
+a migration anybody performs.
+
+Two of the fixes edit a place the document SHARES between occurrences — a
+suppression fix appends to the compilation unit's `using` list, the member fix
+inserts at the top of a rule's body — so the batch fixer Roslyn provides cannot
+serve them: it computes each occurrence's change against the pristine document
+and drops any that conflicts with one already merged. What it drops is not the
+insertion alone but that occurrence's whole document change, and the operation
+then reports success having done part of the work. So the fixes that share an
+offset rewrite each document **once, for all of its occurrences together**,
+which leaves nothing to reconcile.
+
+A wider scope reaches every C# document of the project, or of every project, and
+must leave the rest of the solution exactly as it was: a project with no
+occurrence comes back byte for byte, and no occurrence anywhere the scope
+covered is left behind.
+
 ---
 
 ## 13. Catalogue discovery
@@ -1390,23 +1418,43 @@ comparing a value and looking one up are not the same need.
 
 A specialised package may reference `DiagnosticCatalog` and declare rules for an
 analyzer it does not own. Thirteen are implemented, all generated by the same tool
-from the descriptors of their upstream package:
+from the descriptors of their upstream package.
 
-| Catalogue | Mirrors | Rules | Categories | Help links |
-| --- | --- | --- | --- | --- |
-| `DiagnosticCatalog.Sonar` | `SonarAnalyzer.CSharp 10.31.0.145097` | 456 | 13 | 0 of 465 |
-| `DiagnosticCatalog.NetAnalyzers` | `Microsoft.CodeAnalysis.NetAnalyzers 10.0.302` | 318 | 10 | 318 of 318 |
-| `DiagnosticCatalog.StyleCop` | `StyleCop.Analyzers 1.1.118` | 193 | 8 | 193 of 193 |
-| `DiagnosticCatalog.CodeStyle` | `Microsoft.CodeAnalysis.CSharp.CodeStyle 5.6.0` | 120 | 3 | 117 of 120 |
-| `DiagnosticCatalog.Xunit` | `xunit.analyzers 1.27.0` | 90 | 3 | 90 of 90 |
-| `DiagnosticCatalog.NUnit` | `NUnit.Analyzers 4.14.0` | 99 | 3 | 99 of 99 |
-| `DiagnosticCatalog.MSTest` | `MSTest.Analyzers 4.3.3` | 62 | 3 | 62 of 62 |
-| `DiagnosticCatalog.Trimming` | `Microsoft.NET.ILLink.Tasks 10.0.10` | 77 | 3 | 0 of 77 |
-| `DiagnosticCatalog.AspNetCore` | `Microsoft.AspNetCore.App.Ref 10.0.10` | 35 | 3 | 26 of 35 |
-| `DiagnosticCatalog.Syslib` | `Microsoft.NETCore.App.Ref 10.0.10` | 13 | 4 | 13 of 13 |
-| `DiagnosticCatalog.Roslyn` | `Microsoft.CodeAnalysis.Analyzers 5.6.0` | 52 | 9 | 13 of 52 |
-| `DiagnosticCatalog.PublicApi` | `Microsoft.CodeAnalysis.PublicApiAnalyzers 5.6.0` | 23 | 1 | 23 of 23 |
-| `DiagnosticCatalog.BannedApi` | `Microsoft.CodeAnalysis.BannedApiAnalyzers 5.6.0` | 3 | 1 | 2 of 3 |
+**Live rules** are the rules the mirrored release still declares. **Published
+constants** are the rule types the catalogue actually ships, which is the live
+rules *plus* every rule retired upstream and carried forward as `[Obsolete]`
+(§14.1 rule 9, §23.1) — a constant is never deleted, so the second number only
+ever grows. **Help links** counts the published constants that carry one; a
+vendor populating `HelpLinkUri` on none of its descriptors yields a catalogue
+with none, because nothing is synthesised (§14.1 rule 5). The two counts are
+equal on every row today: no rule mirrored here has yet been retired upstream.
+
+<!-- catalogue-facts:begin -->
+
+| Catalogue | Mirrors | Live rules | Published constants | Categories | Help links |
+| --- | --- | ---: | ---: | ---: | ---: |
+| `DiagnosticCatalog.Sonar` | `SonarAnalyzer.CSharp 10.31.0.145097` | 456 | 456 | 13 | 0 |
+| `DiagnosticCatalog.NetAnalyzers` | `Microsoft.CodeAnalysis.NetAnalyzers 10.0.302` | 318 | 318 | 10 | 318 |
+| `DiagnosticCatalog.StyleCop` | `StyleCop.Analyzers.Unstable 1.2.0.556` | 197 | 197 | 8 | 197 |
+| `DiagnosticCatalog.CodeStyle` | `Microsoft.CodeAnalysis.CSharp.CodeStyle 5.6.0` | 120 | 120 | 3 | 117 |
+| `DiagnosticCatalog.NUnit` | `NUnit.Analyzers 4.14.0` | 99 | 99 | 3 | 99 |
+| `DiagnosticCatalog.Xunit` | `xunit.analyzers 1.27.0` | 90 | 90 | 3 | 90 |
+| `DiagnosticCatalog.Trimming` | `Microsoft.NET.ILLink.Tasks 10.0.10` | 77 | 77 | 3 | 0 |
+| `DiagnosticCatalog.MSTest` | `MSTest.Analyzers 4.3.3` | 62 | 62 | 3 | 62 |
+| `DiagnosticCatalog.Roslyn` | `Microsoft.CodeAnalysis.Analyzers 5.6.0` | 52 | 52 | 9 | 13 |
+| `DiagnosticCatalog.AspNetCore` | `Microsoft.AspNetCore.App.Ref 10.0.10` | 35 | 35 | 3 | 26 |
+| `DiagnosticCatalog.PublicApi` | `Microsoft.CodeAnalysis.PublicApiAnalyzers 5.6.0` | 23 | 23 | 1 | 23 |
+| `DiagnosticCatalog.Syslib` | `Microsoft.NETCore.App.Ref 10.0.10` | 13 | 13 | 4 | 13 |
+| `DiagnosticCatalog.BannedApi` | `Microsoft.CodeAnalysis.BannedApiAnalyzers 5.6.0` | 3 | 3 | 1 | 2 |
+
+<!-- catalogue-facts:end -->
+
+`DiagnosticCatalog.Self` is generated the same way and is not in this table: it
+mirrors this repository's own analyzers rather than a third party's (§15).
+
+Every figure above is recounted from the generated sources and the compiled
+assemblies by `CatalogueFactsTests`, so a regeneration that moves one fails the
+build rather than leaving this table quietly wrong.
 
 ```csharp
 using DiagnosticCatalog;
@@ -1462,11 +1510,21 @@ catalogue to the rules a consumer's build can actually report
 Descriptors are the only source that cannot have drifted.
 
 ```text
-dotnet run --project eng/CatalogGen -- \
-    --package SonarAnalyzer.CSharp --version latest \
-    --namespace DiagnosticCatalog.Sonar --container Sonar \
+dcat generate \
+    --package SonarAnalyzer.CSharp --package-version latest \
+    --namespace DiagnosticCatalog.Sonar --container SonarRule \
     --output src/DiagnosticCatalog.Sonar/SonarRules.g.cs
 ```
+
+The engine is `eng/CatalogGen` and the command line is `dcat`, the .NET tool it
+ships inside ([ADR-0017](adr/0017-publish-the-generator-as-a-cli-on-its-own-release-train.en.md)).
+The upstream release is `--package-version`, never `--version`: on a .NET tool
+`--version` is universally read as "which version of the tool am I running", and
+that is the meaning it keeps.
+
+Every catalogue in the table above is declared in `eng/catalogs.json` instead, so
+one `dcat generate --manifest eng/catalogs.json` produces all of them and the list
+lives as data rather than as thirteen command lines.
 
 Rules for the generator, each of which is load-bearing:
 
@@ -1517,11 +1575,28 @@ Rules for the generator, each of which is load-bearing:
    gives them `CS0618` instead — a warning naming the rule and telling them to
    remove the suppression. If upstream ever restores the rule, the mark is
    dropped again automatically.
-10. **Leave the file untouched when nothing moved.** The generator reads its own
-   previous output, compares the rule set and the mirrored version, and rewrites
-   only on a real difference — including not bumping `generatedOn`. Without this
-   the scheduled job of §14.3 would open a pull request every night whose only
-   content was a new date.
+10. **Leave the file untouched when nothing moved, and rewrite it when anything
+   did.** The generator renders the file it would write, reduces it and its own
+   previous output to a canonical form — line endings normalised, the
+   `generatedOn` stamp elided — and compares the two. Equal means the file is
+   left exactly as it stands, `generatedOn` included; without that the scheduled
+   job of §14.3 would open a pull request every night whose only content was a
+   new date. Different means the file is rewritten, and stamped with today.
+
+   Comparing the whole rendered file rather than a list of fields is what makes
+   the check exhaustive. A catalogue publishes its rules *and* the namespace it
+   declares, the class its rules sit in, the source it records and the language
+   those analyzers were read for — the last four from the manifest rather than
+   from upstream. A comparison made of rules and a version reported "current"
+   for every one of them.
+
+   Line endings are normalised because they are the one difference that is not
+   published content: a checkout under `core.autocrlf` rewrites every line in the
+   file and moves nothing a consumer can see.
+
+   `dcat validate` is this same comparison stopped before the write (§14.3), which
+   is why a pipeline can ask whether a catalogue is still true without touching
+   the tree.
 11. **Record provenance** with `[assembly: CatalogSource]` (§7.6).
 
 ### 14.2 Versioning a generated catalogue
@@ -1547,8 +1622,12 @@ repository as data, so it is not duplicated in CI configuration — and then:
    upstream changed shape and is a signal rather than something to paper over;
 3. runs the generator a **second** time and fails if the output moved, which
    catches any loss of determinism before it can churn every future diff;
-4. opens or updates a single pull request on a fixed branch, carrying the rules
-   diff — added, recategorised, retired — in its body.
+4. opens or updates a single pull request on a fixed branch, carrying in its body
+   a report of every change to what the catalogues publish. The rule-level ones
+   are named one by one — added, recategorised, retitled, relinked, retired,
+   declared again upstream — and a change that moves the file without moving a
+   rule is reported as such, so a reviewer meeting one knows to read the diff
+   rather than the list.
 
 **It never publishes a package.** The pull request exists because a category or an
 id that moved upstream changes a published contract, and because the platform
@@ -1776,12 +1855,17 @@ The foundation must support:
 The first version may be limited to C#. Visual Basic support may be considered
 later.
 
-`DiagnosticCatalog` is currently **not strong-named**. A strong-named assembly
-referencing it reports `CS8002`, which a project applying warnings-as-errors
-must suppress with `<NoWarn>$(NoWarn);CS8002</NoWarn>`. This must be settled
-before the first public release: adding *or* removing a strong name afterwards
-changes the assembly identity of every reference, a binary breaking change in
-either direction (Appendix B6).
+`DiagnosticCatalog` is **not strong-named**, and stays that way (Appendix B6). A
+strong-named assembly referencing it reports `CS8002`, which a project applying
+warnings-as-errors must suppress with `<NoWarn>$(NoWarn);CS8002</NoWarn>`. That
+is the whole cost, and it falls only on an assembly that is itself strong-named
+*and* declares a catalogue of its own: a consumer of a catalogue reads `const`
+values the compiler inlines, so no reference to the catalogue assembly is
+emitted at all.
+
+The decision had to be taken before the first release rather than after it:
+adding *or* removing a strong name changes the assembly identity of every
+reference, a binary breaking change in either direction.
 
 ---
 
@@ -1950,11 +2034,9 @@ upstream must be marked `[Obsolete]`, never deleted.
 
 ---
 
-## 24. MVP scope
+## 24. What 1.0 contains
 
-Version `1.0` must contain only the essentials.
-
-**In scope**
+**Shipped**
 
 * `DiagnosticRuleAttribute`, with metadata-name matching (§7.2);
 * static class validation (`DCAT0002`);
@@ -1965,6 +2047,7 @@ Version `1.0` must contain only the essentials.
   (§3.5), including `:FriendlyName` normalisation;
 * mixed reference/literal detection and its deterministic fix (`DCAT0007`);
 * the `IL####` guard for `UnconditionalSuppressMessage` (`DCAT0009`);
+* the declared-category requirement (`DCAT0011`);
 * `SuppressMessageAttribute` support;
 * `UnconditionalSuppressMessageAttribute` support, scoped per §9.1;
 * the two code fixes for incoherent pairs;
@@ -1972,21 +2055,31 @@ Version `1.0` must contain only the essentials.
   in the code already;
 * the naming diagnostics `DCAT0005`, `DCAT0012` and `DCAT0013`, and the
   `nameof` fix of the second;
-* two NuGet packages (§16.1) with analyzer release tracking;
+* *Fix all occurrences* over a document, a project and a whole solution (§12.5);
+* the foundation and analyzer packages (§16.1) with analyzer release tracking;
+* the generator, published as the `dcat` .NET tool
+  ([ADR-0017](adr/0017-publish-the-generator-as-a-cli-on-its-own-release-train.en.md)),
+  with its four verbs — `generate`, `validate`, `list`, `explain` (§14.1);
+* the thirteen generated vendor catalogues of §14, and
+  `DiagnosticCatalog.Self` (§15);
+* nightly synchronisation with every mirrored vendor, which opens a pull request
+  and never publishes (§14.3);
 * documentation;
 * analyzer, compilation, end-to-end and packaging tests.
 
-**Out of scope**
+**Deliberately absent**
 
-* `DCAT0008`, `DCAT0010`;
-* a catalogue source generator;
-* automatic import of external catalogues;
-* a CLI;
+Each of these was considered and left out, rather than missed:
+
+* `DCAT0008` and `DCAT0010`, which were specified and not implemented;
+* a catalogue source generator — generation happens once, in the repository that
+  publishes the catalogue, not in every consumer's build (§25);
+* automatic import of an external catalogue into a consumer's project;
 * documentation generation;
 * `Scope` / `Target` validation;
 * intelligent justification validation;
-* automatic synchronisation with any third-party vendor;
-* Visual Basic support;
+* Visual Basic support
+  ([ADR-0020](adr/0020-a-catalogue-is-generated-for-c-sharp-only.en.md));
 * a runtime diagnostic model;
 * a web catalogue portal.
 
@@ -2157,7 +2250,8 @@ DCAT0007: Suppression mixes a catalog reference with a string literal.
 
 ## 27. Version 1.0 acceptance criteria
 
-Version `1.0` is complete when:
+Version `1.0` is complete when every item below holds, and each is asserted by a
+test rather than by inspection:
 
 1. a third-party library can declare a rule with `[DiagnosticRule]`, with or
    without referencing the `DiagnosticCatalog` assembly (§7.2);
@@ -2175,15 +2269,29 @@ Version `1.0` is complete when:
 9. a literal suppression is replaced when a unique match exists, **including the
    `Id:FriendlyName` form** (§3.3);
 10. a partially migrated suppression is detected and deterministically fixed;
-11. global suppressions are supported;
-12. `UnconditionalSuppressMessageAttribute` is supported for `IL####` rules, and
+11. *Fix all occurrences* converts every occurrence of a document, of a project,
+    and of a whole solution, leaving the projects it has nothing to do in
+    untouched (§12.5);
+12. global suppressions are supported;
+13. `UnconditionalSuppressMessageAttribute` is supported for `IL####` rules, and
     misuse is reported (§9.1);
-13. the analyzers introduce no runtime dependency, asserted by §21.7;
-14. the packages can be installed from NuGet, and their transitivity behaviour
+14. the analyzers introduce no runtime dependency, asserted by §21.7;
+15. the packages can be installed from NuGet, and their transitivity behaviour
     is documented from a real restore test (§16.3);
-15. every documented case has an automated test;
-16. a sample catalogue is provided;
-17. the documentation is sufficient to build a catalogue without reading the
+16. the thirteen vendor catalogues of §14 are generated from their upstream
+    descriptors, each recording the release it mirrors (§7.6), and regenerating
+    any of them twice produces the same bytes;
+17. `dcat validate` answers `2` on a catalogue that no longer matches its
+    source, `0` on one that does, and `1` on a run that could not finish
+    (§14.1);
+18. `dcat explain` prints a suppression that compiles where it is pasted, with
+    no `using` directive of the reader's;
+19. the `DCAT` diagnostics are themselves catalogued, by this repository's own
+    generator, and the catalogue is checked against the analyzers beside it
+    (§15);
+20. every documented case has an automated test;
+21. a sample catalogue is provided;
+22. the documentation is sufficient to build a catalogue without reading the
     foundation's internals.
 
 ---
@@ -2243,14 +2351,19 @@ recalled. Re-verify before any major revision.
 | A11 | `Microsoft.CodeAnalysis.NetAnalyzers 10.0.302` declares 318 descriptors over 10 categories, all with help links, and splits its analyzers between a language-neutral assembly at `analyzers/dotnet/` and per-language ones under `cs/` and `vb/`. `StyleCop.Analyzers 1.1.118` declares 193 over 8 categories of the `StyleCop.CSharp.*Rules` shape, all with help links. `StyleCop.Analyzers 1.2.0-beta.556` is a metapackage carrying no analyzer assembly; the rules live in `StyleCop.Analyzers.Unstable`. | Same method as A9 |
 | A13 | The **compile-time** trim analyzer does **not** use the linker decoder of A4. It truncates `checkId` at the first colon and then requires an exact, case-sensitive match against the diagnostic id. So `IL2026:FriendlyName`, `IL2026:` and `IL2026:a:b` are honoured, while `IL20265` — which A4's decoder accepts as `IL2026` — is ignored, as are `il2026` and `" IL2026"`. Both paths ignore the category, agreeing with A2 and A4. | Compilation with `EnableTrimAnalyzer`, suppressing a real `IL2026` one identifier shape at a time and observing which warnings survive (§9.1) |
 
-## Appendix B — Open decisions
+## Appendix B — Decisions taken
 
-| # | Question | Current position |
+These are the design questions that were open while the library was being built.
+Each is recorded with the answer it was given and the reasoning behind it, so a
+reader meeting one of them in the body knows it was decided rather than
+overlooked. None of them is open at 1.0.
+
+| # | Question | Decision |
 | --- | --- | --- |
 | B1 | ~~Final product name. `Catalog` names a library that deliberately contains no catalogue (§2.5).~~ | **Settled** — the name stands. It says what the library is for, not what it holds; the alternatives each lose something, and four packages are published. |
 | B2 | ~~Is the `DCAT` prefix free? Community analyzer prefixes are not centrally registered.~~ | **Settled — it is.** Checked by @reefact against the known prefixes before 1.0. It had to close before publication rather than after: a released id is a contract nobody renames (§23), and there is no registry to consult later. |
-| B3 | Should the purely structural fallback of §7.2 (no attribute) be enabled by default? | Attribute-only for 1.0; structural fallback documented but off. |
-| B4 | Are aliases and `using static` worth the analyzer complexity given §10.5? | Resolved, documented, not promoted. |
+| B3 | ~~Should the purely structural fallback of §7.2 (no attribute) be enabled by default?~~ | **Settled — no.** Matching is attribute-only, and the structural fallback stays documented and off. Turning it on would make every static class of two constants named `Id` and `Category` a rule, in somebody else's assembly, with no way for them to opt out. |
+| B4 | ~~Are aliases and `using static` worth the analyzer complexity given §10.5?~~ | **Settled — yes, both are resolved.** An alias or a `using static` at a use site binds to the same symbol, so refusing to follow it would report `DCAT0006` on a suppression that is already a checked reference. Neither is promoted in the documentation: they resolve, and §10.5 says why they are not the shape to reach for. |
 | B5 | ~~Does the ILLink Roslyn analyzer (`IL2xxx` at compile time) share the decoder verified in A4?~~ | **Settled — it does not** (A13). The two agree on everything a generated catalogue can produce, and diverge on one shape: `IL####` followed by anything that is not a colon. `DCAT0009` mirrors the linker, so it stays quiet there; see §11.9. |
 | B6 | ~~Strong-name the `DiagnosticCatalog` assembly?~~ | **Settled** — unsigned, and it stays that way past 1.0. A catalogue's consumer is unaffected either way: they read `const` values, which the compiler inlines, so no reference to the catalogue assembly is emitted at all and the application runs without it. Only an assembly that is *itself* strong-named **and** uses the marker attributes to declare a catalogue of its own is affected, and only by `CS8002` — a warning, on any target framework, not a .NET Framework matter. That is not this library's primary audience. |
 | B7 | ~~Should `DiagnosticCatalog.Sonar`'s package version track `SonarAnalyzer.CSharp`, or run on its own line?~~ | **Settled** — its own line, for every catalogue: [ADR-0015](adr/0015-a-catalogues-version-runs-on-its-own-line.en.md). |

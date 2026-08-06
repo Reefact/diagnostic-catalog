@@ -190,43 +190,17 @@ deux sont livrés à une seule version.
 
 ## Voir aussi
 
-Quatorze catalogues bâtis sur ce paquet sont déjà publiés, générés depuis les descripteurs mêmes des
-analyseurs plutôt qu'écrits à la main. Si vous utilisez l'un d'eux, ses règles n'ont pas à être déclarées :
+Chaque catalogue de règles bâti sur ce paquet est listé au même endroit, généré depuis les
+descripteurs mêmes des analyseurs plutôt qu'écrit à la main. Si vous exécutez l'un de ces
+analyseurs, ses règles n'ont pas besoin d'être déclarées :
 
-- [`DiagnosticCatalog.Sonar`](https://www.nuget.org/packages/DiagnosticCatalog.Sonar)
-  — les règles SonarAnalyzer.CSharp (`Sxxxx`).
-- [`DiagnosticCatalog.NetAnalyzers`](https://www.nuget.org/packages/DiagnosticCatalog.NetAnalyzers)
-  — les règles d'analyse de code .NET (`CAxxxx`).
-- [`DiagnosticCatalog.StyleCop`](https://www.nuget.org/packages/DiagnosticCatalog.StyleCop)
-  — les règles StyleCop.Analyzers (`SAxxxx`).
-- [`DiagnosticCatalog.CodeStyle`](https://www.nuget.org/packages/DiagnosticCatalog.CodeStyle)
-  — les règles de style de code IDE de Roslyn (`IDExxxx`).
-- [`DiagnosticCatalog.Xunit`](https://www.nuget.org/packages/DiagnosticCatalog.Xunit)
-  — les règles xunit.analyzers (`xUnitxxxx`).
-- [`DiagnosticCatalog.NUnit`](https://www.nuget.org/packages/DiagnosticCatalog.NUnit)
-  — les règles NUnit.Analyzers (`NUnitxxxx`).
-- [`DiagnosticCatalog.MSTest`](https://www.nuget.org/packages/DiagnosticCatalog.MSTest)
-  — les règles MSTest.Analyzers (`MSTESTxxxx`).
-- [`DiagnosticCatalog.Trimming`](https://www.nuget.org/packages/DiagnosticCatalog.Trimming)
-  — les avertissements de trimming, Native AOT et fichier unique (`ILxxxx`).
-- [`DiagnosticCatalog.AspNetCore`](https://www.nuget.org/packages/DiagnosticCatalog.AspNetCore)
-  — les règles ASP.NET Core et Blazor (`ASPxxxx`, `BLxxxx`).
-- [`DiagnosticCatalog.Syslib`](https://www.nuget.org/packages/DiagnosticCatalog.Syslib)
-  — les diagnostics des générateurs de source du runtime .NET (`SYSLIB1xxx`).
-- [`DiagnosticCatalog.Roslyn`](https://www.nuget.org/packages/DiagnosticCatalog.Roslyn)
-  — les règles d'écriture d'analyseurs Roslyn (`RS1xxx`, `RS2xxx`).
-- [`DiagnosticCatalog.PublicApi`](https://www.nuget.org/packages/DiagnosticCatalog.PublicApi)
-  — les règles de suivi d'API publique (`RS00xx`).
-- [`DiagnosticCatalog.BannedApi`](https://www.nuget.org/packages/DiagnosticCatalog.BannedApi)
-  — les règles d'API bannies (`RS0030`, `RS0031`, `RS0035`).
-- [`DiagnosticCatalog.Self`](https://www.nuget.org/packages/DiagnosticCatalog.Self)
-  — les règles `DCATxxxx` que signalent les analyseurs de catalogue, cataloguées de la même façon.
+**[Les catalogues disponibles](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/README.fr.md#-les-catalogues-disponibles)**
 
-Ils valent aussi d'être lus comme des exemples travaillés du contrat ci-dessus : un conteneur de
-règles, les catégories déclarées une seule fois, et la version amont que l'ensemble reflète consignée
-dans `[assembly: CatalogSource]`.
+Ils valent aussi comme exemples travaillés du contrat ci-dessus : un conteneur de règles, les
+catégories déclarées une seule fois, et la version amont que l'ensemble reflète, enregistrée dans
+`[assembly: CatalogSource]`.
 
-Pour le contrat expliqué à partir de zéro plutôt que par l'exemple, voyez
+Pour le contrat expliqué depuis zéro plutôt que par l'exemple, voir
 [le guide de l'auteur de catalogue](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/authoring-a-catalogue.fr.md).
 
 ## Documentation
