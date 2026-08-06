@@ -52,6 +52,13 @@ each carry an analyzer assembly of the same file name but a different assembly v
 of them — the build passed only the higher-versioned analyzer to the compiler and the diagnostics
 were not duplicated, while two code-fix assemblies of identical version were both passed through.
 
+The arrangement this record proposes was built and measured end to end, also outside CI: a foundation
+package carrying both the library folder and the analyzer folder, two catalogue packages declaring
+nothing beyond an ordinary dependency on it, and a consumer referencing both catalogues. The
+consumer's literal suppression was reported as `DCAT0006`, once, naming the catalogue reference to
+write instead — so the arrangement asks nothing of a catalogue, and the analyzer reaches a consumer
+of two of them as a single instance.
+
 `DCAT0006` ships as an error by default
 ([ADR-0027](0027-ship-the-use-site-diagnostics-as-errors.en.md)), on the stated ground that
 referencing a catalogue package is itself the statement of intent.
