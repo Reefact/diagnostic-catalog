@@ -27,7 +27,7 @@
     <PackageId>DiagnosticCatalog</PackageId>
     <DevelopmentDependency>false</DevelopmentDependency>
     <Title>DiagnosticCatalog</Title>
-    <Description>Marker attributes for declaring analyzer diagnostic rules as strongly referenced constants, so that SuppressMessageAttribute takes compile-checked references instead of magic strings.</Description>
+    <Description>Marker attributes for declaring analyzer diagnostic rules as strongly referenced constants, so that SuppressMessageAttribute takes compile-checked references instead of magic strings. Ships the DCAT analyzers and code fixes alongside them, so referencing any catalogue built on this foundation is enough to have your suppressions checked and offered a fix.</Description>
     <PackageTags>roslyn;analyzers;diagnostics;suppressmessage;code-analysis;static-analysis;catalog</PackageTags>
     <PackageReadmeFile>README.en.md</PackageReadmeFile>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
@@ -39,6 +39,58 @@
   <ItemGroup>
     <None Include="README.en.md" Pack="true" PackagePath="/" />
   </ItemGroup>
+
+  <!--
+    The analyzers ride in this package, beside the attributes (ADR-0037). They are separate PROJECTS —
+    an analyzer assembly must be netstandard2.0 for the host compiler to load it, and RS1022 bans
+    Workspaces types from it, which is why the code fixes are a third — but they are not separate
+    PACKAGES: every catalogue already depends on this one and may not hide it, so shipping the checks
+    here is what makes "referencing a catalogue means being checked" a property of the dependency graph
+    rather than of thirteen references somebody has to remember.
+
+    analyzers/dotnet/cs/, never lib/. An assembly in lib/ would be compiled against and would become a
+    runtime dependency of the consuming application, which docs §16 forbids in its opening line.
+    IncludeBuildOutput stays true here, unlike the analyzer project that used to pack itself: this
+    package genuinely has a lib/, because DiagnosticCatalog.dll is the one assembly a consumer compiles
+    against.
+
+    The pdbs travel beside their assemblies rather than in the symbol package, so anyone debugging an
+    analyzer inside a compiler host finds them where the host looks.
+  -->
+  <ItemGroup>
+    <None Include="$(AnalyzersOutputPath)DiagnosticCatalog.Analyzers.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <None Include="$(AnalyzersOutputPath)DiagnosticCatalog.Analyzers.pdb" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <None Include="$(CodeFixesOutputPath)DiagnosticCatalog.CodeFixes.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <None Include="$(CodeFixesOutputPath)DiagnosticCatalog.CodeFixes.pdb" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <!-- The released list of diagnostics, at the package root: a consumer deciding whether to upgrade
+         reads it without unpacking the analyzer. -->
+    <None Include="..\DiagnosticCatalog.Analyzers\AnalyzerReleases.Shipped.md" Pack="true" PackagePath="/" Visible="false" />
+  </ItemGroup>
+
+  <!--
+    Build order, not a code dependency. ReferenceOutputAssembly="false" means nothing here compiles
+    against the analyzers — this package's own assembly is the attributes and nothing else — but the
+    projects are built before this one, so the DLLs packed above exist.
+
+    The tempting alternative is to pack them by path with no reference at all. It works under
+    tools/packaging/pack.sh, which packs without rebuilding after a full solution build, and silently
+    produces a package with no analyzers in it for anyone running a bare `dotnet pack`.
+
+    The reference runs THIS WAY ROUND on purpose. DiagnosticCatalog.Analyzers deliberately carries no
+    reference back: §7.2 requires the marker to be matched by its fully qualified metadata name, so the
+    analyzer never needs the attribute type, and depending on it would tempt an implementation into the
+    SymbolEqualityComparer shortcut that breaks a catalogue embedding its own attribute.
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\DiagnosticCatalog.Analyzers\DiagnosticCatalog.Analyzers.csproj"
+                      ReferenceOutputAssembly="false"
+                      PrivateAssets="all" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <AnalyzersOutputPath>$(MSBuildThisFileDirectory)..\DiagnosticCatalog.Analyzers\bin\$(Configuration)\netstandard2.0\</AnalyzersOutputPath>
+    <CodeFixesOutputPath>$(MSBuildThisFileDirectory)..\DiagnosticCatalog.CodeFixes\bin\$(Configuration)\netstandard2.0\</CodeFixesOutputPath>
+  </PropertyGroup>
 
   <!--
     Guards the shape of this assembly's public API: renaming DiagnosticRuleAttribute or moving
