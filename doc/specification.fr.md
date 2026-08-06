@@ -1282,11 +1282,12 @@ procure.
 
 ### 11.14 `DCAT0014` — suppression sans justification
 
-Signalé au site d'utilisation lorsqu'une suppression nommant une règle de
-catalogue ne porte aucune `Justification`, ou en porte une vide.
+Signalé au site d'utilisation lorsqu'une suppression ne porte aucune
+`Justification`, ou en porte une vide.
 
 ```csharp
 [SuppressMessage(SomeRules.RULE001.Category, SomeRules.RULE001.Id)]   // signalé
+[SuppressMessage("Usage", "RULE001")]                                 // signalé
 ```
 
 Tous les autres diagnostics de site d'utilisation de ce document vérifient QUEL
@@ -1307,19 +1308,31 @@ la casse — reconnaître le jeton d'un outil pour « pas encore écrit » relè
 lecture d'un marqueur, alors que trancher sur `"n/a"` ou `"évident"` serait lire
 de la prose. `Justification = null` est vide, comme toute chaîne d'espaces.
 
-**Condition de déclenchement.** Au moins un des deux arguments positionnels se
-résout vers un membre d'un type `[DiagnosticRule]`. La restriction est celle du
-§11.9, pour la raison du §11.9 : une suppression entièrement écrite en valeurs
-relève de `DCAT0006`, et y exiger des justifications signalerait toutes les
-suppressions écrites à la main d'un projet n'ayant adopté aucun catalogue. Les
-deux se passent le relais — la paire migrée, celui-ci prend la ligne. S'applique
-aux deux attributs du §9.1 ; celui du *trimmer* porte la même propriété.
+**Condition de déclenchement.** Toute suppression que l'analyseur lit, que sa
+paire référence une règle de catalogue ou soit entièrement écrite en valeurs
+([ADR-0037](adr/0037-require-a-justification-on-every-suppression.fr.md)). C'est
+le seul diagnostic d'ici qui ne résout aucune règle pour avoir quelque chose à
+dire, si bien que la restriction que le §11.9 s'impose ne s'applique pas :
+`DCAT0009` a besoin que l'identifiant soit une règle avant de pouvoir en juger,
+celui-ci n'a besoin que de l'attribut. C'est aussi la seule vérification
+atteignant un littéral nommant une règle qu'aucun catalogue référencé ne décrit —
+`DCAT0006` ne confronte une telle paire à rien et se tait, de sorte qu'avant lui
+la ligne n'était signalée par rien du tout. S'applique aux deux attributs du
+§9.1 ; celui du *trimmer* porte la même propriété.
+
+**L'unique exception** est un identifiant qui ne se résout vers aucune valeur —
+`null`, qui compile. Roslyn fait la correspondance sur l'identifiant : une telle
+ligne ne fait rien taire, n'a rien à justifier, et ne donne au message rien à
+nommer.
 
 **Emplacement.** L'attribut entier, comme tout diagnostic de site d'utilisation.
 
 **Signalé à côté des autres défauts.** La question est indépendante de l'état de
-la paire : une suppression incohérente ou à moitié migrée qui ne dit rien non
-plus signale les deux.
+la paire : une suppression incohérente, à moitié migrée ou remplaçable qui ne dit
+rien non plus signale les deux. Une paire littérale correspondant à une règle
+connue porte donc `DCAT0006` et celui-ci d'un coup, et appliquer le correctif de
+migration laisse celui-ci debout — convertir une suppression ne répond pas à la
+question à laquelle elle n'a jamais répondu.
 
 **Aucun correctif**, et aucun n'est possible : ce qui doit y figurer est la seule
 partie de l'attribut qui ne se lit pas dans le code, ce qui est exactement
@@ -1327,10 +1340,11 @@ l'interdit de l'ADR-0018.
 
 **Sévérité.** `Warning`, et non `Error` comme les trois règles de site
 d'utilisation que l'ADR-0027 a promues. Il signale des lignes par ailleurs
-entièrement correctes — la paire se résout et le compilateur la vérifie — si bien
-que le livrer en erreur ferait tomber le build de tout projet ayant adopté un
-catalogue avant l'existence de cette règle. Une ligne d'`.editorconfig` la
-hausse.
+entièrement correctes, et il les signale dès le premier build suivant la
+référence au paquet plutôt qu'après une migration — le livrer en erreur ferait
+tomber ce build sur chaque suppression non documentée que le codebase avait déjà.
+Une ligne d'`.editorconfig` la hausse, et le guide d'adoption nomme celle qui
+l'abaisse le temps de traiter un arriéré.
 
 ---
 
@@ -1524,7 +1538,7 @@ prix. Deux mitigations obligatoires :
    que si un site d'utilisation a réellement besoin d'une recherche par valeur —
    c'est-à-dire uniquement pour `DCAT0006` / `DCAT0008`.
 
-`DCAT0001`, `DCAT0007` et `DCAT0009` n'ont besoin d'aucun index : chacun résout
+`DCAT0001`, `DCAT0007`, `DCAT0009` et `DCAT0014` n'ont besoin d'aucun index : chacun résout
 sa règle depuis l'attribut lui-même. `DCAT0007` compare bien une valeur, mais à
 la règle que son argument déjà migré nomme (§11.7), sans jamais en chercher une —
 comparer une valeur et en rechercher une ne sont pas le même besoin.
@@ -2052,8 +2066,11 @@ références, ce qui est une rupture binaire dans les deux sens.
   `DCAT0014` ;
 * une `Justification` d'un mot, et une atteinte via une constante (ne doit rien
   signaler : le §11.14 exige la présence et ne lit rien de plus) ;
-* une paire entièrement écrite en valeurs, ne portant aucune `Justification` (ne
-  doit pas signaler `DCAT0014`).
+* une paire entièrement écrite en valeurs, ne portant aucune `Justification` →
+  `DCAT0014`, y compris une nommant une règle qu'aucun catalogue référencé ne
+  décrit, que rien d'autre ne signale ;
+* un identifiant ne se résolvant vers aucune valeur, sans `Justification` (ne
+  doit rien signaler : il ne fait rien taire).
 
 ### 21.3 Tests des chaînes littérales
 

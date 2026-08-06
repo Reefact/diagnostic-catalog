@@ -41,16 +41,15 @@ Les valeurs acceptées sont celles de Roslyn : `error`, `warning`, `suggestion`,
 | `DCAT0011` | Avertissement | `error` si vous publiez un catalogue — une seule écriture par catégorie, c'est tout l'objet |
 | `DCAT0012` | Avertissement | `error` si vous publiez un catalogue — la réparation est mécanique |
 | `DCAT0013` | Avertissement | `error` si vous publiez un catalogue et voulez que chaque nom dise sa règle |
-| `DCAT0014` | Avertissement | `error` une fois que chacune de vos suppressions porte une raison ; `suggestion` tant que non |
+| `DCAT0014` | Avertissement | `suggestion` le temps qu'un codebase existant rattrape, puis `error` |
 
 La distinction qui compte au moment de choisir : `DCAT0006` et `DCAT0014` signalent *du travail pas
 encore fait*, et les autres signalent *quelque chose de déjà faux* — sauf `DCAT0005`, qui signale
 quelque chose de correct et qui n'aurait pas pu s'écrire autrement. Ce sont ces deux-là qui ont leur
-place à `suggestion` pendant un temps, et seul `DCAT0006` a d'ordinaire besoin d'y être : c'est ce que
-veut un codebase avec des suppressions littérales existantes le jour où il référence le paquet,
-puisque le défaut les transforme toutes en erreurs de build. Supprimez la ligne quand le dernier
-littéral a disparu. `DCAT0014` arrive déjà en avertissement et n'appelle pas ce repli — ne l'abaissez
-que si un arriéré de suppressions sans raison noie la sortie de build que vous lisiez.
+place à `suggestion` pendant un temps, et d'ordinaire les deux y sont. Ils arrivent ensemble, le jour
+où un codebase référence le paquet : `DCAT0006` transforme en erreurs de build toutes les suppressions
+littérales qu'il reconnaît, et `DCAT0014` signale toutes celles qui n'ont jamais porté de raison,
+littérales ou non. Supprimez chaque ligne quand son arriéré a disparu.
 
 Trois des cinq défauts côté usage sont des erreurs à dessein. Un codebase où la moitié des
 suppressions sont des chaînes magiques n'a pas la garantie que cette bibliothèque existe pour
@@ -102,7 +101,7 @@ diagnostic, et que les deux groupes ont besoin de réglages opposés :
 
 | Analyseur | Diagnostics | Sur le code généré |
 | --- | --- | --- |
-| `SuppressionUsageAnalyzer` | `DCAT0001`, `DCAT0006`, `DCAT0007`, `DCAT0009` | **non signalés** |
+| `SuppressionUsageAnalyzer` | `DCAT0001`, `DCAT0006`, `DCAT0007`, `DCAT0009`, `DCAT0014` | **non signalés** |
 | `DiagnosticRuleDefinitionAnalyzer` | `DCAT0002`–`DCAT0005`, `DCAT0011`–`DCAT0013` | **signalés** |
 
 Une suppression dans un fichier généré n'est pas à l'auteur de la corriger : la signaler noierait
@@ -163,9 +162,9 @@ Un chiffre qui vaut d'être connu, parce qu'il décide si la réponse est « rie
 
 `DCAT0006` a besoin de savoir quelles règles existent, ce qui suppose de balayer les métadonnées de
 chaque assemblage référencé susceptible d'en porter. Cet index est construit **paresseusement**, au
-premier usage. `DCAT0001`, `DCAT0007` et `DCAT0009` résolvent tout depuis l'attribut qu'ils ont sous
-les yeux et n'y touchent jamais — pour `DCAT0007` la règle est nommée par l'argument déjà migré,
-ce qui est précisément ce qui rend sa correction pleinement déterministe.
+premier usage. `DCAT0001`, `DCAT0007`, `DCAT0009` et `DCAT0014` résolvent tout depuis l'attribut
+qu'ils ont sous les yeux et n'y touchent jamais — pour `DCAT0007` la règle est nommée par l'argument
+déjà migré, ce qui est précisément ce qui rend sa correction pleinement déterministe.
 
 La conséquence : **un projet dont les suppressions sont déjà des références de catalogue ne paie
 jamais le balayage.** Le coût tombe pendant la migration, c'est-à-dire exactement quand il y a

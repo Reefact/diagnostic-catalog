@@ -70,17 +70,28 @@ vous.
 dotnet_diagnostic.DCAT0009.severity = error
 ```
 
-`DCAT0014` est celui qui arrive *avec* la conversion plutôt qu'avant elle. Il demande qu'une
-suppression dise pourquoi elle existe, et ne se déclenche qu'une fois qu'une des deux positions
-référence une règle de catalogue — une suppression que vous convertissez aujourd'hui se met donc à le
-signaler demain si personne n'a jamais écrit de `Justification`. Il est livré en avertissement pour
-exactement cette raison, et la façon honnête d'y répondre est d'écrire les raisons au fil de la
-conversion, tant que le code et la personne qui a supprimé sont encore devant vous. Si l'arriéré est
-assez gros pour enterrer le reste de votre sortie de build, abaissez-le et traitez-le :
+**`DCAT0014` arrive dès le jour un, à côté de `DCAT0006`.** Il demande qu'une suppression dise
+pourquoi elle existe, et il le demande à *toute* suppression — une suppression littérale comprise,
+qu'un catalogue décrive ou non la règle qu'elle nomme. Le premier build suivant la référence au paquet
+signale donc chaque suppression de votre codebase qui n'a jamais porté de `Justification`, convertie
+ou non.
+
+Il est livré en avertissement plutôt qu'en erreur exactement pour cette raison : ce premier build
+reste vert. Deux façons d'y répondre, et la seconde est l'habituelle :
 
 ```ini
+# Le garder visible le temps de traiter l'arriéré, puis supprimer la ligne.
 dotnet_diagnostic.DCAT0014.severity = suggestion
 ```
+
+La façon honnête est d'écrire les raisons au fil de la conversion. Vous éditez déjà chaque suppression
+pour migrer sa paire, le code est devant vous, et la personne qui a supprimé est souvent encore
+joignable — ce qui ne sera plus vrai dans six mois. Une ligne en cours de conversion signale les deux
+diagnostics d'un coup, et appliquer le correctif de `DCAT0006` laisse `DCAT0014` debout : convertir
+une suppression ne répond pas à la question à laquelle elle n'a jamais répondu.
+
+Si vous faites déjà tourner `SA1404` de StyleCop, vous verrez les deux — elles posent la même
+question, et une ligne d'`.editorconfig` fait taire celle dont vous ne voulez pas.
 
 **Quand vous avez fini — supprimez la ligne.**
 

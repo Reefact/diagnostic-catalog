@@ -126,7 +126,7 @@ public sealed class GeneratedCodeTests
 
         internal static class Consumer
         {
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "JD0006")]
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "JD0006", Justification = "j")]
             public static void Method() { }
         }
         """;

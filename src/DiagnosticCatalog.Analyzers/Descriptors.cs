@@ -109,9 +109,9 @@ internal static class Descriptors
             + "the value is read for its length, never for its meaning, so this judges no justification "
             + "and rejects none for being thin. The one non-blank value it does refuse is the IDE's own "
             + "\"<Pending>\" placeholder, which is that tool's word for a justification nobody has "
-            + "written yet. Reported only where a slot references a catalogue rule: a suppression "
-            + "written entirely in literals is DCAT0006's business first, and asking for a justification "
-            + "there would fire on every hand-written suppression in a codebase that has adopted nothing.");
+            + "written yet. Every suppression is held to it, a literal one included: silencing a warning "
+            + "without saying why costs the same whether or not the pair has been migrated, and the "
+            + "codebases that have migrated least are the ones the question is worth asking of most.");
 
     internal static readonly DiagnosticDescriptor InvalidRuleType = new(
         id: DiagnosticIds.InvalidRuleType,
