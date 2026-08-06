@@ -3,8 +3,9 @@
 🌍 **Languages:**  
 🇬🇧 English (this file) | 🇫🇷 [Français](./0040-grade-every-dcat-diagnostic-by-what-it-says.fr.md)
 
-**Status:** Proposed
+**Status:** Accepted
 **Proposed:** 2026-08-06
+**Accepted:** 2026-08-06
 **Decision Makers:** Reefact
 
 ## Context
