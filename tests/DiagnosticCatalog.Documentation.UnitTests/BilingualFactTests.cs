@@ -53,15 +53,26 @@ public sealed class BilingualFactTests
     /// What counts as a fact, and what each kind is called when one goes missing.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// Each pattern matches something a translator may not touch. Bare numbers are deliberately
     /// absent: a sentence can carry a different count of things in two languages without either being
     /// wrong — "the two halves" against "les deux moitiés" — and the numbers that DO matter are
     /// carried by a version, an id, or a table this repository recounts from the tree
     /// (<see cref="CatalogueFactsTests"/>, <see cref="ReleaseTrainTests"/>).
+    /// </para>
+    /// <para>
+    /// The identifier prefixes are the ones the published catalogues actually carry, and the list is
+    /// meant to hold all of them: a prefix missing from it is a family whose ids are compared by
+    /// nothing, silently and in exactly the pages that discuss that catalogue. <c>xUnit</c> and
+    /// <c>NUnit</c> were, for as long as their catalogues had been in the index. The alternation is
+    /// case-sensitive, which is what lets <c>xUnit1000</c> be spelled with the lowercase initial its
+    /// vendor uses.
+    /// </para>
     /// </remarks>
     private static readonly (string What, string Pattern)[] Facts =
     [
-        ("diagnostic ids", "(?<!\\w)(?:DCAT|CA|IDE|SA|RS|IL|SYSLIB|ASP|BL|MSTEST|CS)[0-9]{4,5}(?!\\w)"),
+        ("diagnostic ids",
+         "(?<!\\w)(?:DCAT|CA|IDE|SA|RS|IL|SYSLIB|ASP|BL|MSTEST|CS|xUnit|NUnit)[0-9]{4,5}(?!\\w)"),
         ("Sonar rule ids", "(?<!\\w)S[0-9]{3,4}(?!\\w)"),
         ("package ids", "(?<!\\w)DiagnosticCatalog(?:\\.[A-Za-z]+)?(?![\\w.])"),
         ("command-line options", "(?<!\\w)--[a-z][a-z0-9-]{2,}"),
