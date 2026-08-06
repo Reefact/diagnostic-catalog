@@ -40,4 +40,67 @@
     <Analyzer Include="$(MSBuildThisFileDirectory)../dcat-analyzers/DiagnosticCatalog.CodeFixes.dll" />
   </ItemGroup>
 
+  <!--
+    DCAT0015 reports a catalogue that publishes without the opt-in above, and that is a fact about a
+    .csproj: no syntax tree, symbol or metadata reference carries it, so the analyzer cannot see it and
+    something has to tell it. These two properties are that telling. CompilerVisibleProperty is the
+    supported channel — the SDK writes each one into the generated AnalyzerConfig as build_property.*.
+
+    PackageId travels because the message names the FILE to add, and build/<package id>.props is the
+    only name NuGet imports. The assembly name is not a safe stand-in: the two differ often, and a
+    message naming the wrong file is worse than no message.
+  -->
+  <ItemGroup>
+    <CompilerVisibleProperty Include="DiagnosticCatalogAnalyzerOptIn" />
+    <CompilerVisibleProperty Include="PackageId" />
+  </ItemGroup>
+
+  <!--
+    Runs before the SDK writes that AnalyzerConfig, which is the last moment a property can still reach
+    an analyzer.
+
+    GenerateMSBuildEditorConfigFileCORE, not GenerateMSBuildEditorConfigFile. The latter is a wrapper
+    whose DependsOnTargets names the former, so a BeforeTargets hook on it fires AFTER the file has
+    already been written — measured, and the symptom is the worst kind: the property is computed
+    correctly, the analyzer receives an empty value, and the diagnostic simply never fires.
+
+    Deliberately narrow. It classifies nothing unless the project actually publishes a package with an
+    id, so an application, a test project or an unpackable library is never a candidate and never has
+    to be excluded later. And it computes nothing when the property already has a value: a catalogue
+    that arranges the opt-in in some way the match below cannot see writes
+    <DiagnosticCatalogAnalyzerOptIn>packed</DiagnosticCatalogAnalyzerOptIn> and is believed. That
+    escape exists because what follows is a match against how a file was DECLARED, and MSBuild offers
+    more than one spelling of the same packaging.
+
+    Three spellings are recognised, and they are the three people write:
+      PackagePath="build/Acme.Catalog.props"    the explicit path
+      PackagePath="build\Acme.Catalog.props"    the same, on Windows
+      PackagePath="build"                       the folder, with the file already named for the package
+
+    Anything else reads as missing, which is the conservative direction: a false "missing" is a warning
+    on a correct package, visible and one property away from silence, while a false "packed" would be
+    this diagnostic failing at the one job it has.
+  -->
+  <Target Name="DiagnosticCatalogClassifyAnalyzerOptIn"
+          BeforeTargets="GenerateMSBuildEditorConfigFileCore"
+          Condition="'$(IsPackable)' == 'true' and '$(PackageId)' != '' and '$(DiagnosticCatalogAnalyzerOptIn)' == ''">
+
+    <ItemGroup>
+      <DiagnosticCatalogOptInCandidate
+          Include="@(None)"
+          Condition="'%(None.Pack)' == 'true' and (
+                       '%(None.PackagePath)' == 'build/$(PackageId).props' or
+                       '%(None.PackagePath)' == 'build\$(PackageId).props' or
+                       (('%(None.PackagePath)' == 'build' or
+                         '%(None.PackagePath)' == 'build/' or
+                         '%(None.PackagePath)' == 'build\') and
+                        '%(None.Filename)%(None.Extension)' == '$(PackageId).props'))" />
+    </ItemGroup>
+
+    <PropertyGroup>
+      <DiagnosticCatalogAnalyzerOptIn Condition="'@(DiagnosticCatalogOptInCandidate)' != ''">packed</DiagnosticCatalogAnalyzerOptIn>
+      <DiagnosticCatalogAnalyzerOptIn Condition="'$(DiagnosticCatalogAnalyzerOptIn)' == ''">missing</DiagnosticCatalogAnalyzerOptIn>
+    </PropertyGroup>
+  </Target>
+
 </Project>

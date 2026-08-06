@@ -41,6 +41,7 @@ The accepted values are Roslyn's own: `error`, `warning`, `suggestion`, `silent`
 | `DCAT0012` | Warning | `error` if you publish a catalogue — the repair is mechanical |
 | `DCAT0013` | Warning | `error` if you publish a catalogue and want every name to say its rule |
 | `DCAT0014` | Warning | `suggestion` while an existing codebase catches up, then `error` |
+| `DCAT0015` | Warning | `error` if you publish a catalogue — shipping one that checks nobody is the failure it names |
 
 The distinction that matters when you pick: `DCAT0006` and `DCAT0014` report *work not yet done*, and
 the others report *something already wrong* — except `DCAT0005`, which reports something that is right
@@ -105,7 +106,7 @@ per-diagnostic, and the two groups need opposite settings:
 | Analyzer | Diagnostics | On generated code |
 | --- | --- | --- |
 | `SuppressionUsageAnalyzer` | `DCAT0001`, `DCAT0006`, `DCAT0007`, `DCAT0009`, `DCAT0014` | **not reported** |
-| `DiagnosticRuleDefinitionAnalyzer` | `DCAT0002`–`DCAT0005`, `DCAT0011`–`DCAT0013` | **reported** |
+| `DiagnosticRuleDefinitionAnalyzer` | `DCAT0002`–`DCAT0005`, `DCAT0011`–`DCAT0013`, `DCAT0015` | **reported** |
 
 A suppression inside a generated file is not the author's to fix, so reporting it would flood every
 generated file with work nobody can do. A *rule declaration* inside a generated file is the opposite
@@ -150,8 +151,8 @@ avoid, and it costs more than it used to. Your consumers cannot resolve `Diagnos
 their own source, so anyone declaring rules of their own gets `CS0246` until they add a dependency
 your package already had — and they are unchecked as well, because one package now means one lever.
 [Packaging a catalogue](packaging-a-catalogue.en.md) says what a catalogue owes its consumers; the
-same script measures both halves of that failure, the second of them as "hiding the foundation also
-withholds the attribute assembly".
+same script measures both halves of that failure, the second of them as "a catalogue hiding the
+foundation withholds the attribute assembly".
 
 **Declining is not a way of being polite** — for a catalogue. `PrivateAssets="all"` used to mean
 "checked by nothing"; it means "does not compile", which the reader meets as a broken package rather
