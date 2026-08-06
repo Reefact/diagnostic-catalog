@@ -277,7 +277,8 @@ La première version ne doit pas :
 * remplacer `SuppressMessageAttribute` ;
 * créer un nouvel attribut propriétaire de suppression ;
 * déterminer si une suppression est fonctionnellement légitime ;
-* vérifier la qualité sémantique d'une justification ;
+* vérifier la qualité sémantique d'une justification — le §11.14 exige qu'elle
+  soit écrite et ne lit rien de plus que sa longueur ;
 * télécharger automatiquement les catalogues de fournisseurs tiers ;
 * contenir directement les règles Sonar, Microsoft ou StyleCop ;
 * imposer une classe de base aux règles ;
@@ -971,6 +972,7 @@ numéro que ce document a déjà dépensé.
 | `DCAT0011` | déclaration | A diagnostic rule's category must reference a declared category constant | Warning | oui |
 | `DCAT0012` | déclaration | A rule identifier should be written as nameof | Warning | oui |
 | `DCAT0013` | déclaration | The diagnostic rule type name does not say its Id | Warning | oui |
+| `DCAT0014` | utilisation | A suppression must carry a justification | Warning | oui |
 
 Les diagnostics de définition (`DCAT0002`–`DCAT0005`, `DCAT0011`–`DCAT0013`) ne se
 déclenchent que sur du code source visible par le compilateur. Une règle mal formée
@@ -1277,6 +1279,58 @@ connue — la forme à nom convivial du §11.5 — elle mérite donc une version
 qu'on l'autorise à arrêter un build. L'auteur de catalogue qui la veut plus
 stricte la hausse dans `.editorconfig`, ce que le fait même de la signaler lui
 procure.
+
+### 11.14 `DCAT0014` — suppression sans justification
+
+Signalé au site d'utilisation lorsqu'une suppression nommant une règle de
+catalogue ne porte aucune `Justification`, ou en porte une vide.
+
+```csharp
+[SuppressMessage(SomeRules.RULE001.Category, SomeRules.RULE001.Id)]   // signalé
+```
+
+Tous les autres diagnostics de site d'utilisation de ce document vérifient QUEL
+diagnostic une ligne fait taire. Celui-ci vérifie que la ligne dit POURQUOI,
+c'est-à-dire la moitié qu'aucun outil ne reconstitue après coup : l'avertissement
+a disparu, et la raison pour laquelle il était acceptable n'existe que dans la
+tête de qui a écrit l'attribut.
+
+**Présence, jamais qualité.** La valeur est lue pour sa longueur. Le §5 exclut
+d'apprécier ce que dit une justification et le §24 d'en valider une
+intelligemment ; les deux restent en vigueur, et ce diagnostic est délibérément
+la vérification la plus faible qui comble encore le trou. Une raison d'un mot le
+satisfait.
+
+**Une seule valeur non vide est refusée** : `"<Pending>"`, le marqueur que l'IDE
+écrit quand il génère une suppression. Il est reconnu exactement et en respectant
+la casse — reconnaître le jeton d'un outil pour « pas encore écrit » relève de la
+lecture d'un marqueur, alors que trancher sur `"n/a"` ou `"évident"` serait lire
+de la prose. `Justification = null` est vide, comme toute chaîne d'espaces.
+
+**Condition de déclenchement.** Au moins un des deux arguments positionnels se
+résout vers un membre d'un type `[DiagnosticRule]`. La restriction est celle du
+§11.9, pour la raison du §11.9 : une suppression entièrement écrite en valeurs
+relève de `DCAT0006`, et y exiger des justifications signalerait toutes les
+suppressions écrites à la main d'un projet n'ayant adopté aucun catalogue. Les
+deux se passent le relais — la paire migrée, celui-ci prend la ligne. S'applique
+aux deux attributs du §9.1 ; celui du *trimmer* porte la même propriété.
+
+**Emplacement.** L'attribut entier, comme tout diagnostic de site d'utilisation.
+
+**Signalé à côté des autres défauts.** La question est indépendante de l'état de
+la paire : une suppression incohérente ou à moitié migrée qui ne dit rien non
+plus signale les deux.
+
+**Aucun correctif**, et aucun n'est possible : ce qui doit y figurer est la seule
+partie de l'attribut qui ne se lit pas dans le code, ce qui est exactement
+l'interdit de l'ADR-0018.
+
+**Sévérité.** `Warning`, et non `Error` comme les trois règles de site
+d'utilisation que l'ADR-0027 a promues. Il signale des lignes par ailleurs
+entièrement correctes — la paire se résout et le compilateur la vérifie — si bien
+que le livrer en erreur ferait tomber le build de tout projet ayant adopté un
+catalogue avant l'existence de cette règle. Une ligne d'`.editorconfig` la
+hausse.
 
 ---
 
@@ -1869,6 +1923,7 @@ dotnet_diagnostic.DCAT0009.severity = error
 dotnet_diagnostic.DCAT0011.severity = error
 dotnet_diagnostic.DCAT0012.severity = error
 dotnet_diagnostic.DCAT0013.severity = error
+dotnet_diagnostic.DCAT0014.severity = error
 ```
 
 L'exemple surcharge toutes les règles pour montrer que toutes sont atteignables ;
@@ -1894,7 +1949,7 @@ classe `DiagnosticAnalyzer`. L'implémentation doit se scinder en deux :
 | Classe d'analyzer | Diagnostics | Flags code généré |
 | --- | --- | --- |
 | `DiagnosticRuleDefinitionAnalyzer` | `DCAT0002`–`DCAT0005`, `DCAT0011`–`DCAT0013` | `Analyze \| ReportDiagnostics` |
-| `SuppressionUsageAnalyzer` | `DCAT0001`, `DCAT0006`–`DCAT0010` | `None` |
+| `SuppressionUsageAnalyzer` | `DCAT0001`, `DCAT0006`–`DCAT0010`, `DCAT0014` | `None` |
 
 Les définitions de règles produites par un outil externe doivent en outre être
 validées par les tests du générateur, des tests de compilation et une validation
@@ -1990,7 +2045,15 @@ références, ce qui est une rupture binaire dans les deux sens.
 * une constante intermédiaire (§10.6) ;
 * `SuppressMessageAttribute` ;
 * `UnconditionalSuppressMessageAttribute` avec une règle `IL####` ;
-* `UnconditionalSuppressMessageAttribute` avec une règle non-IL → `DCAT0009`.
+* `UnconditionalSuppressMessageAttribute` avec une règle non-IL → `DCAT0009` ;
+* une paire nommant une règle et ne portant aucune `Justification` →
+  `DCAT0014` ;
+* une `Justification` vide, en espaces, `null` ou valant le marqueur de l'IDE →
+  `DCAT0014` ;
+* une `Justification` d'un mot, et une atteinte via une constante (ne doit rien
+  signaler : le §11.14 exige la présence et ne lit rien de plus) ;
+* une paire entièrement écrite en valeurs, ne portant aucune `Justification` (ne
+  doit pas signaler `DCAT0014`).
 
 ### 21.3 Tests des chaînes littérales
 
@@ -2137,6 +2200,7 @@ amont doit être marquée `[Obsolete]`, jamais supprimée.
 * la détection des paires mixtes référence/littéral et son correctif
   déterministe (`DCAT0007`) ;
 * le garde-fou `IL####` pour `UnconditionalSuppressMessage` (`DCAT0009`) ;
+* l'exigence de justification (`DCAT0014`) — présence seule, cf. §11.14 ;
 * l'exigence de catégorie déclarée (`DCAT0011`) ;
 * la prise en charge de `SuppressMessageAttribute` ;
 * la prise en charge d'`UnconditionalSuppressMessageAttribute`, cantonnée au

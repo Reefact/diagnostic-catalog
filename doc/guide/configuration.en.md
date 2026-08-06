@@ -40,16 +40,23 @@ The accepted values are Roslyn's own: `error`, `warning`, `suggestion`, `silent`
 | `DCAT0011` | Warning | `error` if you publish a catalogue — one spelling per category is the point |
 | `DCAT0012` | Warning | `error` if you publish a catalogue — the repair is mechanical |
 | `DCAT0013` | Warning | `error` if you publish a catalogue and want every name to say its rule |
+| `DCAT0014` | Warning | `error` once every suppression you have carries a reason; `suggestion` while they do not |
 
-The distinction that matters when you pick: `DCAT0006` reports *work not yet done*, and the others
-report *something already wrong* — except `DCAT0005`, which reports something that is right and could
-not have been written otherwise. Only the first belongs at `suggestion` for a while — and it is what
-a codebase with existing literal suppressions wants on the day it references the package, since the
-default turns every one of them into a build error. Delete the line when the last literal is gone.
+The distinction that matters when you pick: `DCAT0006` and `DCAT0014` report *work not yet done*, and
+the others report *something already wrong* — except `DCAT0005`, which reports something that is right
+and could not have been written otherwise. Those two are the ones that belong at `suggestion` for a
+while, and only `DCAT0006` usually has to be: it is what a codebase with existing literal suppressions
+wants on the day it references the package, since the default turns every one of them into a build
+error. Delete the line when the last literal is gone. `DCAT0014` already arrives as a warning and needs
+no such retreat — lower it only if a backlog of unjustified suppressions is drowning the build output
+you were reading.
 
-The three use-site defaults are errors on purpose. A codebase where half the suppressions are magic
-strings does not have the guarantee this library exists to provide; it has it where someone
-remembered. A warning would leave that to memory.
+Three of the five use-site defaults are errors on purpose. A codebase where half the suppressions are
+magic strings does not have the guarantee this library exists to provide; it has it where someone
+remembered. A warning would leave that to memory. The other two say something narrower — a suppression
+the trimmer discards (`DCAT0009`), and one that never says why it is there (`DCAT0014`) — and both
+report lines that resolve correctly, which is why they arrive quieter and are worth raising once your
+codebase is clean.
 
 ## Severity, for all of them at once
 

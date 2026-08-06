@@ -24,6 +24,7 @@ d'utilisation** regardent une suppression que vous avez écrite, ce qui concerne
 | [`DCAT0011`](#dcat0011) | déclaration | La catégorie d'une règle doit référencer une constante de catégorie déclarée | Avertissement | — |
 | [`DCAT0012`](#dcat0012) | déclaration | Un identifiant de règle devrait s'écrire `nameof` | Avertissement | oui, sous condition |
 | [`DCAT0013`](#dcat0013) | déclaration | Le nom du type de règle ne dit pas son `Id` | Avertissement | — |
+| [`DCAT0014`](#dcat0014) | site d'utilisation | Une suppression doit porter une justification | Avertissement | — |
 
 `DCAT0008` et `DCAT0010` sont spécifiés mais délibérément hors de la 1.0.
 
@@ -138,6 +139,57 @@ La vérification reproduit le décodeur du *trimmer* plutôt qu'un motif plus st
 qu'il honore *effectivement* sont laissés tranquilles — y compris sa propre forme
 `IL2026:FriendlyName`. Les signaler reviendrait à vous demander de changer quelque chose qui
 fonctionne.
+
+### `DCAT0014`
+
+**La suppression nomme une règle et ne dit jamais pourquoi.**
+
+```csharp
+[SuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.Id)]
+```
+
+Tout le reste de cette page porte sur *quel* diagnostic une ligne fait taire. Celui-ci porte sur
+l'autre moitié. La paire est désormais vérifiée par le compilateur ; la raison pour laquelle
+l'avertissement était acceptable n'est écrite nulle part, et elle ne se retrouve pas après coup —
+l'avertissement a disparu, et la seule personne qui savait est celle qui a décidé qu'il n'importait
+pas. Six mois plus tard, plus personne ne distingue une suppression réfléchie d'une suppression
+copiée-collée.
+
+```csharp
+[SuppressMessage(
+    SonarRule.S1144.Category,
+    SonarRule.S1144.Id,
+    Justification = "Appelé par le sérialiseur via la réflexion.")]
+```
+
+**La présence est tout le contrat.** La valeur est lue pour sa longueur, jamais pour son sens : une
+justification d'un mot passe, et une que vous auriez mieux rédigée aussi. Juger ce qu'une
+justification *dit* est délibérément hors périmètre et le reste — c'est une question humaine, et un
+outil qui noterait de la prose se tromperait dans les deux sens.
+
+Une seule valeur non vide est refusée : `"<Pending>"`, le marqueur que Visual Studio écrit quand il
+génère une suppression pour vous. C'est le mot de cet outil pour *personne n'a encore rempli ceci*,
+reconnu exactement et rien d'approchant — `"n/a"` et `"évident"` passent, parce que trancher sur
+ceux-là serait lire de la prose. Une chaîne vide, des espaces et `Justification = null` sont vides et
+signalés comme tels.
+
+**Il ne se déclenche que si une des deux positions référence une règle de catalogue**, la ligne même
+que trace [`DCAT0009`](#dcat0009). Une suppression entièrement écrite en littéraux relève d'abord de
+[`DCAT0006`](#dcat0006) — réclamer des justifications à un codebase qui n'a adopté aucun catalogue
+s'adresserait à des gens pour qui ce paquet n'a pas été écrit. Les deux se passent le relais
+proprement : migrez la paire, et celui-ci prend la ligne en charge. Si vous voulez l'exigence partout,
+littéraux compris, `SA1404` de StyleCop la couvre depuis des années et les deux cohabitent sans se
+contredire. `UnconditionalSuppressMessage` y est tenu aussi — une suppression lue par un outil qui
+s'exécute bien après le compilateur est celle qui a le plus besoin de dire pourquoi elle existe.
+
+**Aucun correctif, et aucun n'est possible.** Ce qui doit y figurer est la seule chose de l'attribut
+qui ne se lit pas dans le code
+([ADR-0018](../adr/0018-a-code-fix-never-decides-what-only-the-author-can.fr.md)).
+
+Il est livré en `Avertissement` et non en erreur, contrairement à ses trois voisins de site
+d'utilisation : il signale des lignes par ailleurs entièrement correctes, et un projet qui a adopté un
+catalogue avant que cette règle n'existe ne doit pas voir son build tomber du jour au lendemain à
+cause d'elles. Une ligne d'`.editorconfig` la relève le jour où vous le voulez.
 
 ---
 
@@ -368,6 +420,11 @@ Mécanismes Roslyn standards, aucun format propriétaire :
 # parce que DCAT0009 rate encore un identifiant atteint via une constante.
 dotnet_diagnostic.DCAT0009.severity = error
 
+# Une suppression qui ne dit jamais pourquoi. Livrée en avertissement parce
+# qu'elle signale des lignes par ailleurs correctes ; relevez-la quand toutes
+# les vôtres portent une raison.
+dotnet_diagnostic.DCAT0014.severity = error
+
 # Déclarer des règles — vous n'en avez besoin que si vous publiez un catalogue.
 dotnet_diagnostic.DCAT0002.severity = error
 dotnet_diagnostic.DCAT0003.severity = error
@@ -407,8 +464,9 @@ vraie règle, de façon cohérente. Ils ne font pas, et ne feront pas :
   correspond à aucune règle connue et n'est signalé par rien. Ce qui rend une mauvaise catégorie
   impossible, c'est la *constante*, que le compilateur vérifie — ces diagnostics vous amènent aux
   constantes et vous y maintiennent ;
-* juger si supprimer une règle *à cet endroit* était raisonnable. C'est à cela que sert
-  `Justification`, et cela reste une question humaine ;
+* juger si supprimer une règle *à cet endroit* était raisonnable. `DCAT0014` exige qu'une
+  `Justification` soit écrite et la lit pour sa seule longueur — ce qu'elle dit est pesé par des
+  humains, jamais par ces analyseurs ;
 * atteindre `#pragma warning disable` ou les clés de gravité d'`.editorconfig`, qui prennent du texte
   nu hors du modèle de compilation C#. Aucune constante ne peut jamais y être substituée.
 

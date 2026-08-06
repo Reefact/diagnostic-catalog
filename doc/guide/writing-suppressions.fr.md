@@ -235,9 +235,11 @@ Dit franchement plutôt que laissé à votre découverte :
 | `dotnet_diagnostic.S1144.severity` dans `.editorconfig` | Les clés de configuration sont du texte brut, entièrement hors du modèle de compilation C#. |
 
 Et une frontière qui mérite d'être claire : ceci vérifie qu'une suppression est **structurellement
-cohérente** — qu'elle nomme une vraie règle, de façon cohérente. Elle n'a aucune opinion sur le fait
-que supprimer cette règle *à cet endroit* était une bonne idée. Ce jugement reste le vôtre, et c'est
-à cela que sert `Justification`.
+cohérente** — qu'elle nomme une vraie règle, de façon cohérente, et qu'elle dise pourquoi
+([`DCAT0014`](diagnostics.fr.md#dcat0014)). Elle n'a aucune opinion sur le fait que supprimer cette
+règle *à cet endroit* était une bonne idée, ni sur la raison que vous en donnez : la `Justification`
+doit être écrite et n'est jamais pesée. Ce jugement reste le vôtre ; ce que les analyseurs refusent,
+c'est la ligne qui n'a jamais été écrite.
 
 ## Où regarder ensuite
 

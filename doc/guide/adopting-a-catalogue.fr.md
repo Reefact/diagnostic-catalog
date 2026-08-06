@@ -56,7 +56,7 @@ Une suggestion apparaît dans l'IDE sous forme d'ampoule et dans `dotnet build` 
 build qui ajoute le paquet est vert, et la migration démarre quand vous le décidez plutôt que quand
 le paquet arrive.
 
-**Pendant la migration — ne touchez pas aux trois autres.**
+**Pendant la migration — ne touchez pas aux quatre autres.**
 
 `DCAT0001` et `DCAT0007` sont déjà des erreurs, et doivent le rester. Ils signifient qu'une
 suppression *ne fait pas ce qu'elle a l'air de faire* : une paire nommant deux règles différentes, ou
@@ -68,6 +68,18 @@ vous.
 
 ```ini
 dotnet_diagnostic.DCAT0009.severity = error
+```
+
+`DCAT0014` est celui qui arrive *avec* la conversion plutôt qu'avant elle. Il demande qu'une
+suppression dise pourquoi elle existe, et ne se déclenche qu'une fois qu'une des deux positions
+référence une règle de catalogue — une suppression que vous convertissez aujourd'hui se met donc à le
+signaler demain si personne n'a jamais écrit de `Justification`. Il est livré en avertissement pour
+exactement cette raison, et la façon honnête d'y répondre est d'écrire les raisons au fil de la
+conversion, tant que le code et la personne qui a supprimé sont encore devant vous. Si l'arriéré est
+assez gros pour enterrer le reste de votre sortie de build, abaissez-le et traitez-le :
+
+```ini
+dotnet_diagnostic.DCAT0014.severity = suggestion
 ```
 
 **Quand vous avez fini — supprimez la ligne.**
@@ -145,7 +157,7 @@ classes précisément pour que les deux groupes puissent différer :
 
 | Analyseur | Diagnostics | Tourne sur le code généré |
 | --- | --- | --- |
-| `SuppressionUsageAnalyzer` | `DCAT0001`, `DCAT0006`, `DCAT0007`, `DCAT0009` | **non** |
+| `SuppressionUsageAnalyzer` | `DCAT0001`, `DCAT0006`, `DCAT0007`, `DCAT0009`, `DCAT0014` | **non** |
 | `DiagnosticRuleDefinitionAnalyzer` | `DCAT0002`–`DCAT0005`, `DCAT0011`–`DCAT0013` | **oui** |
 
 Les diagnostics de site d'utilisation restent hors des fichiers générés parce qu'une suppression dans

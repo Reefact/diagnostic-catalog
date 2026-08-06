@@ -221,8 +221,11 @@ Stated plainly rather than left for you to discover:
 | `dotnet_diagnostic.S1144.severity` in `.editorconfig` | Configuration keys are plain text, outside the C# compilation model entirely. |
 
 And one boundary worth being clear about: this checks that a suppression is **structurally
-coherent** — that it names a real rule, coherently. It has no opinion on whether suppressing that
-rule *there* was a good idea. That judgement stays yours, which is what `Justification` is for.
+coherent** — that it names a real rule, coherently, and that it says why
+([`DCAT0014`](diagnostics.en.md#dcat0014)). It has no opinion on whether suppressing that rule
+*there* was a good idea, and none on the reason you give for it: the `Justification` is required to
+be written and never weighed. That judgement stays yours; what the analyzers refuse is the line that
+never made it.
 
 ## Where to look next
 
