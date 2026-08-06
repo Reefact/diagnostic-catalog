@@ -26,7 +26,7 @@ toutes remplissent la condition. Une version qui les distillerait serait une ver
 jamais.
 
 Et `DCAT0006` est livré en **erreur**
-([ADR-0027](../adr/0027-ship-the-use-site-diagnostics-as-errors.fr.md)), donc cela n'attend pas qu'un
+([ADR-0040](../adr/0040-grade-every-dcat-diagnostic-by-what-it-says.fr.md)), donc cela n'attend pas qu'un
 `<TreatWarningsAsErrors>` morde : le build qui a ajouté le catalogue est le build qui a échoué, avec
 des centaines d'erreurs, dans du code que personne n'a touché. Les équipes en concluent
 raisonnablement que la bibliothèque n'est pas prête.

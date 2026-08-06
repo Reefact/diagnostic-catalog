@@ -24,7 +24,7 @@ that a catalogue reference could replace, and after you add the catalogue, every
 qualifies. A version that trickled would be a version that never finished.
 
 And `DCAT0006` ships as an **error**
-([ADR-0027](../adr/0027-ship-the-use-site-diagnostics-as-errors.en.md)), so this does not wait for a
+([ADR-0040](../adr/0040-grade-every-dcat-diagnostic-by-what-it-says.en.md)), so this does not wait for a
 `<TreatWarningsAsErrors>` to bite: the build that added the catalogue is the build that failed, with
 hundreds of errors, in code nobody touched. Teams reasonably conclude the library is not ready.
 

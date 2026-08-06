@@ -127,7 +127,7 @@ between them is yours.
 > **On adoption.** This fires on every literal suppression at once, the day you add a catalogue —
 > and the catalogue brings the analyzer with it, so there is no second reference standing between
 > you and that. It is an **error** by default
-> ([ADR-0027](../adr/0027-ship-the-use-site-diagnostics-as-errors.en.md)), so the build that adds
+> ([ADR-0040](../adr/0040-grade-every-dcat-diagnostic-by-what-it-says.en.md)), so the build that adds
 > the catalogue is the build that fails. Lower it to `suggestion`, migrate with *Fix all
 > occurrences*, then raise it.
 

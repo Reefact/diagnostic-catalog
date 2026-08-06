@@ -132,7 +132,7 @@ automatique — choisir entre les deux vous revient.
 > **Sur l'adoption.** Celui-ci se déclenche sur toutes les suppressions littérales d'un coup, le jour
 > où vous ajoutez un catalogue — et le catalogue amène l'analyseur avec lui, aucune seconde
 > référence ne s'interpose. C'est une **erreur** par défaut
-> ([ADR-0027](../adr/0027-ship-the-use-site-diagnostics-as-errors.fr.md)) : le build qui ajoute le
+> ([ADR-0040](../adr/0040-grade-every-dcat-diagnostic-by-what-it-says.fr.md)) : le build qui ajoute le
 > catalogue est donc le build qui casse. Descendez-le à `suggestion`, migrez avec *Corriger toutes
 > les occurrences*, puis remontez-le.
 
