@@ -26,10 +26,11 @@ internal abstract class CatalogueSettings : CommandSettings
 {
     /// <summary>The release <c>--package-version</c> resolves to when nobody names one.</summary>
     /// <remarks>
-    /// A constant rather than three spellings, because the default is written three times — the
-    /// attribute the parser reads, the initialiser the property carries, and the comparison that
-    /// tells a typed value from an omitted one. Two of them drifting apart would make a manifest
-    /// run refuse itself.
+    /// Applied HERE rather than by the parser, and that placement is the whole point. A default
+    /// bound to the property while the command line is read leaves no trace of who supplied it: the
+    /// caller who omitted the switch and the caller who typed its default arrive as the same object,
+    /// so a rule about what a caller ASKED FOR cannot be written at all. Every option below that
+    /// carries a default carries it this way, so the question never has to be asked twice.
     /// </remarks>
     private const string LatestStable = "latest";
 
@@ -44,10 +45,12 @@ internal abstract class CatalogueSettings : CommandSettings
     [Description("The NuGet package whose analyzers to read.")]
     public string? Package { get; init; }
 
+    /// <summary>The release the caller typed, or null when they typed none.</summary>
+    /// <remarks>Read through <see cref="ReleaseToRead"/> everywhere the value is wanted.</remarks>
     [CommandOption("--package-version <VERSION>")]
-    [Description("Which release of --package to read: an exact version, 'latest' (latest stable) or 'latest-any'.")]
-    [DefaultValue(LatestStable)]
-    public string PackageVersion { get; init; } = LatestStable;
+    [Description("Which release of --package to read: an exact version, 'latest' (latest stable) or "
+                 + "'latest-any'. Defaults to latest.")]
+    public string? PackageVersion { get; init; }
 
     [CommandOption("--source <NAME-OR-URL>")]
     [Description("Which configured feed to read --package from. Defaults to every enabled source in NuGet.config.")]
@@ -85,10 +88,12 @@ internal abstract class CatalogueSettings : CommandSettings
     [Description("Where to write the generated C# source.")]
     public string? Output { get; init; }
 
+    /// <summary>The language the caller typed, or null when they typed none.</summary>
+    /// <remarks>Read through <see cref="LanguageToRead"/> everywhere the value is wanted.</remarks>
     [CommandOption("--language <LANG>")]
-    [Description("Which language's analyzers to read out of a package. Only cs can be read today.")]
-    [DefaultValue(DefaultLanguage)]
-    public string Language { get; init; } = DefaultLanguage;
+    [Description("Which language's analyzers to read out of a package. Only cs can be read today, "
+                 + "and cs is the default.")]
+    public string? Language { get; init; }
 
     [CommandOption("--source-name <NAME>")]
     [Description("What to record as the source. Defaults to the package's id, the project's assembly name, or the first assembly's.")]
@@ -101,6 +106,12 @@ internal abstract class CatalogueSettings : CommandSettings
     [CommandOption("--summary <PATH>")]
     [Description("Write a Markdown report of what changed, for a pull request body to carry.")]
     public string? Summary { get; init; }
+
+    /// <summary>Which release to read, with the default applied.</summary>
+    internal string ReleaseToRead => PackageVersion ?? LatestStable;
+
+    /// <summary>Which language's analyzers to read, with the default applied.</summary>
+    internal string LanguageToRead => Language ?? DefaultLanguage;
 
     /// <summary>
     /// Refuses a command line that names no source, no destination, or two sources.
@@ -137,11 +148,11 @@ internal abstract class CatalogueSettings : CommandSettings
     /// The switches a manifest already states, named as the caller wrote them.
     /// </summary>
     /// <remarks>
-    /// <c>--package-version</c> and <c>--language</c> are compared with their defaults rather than
-    /// tested for presence, and they have to be: they carry one, so a caller who omitted them and a
-    /// caller who typed the default are the same command line by the time this runs. Refusing them
-    /// by presence would refuse every manifest run there is. What is left is a value the caller can
-    /// only have typed.
+    /// Every one of them tested for PRESENCE, <c>--package-version</c> and <c>--language</c>
+    /// included. Those two used to be compared with their defaults instead, because they were bound
+    /// with one and a caller who omitted them was indistinguishable from a caller who typed it —
+    /// which made the likeliest mistake the one that was accepted. Spelling out the default beside a
+    /// manifest is what somebody does to make sure of it, and a manifest overrides it entirely.
     /// <para>
     /// <c>--summary</c> and <c>--date</c> are absent from this list on purpose. They say what the
     /// RUN does — where its report goes, what date it stamps — rather than what a catalogue is, so
@@ -151,12 +162,12 @@ internal abstract class CatalogueSettings : CommandSettings
     private List<string> SwitchesTheManifestCarries()
     {
         List<string> carried = [];
-        if (PackageVersion != LatestStable) carried.Add("--package-version");
+        if (PackageVersion is not null) carried.Add("--package-version");
         if (Source is not null) carried.Add("--source");
         if (Namespace is not null) carried.Add("--namespace");
         if (Container is not null) carried.Add("--container");
         if (Output is not null) carried.Add("--output");
-        if (Language != DefaultLanguage) carried.Add("--language");
+        if (Language is not null) carried.Add("--language");
         if (SourceName is not null) carried.Add("--source-name");
         if (SourceVersion is not null) carried.Add("--source-version");
         if (Configuration is not null) carried.Add("--configuration");
@@ -230,9 +241,9 @@ internal abstract class CatalogueSettings : CommandSettings
         // Refused here rather than discovered at the end. A language this tool cannot read used to be
         // accepted, resolve a package, download it, read hundreds of descriptors and only then refuse
         // on the analyzers that would not load — a promise kept right up to the point of breaking it.
-        if (!CatalogLanguages.CanRead(Language))
+        if (!CatalogLanguages.CanRead(LanguageToRead))
         {
-            return ValidationResult.Error(CatalogLanguages.Refusal(Language));
+            return ValidationResult.Error(CatalogLanguages.Refusal(LanguageToRead));
         }
 
         // And again: a configuration selects among a project's build outputs. Against an assembly

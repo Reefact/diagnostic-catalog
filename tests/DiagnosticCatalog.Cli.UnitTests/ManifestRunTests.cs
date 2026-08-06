@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using CatalogGen;
 using Xunit;
@@ -145,6 +147,72 @@ public sealed class ManifestRunTests : IDisposable
         Assert.Equal(ExitCodes.Failure, exitCode);
         Assert.StartsWith("error: ", error.Trim(), StringComparison.Ordinal);
         Assert.DoesNotContain("   at ", error, StringComparison.Ordinal);
+    }
+
+    // --- what the PARSER leaves behind ------------------------------------------------
+    //
+    // The three below go through the real command line rather than through a settings object built
+    // in a test, because the distinction they rest on is made by the parser: an option the caller
+    // omitted has to arrive unset. A default applied while binding erases that before any validation
+    // can see it, and the settings tests next door — which construct the object directly — would go
+    // on passing while the tool accepted the command line they say it refuses.
+
+    [Fact]
+    public async Task A_manifest_run_that_names_no_release_or_language_is_accepted()
+    {
+        string manifest = await ManifestAsync(Catalogs(Entry("Vendor.One", "OneRules", "one.g.cs")));
+
+        (int exitCode, _, _) = await CliRun.Async("generate", "--manifest", manifest);
+
+        Assert.Equal(ExitCodes.Success, exitCode);
+    }
+
+    [Fact]
+    public async Task A_manifest_run_typing_the_default_release_is_refused()
+    {
+        string manifest = await ManifestAsync(Catalogs(Entry("Vendor.One", "OneRules", "one.g.cs")));
+
+        (int exitCode, string output, string error) = await CliRun.Async(
+            "generate", "--manifest", manifest, "--package-version", "latest");
+
+        Assert.Equal(ExitCodes.UsageError, exitCode);
+        Assert.Contains("--package-version", output + error, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task A_manifest_run_typing_the_default_language_is_refused()
+    {
+        string manifest = await ManifestAsync(Catalogs(Entry("Vendor.One", "OneRules", "one.g.cs")));
+
+        (int exitCode, string output, string error) = await CliRun.Async(
+            "generate", "--manifest", manifest, "--language", "cs");
+
+        Assert.Equal(ExitCodes.UsageError, exitCode);
+        Assert.Contains("--language", output + error, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task A_run_without_a_manifest_still_resolves_the_release_and_language_defaults()
+    {
+        // The other side of the change, and the one that would go unnoticed: the defaults must still
+        // be APPLIED, only later. Asserted on the catalogue the command line resolves to rather than
+        // on a run, because a run would have to reach a feed to prove anything and this is the whole
+        // of what the defaults decide.
+        GenerateSettings settings = new()
+        {
+            Package = "Vendor.Analyzers",
+            Namespace = "Vendor.Catalog",
+            Container = "VendorRule",
+            Output = Path.Combine(_work, "vendor.g.cs"),
+        };
+
+        Assert.True(settings.Validate().Successful);
+
+        IReadOnlyList<Job>? jobs = await CatalogueJobs.ReadAsync(settings, CancellationToken.None);
+
+        Job job = Assert.Single(jobs!);
+        Assert.Equal("latest", job.Version);
+        Assert.Equal("cs", job.Language);
     }
 
     [Fact]

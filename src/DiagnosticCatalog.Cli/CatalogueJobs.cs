@@ -65,11 +65,11 @@ internal static class CatalogueJobs
         [
             new Job(
                 Package: fromFeed ? settings.Package : null,
-                Version: fromFeed ? settings.PackageVersion : null,
+                Version: fromFeed ? settings.ReleaseToRead : null,
                 Namespace: settings.Namespace!,
                 Container: settings.Container!,
                 Output: Path.GetFullPath(settings.Output!),
-                Language: settings.Language,
+                Language: settings.LanguageToRead,
                 Assemblies: settings.Assemblies.Length > 0 ? settings.Assemblies : null,
                 SourceName: settings.SourceName,
                 SourceVersion: settings.SourceVersion,

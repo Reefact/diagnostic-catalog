@@ -38,7 +38,23 @@ public sealed class GenerateSettingsTests
 
     [Fact]
     public void The_upstream_release_defaults_to_the_latest_stable()
-        => Assert.Equal("latest", new GenerateSettings().PackageVersion);
+        => Assert.Equal("latest", new GenerateSettings().ReleaseToRead);
+
+    [Fact]
+    public void The_language_defaults_to_c_sharp()
+        => Assert.Equal("cs", new GenerateSettings().LanguageToRead);
+
+    [Fact]
+    public void An_omitted_release_and_language_are_left_unset_rather_than_filled_in()
+    {
+        // What separates "the caller did not say" from "the caller said the default", and the
+        // distinction the manifest rules downstream are built on. A default applied at PARSE time
+        // erases it before any validation can see it.
+        GenerateSettings settings = new();
+
+        Assert.Null(settings.PackageVersion);
+        Assert.Null(settings.Language);
+    }
 
     [Fact]
     public void An_assembly_with_a_destination_is_accepted_without_a_package()
@@ -286,16 +302,40 @@ public sealed class GenerateSettingsTests
     }
 
     [Fact]
-    public void A_manifest_carrying_the_defaults_is_still_accepted()
+    public void A_default_release_typed_alongside_a_manifest_is_refused_like_any_other_value()
     {
-        // The witness. --package-version and --language cannot be told apart from their defaults,
-        // so refusing them by presence would refuse every manifest run there is. Only a value the
-        // caller can only have typed is refused.
+        // `--package-version latest` beside a manifest is a caller who believes the switch takes
+        // effect, and it does not: every entry states its own release. That the value happens to be
+        // the one the tool would have chosen changes nothing about the misunderstanding — and it is
+        // the likeliest one to be typed, since a caller spelling out the default is a caller making
+        // sure of it.
+        GenerateSettings settings = new() { Manifest = "catalogs.json", PackageVersion = "latest" };
+
+        ValidationResult result = settings.Validate();
+
+        Assert.False(result.Successful);
+        Assert.Contains("--package-version", result.Message);
+    }
+
+    [Fact]
+    public void A_default_language_typed_alongside_a_manifest_is_refused_like_any_other_value()
+    {
+        GenerateSettings settings = new() { Manifest = "catalogs.json", Language = "cs" };
+
+        ValidationResult result = settings.Validate();
+
+        Assert.False(result.Successful);
+        Assert.Contains("--language", result.Message);
+    }
+
+    [Fact]
+    public void A_manifest_carrying_only_what_describes_the_run_is_accepted()
+    {
+        // --summary and --date say what the RUN does rather than what a catalogue is, so a manifest
+        // states neither and both are meaningful beside one.
         GenerateSettings settings = new()
         {
             Manifest = "catalogs.json",
-            PackageVersion = "latest",
-            Language = "cs",
             Date = "2026-01-01",
             Summary = "summary.md",
         };
