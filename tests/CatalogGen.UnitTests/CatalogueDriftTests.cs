@@ -23,6 +23,13 @@ namespace CatalogGen.UnitTests;
 /// many words. Every test here therefore keeps the version still, because that is the case where the
 /// comparison is the only thing standing.
 /// </para>
+/// <para>
+/// Rules are only half of what a catalogue publishes. The other half comes from the MANIFEST — the
+/// namespace declared, the class the rules sit in, the source recorded, the language read — and a
+/// comparison that enumerated fields would keep needing one more the day the emitter states one
+/// more. So every previous state here is a file this emitter actually wrote, read back the way the
+/// next run reads it, which is what makes the comparison exhaustive rather than merely long.
+/// </para>
 /// </remarks>
 public sealed class CatalogueDriftTests : IDisposable
 {
@@ -30,6 +37,12 @@ public sealed class CatalogueDriftTests : IDisposable
 
     /// <summary>Held still on purpose — see the remarks.</summary>
     private const string Version = "1.0.0";
+
+    private const string Namespace = "Vendor.Catalog";
+    private const string Container = "VendorRule";
+
+    private const string FirstRun = "2026-01-01";
+    private const string SecondRun = "2026-02-02";
 
     private readonly string _temp = Directory.CreateTempSubdirectory("cataloggen-drift-").FullName;
 
@@ -43,27 +56,50 @@ public sealed class CatalogueDriftTests : IDisposable
         return map;
     }
 
-    private static RuleInfo Rule(string helpLinkUri = "", bool retired = false) =>
-        new("Usage", helpLinkUri, retired, "A title.");
+    private static RuleInfo Rule(string helpLinkUri = "") => new("Usage", helpLinkUri, Retired: false, "A title.");
 
-    private static Previous Before(SortedDictionary<string, RuleInfo> rules)
+    private string Output => Path.Combine(_temp, "VendorRules.g.cs");
+
+    private Job JobWith(string ns = Namespace, string container = Container, string language = "cs") =>
+        new(Package, Version, ns, container, Output, language);
+
+    /// <summary>
+    /// The file a previous run left behind, read back the way the next run reads it.
+    /// </summary>
+    /// <remarks>
+    /// Written rather than constructed. A <see cref="Previous"/> built by hand states what a test
+    /// believes the last run published; a file the emitter wrote states what it did publish, and the
+    /// difference is exactly the drift these tests are about.
+    /// </remarks>
+    private Previous Settled(SortedDictionary<string, RuleInfo> rules, Job? job = null, string? sourceName = null)
     {
-        SortedDictionary<string, string> categories = new(StringComparer.Ordinal);
-        foreach (RuleInfo info in rules.Values) categories[info.Category] = Naming.ToIdentifier(info.Category);
+        Job previousJob = job ?? JobWith();
+        CatalogEmitter.Emit(previousJob, sourceName ?? Package, Version, rules, previous: null,
+                            dateOverride: FirstRun);
 
-        return new Previous(Version, rules, categories);
+        return CatalogParser.ReadPrevious(previousJob.Output)!;
+    }
+
+    /// <summary>The same, for a rule an earlier run carried forward as retired.</summary>
+    private Previous SettledWithRetired(
+        SortedDictionary<string, RuleInfo> live, SortedDictionary<string, RuleInfo> before)
+    {
+        Job job = JobWith();
+        CatalogEmitter.Emit(job, Package, Version, before, previous: null, dateOverride: FirstRun);
+        CatalogEmitter.Emit(job, Package, Version, live, CatalogParser.ReadPrevious(job.Output),
+                            dateOverride: FirstRun);
+
+        return CatalogParser.ReadPrevious(job.Output)!;
     }
 
     private GenerateResult Emit(
-        SortedDictionary<string, RuleInfo> upstream, Previous previous, out string emitted)
+        SortedDictionary<string, RuleInfo> upstream, Previous previous, out string emitted,
+        Job? job = null, string? sourceName = null)
     {
-        string output = Path.Combine(_temp, $"{Guid.NewGuid():N}.g.cs");
-        Job job = new(Package, Version, "Vendor.Catalog", "VendorRule", output, "cs");
-
         GenerateResult result = CatalogEmitter.Emit(
-            job, Package, Version, upstream, previous, dateOverride: "2026-01-01");
+            job ?? JobWith(), sourceName ?? Package, Version, upstream, previous, dateOverride: SecondRun);
 
-        emitted = File.Exists(output) ? File.ReadAllText(output) : string.Empty;
+        emitted = File.Exists(Output) ? File.ReadAllText(Output) : string.Empty;
 
         return result;
     }
@@ -74,7 +110,7 @@ public sealed class CatalogueDriftTests : IDisposable
         // The catalogue says "no longer declared by the vendor — remove your suppression" about a
         // rule the vendor declares. Nothing downstream can contradict it: the platform never
         // validates a suppression's category, so the only thing that could was this comparison.
-        Previous carriedForward = Before(Rules(Rule(), Rule(retired: true)));
+        Previous carriedForward = SettledWithRetired(Rules(Rule()), Rules(Rule(), Rule()));
 
         GenerateResult result = Emit(Rules(Rule(), Rule()), carriedForward, out string emitted);
 
@@ -86,7 +122,7 @@ public sealed class CatalogueDriftTests : IDisposable
     [Fact]
     public void A_help_link_the_vendor_added_reaches_the_catalogue()
     {
-        Previous withoutLink = Before(Rules(Rule()));
+        Previous withoutLink = Settled(Rules(Rule()));
 
         GenerateResult result = Emit(Rules(Rule("https://vendor.example/X0001")), withoutLink, out string emitted);
 
@@ -100,7 +136,7 @@ public sealed class CatalogueDriftTests : IDisposable
     [Fact]
     public void A_help_link_the_vendor_moved_reaches_the_catalogue()
     {
-        Previous withOldLink = Before(Rules(Rule("https://vendor.example/old")));
+        Previous withOldLink = Settled(Rules(Rule("https://vendor.example/old")));
 
         GenerateResult result = Emit(Rules(Rule("https://vendor.example/new")), withOldLink, out string emitted);
 
@@ -109,18 +145,112 @@ public sealed class CatalogueDriftTests : IDisposable
         Assert.DoesNotContain("https://vendor.example/old", emitted, StringComparison.Ordinal);
     }
 
+    // --- what the MANIFEST publishes ------------------------------------------------
+    //
+    // Each of the four below moves a value that reaches the generated file and no rule at all. Under
+    // a comparison made of rules and a version, every one of them was reported "current" while the
+    // file on disk said something else — including through `dcat validate`, whose whole answer is
+    // this comparison.
+
+    [Fact]
+    public void A_namespace_the_manifest_moved_reaches_the_catalogue()
+    {
+        Previous published = Settled(Rules(Rule()));
+
+        GenerateResult result = Emit(Rules(Rule()), published, out string emitted,
+                                     JobWith(ns: "Vendor.Catalog.Renamed"));
+
+        Assert.True(result.Changed, "the namespace a consumer imports is published content");
+        Assert.Contains("namespace Vendor.Catalog.Renamed;", emitted, StringComparison.Ordinal);
+        Assert.DoesNotContain("namespace Vendor.Catalog;", emitted, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void A_container_the_manifest_renamed_reaches_the_catalogue()
+    {
+        Previous published = Settled(Rules(Rule()));
+
+        GenerateResult result = Emit(Rules(Rule()), published, out string emitted,
+                                     JobWith(container: "RenamedRule"));
+
+        Assert.True(result.Changed, "the class a suppression writes is published content");
+        Assert.Contains("public static class RenamedRule", emitted, StringComparison.Ordinal);
+        // The category container is named after the rule container, so it moves with it.
+        Assert.Contains("internal static class RenamedCategory", emitted, StringComparison.Ordinal);
+        Assert.DoesNotContain("public static class VendorRule", emitted, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void A_source_name_the_manifest_changed_reaches_the_catalogue()
+    {
+        Previous published = Settled(Rules(Rule()));
+
+        GenerateResult result = Emit(Rules(Rule()), published, out string emitted,
+                                     sourceName: "Vendor.Analyzers.Unstable");
+
+        Assert.True(result.Changed, "which package a catalogue mirrors is published content");
+        Assert.Contains("source:        \"Vendor.Analyzers.Unstable\"", emitted, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void A_language_the_manifest_changed_reaches_the_catalogue()
+    {
+        // The one value that changes nothing a consumer writes and everything a consumer trusts:
+        // the header states which language's analyzers were read, and a catalogue read from another
+        // set of assemblies under the same version is a different catalogue.
+        Previous published = Settled(Rules(Rule()));
+
+        GenerateResult result = Emit(Rules(Rule()), published, out string emitted, JobWith(language: "vb"));
+
+        Assert.True(result.Changed, "which analyzers were read is published content");
+        Assert.Contains("(language: vb)", emitted, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void Anything_that_moves_the_file_moves_its_generated_on_stamp_too()
+    {
+        // The date says when the file's content was established. Rewriting the content and keeping
+        // yesterday's stamp would leave the one field a reader uses to judge how old the answer is
+        // pointing at a run that produced something else.
+        Previous published = Settled(Rules(Rule()));
+
+        Emit(Rules(Rule()), published, out string emitted, JobWith(ns: "Vendor.Catalog.Renamed"));
+
+        Assert.Contains($"generatedOn:   \"{SecondRun}\"", emitted, StringComparison.Ordinal);
+        Assert.DoesNotContain(FirstRun, emitted, StringComparison.Ordinal);
+    }
+
     [Fact]
     public void A_run_over_a_catalogue_that_did_not_move_still_writes_nothing()
     {
-        // The half a wider comparison could break, and the reason this test sits beside the three
-        // above rather than being taken for granted: a comparison that reported a change every time
-        // would have the scheduled job open a pull request every night whose only content is a date.
-        SortedDictionary<string, RuleInfo> settled = Rules(Rule("https://vendor.example/X0001"), Rule(retired: true));
+        // The half a wider comparison could break, and the reason this test sits beside the others
+        // rather than being taken for granted: a comparison that reported a change every time would
+        // have the scheduled job open a pull request every night whose only content is a date.
+        Previous published = Settled(Rules(Rule("https://vendor.example/X0001")));
+        string asPublished = File.ReadAllText(Output);
 
-        GenerateResult result = Emit(Rules(Rule("https://vendor.example/X0001")), Before(settled), out string emitted);
+        GenerateResult result = Emit(Rules(Rule("https://vendor.example/X0001")), published, out string emitted);
 
         Assert.False(result.Changed);
         Assert.Equal(string.Empty, result.Summary);
-        Assert.Equal(string.Empty, emitted);
+        Assert.Equal(asPublished, emitted);
+        Assert.Contains($"generatedOn:   \"{FirstRun}\"", emitted, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void A_run_over_a_catalogue_that_did_not_move_survives_a_crlf_checkout()
+    {
+        // A checkout under core.autocrlf rewrites every line ending in the file, and none of what
+        // the catalogue PUBLISHES has changed. Reporting that as drift would have `dcat validate`
+        // fail a consumer's pipeline on Windows for a reason no diff could show them.
+        Settled(Rules(Rule("https://vendor.example/X0001")));
+        File.WriteAllText(Output, File.ReadAllText(Output).ReplaceLineEndings("\r\n"));
+        string asCheckedOut = File.ReadAllText(Output);
+
+        GenerateResult result = Emit(Rules(Rule("https://vendor.example/X0001")),
+                                     CatalogParser.ReadPrevious(Output)!, out string emitted);
+
+        Assert.False(result.Changed);
+        Assert.Equal(asCheckedOut, emitted);
     }
 }
