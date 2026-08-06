@@ -235,4 +235,4 @@ Optional supporting material:
 | [ADR-0037](0037-ship-the-analyzers-inside-the-foundation-package.en.md) | Ship the analyzers inside the foundation package | Accepted |
 | [ADR-0038](0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.en.md) | Stop the analyzers at the project that references a catalogue | Accepted |
 | [ADR-0039](0039-require-a-justification-on-every-suppression.en.md) | Require a justification on every suppression | Accepted |
-| [ADR-0040](0040-grade-every-dcat-diagnostic-by-what-it-says.en.md) | Grade every DCAT diagnostic by what it says, not by whom it addresses | Proposed |
+| [ADR-0040](0040-grade-every-dcat-diagnostic-by-what-it-says.en.md) | Grade every DCAT diagnostic by what it says, not by whom it addresses | Accepted |
