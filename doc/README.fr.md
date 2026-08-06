@@ -161,6 +161,11 @@ Trois choses de plus rendent la migration tenable :
   reconnaître. Descendez-le en suggestion dans `.editorconfig`, puis remontez-le dossier par
   dossier à mesure que vous convertissez —
   [Adopter un catalogue](guide/adopting-a-catalogue.fr.md) donne l'ordre de conversion.
+  `DCAT0014` tombe sur cette même compilation et pose une question plus large — pourquoi chaque
+  suppression existe, à toutes plutôt qu'aux seules qu'un catalogue apparie
+  ([ADR-0039](adr/0039-require-a-justification-on-every-suppression.fr.md)). C'est un avertissement,
+  rien ne casse ; la même ligne l'abaisse le temps d'écrire les raisons que vous n'aviez pas
+  écrites.
 * **Demander ce qu'est une règle.** `dcat explain <catalogue.dll> S1144` affiche la catégorie de
   la règle, son lien d'aide, et la ligne `[SuppressMessage]` exacte à coller — pleinement
   qualifiée, donc elle compile où qu'elle atterrisse.
