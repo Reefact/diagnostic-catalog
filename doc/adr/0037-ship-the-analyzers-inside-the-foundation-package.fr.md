@@ -55,6 +55,14 @@ version d'assembly différente en reçoit un seul — la compilation n'a transmi
 l'analyzer de version la plus haute et les diagnostics n'ont pas été dupliqués, tandis que deux
 assemblys de correcteurs de version identique ont tous deux été transmis.
 
+Le montage que propose cet enregistrement a été construit et mesuré de bout en bout, également hors
+CI : un paquet de fondation portant à la fois le dossier de bibliothèque et le dossier d'analyse, deux
+paquets de catalogue ne déclarant rien de plus qu'une dépendance ordinaire vers lui, et un
+consommateur référençant les deux catalogues. La suppression littérale du consommateur a été
+rapportée en `DCAT0006`, une seule fois, en nommant la référence de catalogue à écrire à la place —
+le montage ne demande donc rien à un catalogue, et l'analyzer atteint le consommateur de deux d'entre
+eux en une seule instance.
+
 `DCAT0006` est livré en erreur par défaut
 ([ADR-0027](0027-ship-the-use-site-diagnostics-as-errors.fr.md)), au motif énoncé que référencer un
 paquet de catalogue est en soi la déclaration d'intention.
