@@ -52,13 +52,15 @@
   </ItemGroup>
 
   <!--
-    Two registries come along, because DocumentedSiblingsTests asks two different questions of them.
-    Which catalogues exist is eng/catalogs.json, the manifest the generator and the nightly workflow
+    Two registries come along, because CatalogueRoster asks two different questions of them. Which
+    catalogues exist is eng/catalogs.json, the manifest the generator and the nightly workflow
     already read — a catalogue enters it before it exists. What this repository PUBLISHES is the
     <ReleaseTrain> declaration a project carries in its own .csproj, which is what makes it packable
     and "the one file that cannot be forgotten" (tools/trains.sh); the analyzers and the foundation
-    are published without being catalogues. The repository README joins them as the one document
-    that has to name the catalogues from outside them.
+    are published without being catalogues. Both halves of the repository README join them as the
+    central index every catalogue page points at — the English one at the root, because GitHub
+    composes the landing page from it and from nothing else (ADR-0029), and the French one under
+    doc/.
   -->
   <ItemGroup>
     <Content Include="..\..\eng\catalogs.json" Link="catalogmanifest\catalogs.json" CopyToOutputDirectory="PreserveNewest" />
@@ -72,6 +74,7 @@
     <Content Include="..\..\src\**\*.csproj"
              Link="catalogprojects\%(RecursiveDir)project.xml" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\..\README.md" Link="repodocs\README.md" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\doc\README.fr.md" Link="repodocs\README.fr.md" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <!--

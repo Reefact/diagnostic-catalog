@@ -238,5 +238,5 @@ identifier the trimmer *does* honour would be telling you to change something th
 ---
 
 <div align="center">
-<a href="./diagnostics.en.md">← The DCAT diagnostics</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./troubleshooting.en.md">Troubleshooting →</a>
+<a href="./README.en.md">↑ Table of contents</a> · <a href="./troubleshooting.en.md">Troubleshooting →</a>
 </div>

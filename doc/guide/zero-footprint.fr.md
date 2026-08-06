@@ -154,5 +154,5 @@ assemblage de la sortie : aucun ne voit le catalogue, parce qu'il n'y est pas.
 ---
 
 <div align="center">
-<a href="./configuration.fr.md">← Configuration</a> · <a href="./README.fr.md">↑ Table des matières</a> · <a href="./authoring-a-catalogue.fr.md">Publier un catalogue →</a>
+<a href="./configuration.fr.md">← Configuration</a> · <a href="./README.fr.md">↑ Table des matières</a> · <a href="./when-not-to-use.fr.md">Quand ne pas s'en servir →</a>
 </div>

@@ -156,20 +156,23 @@ public sealed class RuleTitleTests : IDisposable
     {
         // The other half of the test above: reporting a retitle must not become a nightly pull
         // request whose only content is the same sentence written again.
-        SortedDictionary<string, RuleInfo> settled = new(StringComparer.Ordinal)
-        {
-            ["X0001"] = new("Usage", string.Empty, Retired: false, "Fields should be private"),
-        };
-        SortedDictionary<string, string> categories = new(StringComparer.Ordinal) { ["Usage"] = "Usage" };
+        //
+        // Written and read back rather than assembled, because "unchanged" means "this run would
+        // write the file that is already there" — a question only the file can answer.
         string output = Path.Combine(_temp, "settled.g.cs");
+        CatalogEmitter.Emit(Job(output), Package, "2.0.0",
+                            Rules(("X0001", "Usage", "Fields should be private", "")),
+                            previous: null, dateOverride: "2026-01-01");
+
+        string asPublished = File.ReadAllText(output);
 
         GenerateResult result = CatalogEmitter.Emit(
             Job(output), Package, "2.0.0",
             Rules(("X0001", "Usage", "Fields should be private", "")),
-            new Previous("2.0.0", settled, categories), dateOverride: "2026-01-01");
+            CatalogParser.ReadPrevious(output), dateOverride: "2026-01-02");
 
         Assert.False(result.Changed);
-        Assert.False(File.Exists(output));
+        Assert.Equal(asPublished, File.ReadAllText(output));
     }
 
     private static Job Job(string output) => new(Package, "2.0.0", "Vendor.Catalog", "VendorRule", output, "cs");

@@ -155,5 +155,5 @@ goes.
 ---
 
 <div align="center">
-<a href="./getting-started.en.md">← Getting started</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./concepts.en.md">Core concepts →</a>
+<a href="./README.en.md">↑ Table of contents</a> · <a href="./getting-started.en.md">Getting started →</a>
 </div>

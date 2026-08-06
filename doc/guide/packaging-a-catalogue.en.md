@@ -150,17 +150,18 @@ Three characters is a ceiling here, not an observation: a longer prefix is abbre
 becomes `XU`, `MSTEST` becomes `MST`. The type shrinks to clear the plate's corners, so the word
 that fits exactly is the word nobody can read; measured on the catalogues published here, a
 six-letter badge lands at under 5px in that listing while a three-letter one holds 9.8px. The
-reasoning is [ADR-0033](../adr/0033-cap-the-badge-at-three-letters.en.md), which supersedes
-[ADR-0032](../adr/0032-badge-a-catalogues-icon-with-its-rule-prefix.en.md) on that point alone.
+record in force is [ADR-0035](../adr/0035-badge-a-shared-prefix-catalogue-with-its-subject.en.md);
+the cap itself was first stated by
+[ADR-0033](../adr/0033-cap-the-badge-at-three-letters.en.md), which ADR-0035 supersedes and whose
+cap it keeps, and the choice of what the badge says by
+[ADR-0032](../adr/0032-badge-a-catalogues-icon-with-its-rule-prefix.en.md) before that.
 
 **And the prefix may already be taken.** Three catalogues here mirror `RS` rules, so the rule above
 cannot give all three the same badge — the mark does not vary, so identical badges are identical
 files, which `PackageIconTests` refuses. When a prefix is already worn, the newcomer's badge names
 the subject of the package it mirrors instead, and the prefix stays with the catalogue already
 publishing it: `DiagnosticCatalog.Roslyn` keeps `RS`, while `DiagnosticCatalog.PublicApi` reads `API`
-and `DiagnosticCatalog.BannedApi` reads `BAN`. That is
-[ADR-0035](../adr/0035-badge-a-shared-prefix-catalogue-with-its-subject.en.md), which supersedes
-ADR-0033 on that point and leaves its three-letter cap standing.
+and `DiagnosticCatalog.BannedApi` reads `BAN`. That is the second half of ADR-0035.
 
 Worth knowing how far the check around this reaches, because it is narrower than it looks.
 `PackageIconTests` fails a catalogue that carries no `icon.png` of its own, one whose icon is
@@ -190,5 +191,5 @@ here take the foundation as a `PackageReference` even though its source sits in 
 ---
 
 <div align="center">
-<a href="./versioning-a-catalogue.en.md">← Versioning a catalogue</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./dcat.en.md">The dcat tool →</a>
+<a href="./versioning-a-catalogue.en.md">← Versioning a catalogue</a> · <a href="./README.en.md">↑ Table of contents</a>
 </div>

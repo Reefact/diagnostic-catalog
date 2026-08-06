@@ -415,5 +415,5 @@ vraie règle, de façon cohérente. Ils ne font pas, et ne feront pas :
 ---
 
 <div align="center">
-<a href="./ci-integration.fr.md">← Tenir un catalogue à jour</a> · <a href="./README.fr.md">↑ Table des matières</a> · <a href="./rule-contract.fr.md">Le contrat de règle →</a>
+<a href="./adopting-a-catalogue.fr.md">← Adopter un catalogue sur une base de code existante</a> · <a href="./README.fr.md">↑ Table des matières</a>
 </div>

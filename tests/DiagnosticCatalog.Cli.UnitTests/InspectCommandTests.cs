@@ -111,36 +111,35 @@ public sealed class InspectCommandTests : IDisposable
         => Assert.Equal(ExitCodes.UsageError, (await RunAsync("list")).ExitCode);
 
     [Fact]
-    public async Task Explain_emits_a_suppression_that_names_the_rule_through_its_container()
+    public async Task Explain_emits_a_suppression_that_depends_on_no_import_of_the_reader_s()
     {
-        // The line the reader came for. `AcmeRules.ACME0002.Category` binds; `ACME0002.Category`
-        // does not, and a catalogue whose explanation does not compile is worse than none.
+        // The line the reader came for, in the shape it has to have: every name reached from the
+        // global namespace, the attribute included. Whether it BUILDS is asserted next door, by
+        // compiling it — see ExplainFragmentTests. What is checked here is that the shape survives,
+        // because it is the shape a later edit would quietly simplify.
         (int exitCode, string output, _) = await RunAsync("explain", Catalogue(), "ACME0002");
 
         Assert.Equal(ExitCodes.Success, exitCode);
-        Assert.Contains("[SuppressMessage(", output, StringComparison.Ordinal);
-        Assert.Contains("AcmeRules.ACME0002.Category,", output, StringComparison.Ordinal);
-        Assert.Contains("AcmeRules.ACME0002.Id,", output, StringComparison.Ordinal);
+        Assert.Contains("[global::System.Diagnostics.CodeAnalysis.SuppressMessage(", output,
+                        StringComparison.Ordinal);
+        Assert.Contains("global::Vendor.Catalog.AcmeRules.ACME0002.Category,", output, StringComparison.Ordinal);
+        Assert.Contains("global::Vendor.Catalog.AcmeRules.ACME0002.Id,", output, StringComparison.Ordinal);
         Assert.Contains("Justification", output, StringComparison.Ordinal);
     }
 
     [Fact]
-    public async Task Explain_writes_a_reference_that_compiles_when_the_type_is_not_named_after_the_id()
+    public async Task Explain_reports_the_declared_id_and_references_the_type_that_carries_it()
     {
         // The §8.2 case: "ACME-0003" carries a character C# forbids in a type name, so the type is
-        // ACME_0003 and both spellings exist. Only the TYPE name can be written at a use site — a
-        // line naming the identifier there does not compile, which is the one thing the line this
-        // command exists to produce may not do.
+        // ACME_0003 and both spellings exist. The command has to print BOTH, each where it belongs —
+        // the identifier as the rule's own fact, the type name in the reference — and this is the
+        // one rule shape where getting them the wrong way round is visible.
         (int exitCode, string output, _) =
             await RunAsync("explain", Catalogue(CatalogueFixture.RuleNamedApartFromItsId), "ACME-0003");
 
         Assert.Equal(ExitCodes.Success, exitCode);
-
-        // The identifier is still what the rule declares, and is still reported as such.
         Assert.Contains("id        ACME-0003", output, StringComparison.Ordinal);
-
-        Assert.Contains("AcmeRules.ACME_0003.Category,", output, StringComparison.Ordinal);
-        Assert.Contains("AcmeRules.ACME_0003.Id,", output, StringComparison.Ordinal);
+        Assert.Contains("global::Vendor.Catalog.AcmeRules.ACME_0003.Category,", output, StringComparison.Ordinal);
         Assert.DoesNotContain("ACME-0003.Category", output, StringComparison.Ordinal);
     }
 
@@ -195,17 +194,17 @@ public sealed class InspectCommandTests : IDisposable
     }
 
     [Fact]
-    public async Task Explain_names_a_rule_that_has_no_container_by_itself()
+    public async Task Explain_names_a_rule_that_has_no_container_without_a_stray_dot()
     {
-        // A rule declared at namespace level is written LOOSE0001.Category, not .LOOSE0001.Category.
-        // The container is prepended only when there is one, and the leading dot a naive
-        // concatenation produces would be a reference that does not compile.
+        // A rule declared at namespace level has no enclosing type, so its reference is the
+        // namespace and the rule — the leading dot a naive concatenation produces would be a
+        // reference that does not compile.
         (int exitCode, string output, _) =
             await RunAsync("explain", Catalogue(CatalogueFixture.NoProvenance), "LOOSE0001");
 
         Assert.Equal(ExitCodes.Success, exitCode);
-        Assert.Contains("    LOOSE0001.Category,", output, StringComparison.Ordinal);
-        Assert.DoesNotContain("    .LOOSE0001", output, StringComparison.Ordinal);
+        Assert.Contains("    global::Vendor.Catalog.LOOSE0001.Category,", output, StringComparison.Ordinal);
+        Assert.DoesNotContain("..", output, StringComparison.Ordinal);
     }
 
     [Fact]

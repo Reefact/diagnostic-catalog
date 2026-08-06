@@ -82,7 +82,7 @@ underneath.
 
 | Option | What it does |
 | --- | --- |
-| `--summary <PATH>` | Write a Markdown report of what changed — rules added, recategorised, retitled, retired. |
+| `--summary <PATH>` | Write a Markdown report of every change to what the catalogue publishes, naming the rule-level ones one by one. |
 
 `--summary` is what makes a scheduled regeneration open a pull request a human can review rather than
 merge blind. [Keeping a catalogue current](ci-integration.en.md) is the pattern it serves.
@@ -184,5 +184,5 @@ newer.
 ---
 
 <div align="center">
-<a href="./dcat.en.md">← The dcat tool</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./catalogs-manifest.en.md">The catalogue manifest →</a>
+<a href="./dcat.en.md">← The `dcat` tool</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./catalogs-manifest.en.md">The catalogue manifest →</a>
 </div>

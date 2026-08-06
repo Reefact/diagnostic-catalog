@@ -75,7 +75,7 @@ still a compile-time constant, and still folds to `"Major Code Smell"` in the co
 
 ```mermaid
 flowchart TB
-    subgraph PUB["Published on nuget.org"]
+    subgraph PUB["The vendor catalogues"]
         F["DiagnosticCatalog<br/><i>the markers</i>"]
         S["DiagnosticCatalog.Sonar"]
         N["DiagnosticCatalog.NetAnalyzers"]
@@ -88,6 +88,8 @@ flowchart TB
         AS["DiagnosticCatalog.AspNetCore"]
         SY["DiagnosticCatalog.Syslib"]
         RO["DiagnosticCatalog.Roslyn"]
+        PA["DiagnosticCatalog.PublicApi"]
+        BA["DiagnosticCatalog.BannedApi"]
         S --> F
         N --> F
         T --> F
@@ -99,8 +101,10 @@ flowchart TB
         AS --> F
         SY --> F
         RO --> F
+        PA --> F
+        BA --> F
     end
-    subgraph SOON["Built here, not published yet"]
+    subgraph TOOLS["The toolkit, referenced when you want it"]
         A["DiagnosticCatalog.Analyzers<br/><i>the DCAT diagnostics + fixes</i>"]
         SELF["DiagnosticCatalog.Self<br/><i>the DCAT rules, catalogued</i>"]
         CLI["dcat<br/><i>the generator, as a tool</i>"]
@@ -116,7 +120,7 @@ flowchart TB
 `[DiagnosticCategory]`, `[assembly: CatalogSource]`. You reference it to declare a catalogue of your
 own. A catalogue you consume references it for you.
 
-**The thirteen vendor catalogues** are constants. Referencing one gives you compile-checked references
+**The vendor catalogues** are constants. Referencing one gives you compile-checked references
 to that analyzer's rules — which is the whole guarantee, and it comes from the C# compiler rather
 than from anything this library runs.
 
@@ -138,15 +142,15 @@ and are not all out yet.
 | Reference | What you get |
 | --- | --- |
 | a vendor catalogue | Compile-checked constants. A misspelled rule is `CS0117`. A retired rule is `CS0618`. Rename and *Find All References* work. |
-| a vendor catalogue **today** | That, and nothing else. The catalogue does not bring `DiagnosticCatalog.Analyzers`, because that package has no version on nuget.org to point at ([ADR-0007](../adr/0007-depend-across-trains-through-published-packages.en.md)). |
-| `DiagnosticCatalog.Analyzers`, once published | `DCAT0006` on every literal suppression it can replace, with a fix; `DCAT0001` on a mismatched pair; `DCAT0007` on a half-migrated one; `DCAT0009` on a trimmer suppression the trimmer will discard. |
+| a vendor catalogue **on its own** | That, and nothing else. A catalogue depends on the foundation and never on `DiagnosticCatalog.Analyzers`: the checking is a choice its consumer makes, not one the catalogue makes for them. |
+| `DiagnosticCatalog.Analyzers`, referenced beside it | `DCAT0006` on every literal suppression it can replace, with a fix; `DCAT0001` on a mismatched pair; `DCAT0007` on a half-migrated one; `DCAT0009` on a trimmer suppression the trimmer will discard. |
 
 The distinction matters more than a footnote. **The core guarantee needs no analyzer**: it is the
 compiler resolving a member. What the analyzer package adds is *finding the code that has not been
 converted yet*, which is a migration aid rather than the mechanism.
 
-[Project status](https://github.com/Reefact/diagnostic-catalog#-project-status) in the repository
-README is the current answer, and it moves when a train is tagged.
+[The packages](https://github.com/Reefact/diagnostic-catalog#-the-packages) in the repository README states what each
+one is for, and which train carries it.
 
 ## Provenance: a catalogue is a snapshot
 
@@ -183,5 +187,5 @@ Two consequences follow, and both shape how catalogues are versioned:
 ---
 
 <div align="center">
-<a href="./the-problem.en.md">← Why magic strings fail</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./when-not-to-use.en.md">When not to use this →</a>
+<a href="./getting-started.en.md">← Getting started</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./writing-suppressions.en.md">Writing suppressions that the compiler checks →</a>
 </div>

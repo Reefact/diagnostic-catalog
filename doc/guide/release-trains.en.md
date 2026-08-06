@@ -31,6 +31,8 @@ So the repository publishes on **fifteen independent lines**
 | `aspnetcore` | `aspnetcore-v` | `aspnetcore` | The ASP.NET Core and Blazor rule catalogue |
 | `syslib` | `syslib-v` | `syslib` | The .NET runtime source-generator rule catalogue |
 | `roslyn` | `roslyn-v` | `roslyn` | The Roslyn analyzer-authoring rule catalogue |
+| `publicapi` | `publicapi-v` | `publicapi` | The public-API tracking rule catalogue |
+| `bannedapi` | `bannedapi-v` | `bannedapi` | The banned-API rule catalogue |
 
 That table lives once, in [`tools/trains.sh`](../../tools/trains.sh). The packaging and release-notes
 scripts **source** it, so what a release publishes and what its notes describe cannot drift apart.

@@ -111,10 +111,8 @@ honest options:
   suppression that matches a rule you have, with a fix that rewrites it and adds the `using`, and
   *Fix all occurrences* applies it across a project or a solution in one step.
 
-  **That package has no version on nuget.org yet.** It is built in the repository and rides the
-  `lib` train, so the next tag there ships it; until then, bulk conversion is a search-and-replace.
-  [Project status](https://github.com/Reefact/diagnostic-catalog#-project-status) is the current
-  answer.
+  A catalogue does not bring that package along: the checking is a choice its consumer makes, so
+  reference `DiagnosticCatalog.Analyzers` yourself when you want it.
 
 Which to pick is the subject of the adoption section of
 [Writing suppressions that the compiler checks](writing-suppressions.en.md).
@@ -156,5 +154,5 @@ Worth naming, because most tooling asks for all of it:
 ---
 
 <div align="center">
-<a href="./README.en.md">↑ Table of contents</a> · <a href="./the-problem.en.md">Why magic strings fail →</a>
+<a href="./the-problem.en.md">← Why magic strings fail</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./concepts.en.md">Core concepts →</a>
 </div>

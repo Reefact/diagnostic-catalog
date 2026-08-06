@@ -27,9 +27,8 @@ flowchart TB
 **Les analyseurs sont un paquet séparé.** Référencer `DiagnosticCatalog.Sonar` vous donne des
 constantes, et une règle mal orthographiée est une erreur de compilation — c'est toute la garantie et
 elle n'a besoin d'aucun analyseur. Ce qui trouve les suppressions que vous n'avez *pas* converties,
-c'est `DiagnosticCatalog.Analyzers`, qui **n'a aujourd'hui aucune version sur nuget.org**.
-[L'état du projet](https://github.com/Reefact/diagnostic-catalog#-project-status) est la réponse à
-jour.
+c'est `DiagnosticCatalog.Analyzers`, et un catalogue ne l'amène pas avec lui. Rien n'est signalé tant
+que vous ne le référencez pas vous-même.
 
 **`DCAT0006` est muet par conception quand il ne sait rien.** Il ne signale une paire littérale que
 lorsqu'une règle visible par la compilation lui correspond. Une base de code sans catalogue reste

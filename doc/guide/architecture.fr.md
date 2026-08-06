@@ -26,6 +26,8 @@ flowchart TB
         AS["DiagnosticCatalog.AspNetCore"]
         SY["DiagnosticCatalog.Syslib"]
         RO["DiagnosticCatalog.Roslyn"]
+        PA["DiagnosticCatalog.PublicApi"]
+        BA["DiagnosticCatalog.BannedApi"]
         CLI["DiagnosticCatalog.Cli<br/><i>livré sous le nom dcat</i>"]
         A -. "embarque" .-> CF
         S --> F
@@ -39,6 +41,8 @@ flowchart TB
         AS --> F
         SY --> F
         RO --> F
+        PA --> F
+        BA --> F
         SELF --> F
     end
     subgraph ENG["eng/ — outillage de compilation"]
@@ -47,10 +51,7 @@ flowchart TB
         GEN --> W
     end
     CLI --> GEN
-    GEN -. "génère" .-> S
-    GEN -. "génère" .-> N
-    GEN -. "génère" .-> T
-    GEN -. "génère" .-> SELF
+    GEN -. "génère chaque catalogue ci-dessus" .-> SRC
     A -. "ses descripteurs sont ce que Self reflète" .-> SELF
 ```
 
@@ -180,11 +181,11 @@ eux.
 * [**Dans le générateur**](generator-internals.fr.md) — le pipeline, étape par étape.
 * [**Les trains de release**](release-trains.fr.md) — comment un projet en rejoint un, et la règle qui
   s'ensuit.
-* [**La stratégie de test**](testing-strategy.fr.md) — ce que chacun des sept projets de test asserte,
+* [**La stratégie de test**](testing-strategy.fr.md) — ce que chaque projet de test asserte,
   et lesquels tournent sur le CLR .NET Framework.
 
 ---
 
 <div align="center">
-<a href="./glossary.fr.md">← Glossaire</a> · <a href="./README.fr.md">↑ Table des matières</a> · <a href="./generator-internals.fr.md">Dans le générateur →</a>
+<a href="./README.fr.md">↑ Table des matières</a> · <a href="./generator-internals.fr.md">Dans le générateur →</a>
 </div>

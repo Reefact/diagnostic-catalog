@@ -84,13 +84,10 @@ est désormais une erreur de compilation, parce que `SonarRule.S1144.Id` est un 
 compilateur résout — aucun analyseur n'intervient là-dedans.
 
 Les diagnostics `DCAT` ci-dessous sont un paquet séparé, `DiagnosticCatalog.Analyzers`, et ce sont
-eux qui trouvent les suppressions que vous n'avez *pas* encore converties. **Il n'a aujourd'hui
-aucune version sur nuget.org**, si bien qu'un catalogue ne l'amène pas avec lui — rien ne peut
-référencer un paquet qui n'a jamais été publié
-([ADR-0007](../adr/0007-depend-across-trains-through-published-packages.fr.md)). Il roule sur le train
-`lib` : le prochain tag l'expédiera ;
-[l'état du projet](https://github.com/Reefact/diagnostic-catalog#-project-status) est la réponse à
-jour.
+eux qui trouvent les suppressions que vous n'avez *pas* encore converties. Un catalogue ne l'amène
+pas avec lui : la vérification est un choix que fait son consommateur, pas un choix que le catalogue
+fait pour lui. Référencez-le à côté du catalogue quand vous le voulez, normalement avec
+`PrivateAssets="all"` pour qu'il reste hors de ce que vous publiez.
 
 ### 2. Écrire la suppression
 
@@ -253,5 +250,5 @@ que supprimer cette règle *à cet endroit* était une bonne idée. Ce jugement 
 ---
 
 <div align="center">
-<a href="./alternatives.fr.md">← Les alternatives</a> · <a href="./README.fr.md">↑ Table des matières</a> · <a href="./adopting-a-catalogue.fr.md">Adopter un catalogue sur une base de code existante →</a>
+<a href="./concepts.fr.md">← Concepts</a> · <a href="./README.fr.md">↑ Table des matières</a> · <a href="./configuration.fr.md">Configuration →</a>
 </div>

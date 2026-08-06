@@ -26,9 +26,8 @@ flowchart TB
 
 **The analyzers are a separate package.** Referencing `DiagnosticCatalog.Sonar` gives you constants,
 and a misspelled rule is a compile error — that is the whole guarantee and it needs no analyzer. What
-finds the suppressions you have *not* converted is `DiagnosticCatalog.Analyzers`, which today **has no
-version on nuget.org**. [Project status](https://github.com/Reefact/diagnostic-catalog#-project-status)
-is the current answer.
+finds the suppressions you have *not* converted is `DiagnosticCatalog.Analyzers`, and a catalogue
+does not bring it along. Nothing is reported until you reference it yourself.
 
 **`DCAT0006` is silent by design when it knows nothing.** It reports a literal pair only when a rule
 the compilation can see matches it. A codebase with no catalogue stays completely quiet — which is
