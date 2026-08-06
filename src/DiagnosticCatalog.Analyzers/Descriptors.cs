@@ -223,4 +223,33 @@ internal static class Descriptors
             + "reference compiles, resolves and works, and misleads every reader of it. No fix is offered: "
             + "renaming the type changes a published name, and rewriting the identifier changes which "
             + "diagnostic is suppressed. Which of those is the typo is not something a tool can know.");
+
+    internal static readonly DiagnosticDescriptor MissingAnalyzerOptIn = new(
+        id: DiagnosticIds.MissingAnalyzerOptIn,
+        title: "A catalogue package must ship the analyzer opt-in",
+        messageFormat: "'{0}' packs no build/{0}.props, so referencing this catalogue checks nobody",
+        category: Category,
+        // Warning, with the other definition diagnostics: it addresses whoever AUTHORS a catalogue, and
+        // ADR-0027's error severity is for the use site. It is also the one diagnostic here that reads
+        // something OUTSIDE the compilation — see CataloguePackaging — so it can be wrong in ways the
+        // others cannot, and a wrong error stops a build that is otherwise correct C#.
+        defaultSeverity: DiagnosticSeverity.Warning,
+        isEnabledByDefault: true,
+        description:
+            "A catalogue delivers the DCAT analyzers to its consumers by packing build/<its own package "
+            + "id>.props, which sets EnableDiagnosticCatalogAnalyzers; NuGet imports a package's build/ "
+            + "folder for a direct reference and for nothing further out, and that asymmetry is what "
+            + "stops an application being analysed by a catalogue it reached through some library "
+            + "(ADR-0038). A catalogue that packs no such file still compiles, still publishes, and still "
+            + "gives its consumers the constants — it simply never reports the suppressions they have "
+            + "not converted. That silence is indistinguishable from a codebase with nothing to report, "
+            + "which is the failure this library exists to remove, so it is reported to the one person "
+            + "who can fix it. A catalogue that arranges the opt-in some other way says so by setting "
+            + "DiagnosticCatalogAnalyzerOptIn to 'packed' in its project file.",
+        // Required by RS1037 for anything reported at compilation end, and it has a visible cost worth
+        // stating: a CompilationEnd diagnostic reaches the IDE only under full-solution analysis, so a
+        // catalogue author sees this in their BUILD and in CI rather than as a squiggle while typing.
+        // Acceptable here — the defect is in a project file nobody is typing in, and it is a release
+        // blocker rather than an editing hint.
+        customTags: WellKnownDiagnosticTags.CompilationEnd);
 }

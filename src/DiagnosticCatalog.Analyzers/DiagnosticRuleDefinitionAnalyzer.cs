@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Immutable;
+using System.Runtime.CompilerServices;
+using System.Threading;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -31,7 +33,8 @@ public sealed class DiagnosticRuleDefinitionAnalyzer : DiagnosticAnalyzer
             Descriptors.UnreferencedRuleCategory,
             Descriptors.RuleTypeNameDiffersFromId,
             Descriptors.IdNotWrittenAsNameOf,
-            Descriptors.RuleTypeNameDoesNotSayId);
+            Descriptors.RuleTypeNameDoesNotSayId,
+            Descriptors.MissingAnalyzerOptIn);
 
     /// <inheritdoc />
     public override void Initialize(AnalysisContext context)
@@ -58,6 +61,62 @@ public sealed class DiagnosticRuleDefinitionAnalyzer : DiagnosticAnalyzer
         // Being syntax-bound also settles the scope for free. DCAT0011 can only ever fire on source,
         // which is what §11 requires of every definition diagnostic anyway.
         context.RegisterSyntaxNodeAction(AnalyzeCategoryInitialiser, SyntaxKind.FieldDeclaration);
+
+        context.RegisterCompilationStartAction(AnalyzePackaging);
+    }
+
+    /// <summary>
+    /// DCAT0015: this project publishes a catalogue and packs no opt-in, so referencing it will check
+    /// nobody (ADR-0038).
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The build's verdict is read FIRST, before a single symbol is looked at. It is a property lookup
+    /// against a dictionary the SDK already materialised, and it is false for every project that is not
+    /// a packable catalogue missing its opt-in — which is nearly all of them — so the symbol action
+    /// below is never even registered there.
+    /// </para>
+    /// <para>
+    /// Whether the project declares a rule cannot be read the same way: it is exactly the question the
+    /// rest of this analyzer answers, and asking MSBuild would mean trusting a second declaration of
+    /// something the source already says. So the two halves come from the two places that own them —
+    /// the packaging from the build, the catalogue-ness from the compilation.
+    /// </para>
+    /// <para>
+    /// Reported with <see cref="Location.None"/>. There is no source to point at: the defect is a
+    /// missing line in a project file, and anchoring it on some arbitrary rule type would send whoever
+    /// reads it to a declaration that is perfectly correct.
+    /// </para>
+    /// </remarks>
+    private static void AnalyzePackaging(CompilationStartAnalysisContext context)
+    {
+        if (!CataloguePackaging.OptInIsMissing(context.Options.AnalyzerConfigOptionsProvider.GlobalOptions)) { return; }
+
+        string? packageId = CataloguePackaging.PackageId(context.Options.AnalyzerConfigOptionsProvider.GlobalOptions);
+        if (packageId is null) { return; }
+
+        // Concurrent execution is enabled, so several symbol callbacks may run at once. The flag only
+        // ever goes false -> true and is read after every callback has finished, which is the one shape
+        // where a plain volatile write needs no further coordination.
+        StrongBox<bool> declaresRule = new(false);
+
+        context.RegisterSymbolAction(
+            symbol =>
+            {
+                if (symbol.Symbol is INamedTypeSymbol type && RuleMarker.IsRule(type))
+                {
+                    Volatile.Write(ref declaresRule.Value, true);
+                }
+            },
+            SymbolKind.NamedType);
+
+        context.RegisterCompilationEndAction(end =>
+        {
+            if (!Volatile.Read(ref declaresRule.Value)) { return; }
+
+            end.ReportDiagnostic(
+                Diagnostic.Create(Descriptors.MissingAnalyzerOptIn, Location.None, packageId));
+        });
     }
 
     private static void Analyze(SymbolAnalysisContext context)

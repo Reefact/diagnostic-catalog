@@ -31,6 +31,7 @@ d'utilisation** regardent une suppression que vous avez écrite, ce qui concerne
 | [`DCAT0012`](#dcat0012) | déclaration | Un identifiant de règle devrait s'écrire `nameof` | Avertissement | oui, sous condition |
 | [`DCAT0013`](#dcat0013) | déclaration | Le nom du type de règle ne dit pas son `Id` | Avertissement | — |
 | [`DCAT0014`](#dcat0014) | site d'utilisation | Une suppression doit porter une justification | Avertissement | — |
+| [`DCAT0015`](#dcat0015) | empaquetage | Un paquet de catalogue doit embarquer l'opt-in des analyseurs | Avertissement | — |
 
 `DCAT0008` et `DCAT0010` sont spécifiés mais délibérément hors de la 1.0.
 
@@ -432,6 +433,54 @@ supprimé. Un outil qui en choisirait une déciderait laquelle des deux était l
 
 ---
 
+### `DCAT0015`
+
+**Votre catalogue publie des règles et n'active aucun analyseur pour qui le référence.**
+
+```
+warning DCAT0015: 'Contoso.Rules' packs no build/Contoso.Rules.props,
+                  so referencing this catalogue checks nobody
+```
+
+Un catalogue livre les analyseurs `DCAT` en embarquant `build/<son propre identifiant de
+paquet>.props`, qui pose `EnableDiagnosticCatalogAnalyzers`. NuGet importe le dossier `build/` d'un
+paquet pour une référence **directe** et pour rien au-delà, et cette asymétrie est ce qui empêche une
+application d'être analysée par un catalogue qu'elle a atteint via une bibliothèque quelconque
+([ADR-0038](../adr/0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.fr.md)). Le
+fichier fait trois lignes, et
+[Empaqueter un catalogue](packaging-a-catalogue.fr.md#embarquez-lopt-in-qui-fait-vérifier-vos-consommateurs)
+les donne.
+
+Sans lui, votre paquet compile toujours, se publie toujours, et donne toujours les constantes à vos
+consommateurs. Ce qu'il ne fait jamais, c'est signaler les suppressions qu'ils n'ont pas converties —
+et une base de code que rien ne vérifie ressemble en tout point à une base de code sans rien à
+signaler. C'est le silence que toute cette bibliothèque existe pour supprimer, il est donc signalé à
+la seule personne qui peut y mettre fin.
+
+**Deux choses le distinguent de tous les autres `DCAT`.**
+
+Il lit un fait **extérieur à la compilation**. Qu'un `.csproj` embarque un fichier ne figure dans
+aucun arbre syntaxique : le build classe donc l'empaquetage et publie son verdict à l'analyseur.
+Reconnaître comment le fichier a été déclaré revient à apparier la façon dont il a été *écrit*, et il
+y a plus d'une orthographe — si le vôtre est arrangé d'une manière que l'appariement ne voit pas,
+dites-le et vous serez cru :
+
+```xml
+<PropertyGroup>
+  <DiagnosticCatalogAnalyzerOptIn>packed</DiagnosticCatalogAnalyzerOptIn>
+</PropertyGroup>
+```
+
+Et il est signalé en **fin de compilation**, ce qui le place dans votre build et dans la CI plutôt que
+sous votre curseur : l'IDE ne fait remonter les diagnostics de fin de compilation qu'en analyse de
+solution complète. Le défaut est une ligne manquante dans un fichier projet, c'est donc le bon
+endroit.
+
+**Aucun correctif.** La réparation est dans un fichier projet, qui n'est pas un document que la
+couche de correctifs édite.
+
+---
+
 ## Les configurer
 
 Mécanismes Roslyn standards, aucun format propriétaire :
@@ -456,6 +505,7 @@ dotnet_diagnostic.DCAT0004.severity = error
 dotnet_diagnostic.DCAT0011.severity = error
 dotnet_diagnostic.DCAT0012.severity = error
 dotnet_diagnostic.DCAT0013.severity = error
+dotnet_diagnostic.DCAT0015.severity = error
 
 # Un nom qui n'aurait pas pu dire son id. Haussez-le si vous préférez revoir
 # chacune de ces déclarations plutôt que de la laisser passer.
