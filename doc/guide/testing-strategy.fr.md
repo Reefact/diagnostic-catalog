@@ -12,7 +12,7 @@ compilation ([ADR-0030](../adr/0030-keep-the-usage-suite-out-of-the-sonar-analys
 `CatalogGen.AbsentContract` et `CatalogGen.PartialLoadFixture` sont des assemblages d'analyseurs
 compilés pour que les tests du générateur échouent dessus.
 
-## Les sept projets
+## Les huit projets
 
 | Projet | Asserte | Tourne sur |
 | --- | --- | --- |
@@ -23,9 +23,16 @@ compilés pour que les tests du générateur échouent dessus.
 | `CatalogGen.UnitTests` | Acquisition, lecture de descripteurs, nommage, émission | net10.0 |
 | `DiagnosticCatalog.Cli.UnitTests` | L'arbre des commandes, les codes de sortie, ce que chaque verbe refuse | net10.0 |
 | `DiagnosticCatalog.Documentation.UnitTests` | La documentation, contre elle-même et contre le code | net10.0 |
+| `DiagnosticCatalog.Packaging.IntegrationTests` | Ce qu'une vraie restauration remet à un consommateur, et que le correctif restauré fonctionne | net10.0 |
 
 Plus une suite que `dotnet test` ne peut pas atteindre — voir
 [la suite shell](#la-suite-que-dotnet-test-ne-peut-pas-atteindre).
+
+`DiagnosticCatalog.Packaging.IntegrationTests` est le seul à ne référencer aucun projet de ce dépôt.
+Il empaquette lui-même la fondation, écrit des consommateurs hors de l'arbre, les restaure depuis un
+flux qui ne contient rien d'autre, et pilote le correctif depuis l'assemblage produit par cette
+restauration. Tous les autres tests d'ici compilent contre la sortie de build : aucun ne peut donc
+distinguer un paquet qui livre le correctif d'un paquet qui se contente de le contenir.
 
 ## Le plancher .NET Framework
 

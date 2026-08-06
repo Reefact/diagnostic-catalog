@@ -31,6 +31,7 @@
     <Project Path="tests/DiagnosticCatalog.Catalogs.UnitTests/DiagnosticCatalog.Catalogs.UnitTests.csproj" />
     <Project Path="tests/DiagnosticCatalog.Cli.UnitTests/DiagnosticCatalog.Cli.UnitTests.csproj" />
     <Project Path="tests/DiagnosticCatalog.Documentation.UnitTests/DiagnosticCatalog.Documentation.UnitTests.csproj" />
+    <Project Path="tests/DiagnosticCatalog.Packaging.IntegrationTests/DiagnosticCatalog.Packaging.IntegrationTests.csproj" />
     <Project Path="tests/DiagnosticCatalog.Usage/DiagnosticCatalog.Usage.csproj" />
     <Project Path="tests/DiagnosticCatalog.UnitTests/DiagnosticCatalog.UnitTests.csproj" />
     <Project Path="tests/DiagnosticCatalog.ZeroFootprint.UnitTests/DiagnosticCatalog.ZeroFootprint.UnitTests.csproj" />

@@ -12,7 +12,7 @@ Three more projects sit under [`tests/`](../../tests) and assert nothing themsel
 `CatalogGen.AbsentContract` and `CatalogGen.PartialLoadFixture` are analyzer assemblies compiled
 for the generator's tests to fail on.
 
-## The seven projects
+## The eight projects
 
 | Project | Asserts | Runs on |
 | --- | --- | --- |
@@ -23,8 +23,15 @@ for the generator's tests to fail on.
 | `CatalogGen.UnitTests` | Acquisition, descriptor reading, naming, emission | net10.0 |
 | `DiagnosticCatalog.Cli.UnitTests` | The command tree, the exit codes, what each verb refuses | net10.0 |
 | `DiagnosticCatalog.Documentation.UnitTests` | The documentation, against itself and against the code | net10.0 |
+| `DiagnosticCatalog.Packaging.IntegrationTests` | What a real restore hands a consumer, and that the restored code fix works | net10.0 |
 
 Plus a suite `dotnet test` cannot reach at all — see [the shell suite](#the-suite-dotnet-test-cannot-reach).
+
+`DiagnosticCatalog.Packaging.IntegrationTests` is the only one that references no project in this
+repository. It packs the foundation itself, writes consumers outside the tree, restores them from a
+feed holding nothing else, and drives the code fix out of the assembly that restore produced. Every
+other test here compiles against the build output, so none of them can tell a package that delivers
+the fix from one that merely contains it.
 
 ## The .NET Framework floor
 

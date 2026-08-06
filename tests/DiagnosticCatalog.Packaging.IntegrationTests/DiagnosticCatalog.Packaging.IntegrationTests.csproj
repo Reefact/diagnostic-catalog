@@ -1,0 +1,62 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    The only test project in this repository that reads NOTHING from the working tree's build output.
+    Everything it exercises is restored from a .nupkg this project packs itself, into projects written
+    OUTSIDE the repository, with no ProjectReference anywhere in the chain.
+
+    That is the whole point. tools/packaging/verify-consumption.sh already asks whether a restore hands
+    the compiler the analyzer, by counting @(Analyzer) items — but an item list says only that a file
+    was passed to a compiler. It cannot say that the CODE FIX inside that file loads, offers an action,
+    produces source that compiles, or survives Fix All at the three scopes it announces. Every test that
+    could say those things ran against a ProjectReference, so what was proven was that the source
+    compiles here, never that the package delivers it.
+
+    Deliberately does NOT import build/Net472TestFloor.props. It drives `dotnet pack`, `dotnet build`
+    and `dotnet msbuild`, and loads a netstandard2.0 analyzer into a Roslyn host exactly as a compiler
+    does; running that twice on another CLR would cost minutes and prove nothing about the package.
+    See CONTRIBUTING.md, "The .NET Framework floor".
+  -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <RootNamespace>DiagnosticCatalog.Packaging.IntegrationTests</RootNamespace>
+  </PropertyGroup>
+
+  <!--
+    The repository root travels as assembly metadata, the way DiagnosticCatalog.Documentation.UnitTests
+    carries its own: this project has to find src/DiagnosticCatalog/DiagnosticCatalog.csproj to pack it,
+    and walking up from the output directory is a guess about the build layout.
+  -->
+  <PropertyGroup>
+    <PackagingRepositoryRoot>$([MSBuild]::NormalizeDirectory('$(MSBuildThisFileDirectory)..\..'))</PackagingRepositoryRoot>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AssemblyMetadata Include="PackagingRepositoryRoot" Value="$(PackagingRepositoryRoot)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="coverlet.collector" />
+    <!--
+      The host side of the code-fix drive: a CodeFixProvider acts on a Document, so a workspace is
+      needed to hand it one. These are the TEST's Roslyn, at the newest central pin, and the analyzer
+      being driven is the netstandard2.0 one restored from the package — compiled against
+      $(RoslynFloorVersion), loaded into a newer host. That asymmetry is not incidental; it is what a
+      real consumer's compiler does, and running it any other way would measure something nobody has.
+    -->
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
+  </ItemGroup>
+
+  <!--
+    NO ProjectReference. Not to src/DiagnosticCatalog, not to the analyzers, not to a catalogue. A
+    reference to any of them would put the working tree's assemblies in this process, and every
+    assertion below would then be true of the build rather than of the package.
+  -->
+
+</Project>

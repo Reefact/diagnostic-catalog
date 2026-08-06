@@ -123,7 +123,7 @@ dcat generate --solution MySolution.slnx \
 
 **Nothing is inferred, and that is the point.** Which of a solution's projects
 produce analyzers cannot be told from the outside. Measured on this tool's own
-repository, *references `Microsoft.CodeAnalysis`* matches eight projects of which one
+repository, *references `Microsoft.CodeAnalysis`* matches nine projects of which one
 is an analyzer; *declares a `DiagnosticAnalyzer`* matches three, and two of those are
 fixtures — one written to fail construction, one in an assembly written not to load
 whole. Reading the wrong set is not a nuisance here:
