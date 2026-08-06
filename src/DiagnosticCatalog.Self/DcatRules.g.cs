@@ -177,4 +177,15 @@ public static class DcatRule
         /// <summary>The category declared by the analyzer's DiagnosticDescriptor.</summary>
         public const string Category = DcatCategory.DiagnosticCatalog;
     }
+
+    /// <summary>A catalogue package must ship the analyzer opt-in.</summary>
+    [DiagnosticRule]
+    public static class DCAT0015
+    {
+        /// <summary>The canonical identifier of this diagnostic.</summary>
+        public const string Id = nameof(DCAT0015);
+
+        /// <summary>The category declared by the analyzer's DiagnosticDescriptor.</summary>
+        public const string Category = DcatCategory.DiagnosticCatalog;
+    }
 }
