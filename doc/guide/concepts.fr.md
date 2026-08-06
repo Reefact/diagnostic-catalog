@@ -78,7 +78,7 @@ initialisée depuis une autre `const` reste une constante de compilation, et se 
 
 ```mermaid
 flowchart TB
-    subgraph PUB["Publiés sur nuget.org"]
+    subgraph PUB["Les catalogues d'éditeurs"]
         F["DiagnosticCatalog<br/><i>les marqueurs</i>"]
         S["DiagnosticCatalog.Sonar"]
         N["DiagnosticCatalog.NetAnalyzers"]
@@ -91,6 +91,8 @@ flowchart TB
         AS["DiagnosticCatalog.AspNetCore"]
         SY["DiagnosticCatalog.Syslib"]
         RO["DiagnosticCatalog.Roslyn"]
+        PA["DiagnosticCatalog.PublicApi"]
+        BA["DiagnosticCatalog.BannedApi"]
         S --> F
         N --> F
         T --> F
@@ -102,8 +104,10 @@ flowchart TB
         AS --> F
         SY --> F
         RO --> F
+        PA --> F
+        BA --> F
     end
-    subgraph SOON["Construits ici, pas encore publiés"]
+    subgraph TOOLS["La boîte à outils, référencée quand vous la voulez"]
         A["DiagnosticCatalog.Analyzers<br/><i>les diagnostics DCAT + correctifs</i>"]
         SELF["DiagnosticCatalog.Self<br/><i>les règles DCAT, cataloguées</i>"]
         CLI["dcat<br/><i>le générateur, en outil</i>"]
@@ -119,7 +123,7 @@ flowchart TB
 `[DiagnosticCategory]`, `[assembly: CatalogSource]`. Vous le référencez pour déclarer un catalogue à
 vous. Un catalogue que vous consommez le référence pour vous.
 
-**Les treize catalogues d'éditeurs** sont des constantes. En référencer un vous donne des références
+**Les catalogues d'éditeurs** sont des constantes. En référencer un vous donne des références
 vérifiées à la compilation vers les règles de cet analyseur — ce qui est toute la garantie, et elle
 vient du compilateur C# plutôt que de quoi que ce soit que cette bibliothèque exécute.
 
@@ -142,16 +146,16 @@ indépendants et ne sont pas tous sortis.
 | Référence | Ce que vous obtenez |
 | --- | --- |
 | un catalogue d'éditeur | Des constantes vérifiées à la compilation. Une règle mal orthographiée donne `CS0117`. Une règle retirée donne `CS0618`. Le renommage et *Rechercher toutes les références* fonctionnent. |
-| un catalogue d'éditeur **aujourd'hui** | Cela, et rien d'autre. Le catalogue n'apporte pas `DiagnosticCatalog.Analyzers`, parce que ce paquet n'a aucune version sur nuget.org vers laquelle pointer ([ADR-0007](../adr/0007-depend-across-trains-through-published-packages.fr.md)). |
-| `DiagnosticCatalog.Analyzers`, une fois publié | `DCAT0006` sur chaque suppression littérale qu'il peut remplacer, avec correctif ; `DCAT0001` sur une paire incohérente ; `DCAT0007` sur une paire à moitié migrée ; `DCAT0009` sur une suppression que le *trimmer* jettera. |
+| un catalogue d'éditeur **seul** | Cela, et rien d'autre. Un catalogue dépend de la fondation et jamais de `DiagnosticCatalog.Analyzers` : la vérification est un choix que fait son consommateur, pas un choix que le catalogue fait pour lui. |
+| `DiagnosticCatalog.Analyzers`, référencé à côté | `DCAT0006` sur chaque suppression littérale qu'il peut remplacer, avec correctif ; `DCAT0001` sur une paire incohérente ; `DCAT0007` sur une paire à moitié migrée ; `DCAT0009` sur une suppression que le *trimmer* jettera. |
 
 La distinction compte plus qu'une note de bas de page. **La garantie de fond n'a besoin d'aucun
 analyseur** : c'est le compilateur qui résout un membre. Ce que le paquet d'analyseurs ajoute, c'est
 *trouver le code qui n'a pas encore été converti*, ce qui est une aide à la migration plutôt que le
 mécanisme.
 
-[L'état du projet](https://github.com/Reefact/diagnostic-catalog#-project-status) dans le README du
-dépôt est la réponse à jour, et il bouge quand un train est taggé.
+[Les paquets](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/README.fr.md#-les-paquets) dans le README du dépôt
+disent à quoi sert chacun, et quel train le porte.
 
 ## Provenance : un catalogue est un instantané
 

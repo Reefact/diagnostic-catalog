@@ -134,7 +134,8 @@ Pas pour la garantie. Une règle mal orthographiée est une erreur de compilatio
 
 `DiagnosticCatalog.Analyzers` trouve les suppressions que vous n'avez **pas** encore converties,
 attrape une paire nommant deux règles différentes, et propose les correctifs. C'est une aide à la
-migration plutôt que le mécanisme — et il n'a aujourd'hui aucune version sur nuget.org.
+migration plutôt que le mécanisme, et un catalogue ne l'amène jamais avec lui : le référencer est un
+choix que vous faites.
 
 ## Pourquoi `dcat` est-il un outil séparé plutôt qu'un générateur de source ?
 

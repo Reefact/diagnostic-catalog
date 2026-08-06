@@ -26,6 +26,8 @@ flowchart TB
         AS["DiagnosticCatalog.AspNetCore"]
         SY["DiagnosticCatalog.Syslib"]
         RO["DiagnosticCatalog.Roslyn"]
+        PA["DiagnosticCatalog.PublicApi"]
+        BA["DiagnosticCatalog.BannedApi"]
         CLI["DiagnosticCatalog.Cli<br/><i>ships as dcat</i>"]
         A -. "bundles" .-> CF
         S --> F
@@ -39,6 +41,8 @@ flowchart TB
         AS --> F
         SY --> F
         RO --> F
+        PA --> F
+        BA --> F
         SELF --> F
     end
     subgraph ENG["eng/ — build-time only"]
@@ -47,10 +51,7 @@ flowchart TB
         GEN --> W
     end
     CLI --> GEN
-    GEN -. "generates" .-> S
-    GEN -. "generates" .-> N
-    GEN -. "generates" .-> T
-    GEN -. "generates" .-> SELF
+    GEN -. "generates every catalogue above" .-> SRC
     A -. "its descriptors are what Self mirrors" .-> SELF
 ```
 

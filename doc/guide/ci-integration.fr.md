@@ -36,7 +36,7 @@ sequenceDiagram
     J->>J: calculer le catalogue, comparer au fichier
     alt rien n'a bougé
         J-->>R: aucun changement — le fichier est laissé intact
-    else une règle ajoutée, recatégorisée ou retirée
+    else quoi que ce soit que le catalogue publie a bougé
         J->>R: ouvrir une pull request portant le diff des règles
         R->>M: un contrat publié a changé — lisez le diff
         M->>R: fusionner, ou refuser

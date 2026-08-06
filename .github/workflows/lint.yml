@@ -119,7 +119,8 @@ jobs:
   # assets/icon-template.svg claims to draw the mark all of them wear, and two edits break that
   # claim silently: changing the template, or drawing a new catalogue's icon by hand instead of
   # exporting it. PackageIconTests cannot see either — it asserts that no two catalogues ship the
-  # SAME icon and never asks what any of them looks like (ADR-0032).
+  # SAME icon and never asks what any of them looks like (ADR-0035, which carries that trade
+  # forward from ADR-0032).
   #
   # Its own job rather than a step in the suite above, so that a drifting icon reports as a
   # drifting icon. The shell suite exercises the same script over its negative cases, which is a

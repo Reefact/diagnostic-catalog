@@ -83,7 +83,7 @@ une source immobile pendant que ses règles bougent dessous.
 
 | Option | Ce qu'elle fait |
 | --- | --- |
-| `--summary <PATH>` | Écrire un rapport Markdown de ce qui a changé — règles ajoutées, recatégorisées, retitrées, retirées. |
+| `--summary <PATH>` | Écrire un rapport Markdown de chaque changement de ce que le catalogue publie, en nommant une par une celles qui portent sur les règles. |
 
 `--summary` est ce qui fait qu'une régénération planifiée ouvre une pull request qu'un humain peut
 relire plutôt que fusionner à l'aveugle. [Tenir un catalogue à jour](ci-integration.fr.md) est le

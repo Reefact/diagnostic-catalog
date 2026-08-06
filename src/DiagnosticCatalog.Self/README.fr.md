@@ -64,40 +64,16 @@ build avec un message qui ne nomme rien d'utile.
 
 ## Voir aussi
 
-Treize catalogues frères sont générés depuis ce dépôt de la même façon, chacun lu depuis les descripteurs d'un
-seul analyseur — à ceci près que les leurs appartiennent à quelqu'un d'autre :
+Chaque catalogue publié par ce dépôt est listé au même endroit — choisissez celui qui correspond à
+un analyseur que vous exécutez :
 
-- [`DiagnosticCatalog.Sonar`](https://www.nuget.org/packages/DiagnosticCatalog.Sonar)
-  — les règles SonarAnalyzer.CSharp (`Sxxxx`).
-- [`DiagnosticCatalog.NetAnalyzers`](https://www.nuget.org/packages/DiagnosticCatalog.NetAnalyzers)
-  — les règles d'analyse de code .NET (`CAxxxx`).
-- [`DiagnosticCatalog.StyleCop`](https://www.nuget.org/packages/DiagnosticCatalog.StyleCop)
-  — les règles StyleCop.Analyzers (`SAxxxx`).
-- [`DiagnosticCatalog.CodeStyle`](https://www.nuget.org/packages/DiagnosticCatalog.CodeStyle)
-  — les règles de style de code IDE de Roslyn (`IDExxxx`).
-- [`DiagnosticCatalog.Xunit`](https://www.nuget.org/packages/DiagnosticCatalog.Xunit)
-  — les règles xunit.analyzers (`xUnitxxxx`).
-- [`DiagnosticCatalog.NUnit`](https://www.nuget.org/packages/DiagnosticCatalog.NUnit)
-  — les règles NUnit.Analyzers (`NUnitxxxx`).
-- [`DiagnosticCatalog.MSTest`](https://www.nuget.org/packages/DiagnosticCatalog.MSTest)
-  — les règles MSTest.Analyzers (`MSTESTxxxx`).
-- [`DiagnosticCatalog.Trimming`](https://www.nuget.org/packages/DiagnosticCatalog.Trimming)
-  — les avertissements de trimming, Native AOT et fichier unique (`ILxxxx`).
-- [`DiagnosticCatalog.AspNetCore`](https://www.nuget.org/packages/DiagnosticCatalog.AspNetCore)
-  — les règles ASP.NET Core et Blazor (`ASPxxxx`, `BLxxxx`).
-- [`DiagnosticCatalog.Syslib`](https://www.nuget.org/packages/DiagnosticCatalog.Syslib)
-  — les diagnostics des générateurs de source du runtime .NET (`SYSLIB1xxx`).
-- [`DiagnosticCatalog.Roslyn`](https://www.nuget.org/packages/DiagnosticCatalog.Roslyn)
-  — les règles d'écriture d'analyseurs Roslyn (`RS1xxx`, `RS2xxx`).
-- [`DiagnosticCatalog.PublicApi`](https://www.nuget.org/packages/DiagnosticCatalog.PublicApi)
-  — les règles de suivi d'API publique (`RS00xx`).
-- [`DiagnosticCatalog.BannedApi`](https://www.nuget.org/packages/DiagnosticCatalog.BannedApi)
-  — les règles d'API bannies (`RS0030`, `RS0031`, `RS0035`).
+**[Les catalogues disponibles](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/README.fr.md#-les-catalogues-disponibles)**
 
-**Vous voulez un catalogue à vous ?** C'est à cela que sert
-[le guide de l'auteur de catalogue](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/authoring-a-catalogue.fr.md), et ce paquet en est
-l'exemple travaillé : une classe statique de constantes marquée `[DiagnosticRule]`, générée depuis
-l'analyseur qui les signale. Le marqueur est livré dans [`DiagnosticCatalog`](https://github.com/Reefact/diagnostic-catalog/blob/main/src/DiagnosticCatalog/README.fr.md).
+**Vous voulez un catalogue à vous ?** Les règles de votre analyseur, ou un jeu de règles interne, se
+déclarent exactement comme celles-ci : une classe statique de constantes marquée `[DiagnosticRule]`,
+référencée par les consommateurs au lieu d'être retapée. Ce marqueur est livré par
+[`DiagnosticCatalog`](https://www.nuget.org/packages/DiagnosticCatalog), la fondation sur laquelle ce catalogue est
+bâti, et son README est le guide.
 
 ## Documentation
 

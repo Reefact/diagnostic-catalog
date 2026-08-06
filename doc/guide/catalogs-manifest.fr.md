@@ -144,7 +144,7 @@ langage, et une sélection qui n'aurait gardé que `cs/` les aurait silencieusem
 dcat generate --manifest eng/catalogs.json --summary "$RUNNER_TEMP/summary.md"
 ```
 
-Un rapport Markdown de ce qui a changé — règles ajoutées, recatégorisées, retitrées, retirées — sur
+Un rapport Markdown de chaque changement de ce qu'un catalogue publie, celles qui portent sur les règles nommées une par une, sur
 toutes les entrées. C'est ce qui transforme une régénération planifiée en une pull request qu'un
 humain peut relire plutôt que fusionner à l'aveugle.
 [Tenir un catalogue à jour](ci-integration.fr.md) est le motif.

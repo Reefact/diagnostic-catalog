@@ -7,6 +7,8 @@
 🌍 **Langues :**  
 🇬🇧 [English](../README.md) | 🇫🇷 Français (ce fichier)
 
+<!-- dcat-doc:missing SonarRule.S1145 la référence que le lecteur est invité à casser exprès ; l'erreur de compilation est le propos -->
+
 |  |  |
 | :-- | :-- |
 | **Build** | [![ci](https://github.com/Reefact/diagnostic-catalog/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Reefact/diagnostic-catalog/actions/workflows/ci.yml) |
@@ -58,11 +60,12 @@ suppression au lieu de casser la recompilation
 exactement une source de vérité publiée, lue depuis le `DiagnosticDescriptor` de l'analyseur
 lui-même plutôt que retapée de mémoire.
 
-## 📦 Ce qu'il y a dans la boîte
+## 📦 Les catalogues disponibles
 
-### Les catalogues prêts à l'emploi
+Vous n'avez presque certainement pas besoin d'en écrire un. Référencez le catalogue qui
+correspond à un analyseur que vous exécutez déjà :
 
-Référencez celui qui correspond à un analyseur que vous exécutez déjà :
+<!-- catalogue-index:begin -->
 
 | Paquet | Catalogue les règles de | Identifiants |
 | --- | --- | --- |
@@ -80,146 +83,29 @@ Référencez celui qui correspond à un analyseur que vous exécutez déjà :
 | **`DiagnosticCatalog.PublicApi`** | [PublicApiAnalyzers](https://github.com/dotnet/roslyn-analyzers), pour une bibliothèque qui suit sa surface dans `PublicAPI.Shipped.txt` | `RS00xx` |
 | **`DiagnosticCatalog.BannedApi`** | [BannedApiAnalyzers](https://github.com/dotnet/roslyn-analyzers), pour une base de code qui bannit une API dans `BannedSymbols.txt` | `RS0030`, `RS0031`, `RS0035` |
 
-Ces treize-là sont **générés**, jamais écrits à la main, et portent les identifiants, les
-catégories, les liens d'aide et le titre de la règle — ce dernier en commentaire de
-documentation, pour que survoler une constante dise de quoi la règle parle. Les descriptions
-de règles et les formats de message sont la documentation des éditeurs et sont délibérément
-laissés de côté
+<!-- catalogue-index:end -->
+
+Chacun d'eux est **généré**, jamais écrit à la main, et porte les identifiants, les catégories,
+les liens d'aide et le titre de la règle — ce dernier en commentaire de documentation, pour que
+survoler une constante dise de quoi la règle parle. Les descriptions de règles et les formats de
+message sont la documentation des éditeurs et sont délibérément laissés de côté
 ([ADR-0014](adr/0014-ship-the-vendors-rule-title-as-a-catalogues-documentation.fr.md)).
-Comment cette génération fonctionne, et ce qui la garde honnête, est la section suivante.
+La page de chaque paquet indique quelle version amont il reflète actuellement, combien de règles
+il porte, et ce que cet éditeur fait que personne d'autre ne fait.
 
 Ces catalogues sont non officiels. Ils ne sont ni affiliés à, ni approuvés par, ni supportés
 par SonarSource, Microsoft, le projet StyleCop.Analyzers, xUnit.net ou le projet NUnit.
 « Sonar » et « SonarQube » sont des marques de SonarSource S.A.
 
-### La boîte à outils
+## 🏁 En référencer un et réécrire une suppression
 
-Pour déclarer un catalogue à vous, et pour vérifier les références à un catalogue :
-
-| Paquet | Ce qu'il vous donne |
-| --- | --- |
-| **`DiagnosticCatalog`** | Les marqueurs `[DiagnosticRule]`, `[DiagnosticCategory]` et `[assembly: CatalogSource]`. C'est ce que vous référencez pour déclarer un catalogue **à vous** — pour vos analyseurs, ou pour un jeu de règles interne. |
-| **`DiagnosticCatalog.Analyzers`** | La vérification : des diagnostics qui confrontent une déclaration de règle au contrat structurel, et une suppression à la règle qu'elle nomme, avec les correctifs qui transforment un littéral en référence de catalogue. Une dépendance de compilation — ces assemblages n'atteignent jamais votre exécution. |
-| **`DiagnosticCatalog.Self`** | Les règles `DCATxxxx` que ces analyseurs signalent, cataloguées de la même façon — de sorte que supprimer un diagnostic de *cette* bibliothèque soit une référence vérifiée plutôt que la chaîne magique que tout ceci existe pour supprimer. |
-| **`DiagnosticCatalog.Cli`**, l'outil `dcat` | Le générateur, en outil .NET. Pointez-le vers un paquet d'analyseurs ou vers des assemblages sur disque et il écrit un catalogue comme ce dépôt écrit les quatorze ci-dessus. |
-
-`DiagnosticCatalog.Self` sort du même générateur, pointé vers les analyseurs de ce dépôt. C'est
-la réponse la plus courte à « est-ce que ça marche vraiment » : les règles que la bibliothèque
-signale sont cataloguées par la bibliothèque, à travers le pipeline qu'elle demande à tout le
-monde d'utiliser.
-
-Tout n'est pas encore sur nuget.org : `.CodeStyle`, `.Xunit`, `.NUnit`, `.MSTest`,
-`.Trimming`, `.AspNetCore`, `.Syslib`, `.Roslyn`, `.PublicApi` et `.BannedApi` côté catalogues, `.Analyzers`, `.Self` et `.Cli` côté outils.
-Voir **État du projet** plus bas.
-
-## ⚙️ Comment un catalogue est construit et tenu à jour
-
-Aucune règle de ce dépôt n'a été tapée à la main. Chaque étape, de la source de vérité de
-l'analyseur jusqu'à un paquet signé, est un script ou un workflow que vous pouvez lire.
-
-```mermaid
-sequenceDiagram
-    participant U as Paquet d'analyseurs amont
-    participant G as CatalogGen
-    participant R as Ce dépôt
-    participant M as Mainteneur
-    participant N as nuget.org
-
-    Note over U,R: Chaque nuit à 03:17 UTC — automatisé
-    G->>U: charger le paquet, construire chaque DiagnosticAnalyzer
-    U-->>G: les instances de DiagnosticDescriptor qu'ils déclarent
-    G->>G: comparer au fichier généré précédemment
-    alt rien n'a bougé en amont
-        G-->>R: aucun changement — le fichier est laissé intact
-    else une règle ajoutée, recatégorisée ou retirée
-        G->>R: ouvrir une pull request portant le diff des règles
-    end
-
-    Note over R,M: Revue — humaine, délibérément
-    R->>M: un contrat publié a changé — lire le diff
-    M->>R: fusionner, ou refuser
-
-    Note over M,N: Release — sur un tag
-    M->>R: pousser un tag de train, tel que sonar-v1.2.3
-    R->>R: packager, embarquer le SBOM SPDX, attester la provenance
-    R->>N: publier via Trusted Publishing, sans clé d'API
-```
-
-**Lire les descripteurs, pas la documentation.** `eng/CatalogGen` charge le paquet d'analyseurs
-amont, construit les analyseurs qu'il marque `[DiagnosticAnalyzer]`, et lit les instances de
-`DiagnosticDescriptor` qu'ils déclarent réellement. Les métadonnées de règles publiées en JSON
-ou en prose s'écartent de ce que l'analyseur fait vraiment, et puisque rien dans la plateforme
-ne valide une catégorie, une valeur copiée depuis une documentation périmée ne produirait aucun
-symptôme nulle part
-([ADR-0009](adr/0009-generate-catalog-content-from-analyzer-descriptors.fr.md)).
-
-**Détecter la dérive chaque nuit.** Un [workflow planifié](../.github/workflows/nightly-catalogs.yml)
-régénère chaque catalogue à 03:17 UTC et ouvre une pull request quand quelque chose a
-réellement bougé — une règle ajoutée, recatégorisée ou retirée en amont. Les nuits où l'amont
-n'a pas bougé ne produisent rien du tout : le générateur compare sa propre sortie précédente et
-laisse le fichier intact, son horodatage `generatedOn` compris.
-
-**Laisser une personne lire le diff.** Ce workflow ne publie rien, et c'est une décision plutôt
-qu'un oubli. Un identifiant ou une catégorie qui a bougé en amont est un changement de *contrat
-publié*, et parce que rien ne valide la catégorie d'une suppression, une valeur fausse fusionnée
-sans revue resterait invisible aussi longtemps qu'elle existerait. L'automatisation trouve le
-changement ; un humain l'accepte.
-
-**Ne jamais supprimer une constante.** Une règle que l'éditeur retire est conservée et marquée
-`[Obsolete]`, en nommant la version qui l'a abandonnée. Un consommateur reçoit un avertissement
-lui disant de retirer la suppression, au lieu d'une compilation cassée par un membre disparu —
-les consommateurs inlinent les valeurs de constantes à leur propre compilation
-([ADR-0010](adr/0010-carry-a-retired-rule-forward-as-obsolete.fr.md)).
-
-**Publier sur un tag, avec les reçus.** Chaque catalogue roule sur son propre
-[train de release](../CONTRIBUTING.md) et se versionne indépendamment, si bien que suivre le
-rythme de SonarSource ne tire jamais la version de la fondation avec lui. Pousser un tag de
-train déclenche le workflow de release, qui package, embarque un SBOM SPDX et publie via
-[Trusted Publishing](https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing)
-avec une provenance de build signée
-([ADR-0006](adr/0006-publish-through-trusted-publishing-with-provenance-and-an-sbom.fr.md)) —
-il n'y a nulle part de clé d'API à longue durée de vie susceptible de fuiter.
-
-La moitié « packaging » de ce pipeline — build, pack, SBOM et les garde-fous d'empaquetage — est
-[répétée sur chaque pull request](../.github/workflows/release-dryrun.yml), pour chaque train,
-afin qu'une release ne l'exerce jamais pour la première fois sur un tag. Ce que la répétition
-saute délibérément, c'est tout ce qui a un effet de bord : aucune provenance n'est attestée,
-rien n'est poussé vers nuget.org, aucune release n'est créée. Un essai à blanc qui simulerait
-tout cela ne prouverait rien.
-
-## 🚧 État du projet
-
-La fondation a été livrée en premier, seule, parce qu'il le fallait : un catalogue ne peut en
-dépendre par référence de paquet tant qu'une version n'en existe pas
-([ADR-0007](adr/0007-depend-across-trains-through-published-packages.fr.md)). C'est cette
-release qui a débloqué les treize catalogues d'éditeurs, qui roulent désormais sur leurs propres
-trains.
-
-| | État |
-| --- | --- |
-| `DiagnosticCatalog` | **Publié**, sur le train `lib`. |
-| `DiagnosticCatalog.Sonar` / `.NetAnalyzers` / `.StyleCop` | **Publiés**, sur leurs propres trains, chacun se versionnant au rythme de son éditeur. |
-| `DiagnosticCatalog.CodeStyle` / `.Xunit` / `.NUnit` / `.MSTest` / `.Trimming` / `.AspNetCore` | **Construits, pas encore publiés** — les six catalogues d'éditeurs les plus récents. Chacun roule déjà sur un train à lui (`codestyle`, `xunit`, `nunit`, `mstest`, `trimming`, `aspnetcore`), donc chacun sera livré à son premier tag. |
-| `DiagnosticCatalog.Analyzers` | **Construit, pas encore publié** — les diagnostics qui valident les déclarations et les sites d'usage. Il roule sur le train `lib`, donc le prochain tag l'y embarque. |
-| `DiagnosticCatalog.Self` | **Construit, pas encore publié** — les règles `DCAT` en catalogue, générées depuis les analyseurs ci-dessus. Il roule sur le train `lib` avec eux, à dessein : les deux ne doivent jamais décrire des jeux de règles différents. |
-| `DiagnosticCatalog.Cli`, l'outil `dcat` | **Construit, pas encore publié** — le générateur, empaqueté en outil .NET sur son propre train `cli` ([ADR-0017](adr/0017-publish-the-generator-as-a-cli-on-its-own-release-train.fr.md)). |
-
-Référencer la fondation seule déclare des règles ; elle n'effectue **aucune vérification**. Cette
-partie-là est le paquet d'analyseurs, qui existe dans le dépôt mais n'a pas encore de version sur
-nuget.org — et rien ne peut pointer vers un paquet qui n'en a pas, ce qui explique qu'un catalogue
-n'emporte pas encore les vérifications jusqu'à ses propres consommateurs. Le même ordonnancement
-qui a fait livrer la fondation en premier.
-
-## 🏁 Démarrer
-
-**Utiliser un catalogue tout prêt** — le cas courant. Référencez le catalogue d'éditeur que vous
-faites déjà tourner :
+Référencez le catalogue d'un analyseur que vous faites déjà tourner :
 
 ```xml
-<PackageReference Include="DiagnosticCatalog.Sonar" Version="..." />
+<PackageReference Include="DiagnosticCatalog.Sonar" Version="1.0.0" />
 ```
 
-Puis supprimez contre ses constantes au lieu de chaînes :
+Puis écrivez la suppression contre ses constantes au lieu de chaînes :
 
 ```csharp
 using System.Diagnostics.CodeAnalysis;
@@ -237,59 +123,74 @@ public sealed class ReportSerializer
 }
 ```
 
-**Déclarer un catalogue à vous** — pour vos analyseurs, ou un jeu de règles interne. Référencez
-la fondation :
+C'est tout. Cassez la référence exprès — `SonarRule.S1145` — et la compilation s'arrête, là où
+la chaîne qu'elle remplace se serait compilée en une suppression qui ne faisait rien, en silence.
+
+Un catalogue, ce sont des constantes et rien d'autre : l'appliquer n'ajoute aucun comportement à
+l'exécution ni aucun assemblage à charger. [La garantie d'empreinte nulle](guide/zero-footprint.fr.md)
+énonce ce qui atteint l'assemblage que vous livrez, et ce que le test vérifie réellement.
+
+Dix minutes de bout en bout, avec la référence cassée exprès, c'est
+[Démarrer](guide/getting-started.fr.md).
+
+## 📈 L'adopter là où des suppressions existent déjà
+
+Une base de code qui supprime déjà des règles ne les réécrit pas à la main. Référencez
+`DiagnosticCatalog.Analyzers` à côté du catalogue :
 
 ```xml
-<PackageReference Include="DiagnosticCatalog" Version="0.1.0" />
+<PackageReference Include="DiagnosticCatalog.Analyzers" Version="1.0.0" PrivateAssets="all" />
 ```
 
-Une règle est une classe statique, non générique, marquée `[DiagnosticRule]`, avec deux
-constantes publiques obligatoires :
+Il signale `DCAT0006` sur une suppression écrite en littéraux lorsqu'un catalogue de la
+compilation déclare cette règle, et propose la correction. *Corriger toutes les occurrences*
+l'applique ensuite à un document, un projet ou la solution entière en une passe, en ajoutant le
+`using` de chaque règle au passage.
 
-```csharp
-using DiagnosticCatalog;
+Deux choses de plus rendent la migration tenable :
 
-namespace Contoso.Analyzers.Suppressions;
+* **Monter la sévérité par paliers.** `DCAT0006` commence en suggestion. Montez-la dossier par
+  dossier à mesure que vous convertissez, plutôt que de rencontrer toutes les occurrences d'un
+  coup — [Adopter un catalogue](guide/adopting-a-catalogue.fr.md) donne l'ordre de conversion.
+* **Demander ce qu'est une règle.** `dcat explain <catalogue.dll> S1144` affiche la catégorie de
+  la règle, son lien d'aide, et la ligne `[SuppressMessage]` exacte à coller — pleinement
+  qualifiée, donc elle compile où qu'elle atterrisse.
 
-public static class Rules
-{
-    [DiagnosticRule]
-    public static class CT0001
-    {
-        public const string Id = nameof(CT0001);
-        public const string Category = "Usage";
-    }
-}
-```
+## 🧭 Ce que cela ne fait pas
 
-Les deux membres doivent être `const` : une propriété, un champ `static readonly` ou un `record`
-ne peuvent pas être un argument d'attribut. C'est aussi pourquoi le contrat est structurel plutôt
-qu'une interface ou une classe de base — voir
-[ADR-0008](adr/0008-express-a-rule-as-a-marked-static-class-of-constants.fr.md).
+* Cela ne peut pas vérifier une règle **qu'aucun catalogue de votre compilation ne déclare**. Une
+  suppression nommant un analyseur pour lequel vous n'avez pas de catalogue reste une paire de
+  chaînes, et rien ne le signale.
+* Cela ne change **rien à quelles règles se déclenchent**. Un catalogue, ce sont des constantes ;
+  les sévérités restent dans `.editorconfig` — voir [la configuration](guide/configuration.fr.md).
+* Une poignée de suppressions dans un seul projet n'a besoin de rien de tout cela.
+  [Quand ne pas l'utiliser](guide/when-not-to-use.fr.md) est écrit pour vous en dissuader là où il
+  le faut, et [les alternatives](guide/alternatives.fr.md) couvre ce qui existe par ailleurs.
+
+Quand quelque chose ne se comporte pas comme prévu, [le dépannage](guide/troubleshooting.fr.md)
+est organisé par symptôme — rien n'est signalé, `CS0117`, `CS0618`, `DCAT0006` sur tous les
+fichiers d'un coup.
 
 ## 📖 Guides
 
-Vingt-six pages, organisées par ce que vous cherchez à faire plutôt que par la façon dont le code
-est rangé. Dix minutes de bout en bout, c'est
-[Démarrer](guide/getting-started.fr.md) : référencer un catalogue, réécrire une suppression, la
-casser exprès et regarder le compilateur l'attraper.
+Organisés par ce que vous cherchez à faire plutôt que par la façon dont le code est rangé. Chaque
+piste est un ordre de lecture court qui lui est propre, et les pages portent précédent/suivant à
+l'intérieur de leur piste :
 
-| Si vous… | Commencez par | Puis |
+| Si vous… | Piste | Commence à |
 | --- | --- | --- |
-| cherchez à savoir si c'est pour vous | [Pourquoi les chaînes magiques échouent](guide/the-problem.fr.md) | [quand *ne pas* l'utiliser](guide/when-not-to-use.fr.md), [les alternatives](guide/alternatives.fr.md) |
-| écrivez `[SuppressMessage(...)]` et voulez que ce soit vérifié | [Écrire des suppressions que le compilateur vérifie](guide/writing-suppressions.fr.md) | [l'adopter sur une base existante](guide/adopting-a-catalogue.fr.md), [la configuration](guide/configuration.fr.md) |
-| livrez un analyseur, ou possédez des règles que personne d'autre ne publie | [Publier un catalogue](guide/authoring-a-catalogue.fr.md) | [le versionnage](guide/versioning-a-catalogue.fr.md), [l'empaquetage](guide/packaging-a-catalogue.fr.md) |
-| préférez générer un catalogue plutôt que l'écrire | [L'outil `dcat`](guide/dcat.fr.md) | [la référence complète](guide/dcat-reference.fr.md), [le tenir à jour en CI](guide/ci-integration.fr.md) |
-| avez vu un `DCATxxxx` et voulez savoir ce qu'il signifie | [Les diagnostics `DCAT`](guide/diagnostics.fr.md) | [le dépannage par symptôme](guide/troubleshooting.fr.md), [le glossaire](guide/glossary.fr.md) |
-| contribuez ici | [Architecture du dépôt](guide/architecture.fr.md) | [dans le générateur](guide/generator-internals.fr.md), [la stratégie de test](guide/testing-strategy.fr.md) |
+| écrivez `[SuppressMessage(...)]` et voulez que ce soit vérifié | **Utiliser un catalogue** | [Pourquoi les chaînes magiques échouent](guide/the-problem.fr.md) |
+| avez déjà des suppressions et voulez les migrer | **Adopter les analyseurs** | [Adopter un catalogue](guide/adopting-a-catalogue.fr.md) |
+| livrez un analyseur, ou possédez des règles que personne d'autre ne publie | **Publier un catalogue** | [Publier un catalogue](guide/authoring-a-catalogue.fr.md) |
+| préférez générer un catalogue plutôt que l'écrire | **Générer avec `dcat`** | [L'outil `dcat`](guide/dcat.fr.md) |
+| avez besoin d'une réponse exacte, ou butez sur un symptôme | **Référence et dépannage** | [Le contrat de règle](guide/rule-contract.fr.md) |
+| contribuez ici | **Contribuer** | [Architecture du dépôt](guide/architecture.fr.md) |
 
-La [carte de la documentation](guide/README.fr.md) ([English](guide/README.en.md)) les liste
-toutes les vingt-six. Chaque page existe en anglais et en français — la bannière en haut bascule
-de l'une à l'autre — et chacune porte une navigation précédent/suivant, de sorte que le guide se
-lit aussi d'une traite.
+La [carte de la documentation](guide/README.fr.md) ([English](guide/README.en.md)) liste toutes
+les pages de toutes les pistes. Chacune existe en anglais et en français — la bannière en haut
+d'une page bascule de l'une à l'autre.
 
-Guides par paquet :
+Pages par paquet :
 [`DiagnosticCatalog`](../src/DiagnosticCatalog/README.fr.md) ·
 [`.Analyzers`](../src/DiagnosticCatalog.Analyzers/README.fr.md) ·
 [`.Self`](../src/DiagnosticCatalog.Self/README.fr.md) ·
@@ -308,20 +209,27 @@ Guides par paquet :
 [`.BannedApi`](../src/DiagnosticCatalog.BannedApi/README.fr.md) ·
 [`.Cli`](../src/DiagnosticCatalog.Cli/README.fr.md)
 
-## 🎯 Quand c'est un bon choix
+## 🧰 Les paquets
 
-Sortez ceci quand les suppressions sont porteuses plutôt qu'accessoires :
+À côté des catalogues d'éditeurs ci-dessus, quatre paquets composent la boîte à outils. Chacun
+roule sur un [train de release](../CONTRIBUTING.md) à lui et se versionne à son propre rythme :
 
-- une base de code qui supprime des règles d'analyseur couramment, et qui veut que les
-  suppressions cassent quand une règle bouge ;
-- un auteur d'analyseur qui veut que ses propres règles soient référencées symboliquement par ses
-  consommateurs ;
-- une équipe qui se standardise sur Sonar, les règles CA de .NET ou StyleCop à travers plusieurs
-  dépôts ;
-- un chemin de mise à niveau où une montée de version d'un paquet d'analyseurs doit faire
-  apparaître les règles renommées et retirées au lieu d'annuler les suppressions en silence.
+| Paquet | À quoi il sert | Train |
+| --- | --- | --- |
+| **`DiagnosticCatalog`** | Les marqueurs `[DiagnosticRule]`, `[DiagnosticCategory]` et `[assembly: CatalogSource]`. Référencez-le pour déclarer un catalogue **à vous** — pour vos analyseurs, ou pour un jeu de règles interne. Le référencer déclare des règles ; il n'effectue aucune vérification. | `lib` |
+| **`DiagnosticCatalog.Analyzers`** | La vérification : des diagnostics qui confrontent une déclaration de règle au contrat structurel, et une suppression à la règle qu'elle nomme, avec les correctifs qui transforment un littéral en référence de catalogue. Une dépendance de compilation — ces assemblages n'atteignent jamais votre exécution. | `lib` |
+| **`DiagnosticCatalog.Self`** | Les règles `DCATxxxx` que ces analyseurs signalent, cataloguées de la même façon — de sorte que supprimer un diagnostic de *cette* bibliothèque soit une référence vérifiée plutôt que la chaîne magique que tout ceci existe pour supprimer. | `lib` |
+| **`DiagnosticCatalog.Cli`**, l'outil `dcat` | Le générateur, en outil .NET. Pointez-le vers un paquet d'analyseurs ou vers des assemblages sur disque et il écrit un catalogue comme ce dépôt écrit ceux ci-dessus. | `cli` |
 
-Une poignée de suppressions dans un seul projet n'a besoin de rien de tout cela.
+`DiagnosticCatalog.Self` sort de ce même générateur, pointé vers les analyseurs de ce dépôt.
+C'est la réponse la plus courte à « est-ce que ça marche vraiment » : les règles que la
+bibliothèque signale sont cataloguées par la bibliothèque, à travers le pipeline qu'elle demande
+à tout le monde d'utiliser.
+
+Chaque catalogue d'éditeur roule sur un train qui porte son nom — `sonar`, `netanalyzers`,
+`stylecop`, `codestyle`, `xunit`, `nunit`, `mstest`, `trimming`, `aspnetcore`, `syslib`,
+`roslyn`, `publicapi`, `bannedapi` — si bien que suivre le rythme de SonarSource ne tire jamais
+la version de la fondation avec lui.
 
 ## 🛠️ Plateformes supportées
 
@@ -333,6 +241,80 @@ Appliquer `[DiagnosticRule]` n'introduit aucun comportement à l'exécution. Le 
 les attributs personnalisés paresseusement, si bien que `DiagnosticCatalog.dll` n'est jamais
 réellement chargé à moins que quelque chose ne réfléchisse sur les types de règles.
 
+## ⚙️ Comment un catalogue est construit et tenu à jour
+
+Aucune règle de ce dépôt n'a été tapée à la main. Chaque étape, de la source de vérité de
+l'analyseur jusqu'à un paquet signé, est un script ou un workflow que vous pouvez lire.
+
+```mermaid
+sequenceDiagram
+    participant U as Paquet d'analyseurs amont
+    participant G as CatalogGen
+    participant R as Ce dépôt
+    participant M as Mainteneur
+    participant N as nuget.org
+
+    Note over U,R: Chaque nuit — automatisé
+    G->>U: charger le paquet, construire les types marqués [DiagnosticAnalyzer]
+    U-->>G: les instances de DiagnosticDescriptor qu'ils déclarent
+    G->>G: comparer au fichier généré précédemment
+    alt le fichier serait écrit exactement tel qu'il est
+        G-->>R: aucun changement — le fichier est laissé intact
+    else quoi que ce soit que le catalogue publie a bougé
+        G->>R: ouvrir une pull request portant le diff
+    end
+
+    Note over R,M: Revue — humaine, délibérément
+    R->>M: un contrat publié a changé — lire le diff
+    M->>R: fusionner, ou refuser
+
+    Note over M,N: Release — sur un tag
+    M->>R: pousser un tag de train, tel que sonar-v1.2.3
+    R->>R: packager, embarquer le SBOM SPDX, attester la provenance
+    R->>N: publier via Trusted Publishing, sans clé d'API
+```
+
+**Lire les descripteurs, pas la documentation.** `eng/CatalogGen` charge le paquet d'analyseurs
+amont, construit les types qu'il marque `[DiagnosticAnalyzer]`, et lit les instances de
+`DiagnosticDescriptor` qu'ils déclarent réellement. Les métadonnées de règles publiées en JSON
+ou en prose s'écartent de ce que l'analyseur fait vraiment, et puisque rien dans la plateforme
+ne valide une catégorie, une valeur copiée depuis une documentation périmée ne produirait aucun
+symptôme nulle part
+([ADR-0009](adr/0009-generate-catalog-content-from-analyzer-descriptors.fr.md)).
+
+**Détecter la dérive chaque nuit.** Un [workflow planifié](../.github/workflows/nightly-catalogs.yml)
+régénère chaque catalogue et ouvre une pull request quand quoi que ce soit que le catalogue
+publie a bougé. Les nuits où rien n'a bougé ne produisent rien du tout : le générateur rend ce
+qu'il écrirait et le compare au fichier déjà présent, si bien qu'un catalogue inchangé garde ses
+octets et son horodatage `generatedOn`. C'est la même comparaison que `dcat validate` renvoie, et
+c'est pourquoi un pipeline peut demander si un catalogue dit encore vrai sans rien écrire.
+
+**Laisser une personne lire le diff.** Ce workflow ne publie rien, et c'est une décision plutôt
+qu'un oubli. Un identifiant ou une catégorie qui a bougé en amont est un changement de *contrat
+publié*, et parce que rien ne valide la catégorie d'une suppression, une valeur fausse fusionnée
+sans revue resterait invisible aussi longtemps qu'elle existerait. L'automatisation trouve le
+changement ; un humain l'accepte.
+
+**Ne jamais supprimer une constante.** Une règle que l'éditeur retire est conservée et marquée
+`[Obsolete]`, en nommant la version qui l'a abandonnée. Un consommateur reçoit un avertissement
+lui disant de retirer la suppression, au lieu d'une compilation cassée par un membre disparu —
+les consommateurs inlinent les valeurs de constantes à leur propre compilation
+([ADR-0010](adr/0010-carry-a-retired-rule-forward-as-obsolete.fr.md)).
+
+**Publier sur un tag, avec les reçus.** Pousser un tag de train déclenche le workflow de release,
+qui package, embarque un SBOM SPDX et publie via
+[Trusted Publishing](https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing)
+avec une provenance de build signée
+([ADR-0006](adr/0006-publish-through-trusted-publishing-with-provenance-and-an-sbom.fr.md)) —
+il n'y a nulle part de clé d'API à longue durée de vie susceptible de fuiter.
+
+La moitié « packaging » de ce pipeline — build, pack, SBOM et les garde-fous d'empaquetage — est
+[répétée sur chaque pull request](../.github/workflows/release-dryrun.yml), pour chaque train,
+afin qu'une release ne l'exerce jamais pour la première fois sur un tag. Ce que la répétition
+saute délibérément, c'est tout ce qui a un effet de bord : aucune provenance n'est attestée,
+rien n'est poussé vers nuget.org, aucune release n'est créée. Un essai à blanc qui simulerait
+tout cela ne prouverait rien.
+
 ## 🔍 Chaîne d'approvisionnement
 
 Les releases publient via [Trusted Publishing](https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing)
@@ -342,6 +324,64 @@ Les paquets sont versionnés en [trains de release](../CONTRIBUTING.md) indépen
 qu'une release Sonar ne déplace pas la version de la fondation. Les détails de vérification sont
 dans [SECURITY.md](../SECURITY.md).
 
+## 🧱 Déclarer un catalogue à vous
+
+Pour vos propres analyseurs, ou pour un jeu de règles interne que personne d'autre ne publie.
+Référencez la fondation :
+
+```xml
+<PackageReference Include="DiagnosticCatalog" Version="1.0.0" />
+```
+
+Une règle est une classe statique, non générique, marquée `[DiagnosticRule]`, avec deux
+constantes publiques obligatoires — et la catégorie est atteinte via une classe à elle :
+
+```csharp
+using DiagnosticCatalog;
+
+namespace Contoso.Analyzers.Suppressions;
+
+[DiagnosticCategory]
+internal static class ContosoCategory
+{
+    public const string Usage = "Usage";
+}
+
+public static class Rules
+{
+    [DiagnosticRule]
+    public static class CT0001
+    {
+        public const string Id = nameof(CT0001);
+        public const string Category = ContosoCategory.Usage;
+    }
+}
+```
+
+Les deux membres doivent être `const` : une propriété, un champ `static readonly` ou un `record`
+ne peuvent pas être un argument d'attribut. C'est aussi pourquoi le contrat est structurel plutôt
+qu'une interface ou une classe de base — voir
+[ADR-0008](adr/0008-express-a-rule-as-a-marked-static-class-of-constants.fr.md).
+
+La classe de catégorie n'est pas de la décoration. Un catalogue répète très peu de catégories
+distinctes sur un très grand nombre de règles — 456 règles Sonar pour 13 valeurs — et déclarer
+chacune une seule fois donne à tout catalogue la même forme, ce qui est ce qui permet à
+l'outillage de proposer la constante nommée à la place d'un littéral. `DCAT0011` signale une
+règle qui atteint sa catégorie autrement
+([ADR-0028](adr/0028-require-every-rule-to-reach-its-category-through-a-declared-constant.fr.md)).
+
+À l'échelle, générez plutôt que d'écrire : [l'outil `dcat`](guide/dcat.fr.md) est ce qui produit
+chaque catalogue du tableau ci-dessus, et [publier un catalogue](guide/authoring-a-catalogue.fr.md)
+couvre la forme à livrer.
+
+## 🏗️ Dans le dépôt
+
+[L'architecture du dépôt](guide/architecture.fr.md) explique les projets, les découpages imposés
+chacun par quelque chose, et où vit chaque sorte de vérification.
+[Dans le générateur](guide/generator-internals.fr.md) suit le chemin que prend une exécution de
+`dcat`. [Les trains de release](guide/release-trains.fr.md) expliquent comment un projet en
+rejoint un et la règle inter-trains qui en découle.
+
 ## 📚 Documentation
 
 Tout vit sous [`doc/`](.), qui contient quatre sortes de documents. Ils répondent à des questions
@@ -349,7 +389,7 @@ différentes :
 
 | Si vous voulez… | Lisez | Forme |
 | --- | --- | --- |
-| *faire* quelque chose | [**Le guide**](guide/README.fr.md) | Vingt-six pages, enfilées dans un ordre unique, chacune avec précédent/suivant |
+| *faire* quelque chose | [**Le guide**](guide/README.fr.md) | Des pistes indépendantes, chacune un ordre de lecture court avec précédent/suivant |
 | le comportement exact, normativement | [**La spécification**](specification.fr.md) | Un long document de conception |
 | savoir *pourquoi* une chose est ainsi | [**Les décisions d'architecture**](adr/) | Un fichier par décision, daté, jamais modifié une fois accepté |
 | ajouter une page ici | [**Les conventions**](CONVENTIONS.fr.md) | La mise en page, et ce que les tests vérifient |

@@ -233,8 +233,9 @@ l'entrée et la clé dans les deux cas :
 error: catalogs.json: catalogs[2]: "namespace" is missing.
 ```
 
-`--summary` écrit un rapport Markdown de ce qui a changé — règles ajoutées, recatégorisées,
-retitrées, retirées — et c'est ce qui fait qu'une régénération planifiée ouvre une pull
+`--summary` écrit un rapport Markdown de chaque changement de ce que le catalogue publie, en
+nommant une par une celles qui portent sur les règles — ajoutées, recatégorisées, retitrées,
+relinkées, retirées, redéclarées. C'est ce qui fait qu'une régénération planifiée ouvre une pull
 request qu'un humain peut relire plutôt que fusionner à l'aveugle.
 
 ## Vérifier qu'un catalogue est toujours vrai

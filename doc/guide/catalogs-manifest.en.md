@@ -140,7 +140,7 @@ folder. Most rules often sit in a language-neutral assembly, and a selection tha
 dcat generate --manifest eng/catalogs.json --summary "$RUNNER_TEMP/summary.md"
 ```
 
-A Markdown report of what changed — rules added, recategorised, retitled, retired — across every
+A Markdown report of every change to what a catalogue publishes, the rule-level ones named one by one, across every
 entry. It is what turns a scheduled regeneration into a pull request a human can review rather than
 merge blind. [Keeping a catalogue current](ci-integration.en.md) is the pattern.
 
