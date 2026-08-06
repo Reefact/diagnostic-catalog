@@ -35,109 +35,36 @@
   </PropertyGroup>
 
   <!--
-    Ships on the lib train. Declaring it here is the whole membership (Directory.Build.targets), and it
-    is also what makes the project packable, gives it an embedded SBOM and puts the icon on the package.
+    NO <ReleaseTrain>, and no package identity of its own: this assembly is BUNDLED into the
+    DiagnosticCatalog package rather than published beside it (ADR-0037). It is the same project shape
+    DiagnosticCatalog.CodeFixes already has, and the one ADR-0007 blesses for code that is not its own
+    package — tools/trains.sh leaves an untrained project alone by design.
 
-    Consequence worth stating: a lib-vX.Y.Z tag publishes the foundation AND this analyzer at one
-    version, so DiagnosticCatalog's version moves whenever the analyzer ships, even when
-    DiagnosticCatalog.dll is byte-identical. That is the cost of one train, accepted deliberately.
+    The reason is the release train. This analyzer and the foundation were both on `lib`, so they could
+    never be released apart: same tag, same version, always. A second package therefore bought no
+    versioning independence at all, and cost a second name a consumer had to discover — which is why
+    thirteen catalogues shipped with nothing checking their consumers' suppressions. Every catalogue
+    already depends on the foundation and is forbidden from hiding it, so folding the checks in there
+    makes them arrive with any catalogue, declared nowhere.
+
+    The consequence to remember, exactly as for the code fixes: nothing publishes this assembly on its
+    own, so DiagnosticCatalog both orders its build and packs its output. See the ProjectReference
+    there.
   -->
   <PropertyGroup>
-    <ReleaseTrain>lib</ReleaseTrain>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
-
-  <!--
-    A development dependency, which the foundation deliberately is not (docs §16.1). The two packages
-    serve opposite audiences: this one carries analysis assemblies that must never reach a consumer's
-    runtime, so NuGet marks it build-time-only and applies PrivateAssets="all" by default. The
-    foundation must flow the other way — to the consumers of a catalogue, so [DiagnosticRule] resolves
-    for them. One package cannot carry both settings, which is why there are two.
-
-    How a consumer gets these analyzers WITHOUT knowing this package exists needed measuring rather
-    than assuming, and tools/packaging/verify-consumption.sh now does it. The answer is the reverse of
-    what was written here: a catalogue referencing this package propagates the analyzer to its own
-    consumers by DEFAULT, despite DevelopmentDependency and despite NuGet documenting analyzers as
-    non-transitive (§16.3, NuGet/Home#13813). No PrivateAssets="none" lever is needed; a catalogue
-    that does NOT want to impose analysis must opt out with PrivateAssets="all".
-
-    A catalogue can therefore only take that reference once this package has a published version to
-    point at — the same ordering ADR-0007 imposed on the catalogues themselves — so the wiring still
-    lands in its own change after the first release. What changed is that the change is now a
-    one-line reference rather than one carrying a setting nobody had tested.
-  -->
-  <PropertyGroup Label="Package">
-    <PackageId>DiagnosticCatalog.Analyzers</PackageId>
-    <DevelopmentDependency>true</DevelopmentDependency>
-    <Title>DiagnosticCatalog.Analyzers</Title>
-    <Description>Roslyn analyzers that check diagnostic rule declarations and the suppressions that reference them: a suppression whose category and id come from different rules, a rule that does not satisfy the structural contract, and string literals that a catalogue reference would replace.</Description>
-    <PackageTags>roslyn;analyzers;diagnostics;suppressmessage;code-analysis;static-analysis;catalog</PackageTags>
-    <PackageReadmeFile>README.en.md</PackageReadmeFile>
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <Authors>Reefact</Authors>
-    <Copyright>Copyright (c) Reefact</Copyright>
-    <PackageProjectUrl>https://github.com/Reefact/diagnostic-catalog</PackageProjectUrl>
-  </PropertyGroup>
-
-  <!--
-    The package layout of docs §16.1: the assembly goes under analyzers/dotnet/cs/, never lib/.
-    IncludeBuildOutput=false is what keeps it out of lib/ — an assembly there would be compiled
-    against, and would become a runtime dependency of the consuming application, which §16 forbids in
-    its opening line. The analyzer is then packed explicitly at the path the compiler looks in.
-  -->
-  <PropertyGroup>
-    <IncludeBuildOutput>false</IncludeBuildOutput>
-    <!--
-      With no lib/, NuGet still emits an empty netstandard2.0 dependency group, and pack then fails
-      with NU5128 because the group matches no lib folder. The fix is to drop the group, not to silence
-      the message: this package genuinely declares no dependencies — every PackageReference above is
-      PrivateAssets="all" — so an empty group was describing something that does not exist. Suppressing
-      NU5128 instead would leave the mismatch in the nuspec and hide the next, real one.
-    -->
-    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
-    <!--
-      No .snupkg either. Directory.Build.props ships symbols separately for every project, but a symbol
-      package describes the assemblies in lib/ and this package has none — pack fails with NU5017,
-      "cannot create a package that has no dependencies nor content". The symbols are not lost: the pdb
-      is packed beside the analyzer below, which is where a debugger attached to the compiler looks for
-      it, rather than on a symbol server that would never be consulted for an analyzer.
-    -->
-    <IncludeSymbols>false</IncludeSymbols>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <None Include="$(OutputPath)$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-    <!-- The pdb travels with the assembly rather than in a symbol package, so anyone debugging the
-         analyzer inside a compiler host has it where the host looks. -->
-    <None Include="$(OutputPath)$(AssemblyName).pdb" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-    <!-- The code fixes ride in the same package, beside the analyzer, which is the layout §16.1 shows.
-         They are a separate ASSEMBLY because RS1022 bans Workspaces types from an analyzer one, not a
-         separate package: a consumer installs analyzers and gets the fixes for them. -->
-    <None Include="$(CodeFixesOutputPath)DiagnosticCatalog.CodeFixes.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-    <None Include="$(CodeFixesOutputPath)DiagnosticCatalog.CodeFixes.pdb" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-    <None Include="README.en.md" Pack="true" PackagePath="/" />
-    <!-- Shipped at the package root per §16.1: it is the released list of diagnostics, and a consumer
-         deciding whether to upgrade reads it without unpacking the analyzer. -->
-    <None Include="AnalyzerReleases.Shipped.md" Pack="true" PackagePath="/" />
-  </ItemGroup>
 
   <!--
     Build order, not a code dependency. ReferenceOutputAssembly="false" means nothing here compiles
     against the code fixes — the two assemblies share source, not references — but the project is built
-    before this one, so the DLL packed above exists.
-
-    The tempting alternative is to pack the DLL by path with no reference at all. It works under
-    tools/pack.sh, which packs without rebuilding after a full solution build, and silently produces a
-    package with no code fixes in it for anyone running a bare `dotnet pack`.
+    before this one, so that DiagnosticCatalog can pack both after building either.
   -->
   <ItemGroup>
     <ProjectReference Include="..\DiagnosticCatalog.CodeFixes\DiagnosticCatalog.CodeFixes.csproj"
                       ReferenceOutputAssembly="false"
                       PrivateAssets="all" />
   </ItemGroup>
-
-  <PropertyGroup>
-    <CodeFixesOutputPath>$(MSBuildThisFileDirectory)..\DiagnosticCatalog.CodeFixes\bin\$(Configuration)\netstandard2.0\</CodeFixesOutputPath>
-  </PropertyGroup>
 
   <ItemGroup>
     <!--
@@ -174,9 +101,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- The DCAT ids are the contract this package publishes, and the analyzer types are its public
-         surface. Renaming either is a breaking change (CLAUDE.md), and RS0016/RS0017 make that a build
-         failure rather than a review oversight. -->
+    <!-- The DCAT ids are the contract shipped inside the DiagnosticCatalog package, and the analyzer
+         types are its public surface. Renaming either is a breaking change (CLAUDE.md), and
+         RS0016/RS0017 make that a build failure rather than a review oversight. The tracking stays
+         here, with the code it describes, rather than moving to the project that packs it. -->
     <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" PrivateAssets="all" />
   </ItemGroup>
 
@@ -188,12 +116,15 @@
   <!--
     NO reference to DiagnosticCatalog, and that is deliberate rather than an omission. §7.2 requires
     the marker to be matched by its fully qualified metadata name, never by symbol identity, so the
-    analyzer never needs the attribute TYPE — only its name. Referencing the foundation would add a
-    dependency this package promises not to have, and would tempt an implementation into the
-    SymbolEqualityComparer shortcut that breaks a catalogue embedding its own attribute.
+    analyzer never needs the attribute TYPE — only its name. Referencing the foundation would tempt an
+    implementation into the SymbolEqualityComparer shortcut that breaks a catalogue embedding its own
+    attribute.
 
-    pack.sh's cross-train guard would not catch it either: both projects are on the lib train, so the
-    guard skips the reference by design. This one rests on judgement, which is why it is written down.
+    Since ADR-0037 the dependency runs the other way — DiagnosticCatalog references this project, for
+    build order, so that it can pack the output — which makes the omission here load-bearing rather
+    than merely tidy: adding it back would close a project reference cycle and fail the build. Nothing
+    else guards it. pack.sh's cross-train guard never did: this project declares no train at all now,
+    and both were on `lib` before, so the guard skipped the reference either way.
   -->
 
 </Project>

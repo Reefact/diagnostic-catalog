@@ -3,8 +3,9 @@
 🌍 **Languages:**  
 🇬🇧 English (this file) | 🇫🇷 [Français](./0037-ship-the-analyzers-inside-the-foundation-package.fr.md)
 
-**Status:** Proposed
+**Status:** Accepted
 **Proposed:** 2026-08-06
+**Accepted:** 2026-08-06
 **Decision Makers:** Reefact
 
 ## Context
@@ -186,6 +187,11 @@ with a page the reader has to already suspect they need is the same bet that the
   package reference, and has to silence the diagnostics in `.editorconfig` instead.
 * The first catalogue release after the change fails builds that were green, everywhere a literal
   suppression matches a catalogued rule, because `DCAT0006` is an error.
+* A catalogue can no longer decline to impose analysis without withholding the attribute along with
+  it. One package means one lever: `PrivateAssets="all"` hides the analyzers and `[DiagnosticRule]`
+  together, so a consumer written the ordinary way stops compiling rather than merely going
+  unchecked. Declining is therefore no longer a way of being polite about analysis — it is the §7.2
+  failure the troubleshooting guide already reports.
 
 ### Risks
 
@@ -193,9 +199,12 @@ with a page the reader has to already suspect they need is the same bet that the
   default private-asset list names analyzers among the excluded assets. A NuGet release restoring
   the documented behaviour would close the path silently. The mitigation is that the flow is
   re-measured against real packages on every pull request rather than assumed.
-* The two-hop path is unmeasured. A library that references a catalogue for its own suppressions
-  may impose error-severity diagnostics on its consumers, who chose neither the catalogue nor the
-  analyzer, and this decision makes that path live before anything measures it.
+* The analyzer travels the second hop as readily as the first. Measured rather than feared, and now
+  asserted on every pull request: a library that references a catalogue for its own suppressions
+  hands error-severity diagnostics to every application referencing it, which chose neither the
+  catalogue nor the analyzer. The mitigation belongs to the library — `PrivateAssets="all"` on its
+  own reference, which is free for it because it owes nobody the attribute, and is the one lever a
+  catalogue does not have.
 * Folding is free only while the identity is unpublished. If a `lib` tag ships first, the same
   decision costs a deprecation and a migration note instead of a rename nobody can observe.
 

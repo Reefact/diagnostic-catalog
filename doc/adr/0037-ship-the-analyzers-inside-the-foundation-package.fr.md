@@ -3,8 +3,9 @@
 🌍 **Langues :**  
 🇬🇧 [English](./0037-ship-the-analyzers-inside-the-foundation-package.en.md) | 🇫🇷 Français (ce fichier)
 
-**Status:** Proposed
+**Status:** Accepted
 **Proposed:** 2026-08-06
+**Accepted:** 2026-08-06
 **Decision Makers:** Reefact
 
 ## Contexte
@@ -199,6 +200,11 @@ doit déjà soupçonner utile, c'est le pari que la première fait perdre.
 * La première publication de catalogue après le changement fait échouer des compilations qui
   passaient, partout où une suppression littérale correspond à une règle cataloguée, puisque
   `DCAT0006` est une erreur.
+* Un catalogue ne peut plus refuser d'imposer l'analyse sans retenir l'attribut avec elle. Un seul
+  paquet veut dire un seul levier : `PrivateAssets="all"` masque les analyzers et `[DiagnosticRule]`
+  ensemble, si bien qu'un consommateur écrit de façon ordinaire cesse de compiler au lieu de
+  simplement n'être pas vérifié. Refuser n'est donc plus une façon d'être poli sur l'analyse — c'est
+  la défaillance du §7.2 que la page de dépannage rapporte déjà.
 
 ### Risques
 
@@ -206,10 +212,12 @@ doit déjà soupçonner utile, c'est le pari que la première fait perdre.
   d'actifs privés par défaut nomme les analyzers parmi les actifs exclus. Une version de NuGet
   rétablissant le comportement documenté refermerait le chemin en silence. L'atténuation est que ce
   passage est remesuré contre de vrais paquets à chaque pull request plutôt que supposé.
-* Le chemin à deux sauts n'est pas mesuré. Une bibliothèque qui référence un catalogue pour ses
-  propres suppressions peut imposer des diagnostics de sévérité erreur à ses consommateurs, qui
-  n'ont choisi ni le catalogue ni l'analyzer, et cette décision rend ce chemin vivant avant que quoi
-  que ce soit ne le mesure.
+* L'analyzer franchit le deuxième saut aussi facilement que le premier. Mesuré plutôt que redouté,
+  et désormais affirmé à chaque pull request : une bibliothèque qui référence un catalogue pour ses
+  propres suppressions remet des diagnostics de sévérité erreur à toute application qui la
+  référence, laquelle n'a choisi ni le catalogue ni l'analyzer. L'atténuation appartient à la
+  bibliothèque — `PrivateAssets="all"` sur sa propre référence, gratuit pour elle puisqu'elle ne
+  doit l'attribut à personne, et c'est le seul levier qu'un catalogue n'a pas.
 * Le repli n'est gratuit que tant que l'identité n'est pas publiée. Si un tag `lib` passe d'abord,
   la même décision coûte une dépréciation et une note de migration au lieu d'un renommage que
   personne ne peut observer.
