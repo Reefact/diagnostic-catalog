@@ -51,15 +51,24 @@ règles et que la réflexion à l'exécution sur votre catalogue résout, et ils
 vérifications avec — un consommateur écrit de la façon ordinaire cesse de compiler au lieu de
 simplement passer inaperçu. Les deux moitiés de cela sont mesurées contre une restauration
 réelle par `tools/packaging/verify-consumption.sh`, dans les vérifications
-`PrivateAssets="all" is what stops a catalogue propagating it` et
-`hiding the foundation also withholds the attribute assembly`.
+`a catalogue hiding the foundation delivers no analyzer either` et
+`a catalogue hiding the foundation withholds the attribute assembly`.
 
-Ne prenez aucune position et les analyseurs parviennent d'eux-mêmes à vos consommateurs — la
-vérification `a catalogue that takes no position propagates the analyzer` — ce qui est la
-façon dont chaque catalogue de ce dépôt est écrit. Le projet qui devrait décliner est une
-**bibliothèque** qui a pris un catalogue pour ses propres suppressions : elle ne doit
-l'attribut à personne, et `PrivateAssets="all"` sur sa référence est ce qui l'empêche de
-livrer les diagnostics à des applications qui n'ont jamais choisi le catalogue.
+Un catalogue embarque aussi `build/<son propre identifiant de paquet>.props`, qui pose
+`EnableDiagnosticCatalogAnalyzers`, et c'est ce qui livre les analyseurs à ses
+consommateurs — la vérification `a catalogue delivers the analyzer to its own consumer`.
+NuGet importe le dossier `build/` d'un paquet pour une référence directe et pour rien
+au-delà : les vérifications atteignent donc le projet qui a référencé le catalogue et s'y
+arrêtent. Une application qui référence une **bibliothèque** ayant pris un catalogue pour
+ses propres suppressions n'est pas analysée par un catalogue qu'elle n'a jamais choisi, et
+la bibliothèque n'écrit rien pour l'obtenir
+([ADR-0038](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/adr/0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.fr.md)).
+[Empaqueter un catalogue](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/packaging-a-catalogue.fr.md)
+donne le fichier.
+
+Un projet consommateur passe outre dans les deux sens avec la même propriété : `false` garde
+le catalogue et décline l'analyse, `true` réclame les vérifications de plus loin qu'une
+référence directe.
 
 ## Déclarer une règle
 

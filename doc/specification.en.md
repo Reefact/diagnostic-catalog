@@ -1759,55 +1759,61 @@ flow transitively. In practice
 transitive analyzers *do* flow. **Depend on neither direction.**
 
 * `tools/packaging/verify-consumption.sh` restores the produced packages as a consumer would and
-  asserts what they then do — twelve checks, run on every pull request from the release rehearsal,
+  asserts what they then do — eighteen checks, run on every pull request from the release rehearsal,
   where real `.nupkg` files exist. Every measurement below is one of them.
 
-**Measured, and it is not what the documentation implies.** Three catalogue packages differing
-only in the `PrivateAssets` of their reference to the foundation were built and consumed:
+**The analyzers are not a NuGet asset.** Since
+[ADR-0038](adr/0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.en.md) the
+assemblies sit in `dcat-analyzers/`, a folder NuGet resolves nothing from, and reach a compiler
+only through `buildTransitive/DiagnosticCatalog.targets`, which adds them when
+`EnableDiagnosticCatalogAnalyzers` is `true` or when the foundation is among the building project's
+own `PackageReference` items. That is deliberate: a NuGet asset flows down the whole graph and has
+no notion of distance, so no setting on an `analyzers/` folder can serve the project that
+referenced a catalogue and refuse the one three packages downstream of it.
 
-| A catalogue referencing the foundation with | The analyzer runs for its consumers |
-| --- | --- |
-| no `PrivateAssets` at all | **yes** |
-| `PrivateAssets="none"` | yes |
-| `PrivateAssets="all"` | no |
+**A catalogue opts its own consumers in.** Every catalogue packs
+`build/<its own package id>.props`, which sets the property. NuGet imports a package's `build/`
+folder for a **direct** reference and for nothing further out — documented behaviour, unlike the
+flow above — and that asymmetry is the whole mechanism. In this repository the file is packed by
+`Directory.Build.targets` into every packable project that depends on the foundation, so it is
+derived rather than remembered; a third-party catalogue must ship it itself
+([`doc/guide/packaging-a-catalogue`](guide/packaging-a-catalogue.en.md)).
 
-So the analyzer **does** flow transitively by default, despite NuGet documenting analyzers as
-non-transitive and despite the default private-asset list naming them among the excluded assets —
-the behaviour reported in
-[NuGet/Home#13813](https://github.com/NuGet/Home/issues/13813).
-
-Three consequences, and the first two are the reverse of the earlier assumption:
-
-* A catalogue that wants to bring the checking along needs **no lever at all**;
-  `PrivateAssets="none"` is confirmed to work and changes nothing. All thirteen catalogues are
-  written that way today, declaring nothing beyond the dependency they were always required to
-  declare.
-* A catalogue that writes `PrivateAssets="all"` is no longer being polite about analysis. One
-  package means one lever, so hiding the analyzers hides `[DiagnosticRule]` along with them and the
-  catalogue's consumers stop compiling — the §7.2 failure, not an opt-out. Measured: the consumer
-  fixture behind the third row above has to declare its own marker attribute to build at all.
-* A project referencing **two** catalogues is checked by exactly **one** analyzer instance. Both
-  catalogues reach it through the same package identity, which NuGet unifies across the graph, so
-  the diagnostics are reported once. That is the check which would fail had the analyzers been
-  folded into each catalogue instead: nothing unifies distinct identities, and which assembly runs
-  would be settled by conflict resolution between packages that version independently
-  ([ADR-0037](adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md)).
-
-**The flow does not stop at the first hop.** An application referencing a library that references a
-catalogue is checked too, having chosen neither. Measured rather than feared, and asserted on every
-pull request rather than once:
+**Measured.** The chain decides, and it stops where the reference stops:
 
 | The chain | The analyzer runs for the application |
 | --- | --- |
+| app → foundation | yes |
 | app → catalogue | yes |
-| app → library → catalogue | yes |
-| app → library referencing the catalogue with `PrivateAssets="all"` | no |
+| app → catalogue **shipping no opt-in** | no, silently |
+| app → library → catalogue | **no** |
+| app → library → catalogue, app sets `EnableDiagnosticCatalogAnalyzers=true` | yes |
+| app → catalogue, app sets `EnableDiagnosticCatalogAnalyzers=false` | no |
 
-The lever on that last row belongs to the library, and it is the one a catalogue does not have: a
-library owes its consumers no attribute, so it may hide the foundation, while a catalogue may not.
+The fourth row is the one this arrangement exists for. An application referencing an ordinary
+library that took a catalogue for its own suppressions chose neither the catalogue nor the
+analyzer, and `DCAT0006` ships as an error (§17), so under the previous arrangement its build
+stopped on its own suppressions with no cause visible in its own project file.
+
+Three further consequences:
+
+* **The property points both ways.** A consumer who wants the catalogue and not the analysis writes
+  `false` and keeps `[DiagnosticRule]`; a consumer further out who wants the checks writes `true`.
+  Neither clause of the gate overwrites a value the project set.
+* A catalogue that writes `PrivateAssets="all"` on the foundation is still not being polite about
+  analysis. One package means one lever, so hiding the analyzers hides `[DiagnosticRule]` along with
+  them and the catalogue's consumers stop compiling — the §7.2 failure, not an opt-out. Measured: the
+  consumer fixture behind that case has to declare its own marker attribute to build at all.
+* A project referencing **two** catalogues is checked by exactly **one** analyzer instance. Both
+  catalogues set one property and the assemblies come from the single foundation, whose identity
+  NuGet unifies across the graph. That is the check which would fail had the analyzers been folded
+  into each catalogue instead: a gate would then add them **by path**, MSBuild would have nothing to
+  unify, and the compiler would be handed two
+  ([ADR-0037](adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md),
+  [ADR-0038](adr/0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.en.md)).
 
 A consumer who wants the checks and no catalogue at all references `DiagnosticCatalog` itself
-(§16.2).
+(§16.2); the gate recognises that reference among the project's own.
 
 ---
 
@@ -2029,7 +2035,7 @@ test, §27 asserts only that the code compiles.
 * the analyzer assemblies do not appear in the consumer's output folder;
 * the attribute assembly does, which is the opposite direction and the other half of §16.1;
 * a consumer of two catalogues is checked by exactly one analyzer instance;
-* the analyzer reaches a consumer two hops out, and a library can decline to pass it on.
+* the analyzer does **not** reach a consumer one hop further out, and both ends can overrule that.
 
 ---
 
@@ -2041,7 +2047,7 @@ test, §27 asserts only that the code compiles.
 * documentation for consumers;
 * the list of `DCATxxxx` diagnostics;
 * the `.editorconfig` configuration procedure;
-* the `PrivateAssets` matrix of §16.3;
+* the reference-chain matrix of §16.3, and what a catalogue must ship to appear in it;
 * an explicit statement of the limits in §5.1;
 * a versioning policy;
 * a contribution guide;

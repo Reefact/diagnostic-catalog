@@ -1836,60 +1836,66 @@ analyzers transitifs circulent bel et bien. **Ne dépendre d'aucune des deux
 directions.**
 
 * `tools/packaging/verify-consumption.sh` restaure les packages produits comme le ferait un
-  consommateur et vérifie ce qu'ils font alors — douze contrôles, exécutés sur chaque pull request
-  depuis la répétition de release, là où de vrais fichiers `.nupkg` existent. Chaque mesure
+  consommateur et vérifie ce qu'ils font alors — dix-huit contrôles, exécutés sur chaque pull
+  request depuis la répétition de release, là où de vrais fichiers `.nupkg` existent. Chaque mesure
   ci-dessous en est un.
 
-**Mesuré, et ce n'est pas ce que la documentation laisse entendre.** Trois packages de catalogue ne
-différant que par le `PrivateAssets` de leur référence à la fondation ont été construits puis
-consommés :
+**Les analyzers ne sont pas un actif NuGet.** Depuis
+l'[ADR-0038](adr/0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.fr.md), les
+assemblages résident dans `dcat-analyzers/`, un dossier dont NuGet ne résout rien, et n'atteignent
+un compilateur que par `buildTransitive/DiagnosticCatalog.targets`, qui les ajoute lorsque
+`EnableDiagnosticCatalogAnalyzers` vaut `true` ou que la fondation figure parmi les
+`PackageReference` propres au projet en cours de compilation. C'est délibéré : un actif NuGet
+descend tout le graphe et n'a aucune notion de distance, donc aucun réglage sur un dossier
+`analyzers/` ne peut servir le projet qui a référencé un catalogue et refuser celui qui se trouve
+trois packages en aval.
 
-| Un catalogue référençant la fondation avec | L'analyzer tourne chez ses consommateurs |
-| --- | --- |
-| aucun `PrivateAssets` | **oui** |
-| `PrivateAssets="none"` | oui |
-| `PrivateAssets="all"` | non |
+**Un catalogue inscrit ses propres consommateurs.** Chaque catalogue embarque
+`build/<son propre identifiant de package>.props`, qui pose la propriété. NuGet importe le dossier
+`build/` d'un package pour une référence **directe** et pour rien au-delà — comportement documenté,
+contrairement au passage ci-dessus — et cette asymétrie est tout le mécanisme. Dans ce dépôt, le
+fichier est embarqué par `Directory.Build.targets` dans chaque projet packageable qui dépend de la
+fondation, il est donc dérivé plutôt que mémorisé ; un catalogue tiers doit le livrer lui-même
+([`doc/guide/packaging-a-catalogue`](guide/packaging-a-catalogue.fr.md)).
 
-L'analyzer circule donc **bel et bien** transitivement par défaut, alors même que NuGet documente
-les analyzers comme non transitifs et que la liste d'actifs privés par défaut les nomme parmi les
-actifs exclus — le comportement rapporté dans
-[NuGet/Home#13813](https://github.com/NuGet/Home/issues/13813).
-
-Trois conséquences, dont les deux premières sont l'inverse de l'hypothèse initiale :
-
-* Un catalogue qui veut apporter la vérification n'a besoin **d'aucun levier** ;
-  `PrivateAssets="none"` fonctionne et ne change rien. Les treize catalogues sont écrits ainsi
-  aujourd'hui, ne déclarant rien de plus que la dépendance qu'ils ont toujours été tenus de
-  déclarer.
-* Un catalogue qui écrit `PrivateAssets="all"` n'est plus poli à l'égard de l'analyse. Un seul
-  package signifie un seul levier : masquer les analyzers masque `[DiagnosticRule]` avec eux et les
-  consommateurs du catalogue cessent de compiler — la défaillance du §7.2, pas un retrait courtois.
-  Mesuré : le projet consommateur derrière la troisième ligne ci-dessus doit déclarer son propre
-  attribut marqueur ne serait-ce que pour compiler.
-* Un projet qui référence **deux** catalogues est vérifié par exactement **une** instance
-  d'analyzer. Les deux catalogues l'atteignent par la même identité de package, que NuGet unifie sur
-  tout le graphe, si bien que les diagnostics ne sont signalés qu'une fois. C'est le contrôle qui
-  échouerait si les analyzers avaient été repliés dans chaque catalogue : rien n'unifie des
-  identités distinctes, et l'assembly qui tourne serait décidée par la résolution de conflit entre
-  des packages qui versionnent indépendamment
-  ([ADR-0037](adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md)).
-
-**Le passage ne s'arrête pas au premier saut.** Une application qui référence une bibliothèque qui
-référence un catalogue est vérifiée elle aussi, sans avoir choisi ni l'un ni l'autre. Mesuré plutôt
-que redouté, et vérifié sur chaque pull request plutôt qu'une seule fois :
+**Mesuré.** La chaîne décide, et elle s'arrête là où s'arrête la référence :
 
 | La chaîne | L'analyzer tourne pour l'application |
 | --- | --- |
+| app → fondation | oui |
 | app → catalogue | oui |
-| app → bibliothèque → catalogue | oui |
-| app → bibliothèque référençant le catalogue avec `PrivateAssets="all"` | non |
+| app → catalogue **sans opt-in embarqué** | non, en silence |
+| app → bibliothèque → catalogue | **non** |
+| app → bibliothèque → catalogue, app pose `EnableDiagnosticCatalogAnalyzers=true` | oui |
+| app → catalogue, app pose `EnableDiagnosticCatalogAnalyzers=false` | non |
 
-Le levier de cette dernière ligne appartient à la bibliothèque, et c'est celui qu'un catalogue n'a
-pas : une bibliothèque ne doit l'attribut à personne, elle peut donc masquer la fondation, ce qu'un
-catalogue ne peut pas faire.
+La quatrième ligne est la raison d'être de ce dispositif. Une application qui référence une
+bibliothèque ordinaire ayant pris un catalogue pour ses propres suppressions n'a choisi ni le
+catalogue ni l'analyzer, et `DCAT0006` est livré en erreur (§17) : sous le dispositif précédent, son
+build s'arrêtait donc sur ses propres suppressions sans qu'aucune cause soit visible dans son propre
+fichier projet.
+
+Trois autres conséquences :
+
+* **La propriété joue dans les deux sens.** Un consommateur qui veut le catalogue sans l'analyse
+  écrit `false` et conserve `[DiagnosticRule]` ; un consommateur plus lointain qui veut les
+  vérifications écrit `true`. Aucune des deux clauses du portail n'écrase une valeur posée par le
+  projet.
+* Un catalogue qui écrit `PrivateAssets="all"` sur la fondation n'est toujours pas poli à l'égard de
+  l'analyse. Un seul package signifie un seul levier : masquer les analyzers masque
+  `[DiagnosticRule]` avec eux et les consommateurs du catalogue cessent de compiler — la défaillance
+  du §7.2, pas un retrait courtois. Mesuré : le projet consommateur derrière ce cas doit déclarer son
+  propre attribut marqueur ne serait-ce que pour compiler.
+* Un projet qui référence **deux** catalogues est vérifié par exactement **une** instance
+  d'analyzer. Les deux catalogues posent une seule propriété et les assemblages proviennent de
+  l'unique fondation, dont NuGet unifie l'identité sur tout le graphe. C'est le contrôle qui
+  échouerait si les analyzers avaient été repliés dans chaque catalogue : un portail les ajouterait
+  alors **par chemin**, MSBuild n'aurait rien à unifier, et le compilateur en recevrait deux
+  ([ADR-0037](adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md),
+  [ADR-0038](adr/0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.fr.md)).
 
 Un consommateur qui veut les vérifications sans aucun catalogue référence `DiagnosticCatalog`
-lui-même (§16.2).
+lui-même (§16.2) ; le portail reconnaît cette référence parmi celles du projet.
 
 ---
 
@@ -2120,8 +2126,8 @@ compilation. Sans ce test, le §27 n'affirme que la compilation du code.
   consommateur ;
 * l'assembly d'attributs, elle, y apparaît — le sens inverse, et l'autre moitié du §16.1 ;
 * un consommateur de deux catalogues est vérifié par exactement une instance d'analyzer ;
-* l'analyzer atteint un consommateur à deux sauts, et une bibliothèque peut refuser de le
-  transmettre.
+* l'analyzer n'atteint **pas** un consommateur situé un saut plus loin, et les deux extrémités
+  peuvent passer outre.
 
 ---
 
@@ -2133,7 +2139,7 @@ compilation. Sans ce test, le §27 n'affirme que la compilation du code.
 * une documentation destinée aux consommateurs ;
 * la liste des diagnostics `DCATxxxx` ;
 * la procédure de configuration `.editorconfig` ;
-* la matrice `PrivateAssets` du §16.3 ;
+* la matrice des chaînes de référence du §16.3, et ce qu'un catalogue doit livrer pour y figurer ;
 * un énoncé explicite des limites du §5.1 ;
 * une politique de versionnement ;
 * un guide de contribution ;

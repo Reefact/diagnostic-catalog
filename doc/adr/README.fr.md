@@ -233,3 +233,4 @@ Matériel de support, optionnel :
 | [ADR-0035](0035-badge-a-shared-prefix-catalogue-with-its-subject.fr.md) | Badger avec son sujet un catalogue dont le préfixe de règle est déjà en service | Accepted |
 | [ADR-0036](0036-exclude-from-coverage-what-no-report-describes.fr.md) | Exclure de la couverture ce qu'aucun rapport de couverture ne décrit | Accepted |
 | [ADR-0037](0037-ship-the-analyzers-inside-the-foundation-package.fr.md) | Embarquer les analyzers dans le paquet de la fondation | Accepted |
+| [ADR-0038](0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.fr.md) | Arrêter les analyzers au projet qui référence un catalogue | Proposed |

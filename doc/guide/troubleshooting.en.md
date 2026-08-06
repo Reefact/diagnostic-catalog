@@ -8,20 +8,25 @@ Symptoms first, cause second.
 
 ## Nothing is reported at all
 
-The commonest report, and it has four causes with the same appearance.
+The commonest report, and it has six causes with the same appearance.
 
 ```mermaid
 flowchart TB
     S["no DCAT diagnostic anywhere"]
-    S --> Q1{"is a catalogue, or<br/>DiagnosticCatalog itself,<br/>referenced?"}
-    Q1 -- "no" --> A1["the diagnostics ship inside DiagnosticCatalog.<br/>Nothing references it, nothing runs."]
-    Q1 -- "yes" --> Q2{"is it PrivateAssets=all<br/>on a package you CONSUME?"}
-    Q2 -- "yes" --> A2["analyzers do not flow from<br/>a dependency that hides them"]
-    Q2 -- "no" --> Q3{"do you reference a catalogue<br/>describing the rules you suppress?"}
-    Q3 -- "no" --> A3["DCAT0006 reports only rules it can see.<br/>No catalogue, no match, silence by design."]
-    Q3 -- "yes" --> Q4{"is the file generated?"}
-    Q4 -- "yes" --> A4["use-site diagnostics do not run<br/>on generated code, deliberately"]
-    Q4 -- "no" --> A5["check .editorconfig severity"]
+    S --> Q1{"does THIS project reference<br/>a catalogue, or DiagnosticCatalog?"}
+    Q1 -- "no, only a package that does" --> A6["the checks stop at the project that<br/>referenced a catalogue. Set<br/>EnableDiagnosticCatalogAnalyzers=true"]
+    Q1 -- "not at all" --> A1["the diagnostics ship inside DiagnosticCatalog.<br/>Nothing references it, nothing runs."]
+    Q1 -- "yes" --> Q2{"is EnableDiagnosticCatalogAnalyzers<br/>set to false?"}
+    Q2 -- "yes" --> A7["that is the opt-out.<br/>Remove it, or set it to true."]
+    Q2 -- "no" --> Q3{"is it PrivateAssets=all<br/>on a package you CONSUME?"}
+    Q3 -- "yes" --> A2["analyzers do not flow from<br/>a dependency that hides them"]
+    Q3 -- "no" --> Q4{"is it a third-party catalogue<br/>shipping no opt-in props?"}
+    Q4 -- "yes" --> A8["a catalogue that ships none checks nobody.<br/>Reference DiagnosticCatalog yourself."]
+    Q4 -- "no" --> Q5{"do you reference a catalogue<br/>describing the rules you suppress?"}
+    Q5 -- "no" --> A3["DCAT0006 reports only rules it can see.<br/>No catalogue, no match, silence by design."]
+    Q5 -- "yes" --> Q6{"is the file generated?"}
+    Q6 -- "yes" --> A4["use-site diagnostics do not run<br/>on generated code, deliberately"]
+    Q6 -- "no" --> A5["check .editorconfig severity"]
 ```
 
 **The analyzers are not a package you add.** Referencing `DiagnosticCatalog.Sonar` gives you
@@ -31,11 +36,34 @@ which every catalogue depends on and none may hide
 ([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md)), so a catalogue
 reference is enough. Where neither is in the graph, no analyzer is loaded and nothing reports.
 
+**The checks stop at the project that referenced a catalogue.** A project that reaches one only
+through another package — a library that took a catalogue for its own suppressions — is deliberately
+not analysed by it, because it chose neither
+([ADR-0038](../adr/0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.en.md)). This
+is the answer when a solution has diagnostics in one project and silence in the next. Reference the
+catalogue where you want the checks, or ask for them without a reference:
+
+```xml
+<PropertyGroup>
+  <EnableDiagnosticCatalogAnalyzers>true</EnableDiagnosticCatalogAnalyzers>
+</PropertyGroup>
+```
+
+**The same property is the opt-out**, so a `false` anywhere it reaches — a `Directory.Build.props`
+two folders up included — is silence with no other symptom. Worth grepping for before anything else
+on this list.
+
+**A third-party catalogue may ship no opt-in at all.** A catalogue delivers the analyzers by packing
+`build/<its own package id>.props`; one that does not is silent for its consumers, and looks exactly
+like a codebase with nothing to report. Reference `DiagnosticCatalog` yourself to get the checks
+back, and tell its author —
+[Packaging a catalogue](packaging-a-catalogue.en.md#ship-the-opt-in-that-checks-your-consumers) is
+the three lines they are missing.
+
 **A dependency that hides the foundation hides the analyzers with it.** They arrive through
 `DiagnosticCatalog`, so `PrivateAssets="all"` on a reference to it — or to a catalogue, one hop
-further out — withholds both. That is legitimate on a library, which owes its consumers no attribute
-and may decline to impose analysis on them; on a catalogue it is a defect, because the same lever
-takes `[DiagnosticRule]` away as well and
+further out — withholds both. On a catalogue that is a defect, because the same lever takes
+`[DiagnosticRule]` away as well and
 [`CS0246`](#cs0246-the-type-or-namespace-name-diagnosticrule-could-not-be-found) is what its
 consumers get instead.
 
