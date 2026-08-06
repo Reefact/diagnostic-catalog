@@ -44,6 +44,14 @@ A packed catalogue's dependency on `DiagnosticCatalog` carries NuGet's default p
 which names analyzers among the excluded assets. The flow §16.3 measured therefore holds despite
 that list rather than because of it.
 
+Two further behaviours were measured against real packages while drafting this record, outside CI. A
+project referencing two packages that request different versions of `DiagnosticCatalog` resolves
+exactly one of them, the higher: NuGet unifies a package identity across the graph, so two
+foundations cannot sit side by side in one compilation. And a project referencing two packages that
+each carry an analyzer assembly of the same file name but a different assembly version receives one
+of them — the build passed only the higher-versioned analyzer to the compiler and the diagnostics
+were not duplicated, while two code-fix assemblies of identical version were both passed through.
+
 `DCAT0006` ships as an error by default
 ([ADR-0027](0027-ship-the-use-site-diagnostics-as-errors.en.md)), on the stated ground that
 referencing a catalogue package is itself the statement of intent.
@@ -119,10 +127,13 @@ checked looks exactly like one whose consumers are.
 The most direct reading of the goal: a catalogue becomes self-sufficient, and no consumer needs to
 know that a foundation exists at all.
 
-Rejected because the catalogues ride different trains at different paces. A project referencing two
-of them would load two copies of the analyzer assembly at two versions, and Roslyn reports from
-every analyzer it loads — so the same suppression would be diagnosed twice, by two versions that
-may disagree.
+Rejected because the catalogues ride different trains at different paces, so the version of the
+analyzer a project runs would be settled by conflict resolution between packages that version
+independently of one another. The measurement above says the obvious objection is not the real one:
+the diagnostics do not duplicate, one assembly wins outright. That is worse rather than better. The
+winner is whichever catalogue happens to carry the highest version, no catalogue can state what its
+own consumers are checked by, and updating an unrelated catalogue silently changes which analyzer
+reads the code.
 
 ### Ship a convenience metapackage depending on both, as §16.1 suggests
 
@@ -185,11 +196,13 @@ with a page the reader has to already suspect they need is the same bet that the
 
 * Rewrite §16.1 and §16.3 of the [specification](../specification.en.md), which describe the two
   packages and the transitivity levers a single package no longer needs.
-* Extend `tools/packaging/verify-consumption.sh` with the two-hop case, and do it before the next
-  `lib` tag rather than after.
-* Update the project README's status table and
-  [`doc/guide/troubleshooting`](../guide/troubleshooting.en.md), which both send a reader to a
-  package that would no longer exist.
+* Extend `tools/packaging/verify-consumption.sh` with the two-hop case and with the unification
+  measured for this record, so neither rests on a one-off run, and do it before the next `lib` tag
+  rather than after.
+* Update the project README's status table,
+  [`doc/guide/troubleshooting`](../guide/troubleshooting.en.md) and
+  [`doc/guide/packaging-a-catalogue`](../guide/packaging-a-catalogue.en.md), which all send a reader
+  to a package that would no longer exist.
 * State in the release notes of the first catalogue release carrying the change that adopting it
   fails the build on every literal suppression matching a catalogued rule.
 * Decide whether `DiagnosticCatalog.Self`, also on the `lib` train and also unpublished, keeps its
