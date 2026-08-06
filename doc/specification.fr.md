@@ -451,8 +451,8 @@ réclame.
 Chaque site d'utilisation paie deux fois le nom du conteneur :
 
 ```csharp
-[SuppressMessage(JustDummiesRules.JD0007.Category, JustDummiesRules.JD0007.Id)]
-[SuppressMessage(Dummies.JD0007.Category, Dummies.JD0007.Id)]
+[SuppressMessage(JustDummiesRules.JD0007.Category, JustDummiesRules.JD0007.Id, Justification = "…")]
+[SuppressMessage(Dummies.JD0007.Category, Dummies.JD0007.Id, Justification = "…")]
 ```
 
 La forme catalogue est intrinsèquement plus verbeuse que le littéral qu'elle
@@ -751,8 +751,9 @@ vers le champ `Category` du type de règle et que l'initialiseur ne joue aucun r
 cette résolution. Ce que cela coûte, c'est une orthographe par valeur de catégorie, sur
 un catalogue qui en répète très peu sur un très grand nombre de règles.
 
-La violation est signalée par `DCAT0011`, en `Warning` : le public est celui qui écrit
-un catalogue, ce qui est le partage de l'ADR-0027, et il n'y a pas d'erreur à signaler.
+La violation est signalée par `DCAT0011`, en `Warning` : la règle compile, se réduit au bon
+littéral et supprime exactement ce qu'elle doit — ce qui manque est la déclaration unique qui
+l'empêche de dériver, ce qui est le niveau avertissement de l'ADR-0040.
 
 Parce que l'initialiseur est de la syntaxe, c'est la seule exigence du §8 qui ne peut
 pas être évaluée sur un symbole de métadonnées. Elle est donc strictement limitée à la
@@ -960,20 +961,20 @@ numéro que ce document a déjà dépensé.
 | Id | Cible | Titre | Sévérité par défaut | Livré |
 | --- | --- | --- | --- | --- |
 | `DCAT0001` | utilisation | Category and Id must reference the same diagnostic rule | Error | oui |
-| `DCAT0002` | définition | A diagnostic rule must be declared as a static non-generic class | Warning | oui |
-| `DCAT0003` | définition | A diagnostic rule must expose a public constant string named Id | Warning | oui |
-| `DCAT0004` | définition | A diagnostic rule must expose a public constant string named Category | Warning | oui |
+| `DCAT0002` | définition | A diagnostic rule must be declared as a static non-generic class | Error | oui |
+| `DCAT0003` | définition | A diagnostic rule must expose a public constant string named Id | Error | oui |
+| `DCAT0004` | définition | A diagnostic rule must expose a public constant string named Category | Error | oui |
 | `DCAT0005` | définition | The diagnostic rule type name should match its Id | Info | oui |
 | `DCAT0006` | utilisation | Use a diagnostic catalog reference instead of string literals | Error | **oui — cœur** |
 | `DCAT0007` | utilisation | Suppression mixes a catalog reference with a string literal | Error | oui |
 | `DCAT0008` | utilisation | Suppression identifier does not resolve to a known diagnostic rule | Aucune (opt-in) | non |
-| `DCAT0009` | utilisation | UnconditionalSuppressMessage only accepts IL#### identifiers | Warning | oui |
+| `DCAT0009` | utilisation | UnconditionalSuppressMessage only accepts IL#### identifiers | Error | oui |
 | `DCAT0010` | utilisation | Referenced diagnostic rule type is malformed | Warning | non |
 | `DCAT0011` | déclaration | A diagnostic rule's category must reference a declared category constant | Warning | oui |
 | `DCAT0012` | déclaration | A rule identifier should be written as nameof | Warning | oui |
 | `DCAT0013` | déclaration | The diagnostic rule type name does not say its Id | Warning | oui |
-| `DCAT0014` | utilisation | A suppression must carry a justification | Warning | oui |
-| `DCAT0015` | empaquetage | A catalogue package must ship the analyzer opt-in | Warning | oui |
+| `DCAT0014` | utilisation | A suppression must carry a justification | Error | oui |
+| `DCAT0015` | empaquetage | A catalogue package must ship the analyzer opt-in | Error | oui |
 
 Les diagnostics de définition (`DCAT0002`–`DCAT0005`, `DCAT0011`–`DCAT0013`) ne se
 déclenchent que sur du code source visible par le compilateur. Une règle mal formée
@@ -1006,8 +1007,8 @@ la complétion les propose tous dans une même liste, et les types déclarants
 coïncident dans le premier cas ci-dessous :
 
 ```csharp
-[SuppressMessage(SomeRules.RULE001.Id, SomeRules.RULE001.Category)]
-[SuppressMessage(SomeRules.RULE001.Category, SomeRules.RULE001.HelpLinkUri)]
+[SuppressMessage(SomeRules.RULE001.Id, SomeRules.RULE001.Category, Justification = "…")]
+[SuppressMessage(SomeRules.RULE001.Category, SomeRules.RULE001.HelpLinkUri, Justification = "…")]
 ```
 
 Les deux compilent, les deux résolvent, et aucun ne supprime quoi que ce soit :
@@ -1274,10 +1275,10 @@ s'annonce.
 l'identifiant change quel diagnostic est supprimé. Laquelle des deux est
 l'erreur n'est pas connaissable depuis le code (ADR-0018).
 
-**Sévérité.** `Warning`, aux côtés des autres diagnostics de définition plutôt
-qu'au-dessus d'eux. La règle est neuve et traîne déjà une forme de faux positif
-connue — la forme à nom convivial du §11.5 — elle mérite donc une version avant
-qu'on l'autorise à arrêter un build. L'auteur de catalogue qui la veut plus
+**Sévérité.** `Warning`. La référence compile, se résout et supprime le bon
+diagnostic ; ce qu'elle fait, c'est tromper tout lecteur du site d'utilisation, ce qui
+est le niveau avertissement de l'ADR-0040 — et contrairement au niveau erreur, aucune
+réparation n'est même désignable par un outil. L'auteur de catalogue qui la veut plus
 stricte la hausse dans `.editorconfig`, ce que le fait même de la signaler lui
 procure.
 
@@ -1286,9 +1287,11 @@ procure.
 Signalé au site d'utilisation lorsqu'une suppression ne porte aucune
 `Justification`, ou en porte une vide.
 
+<!-- dcat-doc:missing-justification le déclencheur de DCAT0014 lui-même ; les deux lignes sont incorrectes à dessein -->
+
 ```csharp
-[SuppressMessage(SomeRules.RULE001.Category, SomeRules.RULE001.Id)]   // signalé
-[SuppressMessage("Usage", "RULE001")]                                 // signalé
+[SuppressMessage(SomeRules.RULE001.Category, SomeRules.RULE001.Id)]   // incorrect : signalé
+[SuppressMessage("Usage", "RULE001")]                                 // incorrect : signalé
 ```
 
 Tous les autres diagnostics de site d'utilisation de ce document vérifient QUEL
@@ -1339,13 +1342,13 @@ question à laquelle elle n'a jamais répondu.
 partie de l'attribut qui ne se lit pas dans le code, ce qui est exactement
 l'interdit de l'ADR-0018.
 
-**Sévérité.** `Warning`, et non `Error` comme les trois règles de site
-d'utilisation que l'ADR-0027 a promues. Il signale des lignes par ailleurs
-entièrement correctes, et il les signale dès le premier build suivant la
-référence au paquet plutôt qu'après une migration — le livrer en erreur ferait
-tomber ce build sur chaque suppression non documentée que le codebase avait déjà.
-Une ligne d'`.editorconfig` la hausse, et le guide d'adoption nomme celle qui
-l'abaisse le temps de traiter un arriéré.
+**Sévérité.** `Error`. Une justification fait partie obligatoire du contrat et n'en
+est pas l'ornement (ADR-0040), et l'information qu'elle porte est la seule qu'aucun
+outil ne peut récupérer ensuite. Il signale dès le premier build suivant la référence
+au paquet plutôt qu'après une migration : une base de code existante le rencontre donc
+sur chaque suppression non documentée d'un coup — exactement comme `DCAT0006`, sur la
+même build. Le guide d'adoption nomme l'unique ligne d'`.editorconfig` qui abaisse les
+deux le temps de traiter un arriéré.
 
 ---
 
@@ -1378,15 +1381,25 @@ Deux conséquences suivent, et ce sont des exigences plutôt que des remarques :
   revient à apparier la façon dont le fichier a été déclaré, et MSBuild offre plus
   d'une orthographe du même empaquetage. Un catalogue qui pose
   `DiagnosticCatalogAnalyzerOptIn` à `packed` n'est pas classé.
+* **Seul un projet en train de produire un paquet est classé.** MSBuild marque tout
+  projet comme empaquetable par défaut : « publie un paquet » ne se lit donc pas sur
+  ce drapeau. Une application console ou une bibliothèque qui déclare des règles pour
+  un référentiel interne — l'agencement que promeut le §16.2 — serait classée comme
+  un catalogue publiant sans son opt-in. Le verdict est donc calculé pendant la
+  production du paquet, qui est le moment où le défaut existe et le seul où son
+  message peut être suivi d'effet.
 
 **Aucune correction.** La réparation est une ligne dans un fichier projet, qui
 n'est pas un document que la couche de correctifs édite.
 
-**Sévérité.** `Warning`, avec les autres diagnostics de définition : il s'adresse
-à qui rédige un catalogue, et les erreurs de site d'utilisation du §11 sont pour
-les consommateurs. C'est aussi le seul diagnostic d'ici qui lit quelque chose
-d'extérieur à la compilation, il peut donc se tromper là où les autres ne le
-peuvent pas, et une erreur à tort arrête un build par ailleurs correct.
+**Sévérité.** `Error`. Le paquet ne fournit pas le comportement pour lequel il
+existe : référencer ce catalogue ne vérifie personne, silencieusement et de façon
+indiscernable d'une base de code sans rien à signaler (ADR-0040). C'est le seul
+diagnostic d'ici qui lit quelque chose d'extérieur à la compilation, ce qui est une
+façon de se tromper que les autres n'ont pas — à quoi répondent la dérivation de la
+classification depuis les réglages d'empaquetage du projet lui-même et l'échappatoire
+explicite `DiagnosticCatalogAnalyzerOptIn` ci-dessus, plutôt qu'un signalement plus
+discret que ce qu'il nomme.
 
 ---
 
@@ -2031,12 +2044,17 @@ dotnet_diagnostic.DCAT0015.severity = error
 ```
 
 L'exemple surcharge toutes les règles pour montrer que toutes sont atteignables ;
-ce n'est pas un énoncé des défauts, que donne le §16. `DCAT0001`, `DCAT0006` et
-`DCAT0007` sont déjà livrés en `Error`, donc la ligne qui compte en pratique est
-celle qui va dans l'autre sens — `DCAT0006` descendu à `suggestion` le temps
+ce n'est pas un énoncé des défauts, que donne le §16. Neuf des treize sont déjà
+livrés en `Error`, donc les lignes qui comptent en pratique sont celles qui vont
+dans l'autre sens — `DCAT0006` et `DCAT0014` descendus à `suggestion` le temps
 qu'une base de code existante migre
-([ADR-0027](adr/0027-ship-the-use-site-diagnostics-as-errors.fr.md)). Aucun format
-de configuration propriétaire n'est requis pour la première version.
+([ADR-0040](adr/0040-grade-every-dcat-diagnostic-by-what-it-says.fr.md)).
+
+Une propriété MSBuild existe à côté de ces clés et répond à une autre question :
+`EnableDiagnosticCatalogAnalyzers` décide si les analyzers sont CHARGÉS dans un
+projet (§16.3), là où une clé `.editorconfig` décide de ce qu'un analyzer chargé
+signale. Aucun format de configuration propriétaire n'est requis pour la première
+version.
 
 ---
 

@@ -12,27 +12,43 @@ referencing any catalogue turns them on
 ([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md)); referencing
 `DiagnosticCatalog` alone is the way to be checked with no catalogue at all.
 
-They fall into two groups. **Definition** diagnostics look at a rule you declared; you only see them
-if you write a catalogue. **Use-site** diagnostics look at a suppression you wrote, which is most
-people.
+They fall into three groups by what they look at. **Definition** diagnostics look at a rule you
+declared; you only see them if you write a catalogue. **Use-site** diagnostics look at a suppression
+you wrote, which is most people. **Packaging** looks at the catalogue package you are about to
+publish.
 
-| Id | Looks at | Title | Default | Fix |
+| Id | Looks at | Title | Default severity | Fix |
 | --- | --- | --- | --- | --- |
 | [`DCAT0001`](#dcat0001) | use site | Category and Id must reference the same diagnostic rule | **Error** | two, unranked |
-| [`DCAT0002`](#dcat0002) | definition | A diagnostic rule must be declared as a static non-generic class | Warning | yes, conditionally |
-| [`DCAT0003`](#dcat0003) | definition | A diagnostic rule must expose a public constant string named `Id` | Warning | yes, conditionally |
-| [`DCAT0004`](#dcat0004) | definition | A diagnostic rule must expose a public constant string named `Category` | Warning | yes, conditionally |
+| [`DCAT0002`](#dcat0002) | definition | A diagnostic rule must be declared as a static non-generic class | **Error** | yes, conditionally |
+| [`DCAT0003`](#dcat0003) | definition | A diagnostic rule must expose a public constant string named `Id` | **Error** | yes, conditionally |
+| [`DCAT0004`](#dcat0004) | definition | A diagnostic rule must expose a public constant string named `Category` | **Error** | yes, conditionally |
 | [`DCAT0005`](#dcat0005) | definition | The diagnostic rule type name should match its `Id` | Info | — |
 | [`DCAT0006`](#dcat0006) | use site | Use a diagnostic catalog reference instead of string literals | **Error** | yes |
 | [`DCAT0007`](#dcat0007) | use site | Suppression mixes a catalog reference with a string literal | **Error** | yes, conditionally |
-| [`DCAT0009`](#dcat0009) | use site | `UnconditionalSuppressMessage` only accepts `IL####` identifiers | Warning | — |
+| [`DCAT0009`](#dcat0009) | use site | `UnconditionalSuppressMessage` only accepts `IL####` identifiers | **Error** | — |
 | [`DCAT0011`](#dcat0011) | definition | A diagnostic rule's category must reference a declared category constant | Warning | — |
 | [`DCAT0012`](#dcat0012) | definition | A rule identifier should be written as `nameof` | Warning | yes, conditionally |
 | [`DCAT0013`](#dcat0013) | definition | The diagnostic rule type name does not say its `Id` | Warning | — |
-| [`DCAT0014`](#dcat0014) | use site | A suppression must carry a justification | Warning | — |
-| [`DCAT0015`](#dcat0015) | packaging | A catalogue package must ship the analyzer opt-in | Warning | — |
+| [`DCAT0014`](#dcat0014) | use site | A suppression must carry a justification | **Error** | — |
+| [`DCAT0015`](#dcat0015) | packaging | A catalogue package must ship the analyzer opt-in | **Error** | — |
 
 `DCAT0008` and `DCAT0010` are specified but deliberately not in 1.0.
+
+**The severity says what kind of defect it is, never who reads the message**
+([ADR-0040](../adr/0040-grade-every-dcat-diagnostic-by-what-it-says.en.md)):
+
+* **Error** — the mandatory contract is not satisfied, the suppression is incorrect or has no effect,
+  or the package does not deliver what it promises. Nine ids, and none of them reports a line that
+  works.
+* **Warning** — the code works today and stays liable to drift (`DCAT0011`, `DCAT0012`) or misleads
+  whoever reads the use site (`DCAT0013`).
+* **Info** — `DCAT0005` alone: a legitimate exception nobody can repair, reported so the boundary
+  `DCAT0013` enforces one step later is visible rather than silent.
+
+Every one of them is overridable per id and per path in `.editorconfig`, which is how a migration
+stages the two that arrive on the first build after referencing a catalogue — see
+[Configuring them](#configuring-them).
 
 ---
 
@@ -43,8 +59,10 @@ people.
 **The category and the identifier come from two different rules.**
 
 ```csharp
-[SuppressMessage(SonarRule.S1144.Category, SonarRule.S2094.Id)]
-//               ^^^^^ from S1144         ^^^^^ from S2094
+[SuppressMessage(
+    SonarRule.S1144.Category,       // from S1144
+    SonarRule.S2094.Id,             // from S2094
+    Justification = "Called by the serializer.")]
 ```
 
 Copy-paste, nearly always: you duplicated a working suppression and changed one half.
@@ -70,8 +88,8 @@ correcting the identifier changes it.
 referenced, and still nothing suppressed:
 
 ```csharp
-[SuppressMessage(SonarRule.S1144.Id, SonarRule.S1144.Category)]   // swapped
-[SuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.HelpLinkUri)]
+[SuppressMessage(SonarRule.S1144.Id, SonarRule.S1144.Category, Justification = "…")]      // swapped
+[SuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.HelpLinkUri, Justification = "…")]
 ```
 
 A rule type carries more than the pair, so completion offers every member of it in one list. Both
@@ -84,7 +102,7 @@ member or the wrong rule is not something a tool can know.
 **These string literals match a rule your project can see.**
 
 ```csharp
-[SuppressMessage("Major Code Smell", "S1144")]
+[SuppressMessage("Major Code Smell", "S1144", Justification = "Called by the serializer.")]
 ```
 
 Reported only when a known rule matches the pair, so a codebase that has adopted no catalogue stays
@@ -94,7 +112,10 @@ The identifier is truncated at the first colon before matching, exactly as Rosly
 Visual Studio's *Suppress → In Source* generates is recognised:
 
 ```csharp
-[SuppressMessage("Major Code Smell", "S1144:Unused private members should be removed")]
+[SuppressMessage(
+    "Major Code Smell",
+    "S1144:Unused private members should be removed",
+    Justification = "Called by the serializer.")]
 ```
 
 The suffix is dropped by the fix. It duplicated the rule's own title, which the catalogue carries as
@@ -115,7 +136,7 @@ between them is yours.
 **One half migrated, one half still a literal.**
 
 ```csharp
-[SuppressMessage(SonarRule.S1144.Category, "S1144")]
+[SuppressMessage(SonarRule.S1144.Category, "S1144", Justification = "Called by the serializer.")]
 ```
 
 The most common half-done state, and the only one where the intended rule is known without
@@ -131,7 +152,10 @@ silenced today — and let the original warning back in. That is a decision, not
 **A non-`IL` rule used in `UnconditionalSuppressMessage`.**
 
 ```csharp
-[UnconditionalSuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.Id)]
+[UnconditionalSuppressMessage(
+    SonarRule.S1144.Category,
+    SonarRule.S1144.Id,
+    Justification = "Kept for the trimmer; the reflection target is preserved by a descriptor.")]
 ```
 
 That attribute is read by the trimmer, from your compiled assembly, long after the compiler has
@@ -143,12 +167,19 @@ The check mirrors the trimmer's decoder rather than a stricter pattern, so ident
 honour are left alone — including its own `IL2026:FriendlyName` form. Reporting those would be
 telling you to change something that works.
 
+It under-detects: an identifier reached through an intermediate constant is missed. That is a shape
+this reports **nothing** about, and it is deliberately not a reason for a quieter severity — a form
+the analyzer cannot see is a false negative, and it says nothing about how certain the reported ones
+are ([ADR-0040](../adr/0040-grade-every-dcat-diagnostic-by-what-it-says.en.md)).
+
 ### `DCAT0014`
 
-**The suppression names a rule and never says why.**
+**The suppression never says why it is there.**
+
+<!-- dcat-doc:missing-justification the DCAT0014 trigger; the absent reason IS what this block shows -->
 
 ```csharp
-[SuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.Id)]
+[SuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.Id)]   // incorrect: no Justification
 ```
 
 Everything else on this page is about *which* diagnostic a line silences. This one is about the other
@@ -178,8 +209,10 @@ An empty string, whitespace, and `Justification = null` are blank and reported a
 diagnostic here that needs nothing from a catalogue: a literal suppression silences a warning exactly
 as a reference does, and says exactly as little about why.
 
+<!-- dcat-doc:missing-justification the same DCAT0014 trigger, written entirely in literals -->
+
 ```csharp
-[SuppressMessage("Usage", "xUnit1004")]   // reported, even with no catalogue in sight
+[SuppressMessage("Usage", "xUnit1004")]   // incorrect, and reported with no catalogue in sight
 ```
 
 That line matters more than it looks. [`DCAT0006`](#dcat0006) reports a literal pair only when a rule
@@ -199,10 +232,11 @@ already run StyleCop's `SA1404`, you will see both; they ask the same question, 
 **No fix, and none is possible.** What belongs there is the one thing in the attribute that cannot be
 read off the code ([ADR-0018](../adr/0018-a-code-fix-never-decides-what-only-the-author-can.en.md)).
 
-It ships as a `Warning` rather than an error, unlike its three use-site neighbours: it reports lines
-that are otherwise entirely correct, and a project that adopted a catalogue before this rule existed
-should not have its build fail on them overnight. One line of `.editorconfig` raises it the day you
-want it to.
+**It ships as an `Error`**, because a justification is part of the contract rather than an ornament
+on it ([ADR-0040](../adr/0040-grade-every-dcat-diagnostic-by-what-it-says.en.md)). It reports from
+the first build after the reference rather than after a migration, so an existing codebase meets it
+on every suppression at once — which is exactly what `DCAT0006` does, on the same build, and the
+same `.editorconfig` line stages both while you write the reasons you never wrote.
 
 ---
 
@@ -210,9 +244,10 @@ want it to.
 
 These fire on code that declares rules. See [the catalogue author's guide](authoring-a-catalogue.en.md).
 
-They fall into two groups. `DCAT0002`, `DCAT0003`, `DCAT0004` and `DCAT0011` say the rule is
-**unusable or unanchored**; `DCAT0005`, `DCAT0012` and `DCAT0013` say it works and its name does not
-tell you what it is.
+They fall into two groups, and that split is the severity. `DCAT0002`, `DCAT0003` and `DCAT0004` say
+the rule is **unusable** — it publishes nothing a suppression can name — so they are errors.
+`DCAT0005`, `DCAT0011`, `DCAT0012` and `DCAT0013` say it works and is unanchored or misnamed, so
+they are not.
 
 Those that offer a fix offer it **when the repair is written in the code already**, and stay silent
 about it otherwise. That line is not caution for its own sake: a fix that guessed would produce a rule
@@ -415,8 +450,8 @@ picked one would be deciding which of them was the typo.
 **Your catalogue publishes rules and turns no analyzer on for the people who reference it.**
 
 ```
-warning DCAT0015: 'Contoso.Rules' packs no build/Contoso.Rules.props,
-                  so referencing this catalogue checks nobody
+error DCAT0015: 'Contoso.Rules' packs no build/Contoso.Rules.props,
+                so referencing this catalogue checks nobody
 ```
 
 A catalogue delivers the `DCAT` analyzers by packing `build/<its own package id>.props`, which sets
@@ -435,7 +470,8 @@ exists to remove, so it is reported to the only person who can end it.
 
 **Two things make this one unlike every other `DCAT`.**
 
-It reads a fact from **outside the compilation**. Whether a `.csproj` packs a file is not in any
+It reads a fact from **outside the compilation**, and that is why it has an escape hatch rather than
+a quieter severity. Whether a `.csproj` packs a file is not in any
 syntax tree, so the build classifies the packaging and publishes its verdict to the analyzer.
 Recognising how the file was declared means matching how it was *written*, and there is more than one
 spelling — so if yours is arranged in a way the match cannot see, say so and be believed:
@@ -446,9 +482,13 @@ spelling — so if yours is arranged in a way the match cannot see, say so and b
 </PropertyGroup>
 ```
 
-And it is reported at **compilation end**, which puts it in your build and in CI rather than under
-your cursor: the IDE surfaces compilation-end diagnostics only under full-solution analysis. The
-defect is a missing line in a project file, so that is the right place for it.
+And it is reported **while the package is being produced** — during `dotnet pack`, at compilation
+end. Not during an ordinary `dotnet build`, and that boundary is load-bearing: MSBuild marks every
+project packable by default, so a console application or an internal library that declares rules of
+its own would otherwise be told to ship a props file for a package nobody will ever publish. It
+therefore reaches you in the release job and in the release rehearsal, which is where a package is
+made, rather than under your cursor — the IDE surfaces compilation-end diagnostics only under
+full-solution analysis anyway.
 
 **No fix.** The repair is in a project file, which is not a document the code-fix layer edits.
 
@@ -458,66 +498,72 @@ defect is a missing line in a project file, so that is the right place for it.
 
 Standard Roslyn mechanisms, no proprietary format:
 
+Nine of the thirteen already ship as errors, so most projects write **nothing**. What is worth
+writing is the ramp — the two ids that land on every file of an existing codebase the day it
+references a catalogue:
+
 ```ini
 # .editorconfig
 [*.cs]
 
-# A suppression the trimmer discards. Not an error by default only because
-# DCAT0009 still misses an identifier reached through a constant.
-dotnet_diagnostic.DCAT0009.severity = error
+# Migrating an existing codebase. Both arrive on the first build: DCAT0006 on
+# every literal suppression a catalogue can match, DCAT0014 on every suppression
+# that never said why it exists. Keep them visible in the IDE and out of the
+# build, and delete each line when its backlog is gone.
+dotnet_diagnostic.DCAT0006.severity = suggestion
+dotnet_diagnostic.DCAT0014.severity = suggestion
+```
 
-# A suppression that never says why. Shipped as a warning because it reports
-# lines that are otherwise correct; raise it once yours all carry a reason.
-dotnet_diagnostic.DCAT0014.severity = error
+The three warnings go the other way — raise them if you publish a catalogue and would rather not
+merge a rule whose category can drift or whose name does not say what it suppresses:
 
-# Declaring rules — you only need these if you publish a catalogue.
-dotnet_diagnostic.DCAT0002.severity = error
-dotnet_diagnostic.DCAT0003.severity = error
-dotnet_diagnostic.DCAT0004.severity = error
+```ini
 dotnet_diagnostic.DCAT0011.severity = error
 dotnet_diagnostic.DCAT0012.severity = error
 dotnet_diagnostic.DCAT0013.severity = error
-dotnet_diagnostic.DCAT0015.severity = error
 
 # A name that could not have said its id. Raise it if you would rather review
 # every such declaration than let it pass.
 dotnet_diagnostic.DCAT0005.severity = warning
-
-# Migrating an existing codebase: keep it visible in the IDE, out of the build.
-# Delete the line when the last literal is gone.
-dotnet_diagnostic.DCAT0006.severity = suggestion
 ```
 
-`DCAT0001`, `DCAT0006` and `DCAT0007` are already errors, so nothing above raises them —
-the only one of the three worth touching is the last, and only while migrating
-([ADR-0027](../adr/0027-ship-the-use-site-diagnostics-as-errors.en.md)).
+The accepted values are Roslyn's own: `error`, `warning`, `suggestion`, `silent`, `none`, `default`.
+Scope a section to a path in the ordinary `.editorconfig` way when generated code or a legacy folder
+needs different treatment; [Adopting a catalogue](adopting-a-catalogue.en.md) is the strategy that
+supports.
 
-The category is `DiagnosticCatalog`, so you can also set them all at once:
+The category is `DiagnosticCatalog`, so you can also set them all at once — useful as a floor with a
+per-id exception on top, since the per-id key wins:
 
 ```ini
 dotnet_analyzer_diagnostic.category-DiagnosticCatalog.severity = error
+dotnet_diagnostic.DCAT0006.severity = suggestion
 ```
 
-Scope a section to a path in the ordinary `.editorconfig` way when generated code or a legacy folder
-needs different treatment.
-
-That same key set to `none` is how you turn the whole set **off**. Since the analyzers ship inside
-`DiagnosticCatalog`, there is no package reference left to decline: a project that wants the markers
-and none of the checking says so here rather than in its dependencies
-([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md)).
+**Silencing them and not loading them are different things.** That same category key set to `none`
+leaves the analyzers running and discards everything they report; setting the MSBuild property
+`EnableDiagnosticCatalogAnalyzers` to `false` stops them being loaded into that project at all, and
+the same property set to `true` asks for them from a project that reaches a catalogue only through
+some library. [Configuration](configuration.en.md#the-three-levers-and-what-each-one-actually-does)
+lays the three side by side, because they answer three different questions and are easy to mistake
+for one.
 
 ## What is deliberately not checked
 
 The analyzers verify that a suppression is **structurally coherent** — that it names one real rule,
 coherently. They do not, and will not:
 
-* validate an arbitrary string. `[SuppressMessage("Usage", "S1144")]` with a wrong category matches
-  no known rule and is reported by nothing. What makes a wrong category impossible is the
+* validate an arbitrary string. `[SuppressMessage("Usage", "S1144", Justification = "…")]` pairs a
+  category with an identifier that no catalogue in the compilation declares together, and **no
+  diagnostic here judges that pair**: `DCAT0001` compares two members of a rule this compilation can
+  see, and two strings offer it nothing to compare. `DCAT0014` still reports the same line if it
+  carries no justification — that is a different question, asked of every suppression — so "nothing
+  reports it" is only ever true of the pair. What makes a wrong category impossible is the
   *constant*, which the compiler checks — these diagnostics get you to the constants and keep you
   there;
 * judge whether suppressing a rule *there* was reasonable. `DCAT0014` requires that a
-  `Justification` be written, and reads it for its length alone — what it says is weighed by people,
-  never by these analyzers;
+  `Justification` be **present**, and reads it for its length alone — what it says is weighed by
+  people, never by these analyzers;
 * reach `#pragma warning disable` or `.editorconfig` severity keys, which take bare text outside the
   C# compilation model. No constant can ever be substituted into either.
 
