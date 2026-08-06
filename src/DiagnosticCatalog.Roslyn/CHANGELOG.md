@@ -54,8 +54,11 @@ inferring it from the number below.
   three letters (ADR-0033), so several `RS` catalogues would want the same two letters while
   `PackageIconTests` asserts no two icons match. Merging them into one catalogue has no manifest
   shape either — `package` is a single string, unlike `projects` and `assemblies`.
-* **Do not confuse this with `DiagnosticCatalog.Analyzers`**, which ships this library's own `DCAT`
-  diagnostics and does the checking. Same word, opposite role.
+* **Do not confuse this with the `DiagnosticCatalog.Analyzers` assembly**, which carries this
+  library's own `DCAT` diagnostics and does the checking. It is not a package — it rides inside
+  `DiagnosticCatalog`, which every catalogue depends on
+  ([ADR-0037](../../doc/adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md)) — but the
+  word is the same and the role is the opposite.
 * **Where `#pragma` is the only answer, no catalogue helps.** Several `RS` rules are reported against
   an assembly or a project file rather than a syntax node — `RS1036`, `RS1038`, `RS2008` — and
   `#pragma warning disable` takes bare identifiers, never a constant. This repository silences three

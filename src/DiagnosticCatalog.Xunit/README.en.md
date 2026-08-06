@@ -25,7 +25,7 @@ analyzer would rather see written another way. These are local exceptions with a
 which is a suppression's job rather than an `.editorconfig` entry's.
 
 ```csharp
-[SuppressMessage("Assertions", "xUnit2013:Do not use equality check to check for collection size", ...)]
+[SuppressMessage("Assertions", "xUnit2013:Do not use equality check to check for collection size", Justification = "…")]
 ```
 
 Three strings, and nothing checks any of them. Get the id wrong and the suppression silently

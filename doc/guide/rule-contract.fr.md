@@ -167,7 +167,7 @@ le même membre est donc équivalente.
 **L'accès qualifié à un membre** — la forme canonique :
 
 ```csharp
-[SuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.Id)]
+[SuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.Id, Justification = "…")]
 ```
 
 **Un alias de type** — pleinement équivalent, et recommandé quand le nom du conteneur est long :
@@ -175,7 +175,7 @@ le même membre est donc équivalente.
 ```csharp
 using Unused = DiagnosticCatalog.Sonar.SonarRule.S1144;
 
-[SuppressMessage(Unused.Category, Unused.Id)]
+[SuppressMessage(Unused.Category, Unused.Id, Justification = "…")]
 ```
 
 **`using static`** — reconnu, **pas recommandé** :
@@ -183,7 +183,7 @@ using Unused = DiagnosticCatalog.Sonar.SonarRule.S1144;
 ```csharp
 using static DiagnosticCatalog.Sonar.SonarRule.S1144;
 
-[SuppressMessage(Category, Id)]
+[SuppressMessage(Category, Id, Justification = "…")]
 ```
 
 Deux directives `using static` pour deux règles dans un même fichier rendent `Category` et `Id`
@@ -195,7 +195,7 @@ qu'une seconde suppression est nécessaire. L'analyseur la résout ; la document
 ```csharp
 private const string RuleId = SonarRule.S1144.Id;
 
-[SuppressMessage(SonarRule.S1144.Category, RuleId)]
+[SuppressMessage(SonarRule.S1144.Category, RuleId, Justification = "…")]
 ```
 
 Quand un argument résout vers un champ constant dont le type déclarant n'est *pas* un type de règle,
@@ -209,7 +209,10 @@ cette bibliothèque fait de même. C'est ce qui rend reconnaissable la forme que
 Dans la source* de Visual Studio :
 
 ```csharp
-[SuppressMessage("Major Code Smell", "S1144:Unused private members should be removed")]
+[SuppressMessage(
+    "Major Code Smell",
+    "S1144:Unused private members should be removed",
+    Justification = "…")]
 ```
 
 Le suffixe est un nom convivial et ne porte aucun sens pour la plateforme. Le correctif de `DCAT0006`

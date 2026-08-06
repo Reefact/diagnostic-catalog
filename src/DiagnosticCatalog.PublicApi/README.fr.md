@@ -38,7 +38,7 @@ depuis une infobulle d'IDE qui affiche un titre non unique, ou depuis un log de 
 lignes plus haut.
 
 ```csharp
-[SuppressMessage("ApiDesign", "RS0037:Enable tracking of nullability...", ...)]  // laquelle ?
+[SuppressMessage("ApiDesign", "RS0037:Enable tracking of nullability...", Justification = "…")]  // laquelle ?
 ```
 
 Trompez-vous d'identifiant et la suppression ne fait silencieusement rien — l'avertissement reste.

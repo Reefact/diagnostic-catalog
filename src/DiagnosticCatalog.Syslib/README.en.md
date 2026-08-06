@@ -28,7 +28,7 @@ catalogue in this family is a concept a person could arrive at: `Usage`, `Securi
 carried by exactly one rule.
 
 ```csharp
-[SuppressMessage("Interoperability", "SYSLIB1090:...", ...)]   // wrong, and nothing says so
+[SuppressMessage("Interoperability", "SYSLIB1090:...", Justification = "…")]   // wrong, and nothing says so
 ```
 
 Get the id wrong and the suppression silently does nothing — the warning simply stays. Get the

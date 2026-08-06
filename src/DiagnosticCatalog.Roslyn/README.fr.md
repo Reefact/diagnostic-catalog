@@ -39,7 +39,7 @@ sous la forme longue et trois sous la courte, sans rien pour dire laquelle est l
 une catégorie contenant exactement une règle.
 
 ```csharp
-[SuppressMessage("MicrosoftCodeAnalysisCorrectness", "RS1016:...", ...)]   // faux, et silencieux
+[SuppressMessage("MicrosoftCodeAnalysisCorrectness", "RS1016:...", Justification = "…")]   // faux, et silencieux
 ```
 
 Trompez-vous d'identifiant et la suppression ne fait silencieusement rien — l'avertissement reste,

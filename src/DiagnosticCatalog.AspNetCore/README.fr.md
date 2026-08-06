@@ -27,7 +27,7 @@ que vous avez activée se règle dans `.editorconfig` ; une règle venue avec le
 exception à l'unique endroit où elle a tort, avec une `Justification` à côté du code qui la mérite.
 
 ```csharp
-[SuppressMessage("Usage", "ASP0018:Unused route parameter", ...)]
+[SuppressMessage("Usage", "ASP0018:Unused route parameter", Justification = "…")]
 ```
 
 Trois chaînes, et rien n'en vérifie aucune. Trompez-vous d'identifiant et la suppression ne fait

@@ -9,7 +9,7 @@ consommateurs que vous l'ayez voulu ou non, et ce que nuget.org fera de votre RE
 ## Référencez la fondation de la façon ordinaire
 
 ```xml
-<PackageReference Include="DiagnosticCatalog" Version="0.1.0" />
+<PackageReference Include="DiagnosticCatalog" Version="1.0.0" />
 ```
 
 Pas `PrivateAssets="all"`. Vos consommateurs ont besoin que `DiagnosticRuleAttribute` soit résoluble

@@ -179,7 +179,7 @@ Reference one catalogue, or write the reference by hand.
 The literal names a **different** rule from the reference beside it:
 
 ```csharp
-[SuppressMessage(SonarRule.S1144.Category, "S9999")]
+[SuppressMessage(SonarRule.S1144.Category, "S9999", Justification = "…")]
 ```
 
 Completing it from `S1144` would silence a different rule than the one silenced today, and let the

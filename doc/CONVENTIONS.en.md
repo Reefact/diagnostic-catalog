@@ -328,6 +328,25 @@ exemption is. Per document, so the same misspelling on any other page still fail
 required. And a declaration that names a reference the page no longer shows fails too — an exemption
 nothing uses covers whatever gets written there next.
 
+### Showing a suppression that carries no justification
+
+Every `SuppressMessage` and `UnconditionalSuppressMessage` in a `csharp` fence carries a non-blank
+`Justification`, because a reader copies what a page shows and `DCAT0014` reports what they copied.
+That holds even where the sample is about something else entirely — a wrong identifier, a mismatched
+pair, a form the fix rewrites — since a second diagnostic on the same line is noise the page did not
+mean to teach.
+
+Some fences have to show the omission: `DCAT0014`'s own trigger is a suppression with no reason.
+Declare it immediately before the fence, with the reason:
+
+```markdown
+<!-- dcat-doc:missing-justification the DCAT0014 trigger; the absent reason IS what this block shows -->
+```
+
+Local to the next fenced block rather than to the whole page, so a document that has to show one
+incorrect sample keeps every other sample checked. The reason is required, and the sample itself
+should say `incorrect` where a reader will meet it.
+
 ## Adding a page
 
 1. Write `doc/guide/<name>.en.md` with the banner, the audience line and the footer.
