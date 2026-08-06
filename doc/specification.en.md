@@ -1231,11 +1231,12 @@ is what reporting it at all provides.
 
 ### 11.14 `DCAT0014` — suppression without a justification
 
-Reported at the use site when a suppression naming a catalogue rule carries no
-`Justification`, or carries one that is blank.
+Reported at the use site when a suppression carries no `Justification`, or carries
+one that is blank.
 
 ```csharp
 [SuppressMessage(SomeRules.RULE001.Category, SomeRules.RULE001.Id)]   // reported
+[SuppressMessage("Usage", "RULE001")]                                 // reported
 ```
 
 Every other use-site diagnostic in this document checks WHICH diagnostic a line
@@ -1254,29 +1255,40 @@ recognising a tool's own token for "not written yet" is reading a marker, wherea
 ruling on `"n/a"` or `"obvious"` would be reading prose. `Justification = null`
 is blank, as is any string of whitespace.
 
-**Trigger condition.** At least one of the two positional arguments resolves to a
-member of a `[DiagnosticRule]` type. The restriction is §11.9's, for §11.9's
-reason: a suppression written entirely in values is `DCAT0006`'s business, and
-requiring justifications there would report every hand-written suppression in a
-project that has adopted no catalogue. The two hand over — once the pair is
-migrated, this takes the line. Applies to both attributes of §9.1; the trimmer's
-carries the same property.
+**Trigger condition.** Every suppression the analyzer reads, whether its pair
+references a catalogue rule or is written entirely in values
+([ADR-0037](adr/0037-require-a-justification-on-every-suppression.en.md)). This is
+the one diagnostic here that resolves no rule to have something to say, so the
+restriction §11.9 places on itself does not apply: `DCAT0009` needs the identifier
+to be a rule before it can judge it, and this needs only the attribute. It is also
+the only check reaching a literal that names a rule no referenced catalogue
+describes — `DCAT0006` matches such a pair against nothing and stays silent, so
+before this the line was reported by nothing at all. Applies to both attributes of
+§9.1; the trimmer's carries the same property.
+
+**The one exception** is an identifier that resolves to no value — `null`, which
+compiles. Roslyn matches a suppression on the identifier, so such a line silences
+nothing, has nothing to justify, and gives the message nothing to name.
 
 **Location.** The whole attribute, as every use-site diagnostic reports.
 
 **Reported alongside other faults.** The question is independent of the pair's
-state, so an incoherent or half-migrated suppression that also says nothing
-reports both.
+state, so an incoherent, half-migrated or replaceable suppression that also says
+nothing reports both. A literal pair matching a known rule therefore carries
+`DCAT0006` and this one at once, and applying the migration fix leaves this one
+standing — converting a suppression does not answer the question it never
+answered.
 
 **No code fix**, and none is possible: what belongs there is the one part of the
 attribute that cannot be read off the code, which is ADR-0018's exact
 prohibition.
 
 **Severity.** `Warning`, and not `Error` like the three use-site rules ADR-0027
-promoted. It reports lines that are otherwise entirely correct — the pair
-resolves and the compiler checks it — so shipping it as an error would fail the
-build of every project that adopted a catalogue before this rule existed. One
-`.editorconfig` line raises it.
+promoted. It reports lines that are otherwise entirely correct, and it reports
+them from the first build after the package is referenced rather than after a
+migration — shipping it as an error would fail that build on every undocumented
+suppression a codebase already had. One `.editorconfig` line raises it, and the
+adoption guide names the line that lowers it while a backlog is worked through.
 
 ---
 
@@ -1458,7 +1470,7 @@ and "index once per compilation" understates it. Two mandatory mitigations:
    `Lazy<T>`, so the cost is paid only when a use site actually needs a
    value-based lookup — that is, only for `DCAT0006` / `DCAT0008`.
 
-`DCAT0001`, `DCAT0007` and `DCAT0009` need no index at all: each resolves its
+`DCAT0001`, `DCAT0007`, `DCAT0009` and `DCAT0014` need no index at all: each resolves its
 rule from the attribute itself. `DCAT0007` does compare a value, but against the
 rule its already-migrated argument names (§11.7), so it never looks one up —
 comparing a value and looking one up are not the same need.
@@ -1965,8 +1977,11 @@ reference, a binary breaking change in either direction.
   `DCAT0014`;
 * a `Justification` of one word, and one reached through a constant (must report
   nothing: §11.14 requires presence and reads no further);
-* a pair written entirely in values, carrying no `Justification` (must not report
-  `DCAT0014`).
+* a pair written entirely in values, carrying no `Justification` → `DCAT0014`,
+  including one naming a rule no referenced catalogue describes, which nothing
+  else reports;
+* an identifier resolving to no value, carrying no `Justification` (must report
+  nothing: it silences nothing).
 
 ### 21.3 String literal tests
 

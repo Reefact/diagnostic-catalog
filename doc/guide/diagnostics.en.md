@@ -164,14 +164,27 @@ a suppression for you. It is that tool's own word for *nobody has filled this in
 and nothing like it — `"n/a"` and `"obvious"` pass, because ruling on those would be reading prose.
 An empty string, whitespace, and `Justification = null` are blank and reported as such.
 
-**It fires only where a slot references a catalogue rule**, which is the same line
-[`DCAT0009`](#dcat0009) draws. A suppression written entirely in literals is
-[`DCAT0006`](#dcat0006)'s business first — asking a codebase that has adopted no catalogue for
-justifications would address people this package was not written for. The two hand over cleanly:
-migrate the pair, and this takes over the line. If you want the requirement everywhere, including on
-literals, StyleCop's `SA1404` has covered it for years and the two sit side by side without arguing.
-`UnconditionalSuppressMessage` is held to it too — a suppression read by a tool that runs long after
-the compiler is the one that most needs to say why it exists.
+**Every suppression is held to it, including one written entirely in literals.** This is the only
+diagnostic here that needs nothing from a catalogue: a literal suppression silences a warning exactly
+as a reference does, and says exactly as little about why.
+
+```csharp
+[SuppressMessage("Usage", "xUnit1004")]   // reported, even with no catalogue in sight
+```
+
+That line matters more than it looks. [`DCAT0006`](#dcat0006) reports a literal pair only when a rule
+your project can see matches it, so a suppression naming a rule no catalogue describes was, before
+this, reported by nothing at all. `UnconditionalSuppressMessage` is held to it too — a suppression
+read by a tool that runs long after the compiler is the one that most needs to say why it exists.
+
+The one shape left alone is an identifier that names nothing, `[SuppressMessage("Usage", null)]`:
+Roslyn matches on the identifier, so that line silences nothing and has nothing to justify.
+
+A line being migrated therefore reports twice — `DCAT0006` for the pair, this for the reason — and
+that is deliberate: converting a suppression does not answer the question it never answered. If you
+already run StyleCop's `SA1404`, you will see both; they ask the same question, and one
+`.editorconfig` line silences whichever you do not want
+([ADR-0037](../adr/0037-require-a-justification-on-every-suppression.en.md)).
 
 **No fix, and none is possible.** What belongs there is the one thing in the attribute that cannot be
 read off the code ([ADR-0018](../adr/0018-a-code-fix-never-decides-what-only-the-author-can.en.md)).

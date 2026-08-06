@@ -47,8 +47,8 @@ claim a consumer will read as one.
   replace (`DCAT0006`), a suppression left half migrated (`DCAT0007`), an
   `UnconditionalSuppressMessage` the trimmer silently discards (`DCAT0009`), a category that reaches
   no declared constant (`DCAT0011`), an identifier written as a literal where `nameof` would not
-  drift (`DCAT0012`), and a suppression that names a rule and never says why it is there
-  (`DCAT0014`). The
+  drift (`DCAT0012`), and a suppression that never says why it is there — any
+  suppression, a literal one included (`DCAT0014`). The
   [diagnostics guide](doc/guide/diagnostics.en.md) is the inventory, and is held to the shipped set
   by the documentation tests; a count written here would be a second inventory that nothing checks.
   The assemblies are

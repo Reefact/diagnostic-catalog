@@ -1,7 +1,7 @@
-# ADR-0037 | Exiger une justification sur toute suppression référençant un catalogue
+# ADR-0037 | Exiger une justification sur toute suppression
 
 🌍 **Langues :**  
-🇬🇧 [English](./0037-require-a-justification-on-every-catalogue-referenced-suppression.en.md) | 🇫🇷 Français (ce fichier)
+🇬🇧 [English](./0037-require-a-justification-on-every-suppression.en.md) | 🇫🇷 Français (ce fichier)
 
 **Status:** Proposed
 **Proposed:** 2026-08-06
@@ -38,16 +38,34 @@ le commentaire affirmait que « rien n'exige la présence de la propriété, et 
 défaut que ces analyseurs connaissent ». C'était une lecture exacte des analyseurs tels qu'ils
 étaient, écrite là où un lecteur la prend pour une décision.
 
+**`DCAT0006` ne couvre pas les littéraux, et ne peut pas être amené à le faire.** Il ne signale une
+paire littérale que si une règle visible de la compilation lui correspond, délibérément : se
+déclencher sur des littéraux sans correspondance signalerait toutes les suppressions écrites à la
+main d'un codebase n'ayant adopté aucun catalogue, ce qui est aussi la raison pour laquelle
+`DCAT0008` a été spécifié en opt-in. La conséquence, mesurée sur un projet référençant les analyseurs
+et un catalogue de vendor, est une forme que rien ne signale :
+
+| Suppression | Signalée par |
+| --- | --- |
+| une référence de catalogue, sans justification | cette décision, et rien avant elle |
+| un littéral nommant une règle que le catalogue connaît | `DCAT0006` — la migration, pas la raison |
+| un littéral nommant une règle qu'aucun catalogue ne connaît | **rien** |
+
+La troisième ligne est celle qui décide de cet enregistrement. Une restriction aux références de
+catalogue laisserait l'exigence absente précisément là où un codebase a le moins adopté, c'est-à-dire
+là où les suppressions ont le moins de chances d'avoir été réfléchies.
+
 **L'exigence existe dans l'écosystème, une fois.** `SA1404` de StyleCop, *Code analysis suppression
-should have justification*, la couvre depuis des années, sur toute suppression y compris celles
-écrites entièrement en littéraux. L'atteindre suppose de prendre `StyleCop.Analyzers` et ses
-plusieurs centaines de règles de style, ce qui est une décision sur tout le style d'un codebase, pas
-sur ses suppressions.
+should have justification*, la couvre depuis des années, sur toute suppression. L'atteindre suppose
+de prendre `StyleCop.Analyzers` et ses plusieurs centaines de règles de style, ce qui est une
+décision sur tout le style d'un codebase, pas sur ses suppressions.
 
 **Deux mesures bornent le coût.** La suite d'usage — 219 attributs de suppression écrits pour
-ressembler à du code qu'un consommateur écrirait, et dont le build EST l'assertion que les analyseurs
-restent muets dessus — a produit exactement **deux** signalements sous la nouvelle règle, tous deux
-sur des fixtures qui existaient pour épingler l'ancien comportement. Et la vérification elle-même est
+ressembler à du code qu'un consommateur écrirait, dont environ dix-huit commencent par un littéral,
+et dont le build EST l'assertion que les analyseurs restent muets dessus — a produit exactement
+**deux** signalements, tous deux sur des fixtures qui existaient pour épingler le comportement
+précédent, et **les mêmes deux que la règle couvre les seules références de catalogue ou toute
+suppression**. L'élargir n'a rien coûté de mesurable sur ce corpus. Et la vérification elle-même est
 bon marché : elle lit un argument nommé sur un attribut que l'analyseur a déjà lié.
 
 **Deux décisions existantes contraignent la forme.**
@@ -60,8 +78,9 @@ laconiques.
 
 ## Décision
 
-Une suppression dont la catégorie ou l'identifiant référence une règle de catalogue doit porter une
-`Justification` non vide, vérifiée par `DCAT0014` sur sa seule présence et jamais sur son contenu.
+Toute suppression analysée par ce paquet doit porter une `Justification` non vide, que sa paire
+référence une règle de catalogue ou soit entièrement écrite en littéraux, vérifiée par `DCAT0014` sur
+sa seule présence et jamais sur son contenu.
 
 ## Justification
 
@@ -81,30 +100,39 @@ structurel sur l'attribut — du même ordre que « l'identifiant se résout-il 
 lisant la longueur d'une chaîne. Les non-objectifs sortent intacts de cette décision, et la
 spécification le dit désormais là où elle les énumère.
 
-**La restriction d'audience garde la règle adressée à ceux qui ont choisi.** Signaler une suppression
-écrite entièrement en littéraux se déclencherait sur toutes les suppressions écrites à la main d'un
-projet ayant référencé les analyseurs sans adopter de catalogue — l'argument de noyade que `DCAT0009`
-tient déjà pour rester hors des littéraux, et pour lequel `DCAT0008` a été laissé en opt-in. La
-restreindre aux suppressions qui référencent une règle rend aussi le relais net plutôt que
-chevauchant : `DCAT0006` demande la migration, et celle-ci prend la ligne une fois la migration
-faite.
+**Toute suppression, parce que c'est la seule question qui ne dépend pas du catalogue.** Tous les
+autres diagnostics d'ici doivent résoudre une règle pour avoir quoi que ce soit à dire ; celui-ci n'a
+besoin que de l'attribut. Une suppression littérale fait taire un avertissement exactement comme une
+référence et en dit exactement aussi peu sur le pourquoi ; une règle qui n'interrogerait que les
+suppressions migrées interrogerait donc sur la base de quelque chose d'étranger à ce qu'elle vérifie.
+L'argument de noyade qui tient `DCAT0009` et `DCAT0008` hors des littéraux ne se transporte pas : ces
+deux-là ont besoin d'un index des règles connues pour dire quelque chose de vrai, et se trompent — ou
+se taisent — là où le catalogue est absent. Celui-ci est exactement aussi vrai, et exactement aussi
+actionnable, sur un littéral.
 
-**Elle est complémentaire de `SA1404`, pas un doublon.** Les deux diffèrent par leur coût et par leur
-couverture. `SA1404` couvre toute suppression et coûte un paquet entier de règles de style ;
-celle-ci couvre les suppressions qu'un projet a déjà déclarées comme références de catalogue et ne
-coûte rien de plus que le paquet qu'il a déjà. Un codebase qui fait tourner les deux voit `SA1404`
-d'abord sur les littéraux et celle-ci après la migration, soit deux règles d'accord plutôt que deux
-règles qui se contredisent.
+**Le coût de la couverture des littéraux a été mesuré plutôt qu'argumenté.** Le corpus écrit pour
+ressembler à du code consommateur signale les deux mêmes sites sous les deux lectures de la règle.
+Ce n'est pas la preuve qu'aucun codebase n'en rencontrera davantage, et les guides disent franchement
+que l'adoption signale toutes les suppressions sans raison d'un coup — mais la forme redoutée, une
+vague de signalements venant de code auquel le paquet n'avait rien à voir, n'est pas apparue là où
+elle aurait été visible.
+
+**Elle recouvre `SA1404`, et c'est la description honnête.** Les deux posent désormais la même
+question, et un codebase qui fait tourner les deux verra les deux. Ce qui diffère est le prix
+d'entrée : `SA1404` arrive avec plusieurs centaines de règles de style attachées, celle-ci arrive
+avec le paquet qu'une équipe a déjà pris pour ses suppressions. Personne n'a rien à installer pour
+l'obtenir, et un projet qui n'en veut qu'une fait taire l'autre en une ligne d'`.editorconfig`. Une
+question posée deux fois coûte moins cher qu'une question que personne n'est en position de poser.
 
 **Un avertissement plutôt qu'une erreur, en s'écartant délibérément du défaut de l'ADR-0027.**
 L'argument de cet enregistrement est qu'un projet référençant un catalogue a décidé que ses
 suppressions sont des références, et qu'une suppression qui n'en est *pas une* doit donc casser le
-build. Cette règle-ci signale autre chose : une suppression qui est une référence, qui se résout
-correctement, et qui est laconique. Casser tous ces builds le jour de la mise à jour du paquet
-punirait les projets ayant adopté un catalogue avant l'existence de la règle, pour des lignes que
-rien n'avait jamais interrogées. La sévérité est à une ligne d'`.editorconfig` pour qui la veut tout
-de suite, ce qui est l'escalade que le seul fait de la signaler procure — le raisonnement même qui a
-maintenu `DCAT0013` en avertissement.
+build. Cette règle-ci signale autre chose : une suppression qui se résout correctement et qui est
+laconique. Elle signale de plus désormais dès l'adoption plutôt qu'après la migration, ce qui rend le
+défaut « erreur » plus coûteux encore — un codebase référençant les analyseurs pour la première fois
+rencontrerait un échec de build sur chacune de ses suppressions sans raison. L'avertissement garde
+cette rencontre lisible, et la sévérité est à une ligne d'`.editorconfig` pour qui la veut tout de
+suite. C'est le raisonnement même qui a maintenu `DCAT0013` en avertissement.
 
 **Aucun correctif, par l'ADR-0018 exactement.** La justification est la seule partie de l'attribut
 qui ne se lit pas dans le code. Un correctif ne pourrait qu'insérer un marqueur, et la règle refuse
@@ -112,28 +140,30 @@ déjà le marqueur de la plateforme comme réponse.
 
 ## Alternatives envisagées
 
+### La restreindre aux suppressions qui référencent une règle de catalogue
+
+C'était la première forme de la règle, et l'argument en sa faveur est réel : elle garde le diagnostic
+adressé aux projets qui ont choisi le catalogue, elle reprend la ligne que `DCAT0009` trace déjà, et
+elle fait que `DCAT0006` et celle-ci se passent proprement le relais au lieu de signaler deux fois la
+même ligne.
+
+Rejetée à cause de la troisième ligne du tableau du Contexte. Un littéral nommant une règle
+qu'aucun catalogue référencé ne connaît n'est signalé par rien, et la restriction rend cela
+définitif — l'exigence serait absente précisément là où un codebase a le moins adopté. Le relais
+qu'elle achète est cosmétique : `DCAT0006` et `DCAT0014` signalent des défauts différents sur la même
+ligne et survivent chacun au correctif de l'autre, si bien que les tenir séparés range la sortie d'un
+build et laisse un trou dans tout projet qui ne migre jamais. La mesure a levé l'objection
+restante — la règle élargie n'a rien coûté sur le corpus où le coût se serait vu.
+
 ### Pointer vers `SA1404` et ne rien livrer
 
 L'exigence existe déjà, implémentée et maintenue par StyleCop, et ajouter au build de chaque
-consommateur une règle qui en double une existante a un coût réel.
+consommateur une règle qui pose la même question a un coût réel.
 
 Rejetée parce que l'atteindre coûte `StyleCop.Analyzers` en entier. Une équipe qui a adopté un
 catalogue pour rendre ses suppressions vérifiables n'a rien dit sur son envie de plusieurs centaines
 de règles de style, et lui répondre que la moitié manquante du contrat est disponible dans un autre
-paquet revient à lui dire que la bibliothèque s'arrête un argument avant sa propre thèse. Les deux
-cohabitent pour qui veut les deux, et c'est ce qui rend celle-ci bon marché plutôt que redondante.
-
-### Signaler toute suppression, littéraux compris
-
-C'est ce qu'attend un lecteur qui demande « quelque chose exige-t-il la justification ? », et c'est
-ce que fait `SA1404`.
-
-Rejetée sur l'argument de noyade que ce dépôt a déjà tenu deux fois — pour `DCAT0009`, qui reste hors
-des littéraux, et pour `DCAT0008`, laissé en opt-in parce qu'un projet référençant des analyseurs
-sans catalogue correspondant serait sinon submergé. Référencer les analyseurs ne doit pas transformer
-chaque suppression préexistante écrite à la main en avertissement sur une propriété que personne ne
-lui avait demandée. La couverture perdue est plus petite qu'il n'y paraît : `DCAT0006` signale les
-littéraux d'abord, et celle-ci prend le relais à mesure qu'ils sont convertis.
+paquet revient à lui dire que la bibliothèque s'arrête un argument avant sa propre thèse.
 
 ### La livrer en erreur, avec les autres règles de site d'utilisation
 
@@ -143,11 +173,11 @@ justification que la moitié du codebase n'écrira pas.
 Rejetée parce que l'argument de cet enregistrement porte sur des suppressions fausses. Toute erreur
 de site d'utilisation existante signale une ligne qui ne fait pas ce qu'elle a l'air de faire ;
 celle-ci signale une ligne qui fait exactement ce qu'elle a l'air de faire et ne dit rien du
-pourquoi. Les deux lectures d'« adopter un catalogue est une déclaration d'intention » ne survivent
-pas à leur application à du code correct — le premier build après une mise à jour de paquet n'est pas
-le moment d'en découvrir plusieurs centaines. La porte reste ouverte : dans une version, les formes
-de faux positifs de la règle étant connues, la promouvoir est un changement de deux lignes et sa
-propre décision.
+pourquoi. Maintenant que la règle couvre toute suppression, un défaut « erreur » ferait de plus
+échouer le premier build suivant la référence au paquet sur du code dont le paquet n'a jamais eu
+d'opinion, ce qui est la pire introduction possible. La porte reste ouverte : dans une version, les
+formes de faux positifs de la règle étant connues, la promouvoir est un changement de deux lignes et
+sa propre décision.
 
 ### Juger la justification plutôt que seulement l'exiger
 
@@ -166,25 +196,30 @@ est une vraie raison est une question de revue de code, et c'est là qu'elle app
 
 ### Positives
 
-* la seconde moitié du contrat d'une suppression est vérifiée, par le paquet même qui vérifie la
-  première ;
+* la seconde moitié du contrat d'une suppression est vérifiée, sur toute suppression, par le paquet
+  qu'une équipe a déjà ;
+* la seule forme que rien ne signalait — un littéral nommant une règle qu'aucun catalogue ne
+  connaît — est couverte, et c'est celle dont un codebase ayant le moins adopté a le plus ;
 * la vérification est la plus faible qui comble le trou, si bien que les non-objectifs sur le contenu
   restent intacts et restent honnêtes ;
-* un codebase qui migre vers un catalogue est invité à donner la raison au moment où le code, et la
-  personne qui a supprimé, sont encore devant celui qui convertit ;
 * la règle ne demande rien de neuf au consommateur — pas de paquet, pas de configuration, pas
-  d'attribut.
+  d'attribut — et sa réponse ne dépend pas des catalogues référencés.
 
 ### Négatives
 
-* un projet ayant adopté un catalogue avant cette règle voit de nouveaux avertissements sur du code
-  correct, en nombre proportionnel au peu de justifications qu'il écrivait ;
+* référencer les analyseurs signale désormais toutes les suppressions sans raison d'un codebase d'un
+  coup, et non les seules migrées ;
+* une ligne en cours de migration est signalée deux fois, `DCAT0006` pour la paire et `DCAT0014` pour
+  la raison, tant que les deux ne sont pas traitées ;
+* elle pose la même question que `SA1404` pour un codebase qui fait tourner les deux ;
 * deux fixtures de la suite d'usage qui documentaient le comportement précédent ont dû changer, et la
-  phrase du guide des suppressions sur l'absence d'opinion des analyseurs a dû être nuancée ;
-* un diagnostic de plus sur une page qu'un lecteur doit déjà tenir en tête.
+  phrase du guide des suppressions sur l'absence d'opinion des analyseurs a dû être nuancée.
 
 ### Risques
 
+* **Bruit à l'adoption.** Le corpus dit que le coût est faible ; un codebase avec mille suppressions
+  non documentées dira le contraire. La sévérité est un avertissement et le guide d'adoption nomme la
+  ligne qui l'abaisse : c'est l'atténuation, pas un espoir.
 * **`"x"` comme réponse.** Rien n'empêche un codebase de s'acquitter de la règle avec un mot.
   Accepté : l'alternative est de juger de la prose, et une revue attrape ce qu'une longueur ne peut
   pas.
@@ -212,5 +247,7 @@ est une vraie raison est une question de revue de code, et c'est là qu'elle app
   n'est offert.
 * [Les diagnostics `DCAT`](../guide/diagnostics.fr.md) — `DCAT0014` tel qu'un consommateur le
   rencontre.
+* [Adopter un catalogue](../guide/adopting-a-catalogue.fr.md) — là où le coût du déclenchement large
+  se rencontre, et la ligne qui l'abaisse le temps d'une migration.
 * [Spécification §11.14](../specification.fr.md) — la condition de déclenchement, et le §5, où les
   non-objectifs sur le contenu disent maintenant ce que cette décision touche et ne touche pas.

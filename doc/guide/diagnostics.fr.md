@@ -173,14 +173,29 @@ reconnu exactement et rien d'approchant — `"n/a"` et `"évident"` passent, par
 ceux-là serait lire de la prose. Une chaîne vide, des espaces et `Justification = null` sont vides et
 signalés comme tels.
 
-**Il ne se déclenche que si une des deux positions référence une règle de catalogue**, la ligne même
-que trace [`DCAT0009`](#dcat0009). Une suppression entièrement écrite en littéraux relève d'abord de
-[`DCAT0006`](#dcat0006) — réclamer des justifications à un codebase qui n'a adopté aucun catalogue
-s'adresserait à des gens pour qui ce paquet n'a pas été écrit. Les deux se passent le relais
-proprement : migrez la paire, et celui-ci prend la ligne en charge. Si vous voulez l'exigence partout,
-littéraux compris, `SA1404` de StyleCop la couvre depuis des années et les deux cohabitent sans se
-contredire. `UnconditionalSuppressMessage` y est tenu aussi — une suppression lue par un outil qui
-s'exécute bien après le compilateur est celle qui a le plus besoin de dire pourquoi elle existe.
+**Toute suppression y est tenue, y compris une suppression entièrement écrite en littéraux.** C'est
+le seul diagnostic d'ici qui n'a besoin de rien du catalogue : une suppression littérale fait taire un
+avertissement exactement comme une référence, et en dit exactement aussi peu sur le pourquoi.
+
+```csharp
+[SuppressMessage("Usage", "xUnit1004")]   // signalé, même sans le moindre catalogue en vue
+```
+
+Cette ligne compte plus qu'il n'y paraît. [`DCAT0006`](#dcat0006) ne signale une paire littérale que
+si une règle visible de votre projet lui correspond ; une suppression nommant une règle qu'aucun
+catalogue ne décrit n'était donc, avant celui-ci, signalée par rien du tout.
+`UnconditionalSuppressMessage` y est tenu aussi — une suppression lue par un outil qui s'exécute bien
+après le compilateur est celle qui a le plus besoin de dire pourquoi elle existe.
+
+La seule forme laissée tranquille est un identifiant qui ne nomme rien,
+`[SuppressMessage("Usage", null)]` : Roslyn fait la correspondance sur l'identifiant, cette ligne ne
+fait donc rien taire et n'a rien à justifier.
+
+Une ligne en cours de migration est donc signalée deux fois — `DCAT0006` pour la paire, celui-ci pour
+la raison — et c'est délibéré : convertir une suppression ne répond pas à la question à laquelle elle
+n'a jamais répondu. Si vous faites déjà tourner `SA1404` de StyleCop, vous verrez les deux ; elles
+posent la même question, et une ligne d'`.editorconfig` fait taire celle dont vous ne voulez pas
+([ADR-0037](../adr/0037-require-a-justification-on-every-suppression.fr.md)).
 
 **Aucun correctif, et aucun n'est possible.** Ce qui doit y figurer est la seule chose de l'attribut
 qui ne se lit pas dans le code

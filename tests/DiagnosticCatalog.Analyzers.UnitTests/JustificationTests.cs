@@ -28,10 +28,11 @@ namespace DiagnosticCatalog.Analyzers.UnitTests;
 /// on prose.
 /// </para>
 /// <para>
-/// The other boundary is the audience. A suppression written entirely in literals is reported by
-/// DCAT0006 and not by this: asking a codebase that has adopted no catalogue for justifications would
-/// address the people this package was not written for, which is the argument DCAT0009 already makes
-/// for staying off literals.
+/// <b>Every suppression is held to it, literals included</b> (ADR-0037), and the fixtures below pin
+/// that too. It is the one diagnostic here whose question does not depend on the catalogue: a literal
+/// suppression silences a warning exactly as a reference does. It matters most where DCAT0006 cannot
+/// reach — a literal naming a rule no referenced catalogue knows was, before this, reported by
+/// nothing at all.
 /// </para>
 /// </remarks>
 public sealed class JustificationTests
@@ -166,26 +167,66 @@ public sealed class JustificationTests
             public sealed class Target { }
             """, "DCAT0014");
 
-    // --- what it stays off --------------------------------------------------------------------
+    // --- the literals, which it does NOT leave alone -------------------------------------------
 
     [Fact]
-    public Task A_suppression_written_entirely_in_literals_is_not_reported() =>
-        // The audience boundary. This codebase has adopted no catalogue — nothing here resolves to a
-        // rule — and reporting it would ask for justifications from every project that references the
-        // analyzers without referencing a catalogue. DCAT0006 comes first; this follows migration.
-        AnalyzerHarness.ReportsNothingAsync(Analyzer, Usings + """
+    public Task A_suppression_written_entirely_in_literals_is_reported() =>
+        // No catalogue anywhere in this compilation — nothing resolves to a rule — and it is still
+        // reported. That is ADR-0037's decision and the reason for it: a literal suppression silences
+        // a warning exactly as a reference does and says exactly as little about why, and a codebase
+        // that has adopted nothing is the one the question is worth asking of most.
+        AnalyzerHarness.ReportsAsync(Analyzer, Usings + """
             [SuppressMessage("Major Code Smell", "S1144")]
             public sealed class Target { }
-            """);
+            """, "DCAT0014");
 
     [Fact]
-    public Task A_literal_pair_matching_a_known_rule_reports_the_migration_and_not_this() =>
-        // Same boundary where a catalogue IS present: the pair is still literals, so it is DCAT0006's
-        // and this stays silent rather than piling a second warning onto one line.
+    public Task A_literal_pair_matching_a_known_rule_reports_the_migration_and_this() =>
+        // Independent faults on one line: the pair can be migrated (DCAT0006) and the line says
+        // nothing about why (DCAT0014). Applying the migration fix leaves the second standing, which
+        // is the point — converting a suppression does not answer the question it never answered.
         AnalyzerHarness.ReportsAsync(Analyzer, Usings + Rules + """
             [SuppressMessage("Major Code Smell", "S1144")]
             public sealed class Target { }
-            """, "DCAT0006");
+            """, "DCAT0006", "DCAT0014");
+
+    [Fact]
+    public Task A_literal_naming_a_rule_no_catalogue_knows_is_reported() =>
+        // The case nothing else in this package reaches. DCAT0006 stays silent because no known rule
+        // matches the pair, so before this diagnostic the line was reported by nothing at all — the
+        // gap that made restricting DCAT0014 to catalogue references untenable.
+        AnalyzerHarness.ReportsAsync(Analyzer, Usings + Rules + """
+            [SuppressMessage("Usage", "xUnit1004")]
+            public sealed class Target { }
+            """, "DCAT0014");
+
+    [Fact]
+    public async Task A_literal_identifier_is_named_by_what_it_silences()
+    {
+        // Truncated at the first colon, as Roslyn truncates it before matching. The message names
+        // S1144 rather than reciting the rule's own title back at whoever wrote it.
+        ImmutableArray<Diagnostic> reported = await AnalyzerHarness.RunAsync(Analyzer, Usings + """
+            [SuppressMessage("Major Code Smell", "S1144:Unused private members should be removed")]
+            public sealed class Target { }
+            """);
+
+        Diagnostic missing = Assert.Single(reported, diagnostic => diagnostic.Id == "DCAT0014");
+
+        Assert.Contains("'S1144'", missing.GetMessage(), StringComparison.Ordinal);
+        Assert.DoesNotContain("Unused private members", missing.GetMessage(), StringComparison.Ordinal);
+    }
+
+    // --- what it stays off --------------------------------------------------------------------
+
+    [Fact]
+    public Task An_identifier_that_names_nothing_is_left_alone() =>
+        // `null` compiles in that slot and silences nothing — Roslyn matches a suppression on the
+        // identifier, and there is no identifier here. A suppression that suppresses nothing has
+        // nothing to justify, and this diagnostic would have nothing to name in its message.
+        AnalyzerHarness.ReportsNothingAsync(Analyzer, Usings + """
+            [SuppressMessage("Major Code Smell", null)]
+            public sealed class Target { }
+            """);
 
     // --- alongside the other faults -----------------------------------------------------------
 

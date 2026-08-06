@@ -129,7 +129,7 @@ public sealed class LiteralSuppressionTests
         // has. Roslyn truncates at the first colon and so must the lookup (§3.3, §11.6); an analyzer
         // skipping the step passes every hand-written fixture above and finds nothing in the wild.
         AnalyzerHarness.ReportsAsync(Analyzer, Usings + Rules + """
-            [SuppressMessage("Major Code Smell", "S1144:Unused private members should be removed")]
+            [SuppressMessage("Major Code Smell", "S1144:Unused private members should be removed", Justification = "j")]
             public sealed class Target { }
             """, "DCAT0006");
 
@@ -168,7 +168,7 @@ public sealed class LiteralSuppressionTests
         // The same rule, written out in full. Both sides truncate to IL2026, so this must match for
         // the same reason the bare form does — and today it fails for the same reason too.
         AnalyzerHarness.ReportsAsync(Analyzer, Usings + SuffixedRule + """
-            [SuppressMessage("Trimming", "IL2026:Members annotated with RequiresUnreferencedCode")]
+            [SuppressMessage("Trimming", "IL2026:Members annotated with RequiresUnreferencedCode", Justification = "j")]
             public sealed class Target { }
             """, "DCAT0006");
 
