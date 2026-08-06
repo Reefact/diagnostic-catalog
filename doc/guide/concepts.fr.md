@@ -147,7 +147,7 @@ indépendants et ne sont pas tous sortis.
 | Référence | Ce que vous obtenez |
 | --- | --- |
 | un catalogue d'éditeur | Des constantes vérifiées à la compilation. Une règle mal orthographiée donne `CS0117`. Une règle retirée donne `CS0618`. Le renommage et *Rechercher toutes les références* fonctionnent. |
-| un catalogue d'éditeur, **et rien d'ajouté à côté** | Cela, et la vérification : `DCAT0006` sur chaque suppression littérale qu'il peut remplacer, avec correctif ; `DCAT0001` sur une paire incohérente ; `DCAT0007` sur une paire à moitié migrée ; `DCAT0009` sur une suppression que le *trimmer* jettera. Un catalogue dépend de la fondation et n'a pas le droit de la masquer, et c'est dans la fondation que vivent les analyseurs. |
+| un catalogue d'éditeur, **et rien d'ajouté à côté** | Cela, et la vérification : `DCAT0006` sur chaque suppression littérale qu'il peut remplacer, avec correctif ; `DCAT0001` sur une paire incohérente ; `DCAT0007` sur une paire à moitié migrée ; `DCAT0009` sur une suppression que le *trimmer* jettera ; `DCAT0014` sur toute suppression qui ne dit jamais pourquoi elle est là. Un catalogue dépend de la fondation et n'a pas le droit de la masquer, et c'est dans la fondation que vivent les analyseurs. |
 | `DiagnosticCatalog` **seul** | Les marqueurs, pour déclarer vos propres règles, et ces mêmes diagnostics — la référence à écrire quand vous voulez la vérification et aucun catalogue. |
 
 La distinction compte plus qu'une note de bas de page. **La garantie de fond n'a besoin d'aucun

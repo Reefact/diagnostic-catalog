@@ -149,6 +149,24 @@ after you add the catalogue, all of them qualify.
 Under `TreatWarningsAsErrors` that fails the build immediately. Lower it to `suggestion`, migrate,
 then raise it — [adopting a catalogue](adopting-a-catalogue.en.md) is the whole procedure.
 
+## `DCAT0014` fires on hundreds of files at once
+
+Expected too, on that same first build, and for a wider reason than `DCAT0006`: it asks every
+suppression why it exists, a literal one included, so it does not wait for a catalogue to recognise
+the rule. A codebase that never wrote justifications meets all of them at once.
+
+It is a **warning**, so the build stays green where `DCAT0006` would have failed it. Lower it to
+`suggestion` while you work through the backlog, and write the reasons as you convert — you are
+already editing each suppression to migrate its pair, and whoever suppressed it is often still
+reachable, which will not be true in six months.
+
+```ini
+dotnet_diagnostic.DCAT0014.severity = suggestion
+```
+
+If you already run StyleCop's `SA1404`, you will see both: they ask the same question, and one
+`.editorconfig` line silences whichever you do not want.
+
 ## `DCAT0006` appears but offers no fix
 
 Two catalogues describe the same rule. Choosing between them is a decision about which package that

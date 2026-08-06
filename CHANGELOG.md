@@ -68,8 +68,10 @@ claim a consumer will read as one.
   alone is `Info`: it is the one rule reporting something its author cannot act on. Every severity is
   overridable per id and per path in `.editorconfig`
   ([ADR-0027](doc/adr/0027-ship-the-use-site-diagnostics-as-errors.en.md)); the
-  [configuration guide](doc/guide/configuration.en.md) gives the one line that downgrades `DCAT0006`
-  while an existing codebase migrates.
+  [configuration guide](doc/guide/configuration.en.md) gives the two lines that downgrade `DCAT0006`
+  and `DCAT0014` while an existing codebase catches up. Both arrive on the first build after the
+  reference: `DCAT0006` on every literal suppression a catalogue can match, `DCAT0014` on every
+  suppression that never said why it exists — matched or not, migrated or not.
 
   An identifier or category hoisted into a named constant — the form the guide promotes so a second
   suppression can reuse it — resolves to the rule it was initialised from rather than to its value.

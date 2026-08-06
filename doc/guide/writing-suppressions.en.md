@@ -142,7 +142,7 @@ it. The alias scales; this does not.
 
 ## What you will be told about, and why
 
-Four diagnostics can appear at a suppression. Full reference in
+Five diagnostics can appear at a suppression. Full reference in
 [the diagnostics guide](diagnostics.en.md); here is what each one means in practice.
 
 **`DCAT0001` — the two arguments come from different rules.**
@@ -177,6 +177,27 @@ lightbulb's.
 trimmer, which accepts only `IL####` identifiers and discards everything else. So the suppression
 you wrote does nothing, and nothing else in the toolchain would ever have told you.
 
+**`DCAT0014` — the suppression never says why.**
+
+```csharp
+[SuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.Id)]   // no Justification
+```
+
+The four above are about *which* diagnostic a line silences. This one is about the other half, and it
+is the half nothing can recover afterwards: the warning is gone, so there is nothing left to
+re-examine, and the reason it was acceptable lived only in the head of whoever wrote the attribute.
+
+**Presence is all it asks.** The value is read for its length, never for its meaning — a one-word
+reason satisfies it, and so does one you would have written better. Judging what a justification
+*says* is a human question and stays one. The single value refused is `"<Pending>"`, the placeholder
+Visual Studio writes when it generates a suppression for you: that is the tool's own word for *not
+filled in yet*.
+
+It holds **every** suppression, including one written entirely in literals — a literal silences a
+warning exactly as a reference does. No fix is offered, because what belongs there is the one part
+of the attribute a tool cannot read off your code
+([ADR-0039](../adr/0039-require-a-justification-on-every-suppression.en.md)).
+
 ## Turning them into build errors
 
 The three that look at a use site are errors by default; the rest are warnings. All are configurable
@@ -197,6 +218,15 @@ That has a cost worth knowing before you reference a catalogue. On an existing c
 fires on **every** literal suppression at once, and being an error it fails the build that day —
 `TreatWarningsAsErrors` no longer has anything to do with it. Lower it to `suggestion`, migrate at
 your own pace, then delete the line.
+
+`DCAT0014` arrives on that same first build, and asks its question of every suppression you have
+rather than only the ones a catalogue can match. It is a **warning**, so the build stays green — but
+on a codebase that never wrote justifications it is not a quiet one. The same line lowers it while
+you catch up:
+
+```ini
+dotnet_diagnostic.DCAT0014.severity = suggestion
+```
 
 ## Does this end up in my application?
 
