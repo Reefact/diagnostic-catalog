@@ -146,5 +146,5 @@ output: none of them see the catalogue, because it is not there.
 ---
 
 <div align="center">
-<a href="./configuration.en.md">← Configuration</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./authoring-a-catalogue.en.md">Publishing a catalogue →</a>
+<a href="./configuration.en.md">← Configuration</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./when-not-to-use.en.md">When not to use this →</a>
 </div>

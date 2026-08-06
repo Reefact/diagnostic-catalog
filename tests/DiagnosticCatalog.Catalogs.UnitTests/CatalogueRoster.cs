@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace DiagnosticCatalog.Catalogs.UnitTests;
@@ -59,7 +58,7 @@ internal static class CatalogueRoster
     {
         get
         {
-            List<CatalogueEntry> vendor = new();
+            List<CatalogueEntry> vendor = [];
             foreach (CatalogueEntry catalogue in All)
             {
                 if (catalogue.MirrorsAVendor) vendor.Add(catalogue);
@@ -71,7 +70,7 @@ internal static class CatalogueRoster
 
     private static List<CatalogueEntry> Read()
     {
-        List<CatalogueEntry> catalogues = new();
+        List<CatalogueEntry> catalogues = [];
 
         string manifest = Path.Combine(AppContext.BaseDirectory, "catalogmanifest", "catalogs.json");
         if (!File.Exists(manifest)) return catalogues;
@@ -158,61 +157,64 @@ internal static class CatalogueRoster
     /// The top-level objects of the <c>catalogs</c> array, each as its own text.
     /// </summary>
     /// <remarks>
-    /// Strings are tracked while walking, so a brace inside a comment string — the manifest's
+    /// Strings are skipped whole while walking, so a brace inside one — the manifest's
     /// <c>$comment</c> arrays are prose — cannot open or close an entry.
     /// </remarks>
     private static IEnumerable<string> Objects(string manifest)
     {
-        int array = manifest.IndexOf("\"catalogs\"", StringComparison.Ordinal);
-        if (array < 0) yield break;
+        int index = manifest.IndexOf("\"catalogs\"", StringComparison.Ordinal);
+        if (index < 0) yield break;
 
-        int open = manifest.IndexOf('[', array);
-        if (open < 0) yield break;
+        index = manifest.IndexOf('[', index) + 1;
+        if (index == 0) yield break;
 
-        StringBuilder entry = new();
-        int depth = 0;
-        bool inString = false;
-        bool escaped = false;
-
-        for (int index = open + 1; index < manifest.Length; index++)
+        while (index < manifest.Length && manifest[index] != ']')
         {
-            char character = manifest[index];
-
-            if (depth > 0) entry.Append(character);
-
-            if (inString)
+            if (manifest[index] != '{')
             {
-                if (escaped) escaped = false;
-                else if (character == '\\') escaped = true;
-                else if (character == '"') inString = false;
+                index++;
 
                 continue;
             }
 
-            switch (character)
-            {
-                case '"':
-                    inString = true;
-                    break;
-                case '{':
-                    if (depth == 0) entry.Append(character);
-                    depth++;
-                    break;
-                case '}':
-                    depth--;
-                    if (depth == 0)
-                    {
-                        yield return entry.ToString();
-                        entry.Length = 0;
-                    }
-
-                    break;
-                case ']':
-                    if (depth == 0) yield break;
-                    break;
-                default:
-                    break;
-            }
+            int close = EndOfObject(manifest, index);
+            yield return manifest.Substring(index, close - index + 1);
+            index = close + 1;
         }
+    }
+
+    /// <summary>The index of the brace closing the object that opens at <paramref name="open"/>.</summary>
+    private static int EndOfObject(string text, int open)
+    {
+        int depth = 0;
+        int index = open;
+
+        while (index < text.Length)
+        {
+            char character = text[index];
+
+            if (character == '"') { index = EndOfString(text, index); }
+            else if (character == '{') { depth++; }
+            else if (character == '}' && --depth == 0) { return index; }
+
+            index++;
+        }
+
+        return text.Length - 1;
+    }
+
+    /// <summary>The index of the quote closing the string that opens at <paramref name="quote"/>.</summary>
+    private static int EndOfString(string text, int quote)
+    {
+        int index = quote + 1;
+
+        while (index < text.Length)
+        {
+            if (text[index] == '\\') { index += 2; }
+            else if (text[index] == '"') { return index; }
+            else { index++; }
+        }
+
+        return text.Length - 1;
     }
 }

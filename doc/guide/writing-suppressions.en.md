@@ -235,5 +235,5 @@ rule *there* was a good idea. That judgement stays yours, which is what `Justifi
 ---
 
 <div align="center">
-<a href="./alternatives.en.md">← The alternatives</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./adopting-a-catalogue.en.md">Adopting a catalogue on an existing codebase →</a>
+<a href="./concepts.en.md">← Core concepts</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./configuration.en.md">Configuration →</a>
 </div>

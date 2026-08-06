@@ -181,5 +181,5 @@ règle Sonar ou StyleCop est un no-op qu'aucun autre outil de la chaîne ne sign
 ---
 
 <div align="center">
-<a href="./faq.fr.md">← FAQ</a> · <a href="./README.fr.md">↑ Table des matières</a> · <a href="./architecture.fr.md">Architecture du dépôt →</a>
+<a href="./faq.fr.md">← FAQ</a> · <a href="./README.fr.md">↑ Table des matières</a>
 </div>

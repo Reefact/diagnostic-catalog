@@ -221,5 +221,5 @@ Tant qu'il n'est pas publié, le chemin mécanisé n'est pas disponible. Ce qui 
 ---
 
 <div align="center">
-<a href="./writing-suppressions.fr.md">← Écrire des suppressions que le compilateur vérifie</a> · <a href="./README.fr.md">↑ Table des matières</a> · <a href="./configuration.fr.md">Configuration →</a>
+<a href="./README.fr.md">↑ Table des matières</a> · <a href="./diagnostics.fr.md">Les diagnostics `DCAT` →</a>
 </div>

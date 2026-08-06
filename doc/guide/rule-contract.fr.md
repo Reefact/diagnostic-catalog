@@ -241,5 +241,5 @@ fonctionne.
 ---
 
 <div align="center">
-<a href="./diagnostics.fr.md">← Les diagnostics DCAT</a> · <a href="./README.fr.md">↑ Table des matières</a> · <a href="./troubleshooting.fr.md">Dépannage →</a>
+<a href="./README.fr.md">↑ Table des matières</a> · <a href="./troubleshooting.fr.md">Dépannage →</a>
 </div>

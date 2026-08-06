@@ -65,7 +65,7 @@ public sealed class CatalogueIndexTests
     /// <summary>Every catalogue's folder, paired with each half of its README.</summary>
     public static TheoryData<string, string> CatalogueHalves()
     {
-        TheoryData<string, string> halves = new();
+        TheoryData<string, string> halves = [];
         foreach (CatalogueEntry catalogue in CatalogueRoster.Vendor)
         {
             halves.Add(catalogue.Folder, "README.en.md");
@@ -78,7 +78,7 @@ public sealed class CatalogueIndexTests
     /// <summary>Every catalogue the manifest declares, vendor or not.</summary>
     public static TheoryData<string> Catalogues()
     {
-        TheoryData<string> folders = new();
+        TheoryData<string> folders = [];
         foreach (CatalogueEntry catalogue in CatalogueRoster.All) folders.Add(catalogue.Folder);
 
         return folders;
@@ -87,7 +87,7 @@ public sealed class CatalogueIndexTests
     /// <summary>Every project this repository packs, and each half of its README.</summary>
     public static TheoryData<string, string> PackagedHalves()
     {
-        TheoryData<string, string> halves = new();
+        TheoryData<string, string> halves = [];
         foreach (KeyValuePair<string, string> package in CatalogueRoster.PackedAs())
         {
             halves.Add(package.Key, "README.en.md");
@@ -274,7 +274,7 @@ public sealed class CatalogueIndexTests
             $"{IndexDocument[half]} carries no {IndexBegin} … {IndexEnd} block, so nothing here can " +
             "tell which of its tables claims to list every catalogue.");
 
-        List<string> packages = new();
+        List<string> packages = [];
         foreach (Match row in Regex.Matches(
                      index.Substring(start, end - start),
                      "^\\|\\s*\\*\\*`(?<package>DiagnosticCatalog(?:\\.[A-Za-z]+)?)`\\*\\*",

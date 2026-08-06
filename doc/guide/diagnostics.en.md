@@ -397,5 +397,5 @@ coherently. They do not, and will not:
 ---
 
 <div align="center">
-<a href="./ci-integration.en.md">← Keeping a catalogue current</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./rule-contract.en.md">The rule contract →</a>
+<a href="./adopting-a-catalogue.en.md">← Adopting a catalogue on an existing codebase</a> · <a href="./README.en.md">↑ Table of contents</a>
 </div>

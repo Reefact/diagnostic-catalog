@@ -194,5 +194,5 @@ Deux conséquences en découlent, et toutes deux façonnent le versionnement des
 ---
 
 <div align="center">
-<a href="./the-problem.fr.md">← Pourquoi les chaînes magiques échouent</a> · <a href="./README.fr.md">↑ Table des matières</a> · <a href="./when-not-to-use.fr.md">Quand ne pas s'en servir →</a>
+<a href="./getting-started.fr.md">← Démarrer</a> · <a href="./README.fr.md">↑ Table des matières</a> · <a href="./writing-suppressions.fr.md">Écrire des suppressions que le compilateur vérifie →</a>
 </div>

@@ -30,7 +30,7 @@ public sealed class DocumentedMirrorTests
     /// </remarks>
     public static TheoryData<string, string> Catalogues()
     {
-        TheoryData<string, string> catalogues = new();
+        TheoryData<string, string> catalogues = [];
         foreach (CatalogueEntry catalogue in CatalogueRoster.Vendor)
         {
             catalogues.Add(catalogue.Folder, catalogue.GeneratedFile);

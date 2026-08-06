@@ -154,5 +154,5 @@ Worth naming, because most tooling asks for all of it:
 ---
 
 <div align="center">
-<a href="./README.en.md">↑ Table of contents</a> · <a href="./the-problem.en.md">Why magic strings fail →</a>
+<a href="./the-problem.en.md">← Why magic strings fail</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./concepts.en.md">Core concepts →</a>
 </div>

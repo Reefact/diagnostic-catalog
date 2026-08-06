@@ -250,5 +250,5 @@ que supprimer cette règle *à cet endroit* était une bonne idée. Ce jugement 
 ---
 
 <div align="center">
-<a href="./alternatives.fr.md">← Les alternatives</a> · <a href="./README.fr.md">↑ Table des matières</a> · <a href="./adopting-a-catalogue.fr.md">Adopter un catalogue sur une base de code existante →</a>
+<a href="./concepts.fr.md">← Concepts</a> · <a href="./README.fr.md">↑ Table des matières</a> · <a href="./configuration.fr.md">Configuration →</a>
 </div>

@@ -157,5 +157,5 @@ Cela vaut d'être nommé, parce que la plupart des outillages réclament tout ce
 ---
 
 <div align="center">
-<a href="./README.fr.md">↑ Table des matières</a> · <a href="./the-problem.fr.md">Pourquoi les chaînes magiques échouent →</a>
+<a href="./the-problem.fr.md">← Pourquoi les chaînes magiques échouent</a> · <a href="./README.fr.md">↑ Table des matières</a> · <a href="./concepts.fr.md">Concepts →</a>
 </div>

@@ -173,11 +173,11 @@ shows up as a red build.
 
 * [**Inside the generator**](generator-internals.en.md) — the pipeline, step by step.
 * [**Release trains**](release-trains.en.md) — how a project joins one, and the rule that follows.
-* [**The testing strategy**](testing-strategy.en.md) — what each of the seven test projects asserts,
+* [**The testing strategy**](testing-strategy.en.md) — what each test project asserts,
   and which run on the .NET Framework CLR.
 
 ---
 
 <div align="center">
-<a href="./glossary.en.md">← Glossary</a> · <a href="./README.en.md">↑ Table of contents</a> · <a href="./generator-internals.en.md">Inside the generator →</a>
+<a href="./README.en.md">↑ Table of contents</a> · <a href="./generator-internals.en.md">Inside the generator →</a>
 </div>

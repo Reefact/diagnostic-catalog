@@ -7,15 +7,28 @@ using Xunit;
 namespace DiagnosticCatalog.Documentation.UnitTests;
 
 /// <summary>
-/// The reading order of <c>doc/guide/</c>, as expressed by the previous/next footers, must be one
-/// total order — every page on it, once, with a single start and a single end.
+/// The reading orders of <c>doc/guide/</c>, as expressed by the previous/next footers. Each TRACK
+/// is one total order — its pages on it, once, with a single start and a single end — and every
+/// page of the folder belongs to exactly one track.
 /// </summary>
 /// <remarks>
 /// <para>
-/// What this really prevents is the orphan: a page written, committed, and linked by nothing. It
+/// Tracks rather than one chain, because one chain made every reader everybody's reader. Threading
+/// twenty-six pages end to end meant the last page a consumer needed sent them onward into
+/// publishing a catalogue, and there was no way to say "you are done" — the only page with no next
+/// link was the last page of the internals. A track ends, and its footer leaves the reader at the
+/// map.
+/// </para>
+/// <para>
+/// What this still prevents is the orphan: a page written, committed, and linked by nothing. It
 /// costs exactly as much to write as any other page and is read by nobody, and no reader will
-/// report it because a reader who never reaches a page does not know it is there. A chain that has
-/// to cover every file in the folder makes adding a page without threading it a build failure.
+/// report it because a reader who never reaches a page does not know it is there. Every page having
+/// to sit on exactly one track makes adding one without threading it a build failure.
+/// </para>
+/// <para>
+/// The tracks are read from the MAP, which declares each with a <c>&lt;!-- track: id --&gt;</c>
+/// marker and a numbered list. The map is where a reader meets them, so it is where they are
+/// stated; the footers are then held to what it says, in both languages.
 /// </para>
 /// <para>
 /// Both languages are checked separately and then compared, because a footer edited in one language
@@ -78,44 +91,96 @@ public sealed class NavigationTests
 
     [Theory]
     [MemberData(nameof(Languages))]
-    public void The_footers_describe_one_total_order(string language)
+    public void Every_page_sits_on_exactly_one_track(string language)
     {
-        List<MarkdownDocument> pages = PagesIn(language);
-        Dictionary<string, Navigation> navigation = pages.ToDictionary(
+        IReadOnlyList<MarkdownDocument> pages = PagesIn(language);
+        List<Track> tracks = TracksIn(language);
+
+        List<string> threaded = [.. tracks.SelectMany(track => track.Pages)];
+
+        List<string> repeated = threaded
+            .GroupBy(name => name, StringComparer.Ordinal)
+            .Where(group => group.Count() > 1)
+            .Select(group => group.Key)
+            .OrderBy(name => name, StringComparer.Ordinal)
+            .ToList();
+
+        Assert.True(
+            repeated.Count == 0,
+            $"doc/guide/README.{language}.md lists {string.Join(", ", repeated)} on more than one " +
+            "track. A page on two tracks has two predecessors, so a reader who goes back does not " +
+            "return where they were.");
+
+        List<string> orphans = pages
+            .Select(page => page.FileName)
+            .Except(threaded, StringComparer.Ordinal)
+            .OrderBy(name => name, StringComparer.Ordinal)
+            .ToList();
+
+        Assert.True(
+            orphans.Count == 0,
+            $"doc/guide/README.{language}.md puts {string.Join(", ", orphans)} on no track at all. " +
+            "A page nothing navigates to is a page nobody reads.");
+
+        List<string> strangers = threaded
+            .Except(pages.Select(page => page.FileName), StringComparer.Ordinal)
+            .OrderBy(name => name, StringComparer.Ordinal)
+            .ToList();
+
+        Assert.True(
+            strangers.Count == 0,
+            $"doc/guide/README.{language}.md lists {string.Join(", ", strangers)} on a track, and no " +
+            "such page exists in doc/guide/.");
+    }
+
+    [Theory]
+    [MemberData(nameof(Languages))]
+    public void Each_track_is_threaded_by_the_footers_in_the_order_the_map_lists(string language)
+    {
+        Dictionary<string, Navigation> navigation = PagesIn(language).ToDictionary(
             page => page.FileName,
             Navigation.Of,
             StringComparer.Ordinal);
 
-        List<string> starts = navigation
-            .Where(entry => Name(entry.Value.Previous) is null)
-            .Select(entry => entry.Key)
-            .OrderBy(name => name, StringComparer.Ordinal)
-            .ToList();
+        foreach (Track track in TracksIn(language))
+        {
+            List<string> threaded = Walk(track.Pages[0], navigation, language, track.Id);
 
-        Assert.True(
-            starts.Count == 1,
-            $"The {language} reading order has {starts.Count} starting pages ({string.Join(", ", starts)}). " +
-            "Exactly one page carries no previous link, and it is the map.");
+            Assert.True(
+                threaded.SequenceEqual(track.Pages, StringComparer.Ordinal),
+                $"doc/guide/README.{language}.md lists the {track.Id} track in an order the footers " +
+                "do not thread.\n" +
+                $"  listed:   {string.Join(" → ", track.Pages)}\n" +
+                $"  threaded: {string.Join(" → ", threaded)}");
+        }
+    }
 
-        List<string> ends = navigation
-            .Where(entry => Name(entry.Value.Next) is null)
-            .Select(entry => entry.Key)
-            .OrderBy(name => name, StringComparer.Ordinal)
-            .ToList();
+    [Theory]
+    [MemberData(nameof(Languages))]
+    public void A_track_starts_and_ends_where_the_map_says(string language)
+    {
+        Dictionary<string, Navigation> navigation = PagesIn(language).ToDictionary(
+            page => page.FileName,
+            Navigation.Of,
+            StringComparer.Ordinal);
 
-        Assert.True(
-            ends.Count == 1,
-            $"The {language} reading order has {ends.Count} final pages ({string.Join(", ", ends)}). " +
-            "Exactly one page carries no next link.");
+        foreach (Track track in TracksIn(language))
+        {
+            string first = track.Pages[0];
+            string last = track.Pages[^1];
 
-        List<string> walked = Walk(starts[0], navigation, language);
+            Assert.True(
+                Name(navigation[first].Previous) is null,
+                $"{first} opens the {track.Id} track and carries a ← to " +
+                $"{Name(navigation[first].Previous)}. The way in to a track is the map, which its ↑ " +
+                "already offers.");
 
-        Assert.True(
-            walked.Count == pages.Count,
-            $"The {language} reading order visits {walked.Count} of the {pages.Count} pages in " +
-            $"doc/guide/. Never reached: " +
-            $"{string.Join(", ", pages.Select(page => page.FileName).Except(walked, StringComparer.Ordinal))}. " +
-            "A page nothing navigates to is a page nobody reads.");
+            Assert.True(
+                Name(navigation[last].Next) is null,
+                $"{last} ends the {track.Id} track and carries a → to {Name(navigation[last].Next)}. " +
+                "A track that runs on into the next one is the single chain these tracks replace: a " +
+                "reader who finished what they came for is sent into somebody else's chapter.");
+        }
     }
 
     /// <summary>
@@ -151,56 +216,48 @@ public sealed class NavigationTests
 
     [Theory]
     [MemberData(nameof(Languages))]
-    public void The_map_opens_onto_the_first_page_of_the_order(string language)
+    public void The_map_opens_onto_the_first_page_of_the_default_track(string language)
     {
         MarkdownDocument map = Repository.Require($"doc/guide/README.{language}.md");
         Navigation navigation = Navigation.Of(map);
-        List<string> order = OrderIn(language);
+        List<Track> tracks = TracksIn(language);
 
         Assert.True(
-            order.Count > 0,
-            $"The {language} reading order is empty, so the map opens onto nothing.");
+            tracks.Count > 0,
+            $"doc/guide/README.{language}.md declares no track, so the map opens onto nothing.");
 
         Assert.True(
-            Name(navigation.Next) == order[0],
+            Name(navigation.Next) == tracks[0].Pages[0],
             $"doc/guide/README.{language}.md sends the reader to " +
-            $"{Name(navigation.Next) ?? "nothing"}, but the reading order starts at {order[0]}. " +
-            "The map is the way in; it has to open onto the page the order actually begins with.");
+            $"{Name(navigation.Next) ?? "nothing"}, but the first track starts at " +
+            $"{tracks[0].Pages[0]}. The map is the way in; it has to open onto the page the default " +
+            "track actually begins with.");
     }
 
     [Fact]
-    public void The_two_languages_thread_the_same_order()
+    public void The_two_languages_thread_the_same_tracks()
     {
-        List<string> english = OrderIn("en").Select(Stem).ToList();
-        List<string> french = OrderIn("fr").Select(Stem).ToList();
+        List<Track> english = [.. TracksIn("en")];
+        List<Track> french = [.. TracksIn("fr")];
 
         Assert.True(
-            english.SequenceEqual(french, StringComparer.Ordinal),
-            "The English and French reading orders differ.\n" +
-            $"  en: {string.Join(" → ", english)}\n" +
-            $"  fr: {string.Join(" → ", french)}\n" +
-            "A translation is the same document in another language, and that includes the order it " +
-            "walks the reader through.");
-    }
+            english.Select(track => track.Id).SequenceEqual(
+                french.Select(track => track.Id), StringComparer.Ordinal),
+            "The English and French maps declare different tracks.\n" +
+            $"  en: {string.Join(", ", english.Select(track => track.Id))}\n" +
+            $"  fr: {string.Join(", ", french.Select(track => track.Id))}");
 
-    /// <summary>
-    /// The map's own numbered reading list is the order the footers thread. Two statements of the
-    /// same order, in one folder, that were allowed to disagree would leave a reader following one
-    /// of them and a maintainer maintaining the other.
-    /// </summary>
-    [Theory]
-    [MemberData(nameof(Languages))]
-    public void The_map_lists_the_reading_order_it_threads(string language)
-    {
-        MarkdownDocument map = Repository.Require($"doc/guide/README.{language}.md");
-        List<string> listed = NumberedTargets(map);
-        List<string> threaded = OrderIn(language);
-
-        Assert.True(
-            listed.SequenceEqual(threaded, StringComparer.Ordinal),
-            $"doc/guide/README.{language}.md lists a reading order the footers do not thread.\n" +
-            $"  listed:   {string.Join(" → ", listed)}\n" +
-            $"  threaded: {string.Join(" → ", threaded)}");
+        for (int index = 0; index < english.Count; index++)
+        {
+            Assert.True(
+                english[index].Pages.Select(Stem).SequenceEqual(
+                    french[index].Pages.Select(Stem), StringComparer.Ordinal),
+                $"The {english[index].Id} track differs between the two languages.\n" +
+                $"  en: {string.Join(" → ", english[index].Pages.Select(Stem))}\n" +
+                $"  fr: {string.Join(" → ", french[index].Pages.Select(Stem))}\n" +
+                "A translation is the same document in another language, and that includes the " +
+                "order it walks the reader through.");
+        }
     }
 
     [Fact]
@@ -210,6 +267,15 @@ public sealed class NavigationTests
             Repository.Guide.Count >= 4,
             $"Only {Repository.Guide.Count} pages were found under doc/guide/, so the navigation " +
             "theories would assert almost nothing.");
+
+        foreach (string language in new[] { "en", "fr" })
+        {
+            Assert.True(
+                TracksIn(language).Count >= 2,
+                $"doc/guide/README.{language}.md declares fewer than two tracks. The markers are " +
+                "<!-- track: id --> followed by a numbered list; a map written another way leaves " +
+                "every footer here unchecked.");
+        }
     }
 
     /// <summary>A page's name without its language suffix, which is what the two orders share.</summary>
@@ -234,28 +300,65 @@ public sealed class NavigationTests
             .OrderBy(page => page.Path, StringComparer.Ordinal)
             .ToList();
 
-    private static List<string> OrderIn(string language)
+    /// <summary>One reading track, as the map declares it.</summary>
+    private sealed record Track(string Id, IReadOnlyList<string> Pages);
+
+    /// <summary>
+    /// The tracks a map declares: a <c>&lt;!-- track: id --&gt;</c> marker, then the numbered list
+    /// that follows it, until the next marker.
+    /// </summary>
+    /// <remarks>
+    /// A marker rather than the heading above it, because the heading is prose in two languages and
+    /// the id has to be the same word in both — that is what lets the two maps be compared at all.
+    /// </remarks>
+    private static List<Track> TracksIn(string language)
     {
-        IReadOnlyList<MarkdownDocument> pages = PagesIn(language);
-        Dictionary<string, Navigation> navigation = pages.ToDictionary(
-            page => page.FileName,
-            Navigation.Of,
-            StringComparer.Ordinal);
+        MarkdownDocument map = Repository.Require($"doc/guide/README.{language}.md");
 
-        string? start = navigation
-            .Where(entry => Name(entry.Value.Previous) is null)
-            .Select(entry => entry.Key)
-            .FirstOrDefault();
+        List<Track> tracks = [];
+        string? id = null;
+        List<string> pages = [];
 
-        return start is null ? [] : Walk(start, navigation, language);
+        foreach (string line in map.Lines)
+        {
+            Match marker = Regex.Match(line, "^<!--\\s*track:\\s*(?<id>[a-z-]+)\\s*-->$",
+                                       RegexOptions.None, MatchTimeout);
+            if (marker.Success)
+            {
+                if (id is not null) tracks.Add(new Track(id, pages));
+                id = marker.Groups["id"].Value;
+                pages = [];
+
+                continue;
+            }
+
+            if (id is null) continue;
+
+            Match item = Regex.Match(
+                line,
+                "^(?<number>\\d+)\\.\\s+\\[[^\\]]*\\]\\((?<target>[^)#\\s]+)",
+                RegexOptions.None,
+                MatchTimeout);
+
+            if (item.Success)
+            {
+                string target = item.Groups["target"].Value;
+                pages.Add(target[(target.LastIndexOf('/') + 1)..]);
+            }
+        }
+
+        if (id is not null) tracks.Add(new Track(id, pages));
+
+        return tracks;
     }
 
     /// <summary>
-    /// Follows the chain from its start, stopping if it ever revisits a page. A cycle would
-    /// otherwise walk forever, and reporting "visited fewer pages than exist" is the same failure a
-    /// reader meets: pages the order never reaches.
+    /// Follows one track from its start, stopping if it ever revisits a page. A cycle would
+    /// otherwise walk forever, and reporting "visited fewer pages than the track lists" is the same
+    /// failure a reader meets: pages the order never reaches.
     /// </summary>
-    private static List<string> Walk(string start, Dictionary<string, Navigation> navigation, string language)
+    private static List<string> Walk(
+        string start, Dictionary<string, Navigation> navigation, string language, string track)
     {
         List<string> walked = [];
         HashSet<string> seen = new(StringComparer.Ordinal);
@@ -269,7 +372,7 @@ public sealed class NavigationTests
 
         Assert.True(
             current is null,
-            $"The {language} reading order loops back to {current}. A chain with a cycle has no end, " +
+            $"The {language} {track} track loops back to {current}. A chain with a cycle has no end, " +
             "and a reader following it never arrives anywhere.");
 
         return walked;
@@ -293,35 +396,6 @@ public sealed class NavigationTests
         if (path.Contains("..", StringComparison.Ordinal)) return null;
 
         return path[(path.LastIndexOf('/') + 1)..];
-    }
-
-    /// <summary>
-    /// The link targets of the last numbered list in a document, which in the map is the reading
-    /// order. The last one, because the map's earlier sections list pages by intent and repeat
-    /// them: those are entry points, not an order.
-    /// </summary>
-    private static List<string> NumberedTargets(MarkdownDocument map)
-    {
-        List<string> targets = [];
-        foreach (string line in map.Lines)
-        {
-            Match item = Regex.Match(
-                line,
-                "^(?<number>\\d+)\\.\\s+\\[[^\\]]*\\]\\((?<target>[^)#\\s]+)",
-                RegexOptions.None,
-                MatchTimeout);
-
-            if (!item.Success) continue;
-
-            if (item.Groups["number"].Value == "1")
-            {
-                targets.Clear();
-            }
-
-            targets.Add(item.Groups["target"].Value[(item.Groups["target"].Value.LastIndexOf('/') + 1)..]);
-        }
-
-        return targets;
     }
 
 }

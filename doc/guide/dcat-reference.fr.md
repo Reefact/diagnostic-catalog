@@ -189,5 +189,5 @@ tout ce qui suit.
 ---
 
 <div align="center">
-<a href="./dcat.fr.md">← L'outil dcat</a> · <a href="./README.fr.md">↑ Table des matières</a> · <a href="./catalogs-manifest.fr.md">Le manifeste de catalogues →</a>
+<a href="./dcat.fr.md">← L'outil `dcat`</a> · <a href="./README.fr.md">↑ Table des matières</a> · <a href="./catalogs-manifest.fr.md">Le manifeste de catalogues →</a>
 </div>

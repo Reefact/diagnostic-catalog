@@ -181,11 +181,11 @@ eux.
 * [**Dans le générateur**](generator-internals.fr.md) — le pipeline, étape par étape.
 * [**Les trains de release**](release-trains.fr.md) — comment un projet en rejoint un, et la règle qui
   s'ensuit.
-* [**La stratégie de test**](testing-strategy.fr.md) — ce que chacun des sept projets de test asserte,
+* [**La stratégie de test**](testing-strategy.fr.md) — ce que chaque projet de test asserte,
   et lesquels tournent sur le CLR .NET Framework.
 
 ---
 
 <div align="center">
-<a href="./glossary.fr.md">← Glossaire</a> · <a href="./README.fr.md">↑ Table des matières</a> · <a href="./generator-internals.fr.md">Dans le générateur →</a>
+<a href="./README.fr.md">↑ Table des matières</a> · <a href="./generator-internals.fr.md">Dans le générateur →</a>
 </div>

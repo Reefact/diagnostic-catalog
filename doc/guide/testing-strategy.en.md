@@ -6,6 +6,12 @@
 For anyone adding a test, or wondering why there are seven test projects. Each one exists because
 something the others cannot reach would otherwise fail silently.
 
+Three more projects sit under [`tests/`](../../tests) and assert nothing themselves:
+`DiagnosticCatalog.Usage` is a consumer whose build the zero-footprint suite inspects
+([ADR-0030](../adr/0030-keep-the-usage-suite-out-of-the-sonar-analysis.en.md)), and
+`CatalogGen.AbsentContract` and `CatalogGen.PartialLoadFixture` are analyzer assemblies compiled
+for the generator's tests to fail on.
+
 ## The seven projects
 
 | Project | Asserts | Runs on |
