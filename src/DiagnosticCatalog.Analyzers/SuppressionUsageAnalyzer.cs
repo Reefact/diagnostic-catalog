@@ -270,7 +270,7 @@ public sealed class SuppressionUsageAnalyzer : DiagnosticAnalyzer
         AttributeSyntax attribute,
         SuppressionArgument checkId)
     {
-        // EVERY suppression, and not only the ones that reference a catalogue (ADR-0037). This is the
+        // EVERY suppression, and not only the ones that reference a catalogue (ADR-0039). This is the
         // one diagnostic here whose question does not depend on the catalogue at all: a literal
         // suppression silences a warning exactly as a reference does, and says exactly as little
         // about why. Restricting it to references would have left the gap open precisely where a

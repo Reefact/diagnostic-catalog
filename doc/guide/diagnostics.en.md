@@ -184,7 +184,7 @@ A line being migrated therefore reports twice — `DCAT0006` for the pair, this 
 that is deliberate: converting a suppression does not answer the question it never answered. If you
 already run StyleCop's `SA1404`, you will see both; they ask the same question, and one
 `.editorconfig` line silences whichever you do not want
-([ADR-0037](../adr/0037-require-a-justification-on-every-suppression.en.md)).
+([ADR-0039](../adr/0039-require-a-justification-on-every-suppression.en.md)).
 
 **No fix, and none is possible.** What belongs there is the one thing in the attribute that cannot be
 read off the code ([ADR-0018](../adr/0018-a-code-fix-never-decides-what-only-the-author-can.en.md)).

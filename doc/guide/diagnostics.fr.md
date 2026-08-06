@@ -195,7 +195,7 @@ Une ligne en cours de migration est donc signalée deux fois — `DCAT0006` pour
 la raison — et c'est délibéré : convertir une suppression ne répond pas à la question à laquelle elle
 n'a jamais répondu. Si vous faites déjà tourner `SA1404` de StyleCop, vous verrez les deux ; elles
 posent la même question, et une ligne d'`.editorconfig` fait taire celle dont vous ne voulez pas
-([ADR-0037](../adr/0037-require-a-justification-on-every-suppression.fr.md)).
+([ADR-0039](../adr/0039-require-a-justification-on-every-suppression.fr.md)).
 
 **Aucun correctif, et aucun n'est possible.** Ce qui doit y figurer est la seule chose de l'attribut
 qui ne se lit pas dans le code

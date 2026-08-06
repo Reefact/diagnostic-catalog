@@ -28,7 +28,7 @@ namespace DiagnosticCatalog.Analyzers.UnitTests;
 /// on prose.
 /// </para>
 /// <para>
-/// <b>Every suppression is held to it, literals included</b> (ADR-0037), and the fixtures below pin
+/// <b>Every suppression is held to it, literals included</b> (ADR-0039), and the fixtures below pin
 /// that too. It is the one diagnostic here whose question does not depend on the catalogue: a literal
 /// suppression silences a warning exactly as a reference does. It matters most where DCAT0006 cannot
 /// reach — a literal naming a rule no referenced catalogue knows was, before this, reported by
@@ -172,7 +172,7 @@ public sealed class JustificationTests
     [Fact]
     public Task A_suppression_written_entirely_in_literals_is_reported() =>
         // No catalogue anywhere in this compilation — nothing resolves to a rule — and it is still
-        // reported. That is ADR-0037's decision and the reason for it: a literal suppression silences
+        // reported. That is ADR-0039's decision and the reason for it: a literal suppression silences
         // a warning exactly as a reference does and says exactly as little about why, and a codebase
         // that has adopted nothing is the one the question is worth asking of most.
         AnalyzerHarness.ReportsAsync(Analyzer, Usings + """

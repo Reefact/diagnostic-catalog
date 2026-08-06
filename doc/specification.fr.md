@@ -1310,7 +1310,7 @@ de la prose. `Justification = null` est vide, comme toute chaîne d'espaces.
 
 **Condition de déclenchement.** Toute suppression que l'analyseur lit, que sa
 paire référence une règle de catalogue ou soit entièrement écrite en valeurs
-([ADR-0037](adr/0037-require-a-justification-on-every-suppression.fr.md)). C'est
+([ADR-0039](adr/0039-require-a-justification-on-every-suppression.fr.md)). C'est
 le seul diagnostic d'ici qui ne résout aucune règle pour avoir quelque chose à
 dire, si bien que la restriction que le §11.9 s'impose ne s'applique pas :
 `DCAT0009` a besoin que l'identifiant soit une règle avant de pouvoir en juger,

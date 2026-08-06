@@ -1257,7 +1257,7 @@ is blank, as is any string of whitespace.
 
 **Trigger condition.** Every suppression the analyzer reads, whether its pair
 references a catalogue rule or is written entirely in values
-([ADR-0037](adr/0037-require-a-justification-on-every-suppression.en.md)). This is
+([ADR-0039](adr/0039-require-a-justification-on-every-suppression.en.md)). This is
 the one diagnostic here that resolves no rule to have something to say, so the
 restriction §11.9 places on itself does not apply: `DCAT0009` needs the identifier
 to be a rule before it can judge it, and this needs only the attribute. It is also
