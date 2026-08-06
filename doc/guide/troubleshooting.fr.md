@@ -184,7 +184,7 @@ Référencez un seul catalogue, ou écrivez la référence à la main.
 Le littéral nomme une règle **différente** de la référence à côté :
 
 ```csharp
-[SuppressMessage(SonarRule.S1144.Category, "S9999")]
+[SuppressMessage(SonarRule.S1144.Category, "S9999", Justification = "…")]
 ```
 
 Le compléter depuis `S1144` ferait taire une règle différente de celle qui est tue aujourd'hui, et

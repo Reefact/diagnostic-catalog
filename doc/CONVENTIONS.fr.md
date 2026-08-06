@@ -342,6 +342,25 @@ où est l'exemption. Par document, pour que la même faute sur n'importe quelle 
 encore. La raison est obligatoire. Et une déclaration qui nomme une référence que la page ne montre
 plus échoue aussi — une exemption que rien n'utilise couvre ce qui sera écrit là ensuite.
 
+### Montrer une suppression sans justification
+
+Tout `SuppressMessage` et tout `UnconditionalSuppressMessage` d'un bloc `csharp` porte une
+`Justification` non vide, parce qu'un lecteur copie ce qu'une page montre et que `DCAT0014` signale
+ce qu'il a copié. Cela vaut même quand l'exemple porte sur tout autre chose — un identifiant faux,
+une paire dépareillée, une forme que le correctif réécrit — puisqu'un second diagnostic sur la même
+ligne est du bruit que la page ne voulait pas enseigner.
+
+Certains blocs doivent montrer l'omission : le déclencheur de `DCAT0014` est précisément une
+suppression sans raison. Déclarez-le juste avant le bloc, avec la raison :
+
+```markdown
+<!-- dcat-doc:missing-justification le déclencheur de DCAT0014 ; la raison absente EST ce que ce bloc montre -->
+```
+
+Local au bloc suivant plutôt qu'à la page entière, pour qu'un document obligé de montrer un exemple
+incorrect garde tous ses autres exemples vérifiés. La raison est obligatoire, et l'exemple lui-même
+devrait dire `incorrect` là où un lecteur le rencontrera.
+
 ## Ajouter une page
 
 1. Écrivez `doc/guide/<nom>.en.md` avec le bandeau, la phrase de public et le pied.

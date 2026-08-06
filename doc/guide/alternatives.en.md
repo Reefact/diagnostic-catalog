@@ -60,7 +60,10 @@ exists.
 Moving suppressions out of the code and into one file:
 
 ```csharp
-[assembly: SuppressMessage("Major Code Smell", "S1144", Scope = "member", Target = "~M:Contoso.Orders.Rebuild")]
+[assembly: SuppressMessage(
+    "Major Code Smell", "S1144",
+    Scope = "member", Target = "~M:Contoso.Orders.Rebuild",
+    Justification = "Called by the serializer through reflection.")]
 ```
 
 **What it buys.** They are all in one place, so they can be read, counted and reviewed as a set —
@@ -126,9 +129,11 @@ Two things are sometimes offered as alternatives and solve different problems:
 
 * **An analyzer that validates suppression strings.** This library ships one — `DCAT0006` and
   friends — and it is deliberately the smaller half. A check on a string can only judge strings it
-  recognises, so `[SuppressMessage("Usage", "S1144")]` is reported by nothing: it may be a wrong
-  category, or a rule from an analyzer you have not catalogued, and nothing can tell. The constant is
-  what removes the ambiguity, not the check.
+  recognises, so the PAIR in `[SuppressMessage("Usage", "S1144", Justification = "…")]` is judged by
+  nothing: it may be a wrong category, or a rule from an analyzer you have not catalogued, and nothing
+  can tell. The constant is what removes the ambiguity, not the check. `DCAT0014` still asks the same
+  line why it exists — a different question, and the one part of a suppression a check can settle
+  without recognising anything.
 * **A tool that removes unnecessary suppressions.** `IDE0079` already does this, and it answers a
   different question — "is this suppression still needed?" rather than "does this suppression name
   what it claims to?". Run both.

@@ -165,7 +165,7 @@ member is equivalent.
 **Qualified member access** — the canonical form:
 
 ```csharp
-[SuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.Id)]
+[SuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.Id, Justification = "…")]
 ```
 
 **A type alias** — fully equivalent, and recommended when the container name is long:
@@ -173,7 +173,7 @@ member is equivalent.
 ```csharp
 using Unused = DiagnosticCatalog.Sonar.SonarRule.S1144;
 
-[SuppressMessage(Unused.Category, Unused.Id)]
+[SuppressMessage(Unused.Category, Unused.Id, Justification = "…")]
 ```
 
 **`using static`** — recognised, **not recommended**:
@@ -181,7 +181,7 @@ using Unused = DiagnosticCatalog.Sonar.SonarRule.S1144;
 ```csharp
 using static DiagnosticCatalog.Sonar.SonarRule.S1144;
 
-[SuppressMessage(Category, Id)]
+[SuppressMessage(Category, Id, Justification = "…")]
 ```
 
 Two `using static` directives for two rules in one file make `Category` and `Id` ambiguous, which is a
@@ -193,7 +193,7 @@ needed. The analyzer resolves it; the documentation does not promote it.
 ```csharp
 private const string RuleId = SonarRule.S1144.Id;
 
-[SuppressMessage(SonarRule.S1144.Category, RuleId)]
+[SuppressMessage(SonarRule.S1144.Category, RuleId, Justification = "…")]
 ```
 
 When an argument resolves to a constant field whose declaring type is *not* a rule type, the analyzer
@@ -207,7 +207,10 @@ does the same. That is what makes the form Visual Studio's *Suppress → In Sour
 recognisable:
 
 ```csharp
-[SuppressMessage("Major Code Smell", "S1144:Unused private members should be removed")]
+[SuppressMessage(
+    "Major Code Smell",
+    "S1144:Unused private members should be removed",
+    Justification = "…")]
 ```
 
 The suffix is a friendly name and carries no meaning to the platform. The `DCAT0006` fix drops it: it

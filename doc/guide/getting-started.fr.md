@@ -28,18 +28,13 @@ Rien d'autre. Pas de version de SDK à monter, pas d'outil à installer, pas de 
 Prenez celui qui correspond à l'analyseur dont vous faites taire les avertissements :
 
 ```xml
-<PackageReference Include="DiagnosticCatalog.Sonar" Version="0.1.0" />
+<PackageReference Include="DiagnosticCatalog.Sonar" Version="1.0.0" />
 ```
 
-Il y en a un pour [SonarAnalyzer](https://www.nuget.org/packages/DiagnosticCatalog.Sonar) (`Sxxxx`),
-un pour [les analyseurs .NET](https://www.nuget.org/packages/DiagnosticCatalog.NetAnalyzers)
-(`CAxxxx`), un pour [StyleCop](https://www.nuget.org/packages/DiagnosticCatalog.StyleCop)
-(`SAxxxx`), un pour [les règles IDE de Roslyn](https://www.nuget.org/packages/DiagnosticCatalog.CodeStyle)
-(`IDExxxx`), un pour [celles de xUnit](https://www.nuget.org/packages/DiagnosticCatalog.Xunit)
-(`xUnitxxxx`), un pour [celles de NUnit](https://www.nuget.org/packages/DiagnosticCatalog.NUnit)
-(`NUnitxxxx`), un pour [celles de MSTest](https://www.nuget.org/packages/DiagnosticCatalog.MSTest)
-(`MSTESTxxxx`) et un pour [les avertissements de trimming et AOT](https://www.nuget.org/packages/DiagnosticCatalog.Trimming)
-(`ILxxxx`). Référencez-en plusieurs si vous exécutez plusieurs analyseurs.
+**[L'index des catalogues](../README.fr.md#-les-catalogues-disponibles)** est la liste : une ligne
+par analyseur, avec le préfixe de règles qu'il couvre. Référencez-en plusieurs si vous exécutez
+plusieurs analyseurs. La liste n'est délibérément pas recopiée ici — une copie partielle est la façon
+dont un lecteur conclut que son analyseur n'est pas couvert.
 
 Cette unique référence active aussi les vérifications : chaque catalogue dépend de
 `DiagnosticCatalog`, qui porte les analyseurs `DCAT` et leurs correctifs à côté des attributs
@@ -48,10 +43,10 @@ marqueurs, et qu'aucun catalogue n'a le droit de masquer
 second paquet à ajouter — et si vous voulez les vérifications sans aucun catalogue,
 `DiagnosticCatalog` seul est la réponse.
 
-Deux conséquences tombent dès la toute première compilation. `DCAT0006` signale chaque suppression
-littérale qui correspond à une règle que vous avez désormais, en **erreur** : une base de code qui
-en a déjà quelques centaines les rencontre toutes d'un coup. `DCAT0014` signale chaque suppression
-qui n'a jamais dit pourquoi elle existe — toutes, règle appariée ou non — en avertissement.
+Deux conséquences tombent dès la toute première compilation, toutes deux en **erreur**. `DCAT0006`
+signale chaque suppression littérale qui correspond à une règle que vous avez désormais : une base de
+code qui en a déjà quelques centaines les rencontre toutes d'un coup. `DCAT0014` signale chaque
+suppression qui n'a jamais dit pourquoi elle existe — toutes, règle appariée ou non.
 Descendez les deux d'abord, et la visite reste une visite :
 
 ```ini
@@ -94,10 +89,14 @@ prose que vous colliez autrefois dans la suppression.
 
 ## 3. La casser exprès
 
-C'est l'étape qui vaut d'être faite plutôt que lue. Changez un chiffre :
+C'est l'étape qui vaut d'être faite plutôt que lue. Changez un chiffre, et laissez la justification
+exactement où elle était — la seule chose à l'épreuve ici est l'identifiant :
 
 ```csharp
-[SuppressMessage(SonarRule.S1145.Category, SonarRule.S1145.Id)]
+[SuppressMessage(
+    SonarRule.S1145.Category,
+    SonarRule.S1145.Id,
+    Justification = "Appelé par le sérialiseur.")]
 ```
 
 Compilez à nouveau :
@@ -109,12 +108,22 @@ error CS0117: 'SonarRule' does not contain a definition for 'S1145'
 Faites maintenant la même chose sur la version de départ :
 
 ```csharp
-[SuppressMessage("Major Code Smell", "S1145")]
+[SuppressMessage("Major Code Smell", "S1145", Justification = "Appelé par le sérialiseur.")]
 ```
 
-Compilez. Ça compile. Rien n'est signalé, par quoi que ce soit, jamais — et l'avertissement que la
-suppression masquait est silencieusement de retour, ou silencieusement pas, selon que le code qui le
-levait est encore là.
+Compilez. **Ça compile.** Aucun compilateur, analyseur, test ni outil de la plateforme ne juge cette
+paire : rien ne vous dit donc que l'identifiant est faux — et l'avertissement que la suppression
+masquait est silencieusement de retour, ou silencieusement pas, selon que le code qui le levait est
+encore là.
+
+Soyez précis sur ce que « rien ne le signale » veut dire, car c'est plus étroit qu'il n'y paraît :
+
+* **La paire n'est jugée par rien.** Roslyn fait la correspondance sur le seul identifiant et ne lit
+  jamais la catégorie, et `DCAT0001` compare deux membres d'une règle que votre compilation voit —
+  deux chaînes ne lui donnent rien à comparer. C'est le trou, et il est total.
+* **`DCAT0014` est une autre question.** Si vous aviez aussi retiré la `Justification`, cette ligne
+  aurait été signalée — pour n'avoir aucune raison, pas pour nommer une règle inexistante. Garder la
+  justification dans les deux versions ci-dessus est ce qui laisse l'identifiant seul sous la lampe.
 
 Cette différence, c'est toute la bibliothèque. [Pourquoi les chaînes magiques
 échouent](the-problem.fr.md) démonte la seconde compilation et explique pourquoi rien, dans la

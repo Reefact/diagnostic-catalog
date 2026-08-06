@@ -25,7 +25,7 @@ une assertion que l'analyseur préférerait voir écrite autrement. Ce sont des 
 une raison, ce qui est le travail d'une suppression plutôt que d'une entrée `.editorconfig`.
 
 ```csharp
-[SuppressMessage("Assertions", "xUnit2013:Do not use equality check to check for collection size", ...)]
+[SuppressMessage("Assertions", "xUnit2013:Do not use equality check to check for collection size", Justification = "…")]
 ```
 
 Trois chaînes, et rien n'en vérifie aucune. Trompez-vous d'identifiant et la suppression ne fait

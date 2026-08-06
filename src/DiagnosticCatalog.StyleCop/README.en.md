@@ -41,7 +41,7 @@ using DiagnosticCatalog.StyleCop;
 ## Installation
 
 ```xml
-<PackageReference Include="DiagnosticCatalog.StyleCop" Version="0.1.0" />
+<PackageReference Include="DiagnosticCatalog.StyleCop" Version="1.0.0" />
 ```
 
 That is the only reference you need. This package depends on `DiagnosticCatalog`, which carries

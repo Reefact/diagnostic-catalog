@@ -27,7 +27,7 @@ que vous avez activée se règle dans `.editorconfig` ; une règle venue avec le
 exception à l'unique endroit où elle a tort, avec une `Justification` à côté du test qui la mérite.
 
 ```csharp
-[SuppressMessage("Assertion", "NUnit2007:The actual value should not be a constant", ...)]
+[SuppressMessage("Assertion", "NUnit2007:The actual value should not be a constant", Justification = "…")]
 ```
 
 Trois chaînes, et rien n'en vérifie aucune. Trompez-vous d'identifiant et la suppression ne fait

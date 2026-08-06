@@ -9,7 +9,7 @@ meant it or not, and what nuget.org will do to your README.
 ## Reference the foundation the ordinary way
 
 ```xml
-<PackageReference Include="DiagnosticCatalog" Version="0.1.0" />
+<PackageReference Include="DiagnosticCatalog" Version="1.0.0" />
 ```
 
 Not `PrivateAssets="all"`. Your consumers need `DiagnosticRuleAttribute` to be resolvable in their

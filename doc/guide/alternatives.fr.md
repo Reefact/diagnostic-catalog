@@ -62,7 +62,10 @@ valeur de catégorie. Un catalogue généré est ce fichier avec les valeurs lue
 Sortir les suppressions du code pour les mettre dans un fichier :
 
 ```csharp
-[assembly: SuppressMessage("Major Code Smell", "S1144", Scope = "member", Target = "~M:Contoso.Orders.Rebuild")]
+[assembly: SuppressMessage(
+    "Major Code Smell", "S1144",
+    Scope = "member", Target = "~M:Contoso.Orders.Rebuild",
+    Justification = "Appelé par le sérialiseur via la réflexion.")]
 ```
 
 **Ce que cela achète.** Elles sont toutes au même endroit : on peut les lire, les compter et les
@@ -130,9 +133,12 @@ Deux choses sont parfois proposées comme alternatives et résolvent d'autres pr
 
 * **Un analyseur qui valide les chaînes de suppression.** Cette bibliothèque en livre un — `DCAT0006`
   et compagnie — et c'est délibérément la plus petite moitié. Une vérification sur une chaîne ne peut
-  juger que les chaînes qu'elle reconnaît : `[SuppressMessage("Usage", "S1144")]` n'est signalé par
-  rien, car ce peut être une mauvaise catégorie ou une règle d'un analyseur que vous n'avez pas
-  catalogué, et rien ne peut le dire. C'est la constante qui lève l'ambiguïté, pas la vérification.
+  juger que les chaînes qu'elle reconnaît : la PAIRE de
+  `[SuppressMessage("Usage", "S1144", Justification = "…")]` n'est jugée par rien, car ce peut être une
+  mauvaise catégorie ou une règle d'un analyseur que vous n'avez pas catalogué, et rien ne peut le
+  dire. C'est la constante qui lève l'ambiguïté, pas la vérification. `DCAT0014` demande toujours à la
+  même ligne pourquoi elle existe — une autre question, et la seule partie d'une suppression qu'une
+  vérification peut trancher sans rien reconnaître.
 * **Un outil qui retire les suppressions inutiles.** `IDE0079` le fait déjà, et il répond à une autre
   question — « cette suppression est-elle encore nécessaire ? » plutôt que « cette suppression nomme-
   t-elle ce qu'elle prétend ? ». Utilisez les deux.

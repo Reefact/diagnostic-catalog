@@ -32,16 +32,16 @@ ni `"Code Smell"`, ni `"Maintainability"`.
 [SuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.Id, Justification = "...")]
 ```
 
-Sonar, les règles CA de .NET, StyleCop, les règles IDE de Roslyn et celles de xUnit sont déjà
-empaquetées sous `DiagnosticCatalog.Sonar`, `DiagnosticCatalog.NetAnalyzers`, `DiagnosticCatalog.StyleCop`
-`DiagnosticCatalog.CodeStyle` et `DiagnosticCatalog.Xunit`. Ce paquet-ci est ce qu'il vous faut pour
-déclarer un catalogue à vous — et référencer l'un de ceux-là vous l'apporte déjà, avec les
-vérifications qu'il porte.
+Treize analyseurs sont déjà empaquetés, et
+[les catalogues disponibles](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/README.fr.md#-les-catalogues-disponibles)
+les listent tous — une liste partielle ici ne ferait que dire à un lecteur que son analyseur n'est
+pas couvert. Ce paquet-ci est ce qu'il vous faut pour déclarer un catalogue à **vous** ; référencer
+l'un de ceux-là vous l'apporte déjà, avec les vérifications qu'il porte.
 
 ## Installation
 
 ```xml
-<PackageReference Include="DiagnosticCatalog" Version="0.1.0" />
+<PackageReference Include="DiagnosticCatalog" Version="1.0.0" />
 ```
 
 N'ajoutez **pas** `PrivateAssets="all"` si votre projet publie un catalogue destiné à
@@ -206,8 +206,9 @@ projet qui l'a caché n'a ni l'un ni l'autre.
 ## Migrer une base de code existante
 
 Adopter un catalogue n'est pas un changement discret : les diagnostics de site d'utilisation sont
-des erreurs par défaut (`DCAT0001`, `DCAT0006` et `DCAT0007`), donc une suppression littérale
-qu'une référence de catalogue remplacerait casse la compilation au lieu d'avertir. Le correctif
+des erreurs par défaut (`DCAT0001`, `DCAT0006`, `DCAT0007`, `DCAT0009` et `DCAT0014`), donc une
+suppression littérale qu'une référence de catalogue remplacerait casse la compilation au lieu
+d'avertir. Le correctif
 qui la réécrit est la façon dont une base de code adopte un catalogue en pratique :
 
 ```csharp
@@ -216,12 +217,12 @@ qui la réécrit est la façon dont une base de code adopte un catalogue en prat
 [SuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.Id, Justification = "kept for reflection")]
 ```
 
-Un dernier tombe sur cette même compilation, et c'est un **avertissement** plutôt qu'une erreur :
-`DCAT0014` signale une suppression qui ne porte aucune `Justification`. Il le demande à toute
-suppression, littérale comprise, et n'attend donc pas, contrairement à `DCAT0006`, qu'un catalogue
-reconnaisse la règle. La présence est tout ce qu'il vérifie — la valeur est lue pour sa longueur,
-jamais pour son sens. Abaissez-le dans `.editorconfig` le temps d'écrire les raisons, exactement
-comme vous abaissez `DCAT0006` le temps de convertir les paires.
+Un dernier tombe sur cette même compilation, et c'est une erreur lui aussi : `DCAT0014` signale une
+suppression qui ne porte aucune `Justification`. Il le demande à toute suppression, littérale
+comprise, et n'attend donc pas, contrairement à `DCAT0006`, qu'un catalogue reconnaisse la règle. La
+présence est tout ce qu'il vérifie — la valeur est lue pour sa longueur, jamais pour son sens.
+Abaissez-le dans `.editorconfig` le temps d'écrire les raisons, exactement comme vous abaissez
+`DCAT0006` le temps de convertir les paires.
 
 *Corriger toutes les occurrences* l'applique à un document, un projet ou une solution en une
 étape, et le `using` dont la référence a besoin est ajouté pour vous. Tout le reste de l'attribut
@@ -298,10 +299,12 @@ que le code ne dit rien de ce que vous vouliez.
 
 ## Ce que les analyseurs ne font pas
 
-Ils ne valident pas une chaîne arbitraire. `[SuppressMessage("Usage", "S1144")]` avec la mauvaise
-catégorie ne correspond à aucune règle connue, et rien n'est signalé — le mécanisme qui rend une
-catégorie fausse impossible est la constante elle-même, que le compilateur vérifie. Ces analyseurs
-vous amènent aux constantes et vous y maintiennent.
+Ils ne valident pas une chaîne arbitraire.
+`[SuppressMessage("Usage", "S1144", Justification = "…")]` avec la mauvaise catégorie ne correspond à
+aucune règle connue, et **cette paire** n'est signalée par rien — `DCAT0014` demande toujours à la
+même ligne pourquoi elle existe, ce qui est une autre question. Le mécanisme qui rend une catégorie
+fausse impossible est la constante elle-même, que le compilateur vérifie. Ces analyseurs vous amènent
+aux constantes et vous y maintiennent.
 
 ## Consigner d'où vient un catalogue
 

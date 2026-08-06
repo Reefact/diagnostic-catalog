@@ -19,9 +19,10 @@ Two strings. The compiler does not check either of them, because as far as it is
 just text. So all of the following compile, ship, and do nothing at all:
 
 ```csharp
-[SuppressMessage("Major Code Smell", "S1145")]   // typo — one digit
-[SuppressMessage("Major Code Smell", "S 1144")]  // stray space
-[SuppressMessage("Major Code Smell", "S1144")]   // correct today; the rule is retired next year
+// Each carries a reason, so the only thing wrong with any of them is the pair.
+[SuppressMessage("Major Code Smell", "S1145", Justification = "Reflection.")]   // typo — one digit
+[SuppressMessage("Major Code Smell", "S 1144", Justification = "Reflection.")]  // stray space
+[SuppressMessage("Major Code Smell", "S1144", Justification = "Reflection.")]   // correct today; retired next year
 ```
 
 Nothing warns you. The suppression simply stops matching, and the warning it was hiding comes back —
@@ -60,17 +61,12 @@ A catalogue is a package of constants for one analyzer's rules. Pick the one mat
 whose warnings you suppress:
 
 ```xml
-<PackageReference Include="DiagnosticCatalog.Sonar" Version="0.1.0" />
+<PackageReference Include="DiagnosticCatalog.Sonar" Version="1.0.0" />
 ```
 
-There is one for [SonarAnalyzer](https://www.nuget.org/packages/DiagnosticCatalog.Sonar), one for
-[the .NET analyzers](https://www.nuget.org/packages/DiagnosticCatalog.NetAnalyzers) (`CAxxxx`) and
-one for [StyleCop](https://www.nuget.org/packages/DiagnosticCatalog.StyleCop) (`SAxxxx`) and one
-for [the Roslyn IDE rules](https://www.nuget.org/packages/DiagnosticCatalog.CodeStyle) (`IDExxxx`)
-and one for [xUnit's](https://www.nuget.org/packages/DiagnosticCatalog.Xunit) (`xUnitxxxx`) and one
-for [NUnit's](https://www.nuget.org/packages/DiagnosticCatalog.NUnit) (`NUnitxxxx`) and one
-for [MSTest's](https://www.nuget.org/packages/DiagnosticCatalog.MSTest) (`MSTESTxxxx`) and one
-for [the trimming and AOT warnings](https://www.nuget.org/packages/DiagnosticCatalog.Trimming) (`ILxxxx`).
+**[The catalogue index](../../README.md#-the-ready-made-catalogues)** is the list: one row per
+analyzer, with the rule prefix it covers. It is not copied here on purpose — a partial copy is how a
+reader concludes their analyzer is not covered.
 
 That is the only line you need for the guarantee itself. A misspelled rule is now a compile error,
 because `SonarRule.S1144.Id` is a member the compiler resolves — no analyzer is involved in that.
@@ -109,9 +105,15 @@ occurrences** to convert a document, a project or the whole solution in one step
 It handles the form Visual Studio generates, suffix and all:
 
 ```csharp
-[SuppressMessage("Major Code Smell", "S1144:Unused private members should be removed")]
+[SuppressMessage(
+    "Major Code Smell",
+    "S1144:Unused private members should be removed",
+    Justification = "Called by the serializer.")]
 // becomes
-[SuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.Id)]
+[SuppressMessage(
+    SonarRule.S1144.Category,
+    SonarRule.S1144.Id,
+    Justification = "Called by the serializer.")]
 ```
 
 The suffix is dropped. It was prose repeating the rule's own title, which the catalogue carries in
@@ -148,7 +150,10 @@ Five diagnostics can appear at a suppression. Full reference in
 **`DCAT0001` — the two arguments come from different rules.**
 
 ```csharp
-[SuppressMessage(SonarRule.S1144.Category, SonarRule.S2094.Id)]
+[SuppressMessage(
+    SonarRule.S1144.Category,
+    SonarRule.S2094.Id,
+    Justification = "Called by the serializer.")]
 ```
 
 Copy-paste, almost always. It is reported *even when both rules share a category*, because then the
@@ -165,7 +170,7 @@ while correcting the identifier changes it.
 **`DCAT0007` — you migrated half of it.**
 
 ```csharp
-[SuppressMessage(SonarRule.S1144.Category, "S1144")]
+[SuppressMessage(SonarRule.S1144.Category, "S1144", Justification = "Called by the serializer.")]
 ```
 
 Completed from the rule the other argument already names. If the literal names something *else* —
@@ -179,8 +184,10 @@ you wrote does nothing, and nothing else in the toolchain would ever have told y
 
 **`DCAT0014` — the suppression never says why.**
 
+<!-- dcat-doc:missing-justification the DCAT0014 trigger; the absent reason IS what this block shows -->
+
 ```csharp
-[SuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.Id)]   // no Justification
+[SuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.Id)]   // incorrect: no Justification
 ```
 
 The four above are about *which* diagnostic a line silences. This one is about the other half, and it
@@ -200,19 +207,18 @@ of the attribute a tool cannot read off your code
 
 ## Turning them into build errors
 
-The three that look at a use site are errors by default; the rest are warnings. All are configurable
+Every one of these is an error by default, because none of them reports a line that does its job:
+the pair names two rules, or is a literal a reference would replace, or is half migrated, or is
+discarded by the trimmer, or never says why it exists
+([ADR-0040](../adr/0040-grade-every-dcat-diagnostic-by-what-it-says.en.md)). All are configurable
 like any Roslyn diagnostic:
 
 ```ini
 # .editorconfig
 [*.cs]
-dotnet_diagnostic.DCAT0009.severity = error        # raising one that ships as a warning
 dotnet_diagnostic.DCAT0006.severity = suggestion   # migrating gradually
+dotnet_diagnostic.DCAT0014.severity = suggestion   # writing the reasons you never wrote
 ```
-
-`DCAT0001` and `DCAT0007` are errors already, and so is `DCAT0006`: all three mean a suppression is
-not doing what it appears to do, and a guarantee held only where somebody remembered is not one
-([ADR-0027](../adr/0027-ship-the-use-site-diagnostics-as-errors.en.md)).
 
 That has a cost worth knowing before you reference a catalogue. On an existing codebase `DCAT0006`
 fires on **every** literal suppression at once, and being an error it fails the build that day —
@@ -220,13 +226,12 @@ fires on **every** literal suppression at once, and being an error it fails the 
 your own pace, then delete the line.
 
 `DCAT0014` arrives on that same first build, and asks its question of every suppression you have
-rather than only the ones a catalogue can match. It is a **warning**, so the build stays green — but
-on a codebase that never wrote justifications it is not a quiet one. The same line lowers it while
-you catch up:
+rather than only the ones a catalogue can match — so on a codebase that never wrote justifications
+it is the louder of the two. It sits on the same downgrade above, and comes off it the same way.
 
-```ini
-dotnet_diagnostic.DCAT0014.severity = suggestion
-```
+`DCAT0001`, `DCAT0007` and `DCAT0009` are the ones to leave alone. None of them fires in bulk: they
+exist only where somebody has already started using references, or wrote a trimmer suppression by
+hand.
 
 ## Does this end up in my application?
 

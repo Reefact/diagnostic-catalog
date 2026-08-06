@@ -23,9 +23,10 @@ Deux chaînes. Le compilateur n'en vérifie aucune, parce que de son point de vu
 texte. Si bien que tout ce qui suit compile, part en production, et ne fait strictement rien :
 
 ```csharp
-[SuppressMessage("Major Code Smell", "S1145")]   // faute de frappe — un chiffre
-[SuppressMessage("Major Code Smell", "S 1144")]  // espace parasite
-[SuppressMessage("Major Code Smell", "S1144")]   // correct aujourd'hui ; la règle est retirée l'an prochain
+// Chacune porte une raison : la seule chose fausse dans ces lignes est la paire.
+[SuppressMessage("Major Code Smell", "S1145", Justification = "Réflexion.")]   // faute de frappe — un chiffre
+[SuppressMessage("Major Code Smell", "S 1144", Justification = "Réflexion.")]  // espace parasite
+[SuppressMessage("Major Code Smell", "S1144", Justification = "Réflexion.")]   // correct aujourd'hui ; retirée l'an prochain
 ```
 
 Rien ne vous avertit. La suppression cesse simplement de correspondre, et l'avertissement qu'elle
@@ -67,17 +68,12 @@ Un catalogue est un paquet de constantes pour les règles d'un analyseur. Prenez
 à l'analyseur dont vous faites taire les avertissements :
 
 ```xml
-<PackageReference Include="DiagnosticCatalog.Sonar" Version="0.1.0" />
+<PackageReference Include="DiagnosticCatalog.Sonar" Version="1.0.0" />
 ```
 
-Il y en a un pour [SonarAnalyzer](https://www.nuget.org/packages/DiagnosticCatalog.Sonar), un pour
-[les analyseurs .NET](https://www.nuget.org/packages/DiagnosticCatalog.NetAnalyzers) (`CAxxxx`) et
-un pour [StyleCop](https://www.nuget.org/packages/DiagnosticCatalog.StyleCop) (`SAxxxx`) et un
-pour [les règles IDE de Roslyn](https://www.nuget.org/packages/DiagnosticCatalog.CodeStyle) (`IDExxxx`)
-et un pour [celles de xUnit](https://www.nuget.org/packages/DiagnosticCatalog.Xunit) (`xUnitxxxx`)
-et un pour [celles de NUnit](https://www.nuget.org/packages/DiagnosticCatalog.NUnit) (`NUnitxxxx`)
-et un pour [celles de MSTest](https://www.nuget.org/packages/DiagnosticCatalog.MSTest) (`MSTESTxxxx`)
-et un pour [les avertissements de trimming et AOT](https://www.nuget.org/packages/DiagnosticCatalog.Trimming) (`ILxxxx`).
+**[L'index des catalogues](../README.fr.md#-les-catalogues-disponibles)** est la liste : une ligne
+par analyseur, avec le préfixe de règles qu'il couvre. Elle n'est délibérément pas recopiée ici — une
+copie partielle est la façon dont un lecteur conclut que son analyseur n'est pas couvert.
 
 C'est la seule ligne dont vous avez besoin pour la garantie elle-même. Une règle mal orthographiée
 est désormais une erreur de compilation, parce que `SonarRule.S1144.Id` est un membre que le
@@ -120,9 +116,15 @@ projet ou la solution entière en une étape.
 Il gère la forme que Visual Studio génère, suffixe compris :
 
 ```csharp
-[SuppressMessage("Major Code Smell", "S1144:Unused private members should be removed")]
+[SuppressMessage(
+    "Major Code Smell",
+    "S1144:Unused private members should be removed",
+    Justification = "Appelé par le sérialiseur.")]
 // devient
-[SuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.Id)]
+[SuppressMessage(
+    SonarRule.S1144.Category,
+    SonarRule.S1144.Id,
+    Justification = "Appelé par le sérialiseur.")]
 ```
 
 Le suffixe est abandonné. C'était de la prose reprenant le titre de la règle, que le catalogue porte
@@ -160,7 +162,10 @@ Cinq diagnostics peuvent apparaître sur une suppression. Référence complète 
 **`DCAT0001` — les deux arguments viennent de règles différentes.**
 
 ```csharp
-[SuppressMessage(SonarRule.S1144.Category, SonarRule.S2094.Id)]
+[SuppressMessage(
+    SonarRule.S1144.Category,
+    SonarRule.S2094.Id,
+    Justification = "Appelé par le sérialiseur.")]
 ```
 
 Copier-coller, presque toujours. C'est signalé *même quand les deux règles partagent une catégorie*,
@@ -177,7 +182,7 @@ change donc rien à ce qui est supprimé, là où corriger l'identifiant le chan
 **`DCAT0007` — vous n'en avez migré que la moitié.**
 
 ```csharp
-[SuppressMessage(SonarRule.S1144.Category, "S1144")]
+[SuppressMessage(SonarRule.S1144.Category, "S1144", Justification = "Appelé par le sérialiseur.")]
 ```
 
 Complété depuis la règle que l'autre argument nomme déjà. Si le littéral nomme *autre chose* —
@@ -192,8 +197,10 @@ dit.
 
 **`DCAT0014` — la suppression ne dit jamais pourquoi.**
 
+<!-- dcat-doc:missing-justification le déclencheur de DCAT0014 ; la raison absente EST ce que ce bloc montre -->
+
 ```csharp
-[SuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.Id)]   // aucune Justification
+[SuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.Id)]   // incorrect : aucune Justification
 ```
 
 Les quatre ci-dessus portent sur *quel* diagnostic une ligne fait taire. Celui-ci porte sur l'autre
@@ -214,20 +221,18 @@ votre code ([ADR-0039](../adr/0039-require-a-justification-on-every-suppression.
 
 ## Les transformer en erreurs de build
 
-Les trois qui regardent un site d'usage sont des erreurs par défaut ; les autres des avertissements.
-Tous se configurent comme n'importe quel diagnostic Roslyn :
+Chacun d'eux est une erreur par défaut, car aucun ne signale une ligne qui fait son travail : la
+paire nomme deux règles, ou c'est un littéral qu'une référence remplacerait, ou c'est une paire à
+moitié migrée, ou c'est une ligne que le *trimmer* jette, ou elle ne dit jamais pourquoi elle existe
+([ADR-0040](../adr/0040-grade-every-dcat-diagnostic-by-what-it-says.fr.md)). Tous se configurent
+comme n'importe quel diagnostic Roslyn :
 
 ```ini
 # .editorconfig
 [*.cs]
-dotnet_diagnostic.DCAT0009.severity = error        # relever un livré en avertissement
 dotnet_diagnostic.DCAT0006.severity = suggestion   # migration progressive
+dotnet_diagnostic.DCAT0014.severity = suggestion   # écrire les raisons jamais écrites
 ```
-
-`DCAT0001` et `DCAT0007` sont déjà des erreurs, `DCAT0006` aussi : les trois signifient qu'une
-suppression ne fait pas ce qu'elle a l'air de faire, et une garantie tenue seulement là où quelqu'un
-y a pensé n'en est pas une
-([ADR-0027](../adr/0027-ship-the-use-site-diagnostics-as-errors.fr.md)).
 
 Cela a un coût qu'il vaut mieux connaître avant de référencer un catalogue. Sur une base de code
 existante, `DCAT0006` se déclenche sur **toutes** les suppressions littérales d'un coup, et étant une
@@ -235,13 +240,13 @@ erreur il casse le build ce jour-là — `TreatWarningsAsErrors` n'y est plus po
 `suggestion`, migrez à votre rythme, puis supprimez la ligne.
 
 `DCAT0014` arrive sur ce même premier build, et pose sa question à toutes vos suppressions plutôt
-qu'aux seules qu'un catalogue sait apparier. C'est un **avertissement**, le build reste donc vert —
-mais sur une base de code qui n'a jamais écrit de justifications, il n'est pas discret. La même ligne
-l'abaisse le temps de rattraper :
+qu'aux seules qu'un catalogue sait apparier — sur une base de code qui n'a jamais écrit de
+justifications, c'est donc le plus bruyant des deux. Il figure sur la même ligne d'abaissement
+ci-dessus, et s'en retire de la même façon.
 
-```ini
-dotnet_diagnostic.DCAT0014.severity = suggestion
-```
+`DCAT0001`, `DCAT0007` et `DCAT0009` sont ceux qu'il faut laisser tranquilles. Aucun ne se déclenche
+en masse : ils n'existent que là où quelqu'un a déjà commencé à utiliser des références, ou là où une
+suppression de *trimmer* a été écrite à la main.
 
 ## Ce que ça laisse dans mon application
 

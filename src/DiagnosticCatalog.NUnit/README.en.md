@@ -27,7 +27,7 @@ on gets tuned in `.editorconfig`; a rule that came with the template gets an exc
 the one place it is wrong, with a `Justification` beside the test that earns it.
 
 ```csharp
-[SuppressMessage("Assertion", "NUnit2007:The actual value should not be a constant", ...)]
+[SuppressMessage("Assertion", "NUnit2007:The actual value should not be a constant", Justification = "…")]
 ```
 
 Three strings, and nothing checks any of them. Get the id wrong and the suppression silently
