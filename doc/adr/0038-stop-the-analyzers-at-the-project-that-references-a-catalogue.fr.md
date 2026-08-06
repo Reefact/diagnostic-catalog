@@ -3,8 +3,9 @@
 🌍 **Langues :**  
 🇬🇧 [English](./0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.en.md) | 🇫🇷 Français (ce fichier)
 
-**Status:** Proposed
+**Status:** Accepted
 **Proposed:** 2026-08-06
+**Accepted:** 2026-08-06
 **Decision Makers:** Reefact
 
 ## Contexte
