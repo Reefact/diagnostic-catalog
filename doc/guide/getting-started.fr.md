@@ -48,15 +48,17 @@ marqueurs, et qu'aucun catalogue n'a le droit de masquer
 second paquet à ajouter — et si vous voulez les vérifications sans aucun catalogue,
 `DiagnosticCatalog` seul est la réponse.
 
-Une conséquence tombe dès la toute première compilation. `DCAT0006` signale chaque suppression
+Deux conséquences tombent dès la toute première compilation. `DCAT0006` signale chaque suppression
 littérale qui correspond à une règle que vous avez désormais, en **erreur** : une base de code qui
-en a déjà quelques centaines les rencontre toutes d'un coup. Descendez-le d'abord, et la visite
-reste une visite :
+en a déjà quelques centaines les rencontre toutes d'un coup. `DCAT0014` signale chaque suppression
+qui n'a jamais dit pourquoi elle existe — toutes, règle appariée ou non — en avertissement.
+Descendez les deux d'abord, et la visite reste une visite :
 
 ```ini
 # .editorconfig
 [*.cs]
 dotnet_diagnostic.DCAT0006.severity = suggestion
+dotnet_diagnostic.DCAT0014.severity = suggestion
 ```
 
 [Adopter un catalogue](adopting-a-catalogue.fr.md) est ce dont cette ligne est la première étape ;

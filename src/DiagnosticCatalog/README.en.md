@@ -211,6 +211,13 @@ adopts a catalogue in practice:
 [SuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.Id, Justification = "kept for reflection")]
 ```
 
+One more lands on that same build, and it is a **warning** rather than an error: `DCAT0014` reports
+a suppression that carries no `Justification`. It asks that of every suppression, a literal one
+included, so unlike `DCAT0006` it does not wait for a catalogue to recognise the rule. Presence is
+all it checks — the value is read for its length, never for its meaning. Lower it in
+`.editorconfig` while you write the reasons, exactly as you lower `DCAT0006` while you convert the
+pairs.
+
 *Fix all occurrences* applies it across a document, project or solution in one step, and the
 `using` the reference needs is added for you. Everything else in the attribute is left exactly
 as written — `Justification`, `Scope`, `Target` and `MessageId` are yours.

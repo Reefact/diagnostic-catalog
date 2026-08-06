@@ -47,14 +47,16 @@ carries the `DCAT` analyzers and their code fixes beside the marker attributes a
 package to add — and if you want the checks with no catalogue at all, `DiagnosticCatalog` on its own
 is the answer.
 
-One consequence lands on the very first build. `DCAT0006` reports each literal suppression that
+Two consequences land on the very first build. `DCAT0006` reports each literal suppression that
 matches a rule you now have, as an **error**, so a codebase already holding a few hundred of them
-meets them all at once. Turn it down first and the tour stays a tour:
+meets them all at once. `DCAT0014` reports each suppression that never said why it exists — every
+one of them, matched rule or not — as a warning. Turn both down first and the tour stays a tour:
 
 ```ini
 # .editorconfig
 [*.cs]
 dotnet_diagnostic.DCAT0006.severity = suggestion
+dotnet_diagnostic.DCAT0014.severity = suggestion
 ```
 
 [Adopting a catalogue](adopting-a-catalogue.en.md) is what that line is the first step of; step 4
