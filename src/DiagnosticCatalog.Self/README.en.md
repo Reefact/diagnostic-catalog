@@ -3,8 +3,9 @@
 🌍 **Languages:**  
 🇬🇧 English (this file) | 🇫🇷 [Français](https://github.com/Reefact/diagnostic-catalog/blob/main/src/DiagnosticCatalog.Self/README.fr.md)
 
-The `DCAT` rules — the ones [`DiagnosticCatalog.Analyzers`](https://github.com/Reefact/diagnostic-catalog/blob/main/src/DiagnosticCatalog.Analyzers/README.en.md)
-reports — as constants you can reference.
+The `DCAT` rules — the ones the analyzers inside
+[`DiagnosticCatalog`](https://www.nuget.org/packages/DiagnosticCatalog) report — as constants you
+can reference.
 
 It is the library applied to itself. The analyzers that check *your* suppressions publish their own
 rules the same way they ask everybody else to, and they do it through the same generator that

@@ -112,14 +112,18 @@ jobs:
       # Nothing the C# build does can see what NuGet hands a consumer: whether the analyzer activates,
       # whether its assemblies leak into an application's output folder, and whether it flows through a
       # catalogue package. The last is the one §16.3 forbids assuming in either direction.
+      #
+      # The FOUNDATION package is what gates the step, and that is not an arbitrary pick: since
+      # ADR-0037 the analyzer and code-fix assemblies ride inside DiagnosticCatalog rather than in a
+      # package of their own, so there is no DiagnosticCatalog.Analyzers.nupkg left to look for.
       - name: Verify what a consumer actually gets
         if: steps.solution.outputs.present == 'true'
         env:
           VERSION: ${{ env.DRYRUN_VERSION }}
         run: |
           set -euo pipefail
-          if [ ! -f "artifacts/DiagnosticCatalog.Analyzers.$VERSION.nupkg" ]; then
-            echo "::notice::The analyzer package was not produced; there is nothing to consume."
+          if [ ! -f "artifacts/DiagnosticCatalog.$VERSION.nupkg" ]; then
+            echo "::notice::The foundation package was not produced; there is nothing to consume."
             exit 0
           fi
           tools/packaging/verify-consumption.sh "$VERSION"

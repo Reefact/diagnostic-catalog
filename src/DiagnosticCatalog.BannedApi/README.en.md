@@ -62,8 +62,11 @@ the suppressions arrive with the ban and outlive whoever wrote them.
 <PackageReference Include="DiagnosticCatalog.BannedApi" Version="1.0.0" />
 ```
 
-This package only supplies the constants. What is banned is `BannedSymbols.txt`, which this
-catalogue never reads.
+The constants are all this package declares — what is banned is `BannedSymbols.txt`, which this
+catalogue never reads. That reference is still all you need to be checked: this package depends
+on `DiagnosticCatalog`, which carries the `DCAT` analyzers and code fixes beside its attributes, so
+the checks on rule declarations and their use sites arrive with it. A literal suppression a
+catalogue reference would replace is an error by default, and a code fix rewrites it for you.
 
 ## What is in the package
 

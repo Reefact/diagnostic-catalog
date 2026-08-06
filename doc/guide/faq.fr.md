@@ -127,15 +127,20 @@ compilation.
 Si l'essentiel de vos suppressions sont des `#pragma`,
 [quand ne pas s'en servir](when-not-to-use.fr.md) le dit franchement.
 
-## Ai-je besoin du paquet d'analyseurs ?
+## Ai-je besoin d'un second paquet pour les analyseurs ?
 
-Pas pour la garantie. Une règle mal orthographiée est une erreur de compilation parce que
-`SonarRule.S1144.Id` est un membre que le compilateur résout — aucun analyseur n'intervient.
+Non, et il n'y a aucun second paquet dont avoir besoin. Les analyseurs `DCAT` et leurs correctifs
+voyagent dans `DiagnosticCatalog`, dont chaque catalogue dépend et qu'aucun n'a le droit de
+masquer : référencer n'importe quel catalogue les livre donc
+([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md)). Vouloir les
+vérifications sans aucun catalogue est le seul cas où il reste quelque chose à référencer :
+`DiagnosticCatalog` lui-même.
 
-`DiagnosticCatalog.Analyzers` trouve les suppressions que vous n'avez **pas** encore converties,
-attrape une paire nommant deux règles différentes, et propose les correctifs. C'est une aide à la
-migration plutôt que le mécanisme, et un catalogue ne l'amène jamais avec lui : le référencer est un
-choix que vous faites.
+Ce n'est pas sur eux que repose la garantie, notez-le. Une règle mal orthographiée est une erreur de
+compilation parce que `SonarRule.S1144.Id` est un membre que le compilateur résout — aucun analyseur
+n'intervient. Ce qu'ils ajoutent, c'est la migration : ils trouvent les suppressions que vous n'avez
+**pas** encore converties, attrapent une paire nommant deux règles différentes, et proposent les
+correctifs.
 
 ## Pourquoi `dcat` est-il un outil séparé plutôt qu'un générateur de source ?
 

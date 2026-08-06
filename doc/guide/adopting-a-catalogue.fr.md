@@ -6,17 +6,19 @@
 Pour quiconque a plus de suppressions qu'il ne veut en convertir à la main. Comment passer de
 quelques centaines de littéraux à des références vérifiées sans une semaine de builds rouges.
 
-> **Ce que cette page suppose.** La conversion en masse décrite ci-dessous, c'est
-> `DiagnosticCatalog.Analyzers`, référencé à côté du catalogue. Un catalogue ne l'amène jamais avec
-> lui — la vérification est un choix que fait son consommateur — donc ajoutez-le vous-même ;
-> [les paquets](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/README.fr.md#-les-paquets) disent à quoi sert
-> chacun. Le chemin manuel de la fin est ce qui reste sans lui.
+> **Ce que cette page suppose.** Rien de plus que le catalogue. La conversion en masse décrite
+> ci-dessous, ce sont les analyseurs `DCAT`, et ils sont livrés dans `DiagnosticCatalog`, dont
+> chaque catalogue dépend et qu'aucun n'a le droit de masquer — la référence au catalogue est ce qui
+> active la vérification
+> ([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md)) ; référencez
+> `DiagnosticCatalog` seul si vous voulez les vérifications sans catalogue. Le chemin manuel de la
+> fin est pour un catalogue publié avant cette décision.
 
 ## Le problème du premier jour
 
-Vous référencez un catalogue, vous référencez les analyseurs, vous compilez — et `DCAT0006` se
-déclenche sur **chaque suppression littérale qui correspond à une règle que vous avez désormais**.
-Pas un échantillon. Toutes, d'un coup.
+Vous référencez un catalogue, vous compilez — et `DCAT0006` se déclenche sur **chaque suppression
+littérale qui correspond à une règle que vous avez désormais**. Pas un échantillon. Toutes, d'un
+coup. Le catalogue est la seule référence en jeu : il a amené les analyseurs avec lui.
 
 Ce n'est pas un défaut. C'est le diagnostic qui fait exactement ce pour quoi il existe : il signale
 une suppression qu'une référence de catalogue pourrait remplacer, et après l'ajout du catalogue,
@@ -25,9 +27,9 @@ jamais.
 
 Et `DCAT0006` est livré en **erreur**
 ([ADR-0027](../adr/0027-ship-the-use-site-diagnostics-as-errors.fr.md)), donc cela n'attend pas qu'un
-`<TreatWarningsAsErrors>` morde : le build qui a ajouté le paquet est le build qui a échoué, avec des
-centaines d'erreurs, dans du code que personne n'a touché. Les équipes en concluent raisonnablement
-que la bibliothèque n'est pas prête.
+`<TreatWarningsAsErrors>` morde : le build qui a ajouté le catalogue est le build qui a échoué, avec
+des centaines d'erreurs, dans du code que personne n'a touché. Les équipes en concluent
+raisonnablement que la bibliothèque n'est pas prête.
 
 C'est pourquoi la première ligne de la rampe ci-dessous n'est pas optionnelle sur une base de code
 existante. C'est la seule baisse délibérée que le défaut attend de vous.
@@ -53,8 +55,8 @@ dotnet_diagnostic.DCAT0006.severity = suggestion
 ```
 
 Une suggestion apparaît dans l'IDE sous forme d'ampoule et dans `dotnet build` sous forme de rien. Le
-build qui ajoute le paquet est vert, et la migration démarre quand vous le décidez plutôt que quand
-le paquet arrive.
+build qui ajoute le catalogue est vert, et la migration démarre quand vous le décidez plutôt que
+quand le paquet arrive.
 
 **Pendant la migration — ne touchez pas aux quatre autres.**
 
@@ -105,7 +107,7 @@ personne qui l'a convertie est passée à autre chose.
 
 ## Convertir
 
-Compilez une fois avec les analyseurs référencés et chaque suppression convertible porte un
+Compilez une fois avec le catalogue référencé et chaque suppression convertible porte un
 correctif. Dans Visual Studio et Rider, *Corriger toutes les occurrences* l'applique à un
 **document**, un **projet** ou la **solution** en une étape.
 
@@ -163,8 +165,8 @@ ne recule jamais.
 
 Vous n'avez pas à l'exclure, et c'est la seule chose gratuite de cette adoption.
 
-`ConfigureGeneratedCodeAnalysis` est par **analyseur**, pas par diagnostic, et ce paquet livre deux
-classes précisément pour que les deux groupes puissent différer :
+`ConfigureGeneratedCodeAnalysis` est par **analyseur**, pas par diagnostic, et la vérification est
+écrite en deux classes précisément pour que les deux groupes puissent différer :
 
 | Analyseur | Diagnostics | Tourne sur le code généré |
 | --- | --- | --- |
@@ -218,9 +220,13 @@ dotnet_diagnostic.S1144.severity = none   # texte brut, hors du modèle de compi
 Si une grande part de vos suppressions sont des `#pragma`, la conversion vous paraîtra maigre — voyez
 [quand ne pas s'en servir](when-not-to-use.fr.md).
 
-## Sans le paquet d'analyseurs
+## Sans les analyseurs
 
-Tant qu'il n'est pas publié, le chemin mécanisé n'est pas disponible. Ce qui fonctionne quand même :
+Un catalogue les porte : le chemin mécanisé est donc normalement là. Deux cas où il ne l'est pas :
+une version de catalogue antérieure à
+[ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md), dont la dépendance à
+`DiagnosticCatalog` se résout vers une version qui ne portait que les attributs, et un projet qui a
+mis `DCAT0006` à `none`. Ce qui fonctionne quand même :
 
 * **Convertir au fil de l'eau.** Réécrivez une suppression quand vous éditez déjà son fichier. Cela
   atteint le code qui change vraiment, et ne coûte rien de plus.

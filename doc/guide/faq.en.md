@@ -118,14 +118,19 @@ Same for `.editorconfig` severity keys — plain text, outside the compilation m
 If most of your suppressions are `#pragma`, [when not to use this](when-not-to-use.en.md) says so
 plainly.
 
-## Do I need the analyzers package?
+## Do I need a second package for the analyzers?
 
-Not for the guarantee. A misspelled rule is a compile error because `SonarRule.S1144.Id` is a member
-the compiler resolves — no analyzer involved.
+No, and there is no second package to need. The `DCAT` analyzers and their code fixes ship inside
+`DiagnosticCatalog`, which every catalogue depends on and none may hide, so referencing any
+catalogue delivers them
+([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md)).
+Wanting the checks and no catalogue at all is the one case with something to reference:
+`DiagnosticCatalog` itself.
 
-`DiagnosticCatalog.Analyzers` finds the suppressions you have **not** converted yet, catches a pair
-naming two different rules, and offers the fixes. It is a migration aid rather than the mechanism,
-and a catalogue never brings it along: referencing it is a choice you make.
+They are not what the guarantee rests on, mind. A misspelled rule is a compile error because
+`SonarRule.S1144.Id` is a member the compiler resolves — no analyzer involved. What they add is the
+migration: they find the suppressions you have **not** converted yet, catch a pair naming two
+different rules, and offer the fixes.
 
 ## Why is `dcat` a separate tool rather than a source generator?
 

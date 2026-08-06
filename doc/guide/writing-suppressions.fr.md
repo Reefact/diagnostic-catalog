@@ -83,11 +83,13 @@ C'est la seule ligne dont vous avez besoin pour la garantie elle-même. Une règ
 est désormais une erreur de compilation, parce que `SonarRule.S1144.Id` est un membre que le
 compilateur résout — aucun analyseur n'intervient là-dedans.
 
-Les diagnostics `DCAT` ci-dessous sont un paquet séparé, `DiagnosticCatalog.Analyzers`, et ce sont
-eux qui trouvent les suppressions que vous n'avez *pas* encore converties. Un catalogue ne l'amène
-pas avec lui : la vérification est un choix que fait son consommateur, pas un choix que le catalogue
-fait pour lui. Référencez-le à côté du catalogue quand vous le voulez, normalement avec
-`PrivateAssets="all"` pour qu'il reste hors de ce que vous publiez.
+Les diagnostics `DCAT` ci-dessous viennent avec cette même ligne. Ils sont livrés dans
+`DiagnosticCatalog`, dont chaque catalogue dépend et qu'aucun n'a le droit de masquer : la référence
+ci-dessus est donc aussi ce qui trouve les suppressions que vous n'avez *pas* encore converties
+([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md)). Si vous voulez les
+vérifications sans catalogue, référencez `DiagnosticCatalog` seul ; si vous publiez une bibliothèque
+et préférez ne pas refiler ses diagnostics à qui vous référence, `PrivateAssets="all"` sur votre
+propre référence de catalogue les arrête à votre frontière.
 
 ### 2. Écrire la suppression
 
@@ -203,7 +205,7 @@ suppression ne fait pas ce qu'elle a l'air de faire, et une garantie tenue seule
 y a pensé n'en est pas une
 ([ADR-0027](../adr/0027-ship-the-use-site-diagnostics-as-errors.fr.md)).
 
-Cela a un coût qu'il vaut mieux connaître avant de référencer le paquet. Sur une base de code
+Cela a un coût qu'il vaut mieux connaître avant de référencer un catalogue. Sur une base de code
 existante, `DCAT0006` se déclenche sur **toutes** les suppressions littérales d'un coup, et étant une
 erreur il casse le build ce jour-là — `TreatWarningsAsErrors` n'y est plus pour rien. Descendez-le à
 `suggestion`, migrez à votre rythme, puis supprimez la ligne.

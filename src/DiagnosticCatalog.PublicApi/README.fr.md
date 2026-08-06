@@ -79,8 +79,13 @@ non contigus, et faciles à intervertir.
 <PackageReference Include="DiagnosticCatalog.PublicApi" Version="1.0.0" />
 ```
 
-Ce paquet ne fournit que les constantes. Il ne suit pas votre API — c'est le travail de l'analyseur,
-et ce catalogue ne l'exécute jamais.
+Les constantes sont tout ce que ce paquet déclare — il ne suit pas votre API, c'est le travail de
+l'analyseur et ce catalogue ne l'exécute jamais. Cette référence reste malgré tout la seule dont
+vous avez besoin pour être vérifié : ce paquet dépend de `DiagnosticCatalog`, qui porte les
+analyseurs `DCAT` et leurs correctifs à côté de ses attributs, si bien que les vérifications des
+déclarations de règles et de leurs sites d'utilisation arrivent avec lui. Une suppression littérale
+qu'une référence de catalogue remplacerait est une erreur par défaut, et un correctif la réécrit
+pour vous.
 
 ## Ce que contient le paquet
 

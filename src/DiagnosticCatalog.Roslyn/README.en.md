@@ -67,9 +67,12 @@ xUnit's and MSTest's analyzers arriving with their test frameworks.
 <PackageReference Include="DiagnosticCatalog.Roslyn" Version="1.0.0" />
 ```
 
-This package only supplies the constants. The checks that validate rule declarations and their use
-sites ship separately in `DiagnosticCatalog.Analyzers` — which, despite the similar name, is a
-different thing entirely: it holds this library's own `DCAT` diagnostics, not Roslyn's `RS` ones.
+That is the only reference you need. This package depends on `DiagnosticCatalog`, which carries
+the `DCAT` analyzers and code fixes beside its attributes, so referencing this catalogue is what
+switches on the checks that validate rule declarations and their use sites. The assembly doing the
+reporting is called `DiagnosticCatalog.Analyzers.dll`, and despite the similar name it is a
+different thing entirely: it raises this library's own `DCAT` diagnostics, never Roslyn's `RS`
+ones, which are what this catalogue names.
 
 ## What is in the package
 

@@ -56,8 +56,11 @@ discrètement de correspondre.
 <PackageReference Include="DiagnosticCatalog.Syslib" Version="1.0.0" />
 ```
 
-Ce paquet ne fournit que les constantes. Les vérifications qui valident les déclarations de règles et
-leurs sites d'utilisation sont livrées à part dans `DiagnosticCatalog.Analyzers`.
+C'est la seule référence dont vous avez besoin. Ce paquet dépend de `DiagnosticCatalog`, qui porte
+les analyseurs `DCAT` et leurs correctifs à côté de ses attributs, si bien que référencer ce
+catalogue est ce qui active les vérifications qui valident les déclarations de règles et leurs
+sites d'utilisation. Une suppression littérale qu'une référence de catalogue remplacerait est une
+erreur par défaut, et un correctif la réécrit pour vous.
 
 ## Ce que contient le paquet
 

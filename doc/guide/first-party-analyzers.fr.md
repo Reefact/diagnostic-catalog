@@ -134,6 +134,18 @@ C'est l'analyseur référençant le catalogue qui rend la boucle possible. C'est
 référençant **rien d'autre que la fondation** qui le rend sûr à prendre en dépendance : un paquet qui
 traîne Roslyn chez chaque consommateur est un paquet que les équipes déclinent.
 
+Il y a une chose que `Contoso.Rules` transmet, et qu'il doit transmettre : la vérification `DCAT`.
+Les analyseurs sont livrés dans `DiagnosticCatalog` : quiconque consomme votre catalogue voit donc
+ses suppressions vérifiées contre lui
+([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md)) — une suppression
+littérale nommant l'une de vos règles est signalée et se voit proposer un correctif, sans qu'il
+référence quoi que ce soit d'autre. Cela ne lui coûte aucune dépendance à l'exécution : ces
+assemblages vivent dans le dossier `analyzers/` du paquet, que le compilateur charge et que le build
+ne copie jamais, ce qu'asserte `tools/packaging/verify-consumption.sh` sous « the analyzer assembly
+stays out of the output folder ». N'allez pas vous y soustraire avec `PrivateAssets="all"` : cela
+masquerait `[DiagnosticRule]` à vos consommateurs en même temps que les analyseurs, et leur build
+cesserait de compiler au lieu de simplement n'être plus vérifié.
+
 Si vous livrez les deux depuis un dépôt à une version, vous n'avez besoin d'aucun attribut de
 [provenance](concepts.fr.md#provenance--un-catalogue-est-un-instantané) — `[assembly: CatalogSource]`
 enregistre la version amont qu'un miroir reflète, et un catalogue de première partie ne reflète rien.

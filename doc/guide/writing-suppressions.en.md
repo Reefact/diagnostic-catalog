@@ -75,11 +75,13 @@ for [the trimming and AOT warnings](https://www.nuget.org/packages/DiagnosticCat
 That is the only line you need for the guarantee itself. A misspelled rule is now a compile error,
 because `SonarRule.S1144.Id` is a member the compiler resolves — no analyzer is involved in that.
 
-The `DCAT` diagnostics below are a separate package, `DiagnosticCatalog.Analyzers`, and they are what
-finds the suppressions you have *not* converted yet. A catalogue does not bring it along: the
-checking is a choice its consumer makes, not one the catalogue makes for them. Reference it beside
-the catalogue when you want it, normally with `PrivateAssets="all"` so it stays out of what you
-publish.
+The `DCAT` diagnostics below come with that same line. They ship inside `DiagnosticCatalog`, which
+every catalogue depends on and none may hide, so the reference above is also what finds the
+suppressions you have *not* converted yet
+([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md)). If you want the
+checks and no catalogue, reference `DiagnosticCatalog` on its own; if you publish a library and
+would rather not hand its diagnostics to whoever references you, `PrivateAssets="all"` on your own
+catalogue reference stops them at your boundary.
 
 ### 2. Write the suppression
 
@@ -190,7 +192,7 @@ dotnet_diagnostic.DCAT0006.severity = suggestion   # migrating gradually
 not doing what it appears to do, and a guarantee held only where somebody remembered is not one
 ([ADR-0027](../adr/0027-ship-the-use-site-diagnostics-as-errors.en.md)).
 
-That has a cost worth knowing before you reference the package. On an existing codebase `DCAT0006`
+That has a cost worth knowing before you reference a catalogue. On an existing codebase `DCAT0006`
 fires on **every** literal suppression at once, and being an error it fails the build that day —
 `TreatWarningsAsErrors` no longer has anything to do with it. Lower it to `suggestion`, migrate at
 your own pace, then delete the line.
