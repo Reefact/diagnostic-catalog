@@ -3,8 +3,9 @@
 🌍 **Langues :**  
 🇬🇧 [English](https://github.com/Reefact/diagnostic-catalog/blob/main/src/DiagnosticCatalog.Self/README.en.md) | 🇫🇷 Français (ce fichier)
 
-Les règles `DCAT` — celles que signale [`DiagnosticCatalog.Analyzers`](https://github.com/Reefact/diagnostic-catalog/blob/main/src/DiagnosticCatalog.Analyzers/README.fr.md)
-— sous forme de constantes que vous pouvez référencer.
+Les règles `DCAT` — celles que signalent les analyseurs livrés dans
+[`DiagnosticCatalog`](https://www.nuget.org/packages/DiagnosticCatalog) — sous forme de constantes
+que vous pouvez référencer.
 
 C'est la bibliothèque appliquée à elle-même. Les analyseurs qui vérifient *vos* suppressions publient leurs
 propres règles de la manière exacte qu'ils demandent à tout le monde, et ils le font au travers du même

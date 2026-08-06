@@ -79,7 +79,7 @@ initialisée depuis une autre `const` reste une constante de compilation, et se 
 ```mermaid
 flowchart TB
     subgraph PUB["Les catalogues d'éditeurs"]
-        F["DiagnosticCatalog<br/><i>les marqueurs</i>"]
+        F["DiagnosticCatalog<br/><i>les marqueurs, et les diagnostics DCAT</i>"]
         S["DiagnosticCatalog.Sonar"]
         N["DiagnosticCatalog.NetAnalyzers"]
         T["DiagnosticCatalog.StyleCop"]
@@ -107,30 +107,31 @@ flowchart TB
         PA --> F
         BA --> F
     end
-    subgraph TOOLS["La boîte à outils, référencée quand vous la voulez"]
-        A["DiagnosticCatalog.Analyzers<br/><i>les diagnostics DCAT + correctifs</i>"]
+    subgraph TOOLS["Le reste de la boîte à outils"]
         SELF["DiagnosticCatalog.Self<br/><i>les règles DCAT, cataloguées</i>"]
         CLI["dcat<br/><i>le générateur, en outil</i>"]
         SELF --> F
     end
     YOU["votre projet"] --> S
-    A -. "vérifie" .-> YOU
+    F -. "vérifie" .-> YOU
     CLI -. "génère" .-> S
     CLI -. "génère" .-> SELF
 ```
 
-**`DiagnosticCatalog`** porte trois attributs et rien d'autre : `[DiagnosticRule]`,
-`[DiagnosticCategory]`, `[assembly: CatalogSource]`. Vous le référencez pour déclarer un catalogue à
-vous. Un catalogue que vous consommez le référence pour vous.
+**`DiagnosticCatalog`** porte trois attributs — `[DiagnosticRule]`, `[DiagnosticCategory]`,
+`[assembly: CatalogSource]` — et, à côté d'eux, les analyseurs `DCAT` et leurs correctifs
+([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md)). Vous le référencez
+pour déclarer un catalogue à vous, ou seul pour être vérifié sans aucun catalogue. Un catalogue que
+vous consommez le référence pour vous, et c'est ainsi que la vérification arrive avec lui.
 
 **Les catalogues d'éditeurs** sont des constantes. En référencer un vous donne des références
 vérifiées à la compilation vers les règles de cet analyseur — ce qui est toute la garantie, et elle
 vient du compilateur C# plutôt que de quoi que ce soit que cette bibliothèque exécute.
 
-**`DiagnosticCatalog.Analyzers`** est le supplément : des diagnostics qui trouvent les suppressions
-que vous n'avez *pas* migrées, attrapent une paire nommant deux règles différentes, et proposent les
-correctifs qui les réécrivent. C'est réellement un supplément et non un fondement — voir la section
-suivante.
+**Les diagnostics `DCAT`** sont le supplément : ils trouvent les suppressions que vous n'avez *pas*
+migrées, attrapent une paire nommant deux règles différentes, et proposent les correctifs qui les
+réécrivent. C'est réellement un supplément et non un fondement — voir la section suivante — et il
+n'y a aucun second paquet à référencer pour les obtenir.
 
 **`DiagnosticCatalog.Self`** est le catalogue des règles `DCAT`, pour que supprimer l'un des
 diagnostics de cette bibliothèque soit aussi une référence vérifiée.
@@ -146,11 +147,11 @@ indépendants et ne sont pas tous sortis.
 | Référence | Ce que vous obtenez |
 | --- | --- |
 | un catalogue d'éditeur | Des constantes vérifiées à la compilation. Une règle mal orthographiée donne `CS0117`. Une règle retirée donne `CS0618`. Le renommage et *Rechercher toutes les références* fonctionnent. |
-| un catalogue d'éditeur **seul** | Cela, et rien d'autre. Un catalogue dépend de la fondation et jamais de `DiagnosticCatalog.Analyzers` : la vérification est un choix que fait son consommateur, pas un choix que le catalogue fait pour lui. |
-| `DiagnosticCatalog.Analyzers`, référencé à côté | `DCAT0006` sur chaque suppression littérale qu'il peut remplacer, avec correctif ; `DCAT0001` sur une paire incohérente ; `DCAT0007` sur une paire à moitié migrée ; `DCAT0009` sur une suppression que le *trimmer* jettera. |
+| un catalogue d'éditeur, **et rien d'ajouté à côté** | Cela, et la vérification : `DCAT0006` sur chaque suppression littérale qu'il peut remplacer, avec correctif ; `DCAT0001` sur une paire incohérente ; `DCAT0007` sur une paire à moitié migrée ; `DCAT0009` sur une suppression que le *trimmer* jettera. Un catalogue dépend de la fondation et n'a pas le droit de la masquer, et c'est dans la fondation que vivent les analyseurs. |
+| `DiagnosticCatalog` **seul** | Les marqueurs, pour déclarer vos propres règles, et ces mêmes diagnostics — la référence à écrire quand vous voulez la vérification et aucun catalogue. |
 
 La distinction compte plus qu'une note de bas de page. **La garantie de fond n'a besoin d'aucun
-analyseur** : c'est le compilateur qui résout un membre. Ce que le paquet d'analyseurs ajoute, c'est
+analyseur** : c'est le compilateur qui résout un membre. Ce que les analyseurs ajoutent, c'est
 *trouver le code qui n'a pas encore été converti*, ce qui est une aide à la migration plutôt que le
 mécanisme.
 

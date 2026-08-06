@@ -41,6 +41,25 @@ one for [the .NET analyzers](https://www.nuget.org/packages/DiagnosticCatalog.Ne
 (`MSTESTxxxx`) and one for [the trimming and AOT warnings](https://www.nuget.org/packages/DiagnosticCatalog.Trimming)
 (`ILxxxx`). Reference more than one if you run more than one.
 
+That one reference also turns the checking on: every catalogue depends on `DiagnosticCatalog`, which
+carries the `DCAT` analyzers and their code fixes beside the marker attributes and may not be hidden
+([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md)). There is no second
+package to add — and if you want the checks with no catalogue at all, `DiagnosticCatalog` on its own
+is the answer.
+
+One consequence lands on the very first build. `DCAT0006` reports each literal suppression that
+matches a rule you now have, as an **error**, so a codebase already holding a few hundred of them
+meets them all at once. Turn it down first and the tour stays a tour:
+
+```ini
+# .editorconfig
+[*.cs]
+dotnet_diagnostic.DCAT0006.severity = suggestion
+```
+
+[Adopting a catalogue](adopting-a-catalogue.en.md) is what that line is the first step of; step 4
+comes back to it.
+
 ## 2. Rewrite one suppression
 
 Find a suppression you already have. It looks like this:
@@ -104,15 +123,16 @@ You now have one checked suppression and, most likely, a few hundred that are st
 honest options:
 
 * **Leave them.** A catalogue is useful one suppression at a time. Nothing degrades because the rest
-  of the file is still literals.
+  of the file is still literals — but the severity line from step 1 stays, because `DCAT0006`
+  reports every one of them.
 * **Convert as you touch them.** Rewrite a suppression when you are already editing its file. Costs
   nothing extra and reaches the code that changes.
-* **Convert in bulk.** This is what `DiagnosticCatalog.Analyzers` is for — it reports every literal
+* **Convert in bulk.** This is what the `DCAT` analyzers are for — they report every literal
   suppression that matches a rule you have, with a fix that rewrites it and adds the `using`, and
   *Fix all occurrences* applies it across a project or a solution in one step.
 
-  A catalogue does not bring that package along: the checking is a choice its consumer makes, so
-  reference `DiagnosticCatalog.Analyzers` yourself when you want it.
+  They are already in your compilation: the catalogue brought them in with it, and there is nothing
+  else to reference.
 
 Which to pick is the subject of the adoption section of
 [Writing suppressions that the compiler checks](writing-suppressions.en.md).

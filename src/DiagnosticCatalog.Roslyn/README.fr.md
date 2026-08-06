@@ -69,10 +69,12 @@ forme que les analyseurs de xUnit et de MSTest arrivant avec leurs frameworks de
 <PackageReference Include="DiagnosticCatalog.Roslyn" Version="1.0.0" />
 ```
 
-Ce paquet ne fournit que les constantes. Les vérifications qui valident les déclarations de règles et
-leurs sites d'utilisation sont livrées à part dans `DiagnosticCatalog.Analyzers` — qui, malgré la
-similitude du nom, est tout autre chose : il détient les diagnostics `DCAT` de cette bibliothèque,
-pas les `RS` de Roslyn.
+C'est la seule référence dont vous avez besoin. Ce paquet dépend de `DiagnosticCatalog`, qui porte
+les analyseurs `DCAT` et leurs correctifs à côté de ses attributs, si bien que référencer ce
+catalogue est ce qui active les vérifications qui valident les déclarations de règles et leurs
+sites d'utilisation. L'assembly qui les signale s'appelle `DiagnosticCatalog.Analyzers.dll`, et
+malgré la similitude du nom, c'est tout autre chose : il lève les diagnostics `DCAT` de cette
+bibliothèque, jamais les `RS` de Roslyn, qui sont ce que ce catalogue nomme.
 
 ## Ce que contient le paquet
 

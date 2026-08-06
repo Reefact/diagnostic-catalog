@@ -15,6 +15,16 @@ meant it or not, and what nuget.org will do to your README.
 Not `PrivateAssets="all"`. Your consumers need `DiagnosticRuleAttribute` to be resolvable in their
 own compilation, and hiding your dependency is what takes it away from them.
 
+Since [ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md) that one line
+delivers more than the attribute: `DiagnosticCatalog` carries the `DCAT` analyzers and their code
+fixes beside it. There is no second package for you or for your consumers to reference.
+
+It is necessary, and since
+[ADR-0038](../adr/0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.en.md) it is
+not sufficient. The analyzers reach a compiler only where a catalogue asks for them, and asking is
+[one file you pack](#ship-the-opt-in-that-checks-your-consumers) — three lines, in the next section.
+Skip it and your consumers are **silently** unchecked: their build succeeds and nothing reports.
+
 > **A correction, stated rather than quietly fixed.** This guide used to say that hiding the
 > foundation leaves the analyzers finding **no rules at all** and reporting nothing. That is not what
 > happens, and it is now asserted rather than argued: with the foundation absent from a consumer's
@@ -23,17 +33,68 @@ own compilation, and hiding your dependency is what takes it away from them.
 > `DiagnosticCatalog` among its references, and the marker is matched by fully qualified metadata
 > name, so an attribute that cannot be resolved is an error type that still carries its name. The
 > test is `MarkerRecognitionTests.A_referenced_catalogue_is_found_although_the_consumer_cannot_resolve_the_marker`.
+> What hiding the foundation decides now is something else, below: whether an analyzer runs there at
+> all.
 
-So what does `PrivateAssets="all"` actually cost? Two things, and both are worth avoiding:
+So what does `PrivateAssets="all"` actually cost? Three things, and the first is why this section is
+now a rule rather than a preference:
 
+* **Your consumers are not checked at all.** The analyzers ride inside `DiagnosticCatalog`, so the
+  reference that hides it hides them too. Measured, as
+  `a catalogue hiding the foundation delivers no analyzer either` in
+  `tools/packaging/verify-consumption.sh`.
 * **A consumer who declares rules of their own cannot.** `[DiagnosticRule]` does not resolve in their
   source, and they get `CS0246` until they add the foundation by hand — a dependency your package
   already had and declined to declare.
 * **Anything reading your catalogue reflectively at run time** — a documentation generator, an
   inventory script, `dcat list` against your assembly — meets an attribute type it cannot bind.
 
-Loud failures rather than silent ones, which is why the advice is "do not" rather than "never, on
-pain of the thing this library exists to prevent".
+The last two fail loudly, which is what once made this advice rather than a rule. The first does
+not: a codebase nothing checks looks exactly like a codebase with nothing to report, which is the
+silence this library exists to remove.
+
+## Ship the opt-in that checks your consumers
+
+Pack this file into your catalogue as `build/<your package id>.props`:
+
+```xml
+<Project>
+  <PropertyGroup>
+    <EnableDiagnosticCatalogAnalyzers Condition="'$(EnableDiagnosticCatalogAnalyzers)' == ''">true</EnableDiagnosticCatalogAnalyzers>
+  </PropertyGroup>
+</Project>
+```
+
+```xml
+<ItemGroup>
+  <None Include="DiagnosticCatalogOptIn.props"
+        Pack="true" PackagePath="build/$(PackageId).props" />
+</ItemGroup>
+```
+
+**The name matters.** NuGet imports `build/<package id>.props` and ignores a file called anything
+else, so a typo here is a catalogue that checks nobody and says nothing about it.
+
+**Why it is your file and not ours.** NuGet imports a package's `build/` folder for a **direct**
+reference and for nothing further out. That is the one place in the whole mechanism where "somebody
+referenced *this*" is distinguishable from "somebody is downstream of this", and only your package
+sits at that point: the foundation is transitive for your consumers and transitive again for
+theirs, so it cannot tell the two apart. Your three lines are what stop an application that
+references a library that references you from being analysed by a catalogue it never chose.
+
+The property is read by `buildTransitive/DiagnosticCatalog.targets` inside `DiagnosticCatalog`,
+which is where the analyzer assemblies live. You ship no analyzer of your own, which is what keeps a
+consumer of several catalogues on exactly one analyzer instance at one version.
+
+**Your consumers can overrule it, in both directions**, and it costs you nothing to let them: a
+project setting `EnableDiagnosticCatalogAnalyzers` to `false` keeps your catalogue and declines the
+analysis, and one setting it to `true` is asking for the checks from further out than a direct
+reference. Neither is a case you have to handle.
+
+In this repository the file is [`build/CatalogueAnalyzerOptIn.props`](../../build/CatalogueAnalyzerOptIn.props)
+and `Directory.Build.targets` packs it into every packable project that depends on the foundation,
+so a fourteenth catalogue carries it without anybody remembering. Outside this repository, it is
+three lines in your `.csproj`.
 
 ## Not taking the dependency at all
 
@@ -68,36 +129,56 @@ is how the analyzers, `dcat` and this repository's own `GeneratedCatalogTests` r
 a line in your README, because unlike `PrivateAssets="all"` above this one fails quietly: the tool
 reports a catalogue of zero rules, indistinguishable from an assembly that declares none.
 
+**And one thing it takes away from your consumers.** The analyzers travel with the foundation, so a
+catalogue that depends on nothing delivers nothing that reports: your users get the constants, and
+no `DCAT0006` on the literals they have not converted yet. They can reference `DiagnosticCatalog`
+themselves to get the checking back — which is a second line for that README, because nothing else
+will tell them.
+
 ## What propagates to your consumers
 
-If your catalogue references `DiagnosticCatalog.Analyzers`, the analyzers reach **your consumers**
-too — so referencing your catalogue is enough for them to get the checking.
+Referencing your catalogue checks **your consumers**, and stops there. Every row below was measured
+against a real restore rather than read from NuGet's documentation, in
+`tools/packaging/verify-consumption.sh`:
 
-That was measured against a real restore rather than read from NuGet's documentation, which says the
-opposite:
-
-| Your reference to `DiagnosticCatalog.Analyzers` | The analyzers run for your consumers |
+| Who is compiling | The analyzers run |
 | --- | --- |
-| no `PrivateAssets` | **yes** |
-| `PrivateAssets="none"` | yes |
-| `PrivateAssets="all"` | no |
+| a project referencing your catalogue | **yes**, if you shipped the opt-in |
+| a project referencing your catalogue, and you shipped no opt-in | no, silently |
+| a project referencing a library that references your catalogue | **no** |
+| that same project, having set `EnableDiagnosticCatalogAnalyzers=true` | yes |
+| a project referencing your catalogue with `EnableDiagnosticCatalogAnalyzers=false` | no; it keeps `[DiagnosticRule]` |
+| a project referencing your catalogue, which hid the foundation with `PrivateAssets="all"` | no, and `[DiagnosticRule]` stops resolving for them |
 
-**Silence propagates.** If you would rather not impose analysis on everyone downstream, say so
-explicitly with `PrivateAssets="all"` — and know that you are choosing it, rather than discovering
-later that you did.
+**The third row is why the opt-in is your file.** An application referencing an ordinary library
+that took your catalogue for its own suppressions chose neither you nor the analyzers, and
+`DCAT0006` ships as an **error** — so before
+[ADR-0038](../adr/0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.en.md) that
+application's build stopped on its own suppressions, with nothing in its own project file to point
+at. The library author had the only lever and no reason to reach for it.
 
-The choice is a real one. Imposing analysis gets your users the migration fix and the coherence
-checks without them knowing the package exists; it also puts warnings in builds that did not ask for
-them, on the day they upgrade your catalogue. Whichever you pick, say which in your README.
+**The last row is not an opt-out a catalogue can afford.** One package means one lever: withholding
+the analyzers withholds the attribute with them, so a consumer written the ordinary way stops
+compiling rather than merely going unchecked — the `CS0246`
+[troubleshooting](troubleshooting.en.md#cs0246-the-type-or-namespace-name-diagnosticrule-could-not-be-found)
+already reports. The check that says so is
+`a catalogue hiding the foundation withholds the attribute assembly`, whose consumer fixture has to
+declare its own marker to compile at all.
+
+**A library that references your catalogue is checked itself** — it did choose it. What it no longer
+does is pass that on, and it needs to write nothing to get that. `PrivateAssets="all"` on its own
+reference still works and is now redundant.
 
 ## The summary table
 
 | Who you are | What you reference | How |
 | --- | --- | --- |
-| **Consumer** — writes suppressions | a catalogue | ordinary reference |
-| **Consumer** — wants the checks | `DiagnosticCatalog.Analyzers` | `PrivateAssets="all"` |
-| **Catalogue author** | `DiagnosticCatalog` | **ordinary reference** |
-| **Catalogue author** — wants consumers checked too | `DiagnosticCatalog.Analyzers` | ordinary reference, deliberately |
+| **Consumer** — writes suppressions | a catalogue | ordinary reference; the checks arrive with it |
+| **Consumer** — wants the checks and no catalogue | `DiagnosticCatalog` | ordinary reference |
+| **Consumer** — wants a catalogue and no analysis | a catalogue | ordinary reference, plus `EnableDiagnosticCatalogAnalyzers=false` |
+| **Consumer** — wants the checks a library's catalogue no longer passes on | nothing more | `EnableDiagnosticCatalogAnalyzers=true` |
+| **Catalogue author** | `DiagnosticCatalog` | **ordinary reference**, never `PrivateAssets="all"`, **plus the opt-in above** |
+| **Library author** — took a catalogue, will not impose it | that catalogue | nothing; it no longer travels |
 | **Analyzer author** — owns both | `DiagnosticCatalog` in the catalogue project; the catalogue in the analyzer project | see [closing the loop](first-party-analyzers.en.md) |
 
 ## Your README is your package page

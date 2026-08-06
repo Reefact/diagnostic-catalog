@@ -77,4 +77,32 @@
     <None Include="$(PackageIconSource)" Pack="true" PackagePath="/" />
   </ItemGroup>
 
+  <!--
+    The catalogue half of ADR-0038's gate. A catalogue ships build/<its own id>.props, NuGet imports
+    it for a DIRECT reference and for nothing further out, and the foundation's
+    buildTransitive/DiagnosticCatalog.targets reads the property it sets. That asymmetry is what
+    bounds the analyzers to the project that asked for a catalogue, instead of every project
+    downstream of one.
+
+    Derived rather than declared, for the reason ReleaseTrain is: a catalogue is a packable project
+    that depends on the foundation, which is a fact about the project file, so the fourteenth
+    catalogue carries the opt-in without anybody remembering it. A list would have to be edited, and
+    a catalogue missing from it would look exactly like one whose consumers are checked.
+
+    Both reference kinds are matched because the repository uses both: the twelve catalogues on their
+    own trains take a PackageReference (ADR-0007 forbids anything else across trains), while
+    DiagnosticCatalog.Self rides the lib train WITH the foundation and takes a ProjectReference.
+
+    The foundation itself matches neither clause and must not: a package carrying buildTransitive/
+    has its build/ folder ignored outright, so the file would be packed and never read. The direct
+    consumer of the foundation is recognised inside the gate instead.
+
+    Item conditions rather than a property, because MSBuild evaluates every property before any item
+    and a property condition may not read @(PackageReference).
+  -->
+  <ItemGroup Condition="'$(ReleaseTrain)' != '' and ('@(PackageReference->WithMetadataValue('Identity','DiagnosticCatalog'))' != '' or '@(ProjectReference->WithMetadataValue('Filename','DiagnosticCatalog'))' != '')">
+    <None Include="$(MSBuildThisFileDirectory)build/CatalogueAnalyzerOptIn.props"
+          Pack="true" PackagePath="build/$(PackageId).props" Visible="false" />
+  </ItemGroup>
+
 </Project>

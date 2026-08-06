@@ -140,6 +140,16 @@ The suite is invoked with `sh` rather than `bash`: every script carries a `#!/bi
 written to POSIX ([ADR-0013](../adr/0013-write-the-shell-tooling-for-posix-sh-not-bash.en.md)), so
 running it under bash would let a bashism pass CI and fail on a contributor's machine.
 
+`tools/packaging/verify-consumption.sh` is the same kind of gap seen from the other end, and it runs
+from the release rehearsal rather than from `run.sh` because it needs real `.nupkg` files first. Its
+eighteen checks restore the packages as a consumer would: that a consumer of a catalogue is checked
+at all, that `DiagnosticCatalog.dll` reaches their output folder while the analyzer assemblies do
+not, that two catalogues deliver exactly one analyzer instance, and that the flow does **not**
+survive a second hop through a library — which nothing compiled in-process against project
+references can observe
+([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.en.md),
+[ADR-0038](../adr/0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.en.md)).
+
 ## Adding a test for a new diagnostic
 
 1. **Write the assertions first**, if the contract is not obvious. The value is the moment it creates:

@@ -7,6 +7,12 @@ Pour quiconque a vu passer un `DCATxxxx` et veut savoir ce qu'il signifie. Chaqu
 `DiagnosticCatalog.Analyzers` signale : ce qui le déclenche, pourquoi il existe, comment le
 configurer.
 
+Cet assemblage est livré dans le paquet `DiagnosticCatalog` plutôt que dans un paquet à lui : il n'y
+a donc rien à référencer pour les obtenir. Chaque catalogue dépend de la fondation et n'a pas le
+droit de la masquer, si bien que référencer n'importe quel catalogue les active
+([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md)) ; référencer
+`DiagnosticCatalog` seul est la façon d'être vérifié sans aucun catalogue.
+
 Ils se répartissent en deux groupes. Les diagnostics de **déclaration** regardent une règle que vous
 avez déclarée ; vous ne les voyez que si vous écrivez un catalogue. Les diagnostics de **site
 d'utilisation** regardent une suppression que vous avez écrite, ce qui concerne la plupart des gens.
@@ -100,8 +106,11 @@ Si **deux** catalogues décrivent la même règle, vous obtenez le diagnostic et
 automatique — choisir entre les deux vous revient.
 
 > **Sur l'adoption.** Celui-ci se déclenche sur toutes les suppressions littérales d'un coup, le jour
-> où vous ajoutez un catalogue. Sous `TreatWarningsAsErrors`, cela casse le build immédiatement.
-> Descendez-le à `suggestion`, migrez avec *Corriger toutes les occurrences*, puis remontez-le.
+> où vous ajoutez un catalogue — et le catalogue amène l'analyseur avec lui, aucune seconde
+> référence ne s'interpose. C'est une **erreur** par défaut
+> ([ADR-0027](../adr/0027-ship-the-use-site-diagnostics-as-errors.fr.md)) : le build qui ajoute le
+> catalogue est donc le build qui casse. Descendez-le à `suggestion`, migrez avec *Corriger toutes
+> les occurrences*, puis remontez-le.
 
 ### `DCAT0007`
 
@@ -397,6 +406,11 @@ dotnet_analyzer_diagnostic.category-DiagnosticCatalog.severity = error
 
 Cantonnez une section à un chemin de la façon ordinaire d'`.editorconfig` quand du code généré ou un
 dossier hérité demande un traitement différent.
+
+Cette même clé réglée sur `none` est la façon de tout **désactiver**. Puisque les analyseurs sont
+livrés dans `DiagnosticCatalog`, il ne reste aucune référence de paquet à décliner : un projet qui
+veut les marqueurs et aucune vérification le dit ici plutôt que dans ses dépendances
+([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md)).
 
 ## Ce qui n'est délibérément pas vérifié
 

@@ -307,9 +307,9 @@ pertinence métier ou technique.
 ```text
 DiagnosticCatalog/
 ├── src/
-│   ├── DiagnosticCatalog/                  → lib, expose les attributs
-│   ├── DiagnosticCatalog.Analyzers/        → assemblies d'analyse
-│   ├── DiagnosticCatalog.CodeFixes/        → code fixers, embarqués dans la précédente
+│   ├── DiagnosticCatalog/                  → lib, expose les attributs et les deux suivants (§16.1)
+│   ├── DiagnosticCatalog.Analyzers/        → assemblies d'analyse, sans package propre
+│   ├── DiagnosticCatalog.CodeFixes/        → code fixers, de même
 │   ├── DiagnosticCatalog.Cli/              → l'outil dcat (§14.1)
 │   ├── DiagnosticCatalog.Self/             → les règles de cette bibliothèque, cataloguées
 │   └── DiagnosticCatalog.<Éditeur>/        → un catalogue généré par éditeur (§14)
@@ -1771,44 +1771,60 @@ Les analyzers Roslyn sont distribués dans le dossier `analyzers` du package
 NuGet. Les assemblies d'analyse ne doivent jamais devenir des dépendances
 runtime de l'application consommatrice.
 
-### 16.1 Deux packages, deux publics
+### 16.1 Un seul package, les deux publics
 
-Un package unique ne peut pas servir les deux publics, car leurs besoins sont
-opposés :
+Deux publics lisent cette section, et ils veulent des moitiés différentes de la même chose :
 
-| Public | Besoin | Mode de référence |
+| Public | Ce qu'il veut | Où le package le porte |
 | --- | --- | --- |
-| **Consommateur** — écrit des suppressions | les analyzers seulement | `PrivateAssets="all"`, aucune dépendance runtime |
-| **Auteur de catalogue** — déclare des règles | `DiagnosticRuleAttribute` résoluble *par ses propres consommateurs* | référence `DiagnosticCatalog` ordinaire, dépendance déclarée — ou attribut embarqué en source (§7.2) |
+| **Consommateur** — écrit des suppressions | les analyzers et leurs code fixers, et aucune assembly d'analyse dans la sortie de build | `analyzers/dotnet/cs/`, que le compilateur charge et que le build ne copie jamais |
+| **Auteur de catalogue** — déclare des règles | `DiagnosticRuleAttribute` résoluble *par ses propres consommateurs* | `lib/`, atteint par une référence `DiagnosticCatalog` ordinaire — ou l'attribut embarqué en source (§7.2) |
 
-Recommander `PrivateAssets="all"` de façon universelle produit le mode de
-défaillance décrit au §7.2. D'où :
+Ils ont été servis par deux packages, et cette séparation n'a pas survécu au contact du graphe de
+dépendances. Tout catalogue dépend de `DiagnosticCatalog` et n'a pas le droit de le masquer, parce
+que `[DiagnosticRule]` doit se résoudre pour ses propres consommateurs (§7.2) — le consommateur d'un
+catalogue reçoit donc l'assembly d'attributs qu'il l'ait demandée ou non, et le public qui voulait
+les analyzers et rien d'autre n'existe pas parmi eux. Un seul package porte donc les deux moitiés,
+et référencer n'importe quel catalogue les livre toutes les deux
+([ADR-0037](adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md)) :
 
 ```text
-DiagnosticCatalog.nupkg
+DiagnosticCatalog.nupkg                    (DevelopmentDependency = false)
 ├── lib/netstandard2.0/DiagnosticCatalog.dll
 ├── lib/netstandard2.0/DiagnosticCatalog.xml
-└── README.md
-
-DiagnosticCatalog.Analyzers.nupkg          (DevelopmentDependency = true)
 ├── analyzers/dotnet/cs/DiagnosticCatalog.Analyzers.dll
 ├── analyzers/dotnet/cs/DiagnosticCatalog.CodeFixes.dll
 ├── AnalyzerReleases.Shipped.md
-├── README.md
+├── README.en.md
 └── icon.png
 ```
 
-Un métapackage de confort peut dépendre des deux.
+`DiagnosticCatalog.Analyzers` et `DiagnosticCatalog.CodeFixes` restent des **projets** distincts et
+des **assemblies** distinctes — un hôte de compilation charge un analyzer en `netstandard2.0`, et
+`RS1022` interdit les types Workspaces dans une assembly d'analyzer, ce qui force les code fixers
+dans une seconde — mais aucune des deux n'est plus une identité de package. Rien ne les publie ;
+`DiagnosticCatalog` ordonne leur build et empaquette leur sortie.
+
+`DevelopmentDependency` vaut `false`, et c'est le réglage porteur plutôt qu'un oubli : c'est lui qui
+laisse l'assembly d'attributs atteindre les consommateurs d'un catalogue. Tenir les assemblies
+d'analyse hors de la sortie de build est le travail du chemin `analyzers/`, pas le sien. Les deux
+tombent de part et d'autre de la ligne qui ouvre cette section, et le §21.7 vérifie les deux sens
+contre un restore réel.
 
 ### 16.2 Référence côté consommateur
 
+Une seule référence, et c'est la fondation :
+
 ```xml
 <ItemGroup>
-  <PackageReference Include="DiagnosticCatalog.Analyzers"
-                    Version="1.0.0"
-                    PrivateAssets="all" />
+  <PackageReference Include="DiagnosticCatalog" Version="1.0.0" />
 </ItemGroup>
 ```
+
+C'est la référence de qui veut les vérifications sans aucun catalogue. Un projet qui référence déjà
+un package de catalogue n'écrit rien du tout : les analyzers arrivent avec lui (§16.3). Un package
+lui-même consommé — un catalogue, ou une bibliothèque qui déclare ses propres règles — ne doit pas y
+ajouter `PrivateAssets="all"` ; le §16.3 mesure ce que cela retient.
 
 ### 16.3 La transitivité doit être testée, pas supposée
 
@@ -1819,35 +1835,67 @@ analyzers ne circulent pas transitivement. En pratique,
 analyzers transitifs circulent bel et bien. **Ne dépendre d'aucune des deux
 directions.**
 
-* `tools/packaging/verify-consumption.sh` effectue un restore réel des packages
-  produits et vérifie si l'analyzer s'active pour le consommateur d'un package de
-  catalogue. Il tourne sur chaque pull request, depuis la répétition de release,
-  là où de vrais fichiers `.nupkg` existent.
+* `tools/packaging/verify-consumption.sh` restaure les packages produits comme le ferait un
+  consommateur et vérifie ce qu'ils font alors — dix-huit contrôles, exécutés sur chaque pull
+  request depuis la répétition de release, là où de vrais fichiers `.nupkg` existent. Chaque mesure
+  ci-dessous en est un.
 
-**Mesuré, et ce n'est pas ce que la documentation laisse entendre.** Trois
-packages de catalogue ne différant que par `PrivateAssets` ont été construits
-puis consommés :
+**Les analyzers ne sont pas un actif NuGet.** Depuis
+l'[ADR-0038](adr/0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.fr.md), les
+assemblages résident dans `dcat-analyzers/`, un dossier dont NuGet ne résout rien, et n'atteignent
+un compilateur que par `buildTransitive/DiagnosticCatalog.targets`, qui les ajoute lorsque
+`EnableDiagnosticCatalogAnalyzers` vaut `true` ou que la fondation figure parmi les
+`PackageReference` propres au projet en cours de compilation. C'est délibéré : un actif NuGet
+descend tout le graphe et n'a aucune notion de distance, donc aucun réglage sur un dossier
+`analyzers/` ne peut servir le projet qui a référencé un catalogue et refuser celui qui se trouve
+trois packages en aval.
 
-| Un catalogue référençant l'analyzer avec | L'analyzer tourne chez ses consommateurs |
+**Un catalogue inscrit ses propres consommateurs.** Chaque catalogue embarque
+`build/<son propre identifiant de package>.props`, qui pose la propriété. NuGet importe le dossier
+`build/` d'un package pour une référence **directe** et pour rien au-delà — comportement documenté,
+contrairement au passage ci-dessus — et cette asymétrie est tout le mécanisme. Dans ce dépôt, le
+fichier est embarqué par `Directory.Build.targets` dans chaque projet packageable qui dépend de la
+fondation, il est donc dérivé plutôt que mémorisé ; un catalogue tiers doit le livrer lui-même
+([`doc/guide/packaging-a-catalogue`](guide/packaging-a-catalogue.fr.md)).
+
+**Mesuré.** La chaîne décide, et elle s'arrête là où s'arrête la référence :
+
+| La chaîne | L'analyzer tourne pour l'application |
 | --- | --- |
-| aucun `PrivateAssets` | **oui** |
-| `PrivateAssets="none"` | oui |
-| `PrivateAssets="all"` | non |
+| app → fondation | oui |
+| app → catalogue | oui |
+| app → catalogue **sans opt-in embarqué** | non, en silence |
+| app → bibliothèque → catalogue | **non** |
+| app → bibliothèque → catalogue, app pose `EnableDiagnosticCatalogAnalyzers=true` | oui |
+| app → catalogue, app pose `EnableDiagnosticCatalogAnalyzers=false` | non |
 
-L'analyzer circule donc **bel et bien** transitivement par défaut, alors même que
-le package déclare `DevelopmentDependency` et que NuGet documente les analyzers
-comme non transitifs — le comportement rapporté dans
-[NuGet/Home#13813](https://github.com/NuGet/Home/issues/13813).
+La quatrième ligne est la raison d'être de ce dispositif. Une application qui référence une
+bibliothèque ordinaire ayant pris un catalogue pour ses propres suppressions n'a choisi ni le
+catalogue ni l'analyzer, et `DCAT0006` est livré en erreur (§17) : sous le dispositif précédent, son
+build s'arrêtait donc sur ses propres suppressions sans qu'aucune cause soit visible dans son propre
+fichier projet.
 
-Deux conséquences, toutes deux inverses de l'hypothèse initiale :
+Trois autres conséquences :
 
-* Un catalogue qui veut apporter la vérification n'a besoin **d'aucun levier** ;
-  `PrivateAssets="none"` fonctionne et ne change rien.
-* Un catalogue qui ne veut *pas* imposer l'analyse à ses consommateurs doit le
-  dire explicitement avec `PrivateAssets="all"`. Le silence propage.
+* **La propriété joue dans les deux sens.** Un consommateur qui veut le catalogue sans l'analyse
+  écrit `false` et conserve `[DiagnosticRule]` ; un consommateur plus lointain qui veut les
+  vérifications écrit `true`. Aucune des deux clauses du portail n'écrase une valeur posée par le
+  projet.
+* Un catalogue qui écrit `PrivateAssets="all"` sur la fondation n'est toujours pas poli à l'égard de
+  l'analyse. Un seul package signifie un seul levier : masquer les analyzers masque
+  `[DiagnosticRule]` avec eux et les consommateurs du catalogue cessent de compiler — la défaillance
+  du §7.2, pas un retrait courtois. Mesuré : le projet consommateur derrière ce cas doit déclarer son
+  propre attribut marqueur ne serait-ce que pour compiler.
+* Un projet qui référence **deux** catalogues est vérifié par exactement **une** instance
+  d'analyzer. Les deux catalogues posent une seule propriété et les assemblages proviennent de
+  l'unique fondation, dont NuGet unifie l'identité sur tout le graphe. C'est le contrôle qui
+  échouerait si les analyzers avaient été repliés dans chaque catalogue : un portail les ajouterait
+  alors **par chemin**, MSBuild n'aurait rien à unifier, et le compilateur en recevrait deux
+  ([ADR-0037](adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md),
+  [ADR-0038](adr/0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.fr.md)).
 
-Un consommateur peut toujours référencer `DiagnosticCatalog.Analyzers`
-directement, et doit le faire quand aucun package de catalogue ne le fournit.
+Un consommateur qui veut les vérifications sans aucun catalogue référence `DiagnosticCatalog`
+lui-même (§16.2) ; le portail reconnaît cette référence parmi celles du projet.
 
 ---
 
@@ -2075,7 +2123,11 @@ compilation. Sans ce test, le §27 n'affirme que la compilation du code.
 * le comportement de transitivité du §16.3 est vérifié, quel qu'il s'avère
   être ;
 * les assemblies d'analyse n'apparaissent pas dans le dossier de sortie du
-  consommateur.
+  consommateur ;
+* l'assembly d'attributs, elle, y apparaît — le sens inverse, et l'autre moitié du §16.1 ;
+* un consommateur de deux catalogues est vérifié par exactement une instance d'analyzer ;
+* l'analyzer n'atteint **pas** un consommateur situé un saut plus loin, et les deux extrémités
+  peuvent passer outre.
 
 ---
 
@@ -2087,7 +2139,7 @@ compilation. Sans ce test, le §27 n'affirme que la compilation du code.
 * une documentation destinée aux consommateurs ;
 * la liste des diagnostics `DCATxxxx` ;
 * la procédure de configuration `.editorconfig` ;
-* la matrice `PrivateAssets` du §16.1 ;
+* la matrice des chaînes de référence du §16.3, et ce qu'un catalogue doit livrer pour y figurer ;
 * un énoncé explicite des limites du §5.1 ;
 * une politique de versionnement ;
 * un guide de contribution ;
@@ -2148,8 +2200,8 @@ amont doit être marquée `[Obsolete]`, jamais supprimée.
   correctif `nameof` du second ;
 * *Corriger toutes les occurrences* sur un document, un projet et une solution
   entière (§12.5) ;
-* les packages de fondation et d'analyseurs (§16.1), avec suivi des versions
-  d'analyseurs ;
+* le package de fondation, qui porte ensemble les attributs et les analyseurs
+  (§16.1), avec suivi des versions d'analyseurs ;
 * le générateur, publié comme outil .NET `dcat`
   ([ADR-0017](adr/0017-publish-the-generator-as-a-cli-on-its-own-release-train.fr.md)),
   avec ses quatre verbes — `generate`, `validate`, `list`, `explain` (§14.1) ;

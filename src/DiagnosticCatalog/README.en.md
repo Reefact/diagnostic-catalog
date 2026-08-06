@@ -6,6 +6,9 @@
 Declare analyzer diagnostic rules as strongly referenced constants, so that
 `SuppressMessageAttribute` takes compile-checked references instead of magic strings.
 
+One package, both halves: the attributes a catalogue is declared with, and the `DCAT`
+analyzers and code fixes that check what you write against it.
+
 ## The problem
 
 **Both** arguments of `SuppressMessageAttribute` are magic strings, and nothing
@@ -30,7 +33,8 @@ or tool can tell you. And you would not guess it — `S1144`'s category is
 Sonar, the .NET CA rules, StyleCop, the Roslyn IDE rules and xUnit's are already packaged as
 `DiagnosticCatalog.Sonar`, `DiagnosticCatalog.NetAnalyzers`, `DiagnosticCatalog.StyleCop`
 `DiagnosticCatalog.CodeStyle` and `DiagnosticCatalog.Xunit`. This package is what you need to
-declare a catalogue of your own.
+declare a catalogue of your own — and referencing any of those already brings it, and the
+checks it carries, along with them.
 
 ## Installation
 
@@ -39,11 +43,30 @@ declare a catalogue of your own.
 ```
 
 Do **not** add `PrivateAssets="all"` if your project publishes a catalogue for others
-to consume: the package must flow to them so they can declare rules of their own, and
-so that run-time reflection over your catalogue keeps working. The checks themselves
-survive an unresolved attribute — the analyzers match on the fully qualified metadata
-name `DiagnosticCatalog.DiagnosticRuleAttribute`, which is exactly the silent failure
-mode that choice was made to design out — but do not rely on it.
+to consume. One package carries both halves, so hiding it hides both: your consumers
+lose `[DiagnosticRule]`, which they need to declare rules of their own and which
+run-time reflection over your catalogue resolves, and they lose the checks along with
+it — a consumer written the ordinary way stops compiling rather than merely going
+unchecked. Both halves of that are measured against a real restore by
+`tools/packaging/verify-consumption.sh`, in the checks
+`a catalogue hiding the foundation delivers no analyzer either` and
+`a catalogue hiding the foundation withholds the attribute assembly`.
+
+A catalogue also packs `build/<its own package id>.props`, setting
+`EnableDiagnosticCatalogAnalyzers`, and that is what delivers the analyzers to its
+consumers — the check `a catalogue delivers the analyzer to its own consumer`. NuGet
+imports a package's `build/` folder for a direct reference and for nothing further out,
+so the checks reach the project that referenced the catalogue and stop there: an
+application referencing a **library** that took a catalogue for its own suppressions is
+not analysed by a catalogue it never chose, and the library writes nothing to arrange
+that
+([ADR-0038](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/adr/0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.en.md)).
+[Packaging a catalogue](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/packaging-a-catalogue.en.md)
+has the file.
+
+A consuming project overrules that in either direction with the same property:
+`false` keeps the catalogue and declines the analysis, `true` asks for the checks from
+further out than a direct reference.
 
 ## Declaring a rule
 
@@ -144,26 +167,128 @@ itself. A standalone catalogue package should stay on plain strings.
 Localised text (`LocalizableString`, resx-backed descriptors) falls outside the `const`
 model; resource files remain the right tool for translated strings.
 
-## What this package is not
+## The checks that come with it
 
-This package contains **the attributes only** — `[DiagnosticRule]` and
-`[assembly: CatalogSource]`. It performs no checking.
+The `DCAT` analyzers and their code fixes ship **inside this package**, under
+`analyzers/dotnet/cs/` beside `lib/`. There is nothing else to reference: they arrive with
+the foundation, and the foundation arrives with every catalogue built on it.
 
-The analyzers that validate rule declarations, verify that `Category` and `Id` come
-from the same rule, and offer to replace string literals with catalogue references
-ship separately:
+They check two things: that a rule **declaration** satisfies the structural contract — its
+shape, its `Id`, its `Category`, how that category is reached and what its type name says —
+and that a **suppression** referencing one is coherent: two arguments that do not name one
+rule's `Category` and that same rule's `Id`, a half-migrated suppression mixing a reference
+with a literal, a literal that a catalogue reference would replace, and an
+`UnconditionalSuppressMessage` the trimmer discards.
 
-```xml
-<PackageReference Include="DiagnosticCatalog.Analyzers" Version="..." PrivateAssets="all" />
+A project that consumes a catalogue and declares no rules of its own sees the second set
+only. The declaration diagnostics report on types marked `[DiagnosticRule]` and return
+immediately on everything else.
+
+An analysis assembly never becomes a runtime dependency of the consuming application:
+`tools/packaging/verify-consumption.sh` restores this package the way a consumer does and
+asserts that `DiagnosticCatalog.Analyzers.dll` and `DiagnosticCatalog.CodeFixes.dll` stay out
+of the output folder while `DiagnosticCatalog.dll` reaches it. Applying `[DiagnosticRule]`
+adds no runtime behaviour either — the runtime resolves attribute types lazily, so
+`DiagnosticCatalog.dll` is never loaded unless something reflects over the rule types.
+
+The analyzers never need the attribute *type*, only its name: they match
+`DiagnosticCatalog.DiagnosticRuleAttribute` by its fully qualified metadata name. A project
+declaring its own `internal sealed class DiagnosticRuleAttribute` in the `DiagnosticCatalog`
+namespace is therefore checked exactly like one that took the package. What that does not do
+is deliver the analyzers — those arrive with this package, and a project that has hidden it
+has neither.
+
+## Migrating an existing codebase
+
+Adopting a catalogue is not a quiet change: the use-site diagnostics are errors by default
+(`DCAT0001`, `DCAT0006` and `DCAT0007`), so a literal suppression a catalogue reference would
+replace fails the build rather than warning. The code fix that rewrites it is how a codebase
+adopts a catalogue in practice:
+
+```csharp
+[SuppressMessage("Major Code Smell", "S1144", Justification = "kept for reflection")]
+// becomes
+[SuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.Id, Justification = "kept for reflection")]
 ```
 
-Applying `[DiagnosticRule]` introduces no runtime behaviour. The runtime resolves
-attribute types lazily, so `DiagnosticCatalog.dll` is never loaded unless something
-reflects over the rule types.
+*Fix all occurrences* applies it across a document, project or solution in one step, and the
+`using` the reference needs is added for you. Everything else in the attribute is left exactly
+as written — `Justification`, `Scope`, `Target` and `MessageId` are yours.
 
-If you want no package dependency at all, the analyzers recognise the attribute by its
-fully qualified metadata name. Declaring your own `internal sealed class
-DiagnosticRuleAttribute` in the `DiagnosticCatalog` namespace works just as well.
+Two behaviours worth knowing before you run it:
+
+* **The friendly-name suffix is dropped.** Visual Studio writes
+  `"S1144:Unused private members should be removed"`; the fix recognises that form and replaces
+  the whole thing with the reference. The prose lived in the suppression only because there was
+  nothing else to hold it — the rule's own documentation has it now.
+* **When two catalogues describe the same rule, no fix is offered.** The diagnostic still
+  appears, so nothing is hidden, but choosing between them is yours to make.
+
+A suppression left half migrated — one reference, one literal — is reported too, and completed
+from the rule the migrated argument already names:
+
+```csharp
+[SuppressMessage(SonarRule.S1144.Category, "S1144", Justification = "kept for reflection")]
+// becomes
+[SuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.Id, Justification = "kept for reflection")]
+```
+
+Only the literal is rewritten; whatever spelling you chose for the other side, an alias
+included, is left alone. And if the literal names something the referenced rule does not —
+`"S9999"` beside `SonarRule.S1144.Category` — you get the diagnostic and no fix. Completing
+that one would silence a different rule than the one silenced today, which is a decision for
+you and not for a lightbulb.
+
+## When the two arguments name different rules
+
+That one gets **two** fixes and no recommendation:
+
+```text
+Use SonarRule.S1144.Id        — keep the category, correct the identifier
+Use SonarRule.S2094.Category  — keep the identifier, correct the category
+```
+
+Only you know which half was the typo, so neither is offered as the default. Worth knowing
+while you choose: Roslyn matches a suppression on the **identifier alone** and never looks at
+the category, so correcting the category leaves what is suppressed exactly as it is, while
+correcting the identifier changes it.
+
+## Fixes for a rule written by hand
+
+A catalogue is normally generated, and generated code satisfies the contract by construction.
+When you write one yourself, code fixes are there for the mechanical part:
+
+```csharp
+[DiagnosticRule]
+public sealed class JD0007                      // → Make 'JD0007' static
+{
+    private static readonly string Id = "JD0007";   // → Make 'Id' a public constant
+                                                    // → Declare 'public const string Category'
+}
+```
+
+Each is offered **only where the repair is already written in the code**. `static` is not
+offered to a generic type, to a `struct`, or to a class holding an instance member — the
+keyword would not compile there, and removing what blocks it is a change to your design rather
+than a repair of it. A `partial` class is refused too: the parts the fix cannot see are the
+ones that decide.
+
+The member repairs correct modifiers and never the value. A `const int Id`, a blank string, an
+initialiser that is not constant — those are reported with no fix, because the code says
+nothing about what you meant.
+
+> **The one to think about before pressing it.** *Declare 'public const string Category'*
+> writes `"TODO"`. That is a real string, so `DCAT0004` stops being reported — you have swapped
+> a warning for a marker. A category nobody fills in is wrong forever and invisible in every
+> build, because Roslyn matches a suppression on its identifier alone. `Id` is different: it is
+> written `nameof(JD0007)`, read off the declaration rather than invented.
+
+## What the analyzers do not do
+
+They do not validate an arbitrary string. `[SuppressMessage("Usage", "S1144")]` with the wrong
+category matches no known rule, and nothing is reported — the mechanism that makes a wrong
+category impossible is the constant itself, which the compiler checks. These analyzers get you
+to the constants and keep you there.
 
 ## Recording where a catalogue came from
 
@@ -211,6 +336,22 @@ For declaring a catalogue, in the order the work happens:
 - [**Packaging a catalogue**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/packaging-a-catalogue.en.md)
   — what to reference, what propagates to your consumers, and what nuget.org does to your
   README.
+
+For the checks this package brings with it:
+
+- [**The `DCAT` diagnostics**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/diagnostics.en.md)
+  — every id these analyzers report, what triggers it, why it exists, whether a code fix is
+  offered, and the `.editorconfig` key that configures it.
+- [**Configuration**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/configuration.en.md)
+  — severities, the category-wide switch, generated code, and the `PrivateAssets` mistake
+  that silences everything.
+- [**Adopting a catalogue on an existing codebase**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/adopting-a-catalogue.en.md)
+  — the severity ramp and what order to convert in, when the migration above is large.
+- [**The rule contract**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/rule-contract.en.md)
+  — the five requirements a declaration is checked against, and every syntactic form a use
+  site may take.
+- [**Troubleshooting**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/troubleshooting.en.md)
+  — by symptom, starting with "nothing is reported at all".
 
 The [**documentation map**](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/guide/README.en.md)
 picks a page by what you are trying to do; every guide exists in English and French. The

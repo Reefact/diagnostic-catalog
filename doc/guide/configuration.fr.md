@@ -69,6 +69,11 @@ dotnet_analyzer_diagnostic.category-DiagnosticCatalog.severity = error
 dotnet_diagnostic.DCAT0006.severity = suggestion
 ```
 
+Le commutateur par catégorie est aussi la réponse pour qui veut les constantes d'un catalogue et
+aucun de ses diagnostics. Puisque la vérification est livrée dans le paquet dont chaque catalogue
+dépend, aucun agencement de références ne donne l'un sans l'autre, et `none` sur la catégorie est ce
+qui exprime ce choix.
+
 ## Gravité, par chemin
 
 Les sections d'`.editorconfig` sont des motifs de chemin ordinaires, et la correspondance la plus
@@ -89,9 +94,9 @@ dotnet_diagnostic.DCAT0006.severity = none
 
 ## Code généré
 
-**Vous n'avez pas à le configurer, et le défaut n'est pas uniforme.** Le paquet livre deux classes
-d'analyseur parce que `ConfigureGeneratedCodeAnalysis` est par **analyseur** plutôt que par
-diagnostic, et que les deux groupes ont besoin de réglages opposés :
+**Vous n'avez pas à le configurer, et le défaut n'est pas uniforme.** La vérification est écrite en
+deux classes d'analyseur parce que `ConfigureGeneratedCodeAnalysis` est par **analyseur** plutôt que
+par diagnostic, et que les deux groupes ont besoin de réglages opposés :
 
 | Analyseur | Diagnostics | Sur le code généré |
 | --- | --- | --- |
@@ -118,37 +123,55 @@ Pas de l'`.editorconfig`, mais la configuration que l'on rate le plus souvent.
 
 | Qui vous êtes | Référence | Comment |
 | --- | --- | --- |
-| Vous écrivez des suppressions | `DiagnosticCatalog.Sonar` (ou un autre catalogue) | référence ordinaire |
-| Vous écrivez des suppressions et voulez les vérifications | `DiagnosticCatalog.Analyzers` | `PrivateAssets="all"` |
-| Vous publiez un catalogue | `DiagnosticCatalog` | **référence ordinaire — jamais `PrivateAssets="all"`** |
+| Vous écrivez des suppressions | `DiagnosticCatalog.Sonar` (ou un autre catalogue) | référence ordinaire — les vérifications viennent avec |
+| Vous voulez les vérifications sans catalogue | `DiagnosticCatalog` | référence ordinaire |
+| Vous voulez un catalogue sans l'analyse | ce catalogue | référence ordinaire, plus `EnableDiagnosticCatalogAnalyzers=false` |
+| Vous publiez un catalogue | `DiagnosticCatalog` | **référence ordinaire — jamais `PrivateAssets="all"`** — plus le props d'opt-in |
+| Vous publiez une bibliothèque qui référence un catalogue | ce catalogue | rien ; vos consommateurs n'en sont pas vérifiés |
 
 ```xml
 <PackageReference Include="DiagnosticCatalog.Sonar" Version="0.1.0" />
-<PackageReference Include="DiagnosticCatalog.Analyzers" Version="0.1.0" PrivateAssets="all" />
 ```
 
-`PrivateAssets="all"` sur les analyseurs est correct : des assemblages d'analyse ne doivent pas
-devenir des dépendances d'exécution de ce qui vous consomme.
+Cette unique ligne est tout. Les analyseurs `DCAT` et leurs correctifs sont livrés dans
+`DiagnosticCatalog`, dont chaque catalogue dépend : il n'y a donc pas de seconde référence à écrire,
+ni de `PrivateAssets` à réussir dessus
+([ADR-0037](../adr/0037-ship-the-analyzers-inside-the-foundation-package.fr.md)). Les assemblages
+d'analyse ne deviennent toujours pas une dépendance d'exécution de ce qui vous consomme :
+`tools/packaging/verify-consumption.sh` restaure le paquet comme le ferait un consommateur et
+asserte qu'ils restent hors du dossier de sortie que `DiagnosticCatalog.dll`, lui, atteint.
 
-`PrivateAssets="all"` sur la **fondation**, depuis un catalogue que vous publiez, est celui à éviter.
-Vos consommateurs ne peuvent alors plus résoudre `DiagnosticRuleAttribute` dans leur propre source :
-quiconque déclare ses propres règles obtient `CS0246` jusqu'à ajouter une dépendance que votre paquet
-avait déjà. Les analyseurs trouvent quand même les règles de votre catalogue — c'est asserté, et
-[empaqueter un catalogue](packaging-a-catalogue.fr.md) dit sur quoi la garantie repose — la
-défaillance est donc bruyante et non silencieuse. Évitez-le tout de même : cela dit faux sur ce dont
-votre paquet a besoin.
+`PrivateAssets="all"` sur la **fondation**, depuis un catalogue que vous publiez, est celui à
+éviter, et il coûte plus cher qu'avant. Vos consommateurs ne peuvent plus résoudre
+`DiagnosticRuleAttribute` dans leur propre source : quiconque déclare ses propres règles obtient
+`CS0246` jusqu'à ajouter une dépendance que votre paquet avait déjà — et ils ne sont pas vérifiés
+non plus, parce qu'un seul paquet ne fait désormais qu'un seul levier.
+[Empaqueter un catalogue](packaging-a-catalogue.fr.md) dit ce qu'un catalogue doit à ses
+consommateurs ; le même script mesure les deux moitiés de cette défaillance, la seconde sous
+l'intitulé « a catalogue hiding the foundation withholds the attribute assembly ».
 
-Si un catalogue référence les analyseurs, ceux-ci atteignent les consommateurs de ce catalogue —
-mesuré contre une vraie restauration plutôt que lu dans la documentation de NuGet, qui dit le
-contraire :
+**Décliner n'est pas une façon d'être poli** — pour un catalogue. `PrivateAssets="all"` voulait dire
+« vérifié par rien » ; il veut dire « ne compile pas », ce que le lecteur reçoit comme un paquet
+cassé plutôt que comme un choix que vous avez fait.
 
-| Un catalogue référençant `DiagnosticCatalog.Analyzers` avec | Les analyseurs tournent pour ses consommateurs |
-| --- | --- |
-| pas de `PrivateAssets` | **oui** |
-| `PrivateAssets="none"` | oui |
-| `PrivateAssets="all"` | non |
+**La propriété est le levier, et il appartient au consommateur.** Depuis
+l'[ADR-0038](../adr/0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.fr.md), les
+analyseurs atteignent le projet qui a référencé un catalogue et s'y arrêtent : une **bibliothèque**
+n'a donc besoin d'aucun levier, puisqu'une application qui la référence n'est pas analysée par un
+catalogue qu'elle n'a jamais choisi. Ce qu'apporte `EnableDiagnosticCatalogAnalyzers`, ce sont les
+deux exceptions, et c'est une simple propriété MSBuild :
 
-**Le silence se propage.** Si vous préférez ne pas imposer l'analyse en aval, dites-le explicitement.
+```xml
+<PropertyGroup>
+  <!-- garder le catalogue, décliner l'analyse ; [DiagnosticRule] résout toujours -->
+  <EnableDiagnosticCatalogAnalyzers>false</EnableDiagnosticCatalogAnalyzers>
+</PropertyGroup>
+```
+
+Posez-la à `true` et un projet est vérifié par un catalogue qu'il n'atteint qu'à travers une
+bibliothèque. Les deux sens sont mesurés — « a direct consumer can opt OUT » et « a consumer two
+hops out can opt IN » — de même que le fait que se retirer conserve l'assemblage d'attributs, ce qui
+en fait une vraie alternative à faire taire `DCAT0006` dans l'`.editorconfig`.
 
 ## Ce que coûte le fait d'avoir les analyseurs activés
 
