@@ -233,7 +233,7 @@ internal static class Descriptors
         description:
             "The identifier carries a character C# forbids in a type name, so the name is the identifier "
             + "legalised and no closer spelling exists. Reported rather than passed over in silence: the "
-            + "same divergence is an error when nothing forced it (DCAT0013), and a reader who cannot see "
+            + "same divergence is reported when nothing forced it (DCAT0013), and a reader who cannot see "
             + "where the boundary falls cannot tell a blessed declaration from one nobody has checked.");
 
     internal static readonly DiagnosticDescriptor IdNotWrittenAsNameOf = new(
