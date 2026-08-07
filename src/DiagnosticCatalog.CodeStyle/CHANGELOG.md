@@ -21,6 +21,12 @@ inferring it from the number below.
 **Mirrors `Microsoft.CodeAnalysis.CSharp.CodeStyle 5.6.0`** — unchanged upstream.
 <!-- mirror:end -->
 
+_No other change yet._
+
+## [1.0.0] - 2026-08-07
+
+**Mirrors `Microsoft.CodeAnalysis.CSharp.CodeStyle 5.6.0`.** The first published version of this catalogue.
+
 ### Added
 
 * **120 rules** — the `IDExxxx` code-style diagnostics — each a static class exposing
