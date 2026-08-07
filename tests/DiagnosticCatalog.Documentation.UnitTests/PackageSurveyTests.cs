@@ -129,13 +129,58 @@ public sealed class PackageSurveyTests
             "two means the table was reworded into a shape the row pattern no longer reads. Every " +
             "package would then be unchecked in that half.");
 
-        int counted = Repository.Documents.Count(document => CountsIn(document).Count > 0);
+        // Each PATTERN has to still find its sentence, not merely each page still hold one.
+        //
+        // The distinction is the whole of this check. CountSentences carries four patterns across
+        // two pages, so a page-level tally is satisfied twice over while half the patterns read
+        // nothing: when #147 reworded the category sentence, its pattern stopped matching, the
+        // English page went on matching the OTHER English pattern, the tally stayed at two, and the
+        // suite stayed green with those figures unread. A rewording that outruns its pattern is
+        // exactly the failure this exists to report, and it was the one shape it could not see.
+        //
+        // The patterns are language-specific — two English, two French — so requiring every one of
+        // them also asserts what the page count was standing in for: both halves of the pair state a
+        // figure. That is why the tally is replaced rather than kept beside this.
+        List<string> unread = [];
+
+        foreach (string pattern in CountSentences)
+        {
+            bool matched = false;
+
+            foreach (MarkdownDocument document in Repository.Documents)
+            {
+                foreach (Match sentence in ProseFigures.Sweep(document, pattern))
+                {
+                    // A match whose figure is not a word ProseFigures knows produces no Count, so it
+                    // leaves the pattern just as unread as no match at all.
+                    if (ProseFigures.Knows(sentence.Groups["count"].Value))
+                    {
+                        matched = true;
+
+                        break;
+                    }
+                }
+
+                if (matched)
+                {
+                    break;
+                }
+            }
+
+            if (!matched)
+            {
+                unread.Add(pattern);
+            }
+        }
 
         Assert.True(
-            counted >= 2,
-            $"{counted} page(s) state how many packages the catalogues mirror. The sentence is the " +
-            "figure that went stale before, so a rewrite this cannot follow is the failure worth " +
-            $"reporting: teach {nameof(CountSentences)} the new wording rather than dropping it.");
+            unread.Count == 0,
+            $"{unread.Count} of the {CountSentences.Length} sentence patterns in " +
+            $"{nameof(CountSentences)} match no page:\n" +
+            string.Join("\n", unread.Select(pattern => $"  {pattern}")) + "\n" +
+            "Each states how many packages the catalogues mirror, and a pattern reading nothing " +
+            "leaves its figure unchecked while the others keep this green. The sentence was almost " +
+            "certainly reworded: teach the pattern the new wording rather than dropping it.");
     }
 
     private static TheoryData<string> Pages(Func<MarkdownDocument, bool> carries)
