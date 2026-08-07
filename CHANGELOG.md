@@ -31,7 +31,34 @@ project:
 
 _Nothing yet._
 
+## [1.0.1] - 2026-08-07
+
+**Use this rather than 1.0.0**, whose packages cannot be loaded. Same foundation, same
+source; what changes is that the packages now contain the assemblies they claim.
+
+### Fixed
+
+* **`DiagnosticCatalog 1.0.0` was published around an assembly stamped `0.0.0.0`**, while
+  `DiagnosticCatalog.Self 1.0.0`, packed in the same run, was stamped `1.0.0.0` and recorded
+  a reference to `DiagnosticCatalog 1.0.0.0`. The two cannot bind, so loading a catalogue
+  raised a `FileNotFoundException` naming a version that was published and does not exist.
+
+  The bytes were stale, not misdeclared. `release.yml` builds, then **tests**, then packs
+  without rebuilding — and in the middle, `DiagnosticCatalog.Packaging.IntegrationTests`
+  packs the foundation from source at `0.0.0-pkgtest` to restore it the way a consumer
+  would, rebuilding `src/DiagnosticCatalog` into the shared `bin/Release` on its way past.
+  The release then numbered those leftovers. The suite is right to pack from source; nothing
+  told the release it was no longer packing its own build.
+
+  `tools/packaging/pack.sh` now compiles what it packs, so no step that ran earlier can
+  decide what a release ships. A second check in `Directory.Build.targets` (`DCATPACK001`)
+  fails any train project whose package version and assembly version disagree at the source.
+
 ## [1.0.0] - 2026-08-07
+
+**Broken — do not use; see 1.0.1.** The packages are numbered correctly and contain an
+assembly identity that no consumer can bind to. The release below describes what 1.0.0 was
+meant to deliver, and what 1.0.1 delivers.
 
 The whole set: the foundation moves from 0.1.0 to the 1.0 line and now carries the
 analyzers that check the contract, and the train ships a catalogue of their own
