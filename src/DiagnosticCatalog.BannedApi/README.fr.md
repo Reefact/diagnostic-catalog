@@ -33,7 +33,7 @@ exactement l'endroit où une faute de frappe dans l'identifiant survit à la rel
 personne ne lit la quatorzième suppression aussi attentivement que la première.
 
 ```csharp
-[SuppressMessage("ApiDesign", "RS0030:Do not use banned APIs", ...)]
+[SuppressMessage("ApiDesign", "RS0030:Do not use banned APIs", Justification = "…")]
 ```
 
 Trompez-vous d'identifiant et la suppression ne fait silencieusement rien — l'avertissement reste.

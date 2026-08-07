@@ -72,7 +72,7 @@ registre* : le fichier prétend désormais une catégorie que l'éditeur n'emplo
 personne à s'y fier — cherchant toutes les suppressions `"Major Code Smell"` avant une montée de
 version, par exemple — obtient une réponse silencieusement incomplète.
 
-Il n'y a aucun build qui échoue, aucun test qui rougit, aucun analyseur qui signale, et aucun
+Il n'y a aucun build qui échoue, aucun test qui rougit, aucun analyseur qui juge la valeur, et aucun
 comportement à l'exécution qui diffère. Une erreur sans symptôme n'est pas une petite erreur. C'est
 une erreur qu'on ne peut pas trouver.
 
@@ -101,15 +101,25 @@ Un analyseur pourrait comparer les deux chaînes à une liste de règles connues
 livre un qui le fait, et c'est délibérément la plus petite moitié de la réponse.
 
 Une vérification sur une chaîne ne peut juger que les chaînes qu'elle reconnaît.
-`[SuppressMessage("Usage", "S1144")]` ne correspond à aucune règle décrite par un catalogue —
-alors, mauvaise catégorie, ou règle d'un analyseur que vous n'avez pas catalogué ? Rien ne peut le
-dire, et un analyseur qui devinerait signalerait un faux positif pour chaque analyseur que personne
-n'a reflété. Il se tait donc, ce qui est correct et n'est pas non plus une solution.
+`[SuppressMessage("Usage", "S1144", Justification = "Appelé par le sérialiseur.")]` associe une
+catégorie à un identifiant qu'aucun catalogue ne décrit ensemble — alors, mauvaise catégorie, ou règle
+d'un analyseur que vous n'avez pas catalogué ? Rien ne peut le dire, et un analyseur qui devinerait
+signalerait un faux positif pour chaque analyseur que personne n'a reflété. **Cette paire** reste donc
+non jugée, ce qui est correct et n'est pas non plus une solution.
+
+Non jugée **en tant que paire**, et seulement en tant que paire. La même ligne reste tenue par
+`DCAT0014` — une suppression doit dire pourquoi elle existe, qu'un catalogue reconnaisse ou non la
+règle qu'elle nomme. Ce sont deux questions différentes, et il vaut la peine de les tenir séparées :
+« rien ne le signale » est une affirmation sur la catégorie et l'identifiant, jamais sur la ligne
+entière.
 
 Une **constante** n'a pas ce problème, parce qu'il n'y a rien à reconnaître :
 
 ```csharp
-[SuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.Id)]
+[SuppressMessage(
+    SonarRule.S1144.Category,
+    SonarRule.S1144.Id,
+    Justification = "Appelé par le sérialiseur.")]
 ```
 
 `SonarRule.S1144.Category` est soit un membre qui existe, soit une erreur de compilation. Il n'y a
@@ -149,8 +159,9 @@ changera rien :
 | `dotnet_diagnostic.S1144.severity = none` | Une clé `.editorconfig` est du texte brut lu entièrement hors du modèle de compilation C#. |
 
 Et une frontière qui est un choix plutôt qu'une limite : rien de tout ceci ne juge si supprimer une
-règle *à cet endroit* était raisonnable. Cela reste une question humaine, et `Justification` est
-l'endroit où va la réponse.
+règle *à cet endroit* était raisonnable. `DCAT0014` exige qu'une `Justification` soit **présente** —
+cela, c'est mécanique — et ce qu'elle dit reste une question humaine, pesée par des relecteurs et
+jamais par un analyseur.
 
 ## Où aller ensuite
 

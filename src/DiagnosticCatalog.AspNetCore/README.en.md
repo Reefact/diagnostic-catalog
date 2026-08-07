@@ -27,7 +27,7 @@ tuned in `.editorconfig`; a rule that came with the framework gets an exception 
 is wrong, with a `Justification` beside the code that earns it.
 
 ```csharp
-[SuppressMessage("Usage", "ASP0018:Unused route parameter", ...)]
+[SuppressMessage("Usage", "ASP0018:Unused route parameter", Justification = "…")]
 ```
 
 Three strings, and nothing checks any of them. Get the id wrong and the suppression silently does

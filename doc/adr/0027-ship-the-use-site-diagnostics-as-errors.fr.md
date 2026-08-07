@@ -3,7 +3,7 @@
 🌍 **Langues :**  
 🇫🇷 Français (ce fichier) | 🇬🇧 [English](./0027-ship-the-use-site-diagnostics-as-errors.en.md)
 
-**Status:** Accepted
+**Status:** Superseded by [ADR-0040](0040-grade-every-dcat-diagnostic-by-what-it-says.fr.md)
 **Proposed:** 2026-08-02
 **Accepted:** 2026-08-02
 **Decision Makers:** Reefact

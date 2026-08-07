@@ -30,16 +30,16 @@ or tool can tell you. And you would not guess it — `S1144`'s category is
 [SuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.Id, Justification = "...")]
 ```
 
-Sonar, the .NET CA rules, StyleCop, the Roslyn IDE rules and xUnit's are already packaged as
-`DiagnosticCatalog.Sonar`, `DiagnosticCatalog.NetAnalyzers`, `DiagnosticCatalog.StyleCop`
-`DiagnosticCatalog.CodeStyle` and `DiagnosticCatalog.Xunit`. This package is what you need to
-declare a catalogue of your own — and referencing any of those already brings it, and the
-checks it carries, along with them.
+Thirteen analyzers are already packaged, and
+[the ready-made catalogues](https://github.com/Reefact/diagnostic-catalog#-the-ready-made-catalogues)
+lists every one of them — a partial list here would only tell a reader their analyzer is not
+covered. This package is what you need to declare a catalogue of your **own**; referencing any of
+those already brings it, and the checks it carries, along with them.
 
 ## Installation
 
 ```xml
-<PackageReference Include="DiagnosticCatalog" Version="0.1.0" />
+<PackageReference Include="DiagnosticCatalog" Version="1.0.0" />
 ```
 
 Do **not** add `PrivateAssets="all"` if your project publishes a catalogue for others
@@ -201,9 +201,9 @@ has neither.
 ## Migrating an existing codebase
 
 Adopting a catalogue is not a quiet change: the use-site diagnostics are errors by default
-(`DCAT0001`, `DCAT0006` and `DCAT0007`), so a literal suppression a catalogue reference would
-replace fails the build rather than warning. The code fix that rewrites it is how a codebase
-adopts a catalogue in practice:
+(`DCAT0001`, `DCAT0006`, `DCAT0007`, `DCAT0009` and `DCAT0014`), so a literal suppression a
+catalogue reference would replace fails the build rather than warning. The code fix that rewrites it
+is how a codebase adopts a catalogue in practice:
 
 ```csharp
 [SuppressMessage("Major Code Smell", "S1144", Justification = "kept for reflection")]
@@ -211,12 +211,11 @@ adopts a catalogue in practice:
 [SuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.Id, Justification = "kept for reflection")]
 ```
 
-One more lands on that same build, and it is a **warning** rather than an error: `DCAT0014` reports
-a suppression that carries no `Justification`. It asks that of every suppression, a literal one
-included, so unlike `DCAT0006` it does not wait for a catalogue to recognise the rule. Presence is
-all it checks — the value is read for its length, never for its meaning. Lower it in
-`.editorconfig` while you write the reasons, exactly as you lower `DCAT0006` while you convert the
-pairs.
+One more lands on that same build, and it is an error too: `DCAT0014` reports a suppression that
+carries no `Justification`. It asks that of every suppression, a literal one included, so unlike
+`DCAT0006` it does not wait for a catalogue to recognise the rule. Presence is all it checks — the
+value is read for its length, never for its meaning. Lower it in `.editorconfig` while you write
+the reasons, exactly as you lower `DCAT0006` while you convert the pairs.
 
 *Fix all occurrences* applies it across a document, project or solution in one step, and the
 `using` the reference needs is added for you. Everything else in the attribute is left exactly
@@ -292,9 +291,10 @@ nothing about what you meant.
 
 ## What the analyzers do not do
 
-They do not validate an arbitrary string. `[SuppressMessage("Usage", "S1144")]` with the wrong
-category matches no known rule, and nothing is reported — the mechanism that makes a wrong
-category impossible is the constant itself, which the compiler checks. These analyzers get you
+They do not validate an arbitrary string. `[SuppressMessage("Usage", "S1144", Justification = "…")]`
+with the wrong category matches no known rule, and **that pair** is reported by nothing — `DCAT0014`
+still asks the same line why it exists, which is a different question. The mechanism that makes a
+wrong category impossible is the constant itself, which the compiler checks. These analyzers get you
 to the constants and keep you there.
 
 ## Recording where a catalogue came from

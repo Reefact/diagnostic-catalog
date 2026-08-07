@@ -35,7 +35,7 @@ every pair point at the same URL.
 an IDE tooltip showing a title that is not unique, or from a build log two hundred lines up.
 
 ```csharp
-[SuppressMessage("ApiDesign", "RS0037:Enable tracking of nullability...", ...)]  // which one?
+[SuppressMessage("ApiDesign", "RS0037:Enable tracking of nullability...", Justification = "…")]  // which one?
 ```
 
 Get the id wrong and the suppression silently does nothing — the warning simply stays. Get the

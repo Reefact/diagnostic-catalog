@@ -222,7 +222,7 @@ Matériel de support, optionnel :
 | [ADR-0024](0024-fail-on-any-diagnostic-the-ratchet-cannot-see.fr.md) | Échouer sur tout diagnostic que le cliquet d'avertissements ne voit pas | Accepted |
 | [ADR-0025](0025-bind-every-feature-commit-to-the-documentation-it-changed.fr.md) | Lier chaque commit de fonctionnalité à la documentation qu'il a changée | Accepted |
 | [ADR-0026](0026-reach-a-category-only-through-the-rule-that-carries-it.fr.md) | N'atteindre une catégorie qu'à travers la règle qui la porte | Accepted |
-| [ADR-0027](0027-ship-the-use-site-diagnostics-as-errors.fr.md) | Livrer les diagnostics côté usage en erreurs | Accepted |
+| [ADR-0027](0027-ship-the-use-site-diagnostics-as-errors.fr.md) | Livrer les diagnostics côté usage en erreurs | Superseded by [ADR-0040](0040-grade-every-dcat-diagnostic-by-what-it-says.fr.md) |
 | [ADR-0028](0028-require-every-rule-to-reach-its-category-through-a-declared-constant.fr.md) | Exiger que chaque règle atteigne sa catégorie via une constante déclarée | Accepted |
 | [ADR-0029](0029-pair-the-project-readme-across-the-doc-boundary.fr.md) | Apparier le README du projet par-delà la frontière de `doc/` | Accepted |
 | [ADR-0030](0030-keep-the-usage-suite-out-of-the-sonar-analysis.fr.md) | Garder la suite d'usage hors de l'analyse Sonar | Accepted |
@@ -235,3 +235,4 @@ Matériel de support, optionnel :
 | [ADR-0037](0037-ship-the-analyzers-inside-the-foundation-package.fr.md) | Embarquer les analyzers dans le paquet de la fondation | Accepted |
 | [ADR-0038](0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.fr.md) | Arrêter les analyzers au projet qui référence un catalogue | Accepted |
 | [ADR-0039](0039-require-a-justification-on-every-suppression.fr.md) | Exiger une justification sur toute suppression | Accepted |
+| [ADR-0040](0040-grade-every-dcat-diagnostic-by-what-it-says.fr.md) | Classer chaque diagnostic DCAT par ce qu'il dit, pas par le public auquel il s'adresse | Accepted |

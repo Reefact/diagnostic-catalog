@@ -37,7 +37,7 @@ using DiagnosticCatalog.NetAnalyzers;
 ## Installation
 
 ```xml
-<PackageReference Include="DiagnosticCatalog.NetAnalyzers" Version="0.1.0" />
+<PackageReference Include="DiagnosticCatalog.NetAnalyzers" Version="1.0.0" />
 ```
 
 C'est la seule référence dont vous avez besoin. Ce paquet dépend de `DiagnosticCatalog`, qui porte

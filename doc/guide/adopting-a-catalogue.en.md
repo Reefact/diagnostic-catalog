@@ -24,7 +24,7 @@ that a catalogue reference could replace, and after you add the catalogue, every
 qualifies. A version that trickled would be a version that never finished.
 
 And `DCAT0006` ships as an **error**
-([ADR-0027](../adr/0027-ship-the-use-site-diagnostics-as-errors.en.md)), so this does not wait for a
+([ADR-0040](../adr/0040-grade-every-dcat-diagnostic-by-what-it-says.en.md)), so this does not wait for a
 `<TreatWarningsAsErrors>` to bite: the build that added the catalogue is the build that failed, with
 hundreds of errors, in code nobody touched. Teams reasonably conclude the library is not ready.
 
@@ -49,37 +49,31 @@ flowchart LR
 # .editorconfig
 [*.cs]
 dotnet_diagnostic.DCAT0006.severity = suggestion
+dotnet_diagnostic.DCAT0014.severity = suggestion
 ```
 
 A suggestion appears in the IDE as a lightbulb and in `dotnet build` as nothing. The build that adds
 the catalogue is green, and the migration starts when you decide rather than when the package
 arrives.
 
-**While migrating — leave the other four alone.**
+**While migrating — leave the other three alone.**
 
-`DCAT0001` and `DCAT0007` are errors already, and they should stay that way. They mean a suppression
-is *not doing what it looks like*: a pair naming two different rules, or a half-converted one. Both
-are defects you want reported the moment they appear, and neither fires in bulk — they only exist
-where somebody has already started using references. `DCAT0009` is the same in kind but still ships
-as a warning, because it misses an identifier reached through a constant; raise it if a trimmed build
-matters to you.
-
-```ini
-dotnet_diagnostic.DCAT0009.severity = error
-```
+`DCAT0001`, `DCAT0007` and `DCAT0009` are errors, and they should stay that way. They mean a
+suppression is *not doing what it looks like*: a pair naming two different rules, a half-converted
+one, or an `UnconditionalSuppressMessage` the trimmer discards outright. All three are defects you
+want reported the moment they appear, and none of them fires in bulk — they only exist where
+somebody has already started using references, or where a trimmer suppression was written by hand.
 
 **`DCAT0014` arrives on day one, beside `DCAT0006`.** It asks that a suppression say why it exists,
 and it asks it of *every* suppression — a literal one included, whether or not any catalogue
 describes the rule it names. So the first build after you reference the package reports every
 suppression in your codebase that never carried a `Justification`, converted or not.
 
-It ships as a warning rather than an error for exactly that reason, so that first build is still
-green. Two ways to meet it, and the second is the usual one:
-
-```ini
-# Keep it visible while you work through the backlog, then delete the line.
-dotnet_diagnostic.DCAT0014.severity = suggestion
-```
+It is an error, like `DCAT0006`, and for the same reason: a justification is part of the contract
+rather than an ornament on it
+([ADR-0040](../adr/0040-grade-every-dcat-diagnostic-by-what-it-says.en.md)). That is why it sits on
+the same downgrade line above rather than on one of its own. Two ways to meet it, and the second is
+the usual one.
 
 The honest way is to write the reasons as you convert. You are already editing each suppression to
 migrate its pair, the code is in front of you, and whoever suppressed it is often still reachable —
@@ -90,10 +84,11 @@ question it never answered.
 If you already run StyleCop's `SA1404`, you will see both — they ask the same question, and one
 `.editorconfig` line silences whichever you do not want.
 
-**When you finish — delete the line.**
+**When you finish — delete the lines.**
 
 ```ini
 # gone: dotnet_diagnostic.DCAT0006.severity = suggestion
+# gone: dotnet_diagnostic.DCAT0014.severity = suggestion
 ```
 
 Removing the downgrade restores the default: from then on a new literal suppression cannot merge,

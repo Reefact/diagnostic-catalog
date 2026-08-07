@@ -45,7 +45,7 @@ suppression morte derrière elle.
 ## Installation
 
 ```xml
-<PackageReference Include="DiagnosticCatalog.Sonar" Version="0.1.0" />
+<PackageReference Include="DiagnosticCatalog.Sonar" Version="1.0.0" />
 ```
 
 C'est la seule référence dont vous avez besoin. Ce paquet dépend de `DiagnosticCatalog`, qui porte

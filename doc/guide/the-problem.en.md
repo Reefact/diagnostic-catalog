@@ -68,7 +68,7 @@ the file now claims a category the vendor does not use, and the first person to 
 for every `"Major Code Smell"` suppression before an upgrade, say — gets an answer that is quietly
 short.
 
-There is no build that fails, no test that reddens, no analyzer that reports, and no runtime
+There is no build that fails, no test that reddens, no analyzer that judges the value, and no runtime
 behaviour that differs. A mistake with no symptom is not a small mistake. It is a mistake that
 cannot be found.
 
@@ -96,16 +96,25 @@ nothing validates drifts without anyone finding out.
 An analyzer could compare the two strings against a list of known rules. This library ships one that
 does, and it is deliberately the smaller half of the answer.
 
-A check on a string can only judge strings it recognises. `[SuppressMessage("Usage", "S1144")]`
-matches no rule any catalogue describes — so is it a wrong category, or a rule from an analyzer you
-have not catalogued? Nothing can tell, and an analyzer that guessed would report a false positive
-against every analyzer nobody has mirrored. So it stays quiet, which is right and is also not a
-solution.
+A check on a string can only judge strings it recognises.
+`[SuppressMessage("Usage", "S1144", Justification = "Called by the serializer.")]` pairs a category
+with an identifier that no catalogue describes together — so is it a wrong category, or a rule from
+an analyzer you have not catalogued? Nothing can tell, and an analyzer that guessed would report a
+false positive against every analyzer nobody has mirrored. So **that pair** goes unjudged, which is
+right and is also not a solution.
+
+Unjudged **as a pair**, and only as a pair. The same line is still held to `DCAT0014` — a suppression
+must say why it exists, whether or not any catalogue recognises the rule it names. The two are
+different questions, and it is worth keeping them apart: "nothing reports it" is a statement about
+the category and the identifier, never about the whole line.
 
 A **constant** does not have that problem, because there is nothing to recognise:
 
 ```csharp
-[SuppressMessage(SonarRule.S1144.Category, SonarRule.S1144.Id)]
+[SuppressMessage(
+    SonarRule.S1144.Category,
+    SonarRule.S1144.Id,
+    Justification = "Called by the serializer.")]
 ```
 
 `SonarRule.S1144.Category` is either a member that exists or a compile error. There is no
@@ -140,8 +149,8 @@ Two forms cannot be reached, ever, and no version of this library will change th
 | `dotnet_diagnostic.S1144.severity = none` | An `.editorconfig` key is plain text read outside the C# compilation model entirely. |
 
 And one boundary that is a choice rather than a limit: none of this judges whether suppressing a
-rule *there* was reasonable. That stays a human question, and `Justification` is where the answer
-goes.
+rule *there* was reasonable. `DCAT0014` requires that a `Justification` be **present** — that much is
+mechanical — and what it says stays a human question, weighed by reviewers and never by an analyzer.
 
 ## Where to go next
 

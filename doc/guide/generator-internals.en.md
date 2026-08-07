@@ -54,7 +54,7 @@ produce it, rather than building on your behalf.
 
 **Why `SolutionSource` refuses** is the sharpest refusal in the engine. Deciding which projects
 produce analyzers cannot be inferred: measured on this repository, "references
-`Microsoft.CodeAnalysis`" matches eight projects of which one is an analyzer. Guessing short emits a
+`Microsoft.CodeAnalysis`" matches nine projects of which one is an analyzer. Guessing short emits a
 catalogue whose missing rules read as retired ones — and a solution declaring none returns `null`
 rather than an empty set, because generating nothing and exiting `0` would read to a scheduled job as
 success.

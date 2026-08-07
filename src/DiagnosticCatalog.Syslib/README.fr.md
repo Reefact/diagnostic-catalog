@@ -29,7 +29,7 @@ de tous les catalogues de cette famille sont un concept auquel une personne pour
 qui a fui dans un contrat publié, porté par exactement une règle.
 
 ```csharp
-[SuppressMessage("Interoperability", "SYSLIB1090:...", ...)]   // faux, et rien ne le dit
+[SuppressMessage("Interoperability", "SYSLIB1090:...", Justification = "…")]   // faux, et rien ne le dit
 ```
 
 Trompez-vous d'identifiant et la suppression ne fait silencieusement rien — l'avertissement reste,

@@ -155,8 +155,8 @@ analyseur** : c'est le compilateur qui résout un membre. Ce que les analyseurs 
 *trouver le code qui n'a pas encore été converti*, ce qui est une aide à la migration plutôt que le
 mécanisme.
 
-[Les paquets](https://github.com/Reefact/diagnostic-catalog/blob/main/doc/README.fr.md#-les-paquets) dans le README du dépôt
-disent à quoi sert chacun, et quel train le porte.
+[Les trains de release](release-trains.fr.md) dit sur quelle ligne chacun de ces paquets se versionne,
+et pourquoi une mise à jour Sonar ne déplace jamais le numéro de la fondation.
 
 ## Provenance : un catalogue est un instantané
 

@@ -436,8 +436,8 @@ impossible to violate, and is the form `DCAT0012` asks for.
 Every use site pays for the container name twice:
 
 ```csharp
-[SuppressMessage(JustDummiesRules.JD0007.Category, JustDummiesRules.JD0007.Id)]
-[SuppressMessage(Dummies.JD0007.Category, Dummies.JD0007.Id)]
+[SuppressMessage(JustDummiesRules.JD0007.Category, JustDummiesRules.JD0007.Id, Justification = "…")]
+[SuppressMessage(Dummies.JD0007.Category, Dummies.JD0007.Id, Justification = "…")]
 ```
 
 The catalogue form is inherently more verbose than the literal it replaces.
@@ -727,8 +727,9 @@ the rule type and the initialiser plays no part in that resolution. What it cost
 spelling per category value, across a catalogue that repeats very few of them over very
 many rules.
 
-Violation is reported as `DCAT0011`, at `Warning`: the audience is whoever authors a
-catalogue, which is ADR-0027's split, and there is no error to report.
+Violation is reported as `DCAT0011`, at `Warning`: the rule compiles, folds to the right
+literal and suppresses exactly what it should — what is missing is the single declaration
+that keeps it from drifting, which is ADR-0040's warning tier.
 
 Because the initialiser is syntax, this is the one requirement of §8 that cannot be
 evaluated over a metadata symbol. It is therefore source-only in the strict sense —
@@ -930,20 +931,20 @@ implementing one later cannot reuse a number this document has already spent.
 | Id | Target | Title | Default severity | Shipped |
 | --- | --- | --- | --- | --- |
 | `DCAT0001` | use site | Category and Id must reference the same diagnostic rule | Error | yes |
-| `DCAT0002` | definition | A diagnostic rule must be declared as a static non-generic class | Warning | yes |
-| `DCAT0003` | definition | A diagnostic rule must expose a public constant string named Id | Warning | yes |
-| `DCAT0004` | definition | A diagnostic rule must expose a public constant string named Category | Warning | yes |
+| `DCAT0002` | definition | A diagnostic rule must be declared as a static non-generic class | Error | yes |
+| `DCAT0003` | definition | A diagnostic rule must expose a public constant string named Id | Error | yes |
+| `DCAT0004` | definition | A diagnostic rule must expose a public constant string named Category | Error | yes |
 | `DCAT0005` | definition | The diagnostic rule type name should match its Id | Info | yes |
 | `DCAT0006` | use site | Use a diagnostic catalog reference instead of string literals | Error | **yes — core** |
 | `DCAT0007` | use site | Suppression mixes a catalog reference with a string literal | Error | yes |
 | `DCAT0008` | use site | Suppression identifier does not resolve to a known diagnostic rule | None (opt-in) | no |
-| `DCAT0009` | use site | UnconditionalSuppressMessage only accepts IL#### identifiers | Warning | yes |
+| `DCAT0009` | use site | UnconditionalSuppressMessage only accepts IL#### identifiers | Error | yes |
 | `DCAT0010` | use site | Referenced diagnostic rule type is malformed | Warning | no |
 | `DCAT0011` | definition | A diagnostic rule's category must reference a declared category constant | Warning | yes |
 | `DCAT0012` | definition | A rule identifier should be written as nameof | Warning | yes |
 | `DCAT0013` | definition | The diagnostic rule type name does not say its Id | Warning | yes |
-| `DCAT0014` | use site | A suppression must carry a justification | Warning | yes |
-| `DCAT0015` | packaging | A catalogue package must ship the analyzer opt-in | Warning | yes |
+| `DCAT0014` | use site | A suppression must carry a justification | Error | yes |
+| `DCAT0015` | packaging | A catalogue package must ship the analyzer opt-in | Error | yes |
 
 Definition diagnostics (`DCAT0002`–`DCAT0005`, `DCAT0011`–`DCAT0013`) only fire on
 source the compiler can see. A malformed rule inside a *referenced assembly*
@@ -975,8 +976,8 @@ pair — a generated catalogue emits `HelpLinkUri` beside it — so completion o
 all of them in one list, and the declaring types match in the first case below:
 
 ```csharp
-[SuppressMessage(SomeRules.RULE001.Id, SomeRules.RULE001.Category)]
-[SuppressMessage(SomeRules.RULE001.Category, SomeRules.RULE001.HelpLinkUri)]
+[SuppressMessage(SomeRules.RULE001.Id, SomeRules.RULE001.Category, Justification = "…")]
+[SuppressMessage(SomeRules.RULE001.Category, SomeRules.RULE001.HelpLinkUri, Justification = "…")]
 ```
 
 Both compile, both resolve, and neither suppresses anything: Roslyn matches a
@@ -1224,20 +1225,22 @@ site. That is a worse failure than an unusable rule, which announces itself.
 identifier changes which diagnostic is suppressed. Which of the two is the
 mistake is not knowable from the code (ADR-0018).
 
-**Severity.** `Warning`, alongside the other definition diagnostics rather than
-above them. The rule is new and has one known false-positive shape behind it — the
-friendly-name form of §11.5 — so it earns a release before being allowed to stop a
-build. A catalogue author wanting it stricter raises it in `.editorconfig`, which
-is what reporting it at all provides.
+**Severity.** `Warning`. The reference compiles, resolves and suppresses the right
+diagnostic; what it does is mislead every reader of the use site, which is ADR-0040's
+warning tier — and unlike the error tier there is no repair a tool can even point at.
+A catalogue author wanting it stricter raises it in `.editorconfig`, which is what
+reporting it at all provides.
 
 ### 11.14 `DCAT0014` — suppression without a justification
 
 Reported at the use site when a suppression carries no `Justification`, or carries
 one that is blank.
 
+<!-- dcat-doc:missing-justification the DCAT0014 trigger itself; both lines are incorrect by design -->
+
 ```csharp
-[SuppressMessage(SomeRules.RULE001.Category, SomeRules.RULE001.Id)]   // reported
-[SuppressMessage("Usage", "RULE001")]                                 // reported
+[SuppressMessage(SomeRules.RULE001.Category, SomeRules.RULE001.Id)]   // incorrect: reported
+[SuppressMessage("Usage", "RULE001")]                                 // incorrect: reported
 ```
 
 Every other use-site diagnostic in this document checks WHICH diagnostic a line
@@ -1284,12 +1287,13 @@ answered.
 attribute that cannot be read off the code, which is ADR-0018's exact
 prohibition.
 
-**Severity.** `Warning`, and not `Error` like the three use-site rules ADR-0027
-promoted. It reports lines that are otherwise entirely correct, and it reports
-them from the first build after the package is referenced rather than after a
-migration — shipping it as an error would fail that build on every undocumented
-suppression a codebase already had. One `.editorconfig` line raises it, and the
-adoption guide names the line that lowers it while a backlog is worked through.
+**Severity.** `Error`. A justification is a mandatory part of the contract rather
+than an ornament on it (ADR-0040), and the information it carries is the one thing no
+tool can recover afterwards. It reports from the first build after the package is
+referenced rather than after a migration, so an existing codebase meets it on every
+undocumented suppression at once — exactly as `DCAT0006` does, on the same build. The
+adoption guide names the one `.editorconfig` line that lowers both while a backlog is
+worked through.
 
 ---
 
@@ -1322,15 +1326,24 @@ Two consequences follow, and both are requirements rather than notes:
   means matching how the file was declared, and MSBuild offers more than one
   spelling of the same packaging. A catalogue setting
   `DiagnosticCatalogAnalyzerOptIn` to `packed` is not classified.
+* **Only a project that is actually producing a package is classified.** MSBuild
+  marks every project packable by default, so "publishes a package" cannot be read
+  off that flag: a console application or a library declaring rules for an internal
+  ruleset — the arrangement §16.2 promotes — would be classified as a catalogue
+  publishing without its opt-in. The verdict is therefore computed while the package
+  is being produced, which is the moment the defect exists and the only moment its
+  message can be acted on.
 
 **No fix.** The repair is a line in a project file, which is not a document the
 code-fix layer edits.
 
-**Severity.** `Warning`, with the other definition diagnostics: it addresses
-whoever authors a catalogue, and §11's use-site errors are for consumers. It is
-also the one diagnostic here that reads something outside the compilation, so it
-can be wrong in ways the others cannot, and a wrong error stops a build that is
-otherwise correct C#.
+**Severity.** `Error`. The package does not deliver the behaviour it exists to
+deliver: referencing this catalogue checks nobody, silently and indistinguishably
+from a codebase with nothing to report (ADR-0040). It is the one diagnostic here that
+reads something outside the compilation, which is a way of being wrong the others do
+not have — answered by deriving the classification from the project's own pack
+settings and by the explicit `DiagnosticCatalogAnalyzerOptIn` escape above, rather
+than by reporting it more quietly than what it names.
 
 ---
 
@@ -1944,11 +1957,15 @@ dotnet_diagnostic.DCAT0015.severity = error
 ```
 
 The sample overrides every rule to show that every rule is reachable; it is not a
-statement of the defaults, which §16 gives. `DCAT0001`, `DCAT0006` and `DCAT0007`
-already ship at `Error`, so the line that matters in practice is the one going the
-other way — `DCAT0006` down to `suggestion` while an existing codebase migrates
-([ADR-0027](adr/0027-ship-the-use-site-diagnostics-as-errors.en.md)). No
-proprietary configuration format is required for the first version.
+statement of the defaults, which §16 gives. Nine of the thirteen already ship at
+`Error`, so the lines that matter in practice are the ones going the other way —
+`DCAT0006` and `DCAT0014` down to `suggestion` while an existing codebase migrates
+([ADR-0040](adr/0040-grade-every-dcat-diagnostic-by-what-it-says.en.md)).
+
+One MSBuild property exists beside these keys and answers a different question:
+`EnableDiagnosticCatalogAnalyzers` decides whether the analyzers are LOADED into a
+project (§16.3), where an `.editorconfig` key decides what a loaded analyzer
+reports. No proprietary configuration format is required for the first version.
 
 ---
 

@@ -38,7 +38,7 @@ form and three under the short one, with nothing to tell you which is which. `Li
 with exactly one rule in it.
 
 ```csharp
-[SuppressMessage("MicrosoftCodeAnalysisCorrectness", "RS1016:...", ...)]   // wrong, and silent
+[SuppressMessage("MicrosoftCodeAnalysisCorrectness", "RS1016:...", Justification = "…")]   // wrong, and silent
 ```
 
 Get the id wrong and the suppression silently does nothing — the warning simply stays. Get the

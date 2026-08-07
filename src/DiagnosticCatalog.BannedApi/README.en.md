@@ -31,7 +31,7 @@ where a typo in the id survives review, because no reviewer is reading the fourt
 carefully as the first.
 
 ```csharp
-[SuppressMessage("ApiDesign", "RS0030:Do not use banned APIs", ...)]
+[SuppressMessage("ApiDesign", "RS0030:Do not use banned APIs", Justification = "…")]
 ```
 
 Get the id wrong and the suppression silently does nothing — the warning simply stays. Get the

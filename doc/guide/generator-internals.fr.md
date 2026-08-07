@@ -54,7 +54,7 @@ qui le produirait, plutôt que de compiler à votre place.
 
 **Pourquoi `SolutionSource` refuse** est le refus le plus net du moteur. Décider quels projets
 produisent des analyseurs ne peut pas s'inférer : mesuré sur ce dépôt, « référence
-`Microsoft.CodeAnalysis` » correspond à huit projets dont un est un analyseur. Deviner trop court émet
+`Microsoft.CodeAnalysis` » correspond à neuf projets dont un est un analyseur. Deviner trop court émet
 un catalogue dont les règles manquantes se lisent comme des règles retirées — et une solution qui n'en
 déclare aucun renvoie `null` plutôt qu'un ensemble vide, parce que ne rien générer et sortir en `0` se
 lirait, pour une tâche planifiée, comme un succès.

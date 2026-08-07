@@ -28,18 +28,13 @@ Nothing else. No SDK version to bump, no tool to install, no generator to run.
 Pick the one matching the analyzer whose warnings you suppress:
 
 ```xml
-<PackageReference Include="DiagnosticCatalog.Sonar" Version="0.1.0" />
+<PackageReference Include="DiagnosticCatalog.Sonar" Version="1.0.0" />
 ```
 
-There is one for [SonarAnalyzer](https://www.nuget.org/packages/DiagnosticCatalog.Sonar) (`Sxxxx`),
-one for [the .NET analyzers](https://www.nuget.org/packages/DiagnosticCatalog.NetAnalyzers)
-(`CAxxxx`), one for [StyleCop](https://www.nuget.org/packages/DiagnosticCatalog.StyleCop)
-(`SAxxxx`), one for [the Roslyn IDE rules](https://www.nuget.org/packages/DiagnosticCatalog.CodeStyle)
-(`IDExxxx`), one for [xUnit's](https://www.nuget.org/packages/DiagnosticCatalog.Xunit)
-(`xUnitxxxx`), one for [NUnit's](https://www.nuget.org/packages/DiagnosticCatalog.NUnit)
-(`NUnitxxxx`), one for [MSTest's](https://www.nuget.org/packages/DiagnosticCatalog.MSTest)
-(`MSTESTxxxx`) and one for [the trimming and AOT warnings](https://www.nuget.org/packages/DiagnosticCatalog.Trimming)
-(`ILxxxx`). Reference more than one if you run more than one.
+**[The catalogue index](../../README.md#-the-ready-made-catalogues)** is the list: one row per
+analyzer, with the rule prefix it covers. Reference more than one if you run more than one. The list
+is not repeated here on purpose — a partial copy of it is how a reader concludes their analyzer is
+not covered.
 
 That one reference also turns the checking on: every catalogue depends on `DiagnosticCatalog`, which
 carries the `DCAT` analyzers and their code fixes beside the marker attributes and may not be hidden
@@ -47,10 +42,10 @@ carries the `DCAT` analyzers and their code fixes beside the marker attributes a
 package to add — and if you want the checks with no catalogue at all, `DiagnosticCatalog` on its own
 is the answer.
 
-Two consequences land on the very first build. `DCAT0006` reports each literal suppression that
-matches a rule you now have, as an **error**, so a codebase already holding a few hundred of them
-meets them all at once. `DCAT0014` reports each suppression that never said why it exists — every
-one of them, matched rule or not — as a warning. Turn both down first and the tour stays a tour:
+Two consequences land on the very first build, both as **errors**. `DCAT0006` reports each literal
+suppression that matches a rule you now have, so a codebase already holding a few hundred of them
+meets them all at once. `DCAT0014` reports each suppression that never said why it exists — every one
+of them, matched rule or not. Turn both down first and the tour stays a tour:
 
 ```ini
 # .editorconfig
@@ -92,10 +87,14 @@ used to paste into the suppression now lives.
 
 ## 3. Break it on purpose
 
-This is the step worth doing rather than reading. Change one digit:
+This is the step worth doing rather than reading. Change one digit, and leave the justification
+exactly where it was — the only thing under test here is the identifier:
 
 ```csharp
-[SuppressMessage(SonarRule.S1145.Category, SonarRule.S1145.Id)]
+[SuppressMessage(
+    SonarRule.S1145.Category,
+    SonarRule.S1145.Id,
+    Justification = "Called by the serializer.")]
 ```
 
 Build again:
@@ -107,12 +106,21 @@ error CS0117: 'SonarRule' does not contain a definition for 'S1145'
 Now do the same to the version you started with:
 
 ```csharp
-[SuppressMessage("Major Code Smell", "S1145")]
+[SuppressMessage("Major Code Smell", "S1145", Justification = "Called by the serializer.")]
 ```
 
-Build again. It compiles. Nothing is reported, by anything, ever — and the warning the suppression
-was hiding is quietly back, or quietly not, depending on whether the code that raised it is still
-there.
+Build again. **It compiles.** No compiler, analyzer, test or tool anywhere in the platform judges
+that pair, so nothing tells you the identifier is wrong — and the warning the suppression was hiding
+is quietly back, or quietly not, depending on whether the code that raised it is still there.
+
+Be precise about what "nothing reports it" means, because it is narrower than it looks:
+
+* **The pair is judged by nothing.** Roslyn matches on the identifier alone and reads the category
+  never, and `DCAT0001` compares two members of a rule your compilation can see — two strings give it
+  nothing to compare. That is the gap, and it is total.
+* **`DCAT0014` is a different question.** Had you dropped the `Justification` as well, that line would
+  have been reported — for having no reason, not for naming a rule that does not exist. Keeping the
+  justification in both versions above is what leaves the identifier alone under the light.
 
 That difference is the whole library. [Why magic strings fail](the-problem.en.md) takes the second
 build apart and explains why nothing in the platform is in a position to report it.

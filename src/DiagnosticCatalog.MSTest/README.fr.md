@@ -32,7 +32,7 @@ contredisent exprès** : `MSTEST0019` préfère les méthodes `TestInitialize` a
 paire est une règle dont vous répondrez toute la vie du projet.
 
 ```csharp
-[SuppressMessage("Usage", "MSTEST0037:Use proper 'Assert' methods", ...)]
+[SuppressMessage("Usage", "MSTEST0037:Use proper 'Assert' methods", Justification = "…")]
 ```
 
 Trois chaînes, et rien n'en vérifie aucune. Trompez-vous d'identifiant et la suppression ne fait

@@ -151,8 +151,8 @@ The distinction matters more than a footnote. **The core guarantee needs no anal
 compiler resolving a member. What the analyzers add is *finding the code that has not been
 converted yet*, which is a migration aid rather than the mechanism.
 
-[The packages](https://github.com/Reefact/diagnostic-catalog#-the-packages) in the repository README states what each
-one is for, and which train carries it.
+[Release trains](release-trains.en.md) says which line each of these packages versions on, and why a
+Sonar refresh never moves the foundation's number.
 
 ## Provenance: a catalogue is a snapshot
 

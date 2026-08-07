@@ -32,7 +32,7 @@ prefers `Dispose` over `TestCleanup` and `MSTEST0022` prefers the reverse. You p
 the other rule of the pair is one you will be answering for the life of the project.
 
 ```csharp
-[SuppressMessage("Usage", "MSTEST0037:Use proper 'Assert' methods", ...)]
+[SuppressMessage("Usage", "MSTEST0037:Use proper 'Assert' methods", Justification = "…")]
 ```
 
 Three strings, and nothing checks any of them. Get the id wrong and the suppression silently

@@ -222,7 +222,7 @@ Optional supporting material:
 | [ADR-0024](0024-fail-on-any-diagnostic-the-ratchet-cannot-see.en.md) | Fail on any diagnostic the warning ratchet cannot see | Accepted |
 | [ADR-0025](0025-bind-every-feature-commit-to-the-documentation-it-changed.en.md) | Bind every feature commit to the documentation it changed | Accepted |
 | [ADR-0026](0026-reach-a-category-only-through-the-rule-that-carries-it.en.md) | Reach a category only through the rule that carries it | Accepted |
-| [ADR-0027](0027-ship-the-use-site-diagnostics-as-errors.en.md) | Ship the use-site diagnostics as errors | Accepted |
+| [ADR-0027](0027-ship-the-use-site-diagnostics-as-errors.en.md) | Ship the use-site diagnostics as errors | Superseded by [ADR-0040](0040-grade-every-dcat-diagnostic-by-what-it-says.en.md) |
 | [ADR-0028](0028-require-every-rule-to-reach-its-category-through-a-declared-constant.en.md) | Require every rule to reach its category through a declared constant | Accepted |
 | [ADR-0029](0029-pair-the-project-readme-across-the-doc-boundary.en.md) | Pair the project README across the `doc/` boundary | Accepted |
 | [ADR-0030](0030-keep-the-usage-suite-out-of-the-sonar-analysis.en.md) | Keep the usage suite out of the Sonar analysis | Accepted |
@@ -235,3 +235,4 @@ Optional supporting material:
 | [ADR-0037](0037-ship-the-analyzers-inside-the-foundation-package.en.md) | Ship the analyzers inside the foundation package | Accepted |
 | [ADR-0038](0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.en.md) | Stop the analyzers at the project that references a catalogue | Accepted |
 | [ADR-0039](0039-require-a-justification-on-every-suppression.en.md) | Require a justification on every suppression | Accepted |
+| [ADR-0040](0040-grade-every-dcat-diagnostic-by-what-it-says.en.md) | Grade every DCAT diagnostic by what it says, not by whom it addresses | Accepted |

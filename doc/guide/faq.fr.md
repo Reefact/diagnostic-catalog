@@ -182,7 +182,7 @@ L'automatisation trouve le changement ; un humain l'accepte.
 ## Pourquoi les projets de `--solution` doivent-ils déclarer une propriété ?
 
 Parce que deviner n'est pas assez juste. Mesuré sur ce dépôt : « référence `Microsoft.CodeAnalysis` »
-correspond à huit projets dont un est un analyseur ; « déclare une sous-classe de `DiagnosticAnalyzer` »
+correspond à neuf projets dont un est un analyseur ; « déclare une sous-classe de `DiagnosticAnalyzer` »
 correspond à trois dont un est un analyseur — les deux autres sont des montages, un écrit pour
 *échouer* à la construction, un dans un assemblage écrit pour ne pas charger en entier.
 
