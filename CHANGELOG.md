@@ -29,14 +29,13 @@ project:
 
 ## [Unreleased]
 
-The first preview of the whole set, prepared and not yet published: the foundation
-moves from 0.1.0 to a 1.0 line and now carries the analyzers that check the
-contract, and the train ships a catalogue of their own rules for the first time.
+_Nothing yet._
 
-The `lib` train's last published version is `0.1.0`. Nothing below has a tag, an
-`AnalyzerReleases.Shipped.md` entry or a `PublicAPI.Shipped.txt` line, which is why
-it sits here rather than under a version heading: an entry dated as released is a
-claim a consumer will read as one.
+## [1.0.0] - 2026-08-07
+
+The whole set: the foundation moves from 0.1.0 to the 1.0 line and now carries the
+analyzers that check the contract, and the train ships a catalogue of their own
+rules for the first time.
 
 ### Added
 

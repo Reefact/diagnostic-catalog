@@ -1,9 +1,1 @@
 #nullable enable
-DiagnosticCatalog.Analyzers.DiagnosticRuleDefinitionAnalyzer
-DiagnosticCatalog.Analyzers.DiagnosticRuleDefinitionAnalyzer.DiagnosticRuleDefinitionAnalyzer() -> void
-override DiagnosticCatalog.Analyzers.DiagnosticRuleDefinitionAnalyzer.Initialize(Microsoft.CodeAnalysis.Diagnostics.AnalysisContext! context) -> void
-override DiagnosticCatalog.Analyzers.DiagnosticRuleDefinitionAnalyzer.SupportedDiagnostics.get -> System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.DiagnosticDescriptor!>
-DiagnosticCatalog.Analyzers.SuppressionUsageAnalyzer
-DiagnosticCatalog.Analyzers.SuppressionUsageAnalyzer.SuppressionUsageAnalyzer() -> void
-override DiagnosticCatalog.Analyzers.SuppressionUsageAnalyzer.Initialize(Microsoft.CodeAnalysis.Diagnostics.AnalysisContext! context) -> void
-override DiagnosticCatalog.Analyzers.SuppressionUsageAnalyzer.SupportedDiagnostics.get -> System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.DiagnosticDescriptor!>
