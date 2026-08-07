@@ -33,6 +33,37 @@ namespace DiagnosticCatalog.Documentation.UnitTests;
 /// across every document, anchored on the backticked package names the survey rows carry, which is
 /// what translation leaves alone.
 /// </para>
+/// <para>
+/// <b>How to recount a column by hand, since nothing recounts it for you.</b> The rule below was
+/// established by reproducing all ten pre-existing rows exactly, on all three columns, and it is
+/// written here because it was expensive: one afternoon produced three different answers for a
+/// single row, from two authors, each confident and each leaving CI green. Two of its steps are
+/// counter-intuitive and one is exposed by a single row, so a method calibrated against a couple of
+/// rows can reproduce them and still be wrong.
+/// </para>
+/// <para>
+/// <i>The assembly set</i> — every DLL under the package's analyzers folder, excluding the
+/// <c>.resources.dll</c> satellites, across every language folder AND the language-neutral one. Not
+/// the C# folder alone: NetAnalyzers' published 740 is 501 language-neutral plus 128 C# plus 111
+/// Visual Basic, where the C# folder alone gives 629. <i>And no deduplication</i>: a same-named
+/// assembly present in a second language folder counts again, byte-identical copy or not. MSTest's
+/// published 182 is 48 plus 67 plus 67, the last two sharing a sha256. That step is the one that
+/// separates the right answer from the plausible one, and MSTest is the only row that exposes it.
+/// </para>
+/// <para>
+/// <i>Public types</i> — the type's OWN accessibility flag, public for a top-level type and
+/// nested-public for a nested one. Not effective visibility: requiring the whole enclosing chain to
+/// be public gives StyleCop 0 where the table says 6. <i>Public constants</i> — public literal
+/// fields declared on those public-flagged types, and only those. Counting public literals on every
+/// type gives NetAnalyzers 958 against its published 128, Sonar 1092 against 861, StyleCop 435
+/// against 12. <i>Rule ids</i> — the subset of those constants whose string value is one of the
+/// vendor's rule ids or one of the categories the catalogue declares.
+/// </para>
+/// <para>
+/// One trap for the prose rather than the columns: the sentence counting types "across its two
+/// assemblies" includes a pseudo-type the metadata carries once per assembly, which the public-types
+/// column does not. Both are correct as written, and a recount must not quietly reconcile them.
+/// </para>
 /// </remarks>
 public sealed class PackageSurveyTests
 {
