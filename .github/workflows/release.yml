@@ -151,6 +151,24 @@ jobs:
           echo "train=$TRAIN" >> "$GITHUB_OUTPUT"
           echo "Resolved $TRAIN release version: $VERSION"
 
+      # Refuse to publish a version the train's changelog does not document. Placed here, before
+      # the restore, so the run fails in seconds rather than after a build and a full test pass —
+      # and, more to the point, before anything has been packed, attested or pushed.
+      #
+      # Skipped on a dry run, and only there: a rehearsal passes a throwaway version (0.0.0-dryrun)
+      # that no changelog documents and none should. The condition is the same one the publishing
+      # steps carry, so the check covers exactly the runs that publish.
+      #
+      # This was added after fourteen packages shipped at 1.0.0 against changelogs saying they had
+      # not — ten with their entries still under "Unreleased", four dating a preview that was never
+      # cut. Every one of those releases was green, because nothing in the pipeline read a changelog.
+      - name: Check the changelog documents this version
+        if: github.event_name == 'push' || inputs.dry_run == false
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          TRAIN: ${{ steps.version.outputs.train }}
+        run: tools/packaging/check-changelog.sh "$TRAIN" "$VERSION"
+
       # A release with no solution would fail deep inside `dotnet restore` with MSB1003. Say it here
       # instead, before anything else runs.
       - name: Check the solution is present

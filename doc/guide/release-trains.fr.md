@@ -196,8 +196,16 @@ artefacts, publie via OIDC trusted publishing, et crée une release dont les not
 les commits de ce train
 ([ADR-0006](../adr/0006-publish-through-trusted-publishing-with-provenance-and-an-sbom.fr.md)).
 
-Deux choses à savoir avant la première :
+Trois choses à savoir avant la première :
 
+* **Le changelog est un préalable.** Le `CHANGELOG.md` du train doit déjà porter un titre daté
+  `## [1.2.3] - AAAA-MM-JJ` pour la version publiée, sinon le run s'arrête avant même de restaurer
+  quoi que ce soit — `tools/packaging/check-changelog.sh`, que vous pouvez lancer vous-même. Écrivez
+  l'entrée et fusionnez-la *avant* de pousser le tag. Ce garde existe parce que quatorze paquets sont
+  un jour sortis en 1.0.0 contre des changelogs qui disaient le contraire, et que chacune de ces
+  releases était verte : rien d'autre dans la chaîne ne lit un changelog. Le garde prouve qu'une
+  entrée existe et qu'elle est datée ; il ne peut pas prouver qu'elle est vraie, et cela, seul un
+  lecteur l'attrape.
 * **C'est répété.** `release-dryrun` empaquette chaque train à chaque pull request, et le workflow de
   release lui-même peut être déclenché avec `dry_run` coché — exécutant tout jusqu'à la connexion OIDC
   et l'attestation de provenance comprises, et ne sautant que les deux étapes qui publient. Ce que la
