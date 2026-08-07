@@ -187,8 +187,15 @@ train from the prefix, builds and tests, packs **only that train**, attests the 
 through OIDC trusted publishing, and creates a release whose notes contain only that train's commits
 ([ADR-0006](../adr/0006-publish-through-trusted-publishing-with-provenance-and-an-sbom.en.md)).
 
-Two things to know before the first one:
+Three things to know before the first one:
 
+* **The changelog is a precondition.** The train's `CHANGELOG.md` must already carry a dated
+  `## [1.2.3] - YYYY-MM-DD` heading for the version being published, or the run stops before it
+  restores anything — `tools/packaging/check-changelog.sh`, which you can run yourself. Write the
+  entry and merge it *before* pushing the tag. This exists because fourteen packages once shipped at
+  1.0.0 against changelogs saying they had not, and every one of those releases was green: nothing
+  else in the pipeline reads a changelog. The check proves an entry exists and is dated; it cannot
+  prove the entry is true, and only a reader catches that.
 * **It is rehearsed.** `release-dryrun` packs every train on every pull request, and the release
   workflow itself can be dispatched with `dry_run` ticked — running everything up to and including the
   OIDC login and the provenance attestation, and skipping only the two steps that publish. What the
