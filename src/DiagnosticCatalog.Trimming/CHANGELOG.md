@@ -19,6 +19,12 @@ inferring it from the number below.
 **Mirrors `Microsoft.NET.ILLink.Tasks 10.0.10`** — unchanged upstream.
 <!-- mirror:end -->
 
+_No other change yet._
+
+## [1.0.0] - 2026-08-07
+
+**Mirrors `Microsoft.NET.ILLink.Tasks 10.0.10`.** The first published version of this catalogue.
+
 ### Added
 
 * **77 rules** — the `ILxxxx` trimming, Native AOT and single-file diagnostics — each a static class

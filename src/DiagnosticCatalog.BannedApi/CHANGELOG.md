@@ -19,6 +19,12 @@ inferring it from the number below.
 **Mirrors `Microsoft.CodeAnalysis.BannedApiAnalyzers 5.6.0`** — unchanged upstream.
 <!-- mirror:end -->
 
+_No other change yet._
+
+## [1.0.0] - 2026-08-07
+
+**Mirrors `Microsoft.CodeAnalysis.BannedApiAnalyzers 5.6.0`.** The first published version of this catalogue.
+
 ### Added
 
 * **3 rules** — `RS0030`, `RS0031` and `RS0035` — each a static class exposing `Id`, `Category` and,
