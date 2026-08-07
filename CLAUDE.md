@@ -142,6 +142,22 @@ rehearsal:
   that was never published. Depend on another train through a `PackageReference`
   to a released version (ADR-0007).
 
+A release is cut by pushing a train-prefixed tag, and two things about that are
+worth carrying into any session that touches a release:
+
+* **Push at most three tags in one go.** GitHub Actions raises no `push` event for
+  tags beyond the third in a single push, so the release does not fail — it never
+  starts. Thirteen pushed together produced zero runs, so do not count on the first
+  three either. Recover a missed one by dispatching `release.yml` for its train with
+  `dry_run` unticked. **Nothing checks this**: the workflow that would complain is
+  the one that never runs.
+* **The changelog is a precondition**, enforced by
+  `tools/packaging/check-changelog.sh` before the release restores anything. Write
+  the dated `## [x.y.z] - YYYY-MM-DD` entry and merge it *before* the tag is pushed.
+
+Both are in [`doc/guide/release-trains.en.md`](doc/guide/release-trains.en.md)
+("Cutting one"), which is where a maintainer reads them.
+
 ## Change guidelines
 
 * Keep changes small, focused, and aligned with the requested task.
