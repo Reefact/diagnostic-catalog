@@ -109,4 +109,52 @@
           Pack="true" PackagePath="build/$(PackageId).props" Visible="false" />
   </ItemGroup>
 
+  <!--
+    The package version and the assembly version must say the same thing.
+
+    They are two independent properties, and nothing in the SDK ties them: $(Version) names the
+    package, $(AssemblyVersion) is stamped into the binary and is what the CLR binds on. A release
+    that sets one and not the other produces a package whose number is right and whose assembly
+    identity is not — which no amount of building, testing or packing notices, because every one of
+    those steps is internally consistent with itself.
+
+    lib-v1.0.0 shipped exactly that: DiagnosticCatalog 1.0.0 carried an assembly stamped 0.0.0.0
+    while DiagnosticCatalog.Self 1.0.0, packed in the same run, was stamped 1.0.0.0 and recorded a
+    reference to DiagnosticCatalog 1.0.0.0. The two cannot bind, so a consumer loading a catalogue
+    meets a FileNotFoundException naming a version that was published and does not exist. Nothing in
+    the pipeline was looking: not the build, not the suite, not verify-consumption.sh, not the SBOM,
+    not the provenance attestation. The version a package DECLARES was checked everywhere; the
+    version it CONTAINS was checked nowhere.
+
+    Be clear about what this does NOT catch, because it is what actually happened. This compares two
+    PROPERTIES of one evaluation, and lib-v1.0.0's bytes were stale rather than misdeclared: a pack
+    that skipped the build recomputed both properties, found them in agreement, and numbered an
+    assembly an earlier compilation had stamped. No property comparison can see that. What closes
+    that hole is tools/packaging/pack.sh compiling what it packs; this target is the second line,
+    for the day someone sets AssemblyVersion by hand and the two disagree at the source.
+
+    Both entry points are covered so the check holds wherever the stamp is decided: CoreCompile is
+    where it is applied, and GenerateNuspec catches a pack invoked on its own.
+
+    Only the three leading components are compared. A four-part $(AssemblyVersion) against a
+    three-part $(Version) is the ordinary case, not a mismatch, and a SemVer pre-release label
+    (1.0.0-rc.1) is deliberately outside the comparison: the CLR has nowhere to put it, so the
+    assembly of a pre-release legitimately reads 1.0.0.
+
+    A version neither side can parse as three numbers leaves this quiet rather than guessing. That
+    is a real gap and a small one — release.yml already refuses any tag that is not SemVer, so the
+    shape reaching a release is always one this reads.
+  -->
+  <Target Name="DiagnosticCatalogVerifyAssemblyVersionMatchesPackageVersion"
+          Condition="'$(ReleaseTrain)' != ''"
+          BeforeTargets="CoreCompile;GenerateNuspec">
+    <PropertyGroup>
+      <_DcatPackageVersionCore>$([System.Text.RegularExpressions.Regex]::Match('$(Version)', '^[0-9]+\.[0-9]+\.[0-9]+').Value)</_DcatPackageVersionCore>
+      <_DcatAssemblyVersionCore>$([System.Text.RegularExpressions.Regex]::Match('$(AssemblyVersion)', '^[0-9]+\.[0-9]+\.[0-9]+').Value)</_DcatAssemblyVersionCore>
+    </PropertyGroup>
+    <Error Condition="'$(_DcatPackageVersionCore)' != '' and '$(_DcatAssemblyVersionCore)' != '' and '$(_DcatPackageVersionCore)' != '$(_DcatAssemblyVersionCore)'"
+           Code="DCATPACK001"
+           Text="$(PackageId) would ship version $(Version) with an assembly stamped $(AssemblyVersion). A consumer binds on the assembly version, so the two must agree on their first three components. Set Version (the release passes -p:Version) rather than AssemblyVersion, and do not set AssemblyVersion by hand." />
+  </Target>
+
 </Project>

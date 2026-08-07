@@ -114,8 +114,23 @@ echo "ok: no cross-train ProjectReference on the '${train}' train"
 # project declaring a train): each package embeds its SPDX inventory at
 # _manifest/spdx_2.2/manifest.spdx.json. It is passed here, not set in the project files, so
 # an ordinary local `dotnet pack` stays SBOM-free and fast.
+#
+# This COMPILES rather than packing whatever bin/ happens to hold, and the difference is not
+# academic: it is how lib-v1.0.0 shipped a package numbered 1.0.0 around an assembly stamped
+# 0.0.0.0. `dotnet pack` writes the package version from -p:Version whether or not the assembly
+# beside it agrees, so with a build it never made, this step will faithfully number anything.
+#
+# What wrote those bytes is release.yml's own step order — build, TEST, pack — and one test in
+# the middle: DiagnosticCatalog.Packaging.IntegrationTests packs the foundation from source at
+# 0.0.0-pkgtest to restore it like a consumer would, and that pack rebuilds src/DiagnosticCatalog
+# into the shared bin/Release. The suite is right to do it; nothing warned that the release then
+# packed the leftovers.
+#
+# Compiling here costs a rebuild of one train and removes the whole class: no step that ran
+# earlier can decide what a release ships. The build is deterministic, so recompiling the same
+# source at the same version reproduces the same bytes the test step exercised.
 for project in $projects; do
-  dotnet pack "$project" -c Release --no-build -p:Version="$version" -p:GenerateSBOM=true -o artifacts
+  dotnet pack "$project" -c Release -p:Version="$version" -p:GenerateSBOM=true -o artifacts
 done
 
 # --- guard: the SBOM is actually in there --------------------------------------
