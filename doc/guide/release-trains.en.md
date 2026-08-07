@@ -187,7 +187,16 @@ train from the prefix, builds and tests, packs **only that train**, attests the 
 through OIDC trusted publishing, and creates a release whose notes contain only that train's commits
 ([ADR-0006](../adr/0006-publish-through-trusted-publishing-with-provenance-and-an-sbom.en.md)).
 
-Three things to know before the first one:
+Four things to know before the first one:
+
+* **Push at most three tags in one go — one at a time is safer.** GitHub Actions raises no `push`
+  event for tags beyond the third in a single push, so the release does not fail: it never starts.
+  No run appears, nothing queues, and the tags sit on the remote looking exactly like tags whose
+  releases succeeded. Thirteen were pushed together once and produced **zero** runs — not ten, zero
+  — so do not count on the first three going through either. The recovery is to dispatch
+  `release.yml` per train with `dry_run` unticked; it publishes exactly as the tag would have, and
+  creates the release against the tag already present. **Nothing can check this**: the workflow that
+  would complain is the one that never runs.
 
 * **The changelog is a precondition.** The train's `CHANGELOG.md` must already carry a dated
   `## [1.2.3] - YYYY-MM-DD` heading for the version being published, or the run stops before it

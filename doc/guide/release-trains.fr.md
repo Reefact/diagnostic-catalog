@@ -196,7 +196,16 @@ artefacts, publie via OIDC trusted publishing, et crée une release dont les not
 les commits de ce train
 ([ADR-0006](../adr/0006-publish-through-trusted-publishing-with-provenance-and-an-sbom.fr.md)).
 
-Trois choses à savoir avant la première :
+Quatre choses à savoir avant la première :
+
+* **Poussez au plus trois tags d'un coup — un à la fois est plus sûr.** GitHub Actions ne lève aucun
+  événement `push` pour les tags au-delà du troisième dans une même poussée : la release n'échoue
+  donc pas, elle ne démarre jamais. Aucun run n'apparaît, rien ne s'empile, et les tags sont sur le
+  dépôt, indiscernables de ceux dont la release a réussi. Treize poussés ensemble ont un jour produit
+  **zéro** run — pas dix, zéro — donc ne comptez pas non plus sur les trois premiers. Le rattrapage
+  consiste à déclencher `release.yml` train par train avec `dry_run` décoché : il publie exactement
+  comme le tag l'aurait fait, et crée la release sur le tag déjà présent. **Aucun contrôle ne peut
+  attraper ça** : le workflow qui protesterait est celui qui ne tourne pas.
 
 * **Le changelog est un préalable.** Le `CHANGELOG.md` du train doit déjà porter un titre daté
   `## [1.2.3] - AAAA-MM-JJ` pour la version publiée, sinon le run s'arrête avant même de restaurer
