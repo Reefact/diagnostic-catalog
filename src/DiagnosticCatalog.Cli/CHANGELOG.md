@@ -20,7 +20,7 @@ reads their descriptors.
 
 _Nothing yet._
 
-## [1.0.0-preview.1] - 2026-08-01
+## [1.0.0] - 2026-08-07
 
 The first release of `dcat`. Everything below is what it carries, rather than a
 change against a previous version.
