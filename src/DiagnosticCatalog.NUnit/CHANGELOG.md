@@ -19,6 +19,12 @@ inferring it from the number below.
 **Mirrors `NUnit.Analyzers 4.14.0`** — unchanged upstream.
 <!-- mirror:end -->
 
+_No other change yet._
+
+## [1.0.0] - 2026-08-07
+
+**Mirrors `NUnit.Analyzers 4.14.0`.** The first published version of this catalogue.
+
 ### Added
 
 * **99 rules** — the `NUnitxxxx` diagnostics — each a static class exposing `Id`,
