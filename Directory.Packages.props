@@ -21,7 +21,7 @@
          would stamp a dependency on a version that was never published (ADR-0007). This line is therefore
          the version every published catalogue declares it needs, and bumping it is a deliberate act rather
          than a side effect of the foundation moving. -->
-    <PackageVersion Include="DiagnosticCatalog" Version="0.1.0" />
+    <PackageVersion Include="DiagnosticCatalog" Version="1.0.1" />
     <!-- Consumed by the .NET Framework 4.7.2 floor: build/Net472TestFloor.props adds this reference on the
          net472 inner build, version-less, so the version has to resolve from here. Reference assemblies only
          (PrivateAssets=all), so net472 compiles on a box without the 4.7.2 targeting pack installed. -->
