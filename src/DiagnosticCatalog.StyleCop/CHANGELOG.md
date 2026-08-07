@@ -23,7 +23,7 @@ assembly rather than inferring it from the number below.
 
 _No other change yet._
 
-## [1.0.0-preview.1] - 2026-08-01
+## [1.0.0] - 2026-08-07
 
 **Mirrors `StyleCop.Analyzers.Unstable 1.2.0.556`** — unchanged upstream: no rule was added, retired or
 recategorised, and every identifier, category and constant is the one the previous
@@ -44,7 +44,7 @@ own, and it is breaking: see below.
   on this package's page from a search learns the set it belongs to. nuget.org renders
   the README embedded in the package, so republishing is the only way an updated one
   reaches that page.
-* The version joins the 1.0 line the whole set moves to with this preview. Nothing in
+* The version joins the 1.0 line the whole set moves to with this release. Nothing in
   the mirrored StyleCop rules changed with it.
 
 ## [0.3.0] - 2026-07-31
