@@ -216,8 +216,8 @@ internal abstract class CatalogueSettings : CommandSettings
     }
 
     /// <summary>
-    /// The switches that only mean something against one kind of source, refused rather than
-    /// ignored when they are passed against another.
+    /// The switches refused rather than ignored: those that only mean something against one kind
+    /// of source, and the one whose value this tool cannot act on whatever the source.
     /// </summary>
     private ValidationResult SwitchesMatchTheSource()
     {

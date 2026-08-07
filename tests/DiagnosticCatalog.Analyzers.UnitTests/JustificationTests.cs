@@ -10,7 +10,7 @@ using Xunit;
 namespace DiagnosticCatalog.Analyzers.UnitTests;
 
 /// <summary>
-/// DCAT0014 — a suppression that references a catalogue rule and says nothing about why.
+/// DCAT0014 — a suppression that says nothing about why it is there.
 /// </summary>
 /// <remarks>
 /// <para>
