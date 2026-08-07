@@ -95,7 +95,7 @@
       PackagePath="build\Acme.Catalog.props"    the same, on Windows
       PackagePath="build"                       the folder, with the file already named for the package
 
-    Anything else reads as missing, which is the conservative direction: a false "missing" is a warning
+    Anything else reads as missing, which is the conservative direction: a false "missing" is an error
     on a correct package, visible and one property away from silence, while a false "packed" would be
     this diagnostic failing at the one job it has.
   -->
