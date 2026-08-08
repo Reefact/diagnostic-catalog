@@ -236,3 +236,4 @@ Matériel de support, optionnel :
 | [ADR-0038](0038-stop-the-analyzers-at-the-project-that-references-a-catalogue.fr.md) | Arrêter les analyzers au projet qui référence un catalogue | Accepted |
 | [ADR-0039](0039-require-a-justification-on-every-suppression.fr.md) | Exiger une justification sur toute suppression | Accepted |
 | [ADR-0040](0040-grade-every-dcat-diagnostic-by-what-it-says.fr.md) | Classer chaque diagnostic DCAT par ce qu'il dit, pas par le public auquel il s'adresse | Accepted |
+| [ADR-0041](0041-merge-every-pull-request-by-rebase.fr.md) | Fusionner chaque pull request par rebase, jamais par un commit de merge | Accepted |
