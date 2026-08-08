@@ -97,9 +97,12 @@ request and let `@reefact` judge rather than guessing.
 ## Tidying history before a pull request (acting agent)
 
 This governs the agent that *prepares* a branch for review, not the reviewer.
-This repository merges pull requests with a **merge commit**, so every commit a
-branch carries lands in `main`'s history — a messy branch is not squashed away
-on merge, it pollutes protected history for good. `CONTRIBUTING.md` already
+This repository merges pull requests by **rebase**, so every commit a branch
+carries is replayed onto `main` individually — no merge commit wraps them and
+nothing is squashed away, so each one becomes a commit of `main`'s linear
+history for good. That is a stricter regime than a merge commit, not a laxer
+one: no wrapper reads the branch as one unit afterwards, so the commits
+themselves are the only record of it. `CONTRIBUTING.md` already
 fixes the endpoint (autosquash placeholders squashed before merge, a conforming
 header on every commit, one intention per commit); this section makes the agent
 *reach* it **on its own initiative**.
