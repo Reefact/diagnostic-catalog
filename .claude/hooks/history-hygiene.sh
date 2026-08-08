@@ -3,9 +3,10 @@
 #
 # Wired from .claude/settings.json on two events so an agent never opens a pull
 # request on — nor quietly grows — a branch whose commits would land messy in
-# `main`. This repository merges pull requests with a merge commit, so every
-# commit on a branch reaches protected history (CONTRIBUTING.md, "Branches"):
-# a messy history is not squashed away on merge, it stays on `main` for good.
+# `main`. This repository merges pull requests by rebase, so every commit on a
+# branch is replayed onto protected history individually (CONTRIBUTING.md,
+# "Branches"): no merge commit wraps them, nothing is squashed away, and each
+# one stays on `main` for good.
 #
 # It reuses the repository's single commit linter
 # (tools/commit-lint/lint-commit-message.sh), so the hook, the local commit-msg

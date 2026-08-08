@@ -241,8 +241,11 @@ essentials, inlined so they hold even if `AGENTS.md` is not read:
   lint rejects, one change split across non-standalone commits or two folded
   into one), **propose** a cleanup and rewrite only after I approve — while the
   branch is yours alone, with `git push --force-with-lease`, leaving the diff
-  against `origin/main` unchanged. This repository merges with a merge commit,
-  so a messy branch reaches `main`. Full rule in [`AGENTS.md`](AGENTS.md)
+  against `origin/main` unchanged. This repository merges by **rebase**, so
+  every commit a branch carries is replayed onto `main` individually: nothing
+  wraps them, nothing squashes them, and each one becomes a commit of `main`'s
+  linear history for good. That makes the cleanup more critical than it was
+  under a merge commit, not less. Full rule in [`AGENTS.md`](AGENTS.md)
   ("Tidying history before a pull request"); the `/tidy-history` command runs it.
 * In PR descriptions, do not invent testing results. Only check items that were
   actually run.

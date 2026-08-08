@@ -66,8 +66,9 @@ case "$subject" in
 esac
 # Autosquash placeholders are rewritten by a later `git rebase --autosquash`, so
 # the local hook lets them through. CI (--ci) rejects them instead: this repo
-# merges pull requests with a merge commit, so a placeholder merged before its
-# rebase would otherwise land, unlinted, in protected history.
+# merges pull requests by rebase, so a placeholder merged before its own
+# autosquash is replayed onto `main` as an ordinary commit — unlinted, in
+# protected history, and with nothing left to squash it into.
 case "$subject" in
   'fixup! '*|'squash! '*|'amend! '*)
     if [ "$strict" = 0 ]; then
