@@ -33,7 +33,7 @@
          which build/Net472TestFloor.props handles for the projects that join the floor. -->
     <PackageVersion Include="xunit.v3" Version="3.2.2" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.9.0" />
     <!-- Embeds the SPDX SBOM in every published package. Referenced from Directory.Build.targets for any
          project declaring a <ReleaseTrain>, version-less, so the version has to resolve from here. -->
     <PackageVersion Include="Microsoft.Sbom.Targets" Version="4.1.5" />
