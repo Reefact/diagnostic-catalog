@@ -17,7 +17,7 @@ number below.
 ## [Unreleased]
 
 <!-- mirror:begin -->
-**Mirrors `Microsoft.CodeAnalysis.NetAnalyzers 10.0.302`** — unchanged upstream.
+**Mirrors `Microsoft.CodeAnalysis.NetAnalyzers 10.0.401`** — upstream moved from `10.0.302`.
 <!-- mirror:end -->
 
 _No other change yet._

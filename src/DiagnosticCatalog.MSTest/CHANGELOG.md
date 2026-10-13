@@ -16,7 +16,7 @@ inferring it from the number below.
 ## [Unreleased]
 
 <!-- mirror:begin -->
-**Mirrors `MSTest.Analyzers 4.3.3`** — unchanged upstream.
+**Mirrors `MSTest.Analyzers 4.5.1`** — upstream moved from `4.3.3`.
 <!-- mirror:end -->
 
 _No other change yet._

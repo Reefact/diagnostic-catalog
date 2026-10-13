@@ -7,10 +7,10 @@ Les règles **SonarAnalyzer.CSharp** sous forme de constantes fortement référe
 `SuppressMessageAttribute` prenne des références vérifiées à la compilation plutôt que des chaînes magiques.
 
 <!-- mirror:begin -->
-> ## 🪞 Reflète `SonarAnalyzer.CSharp 10.31.0.145097`
+> ## 🪞 Reflète `SonarAnalyzer.CSharp 10.35.0.4138`
 >
 > **456 règles, 13 catégories**, chaque identifiant et chaque
-> catégorie lus dans les analyseurs de cette version. Régénéré le 2026-07-31.
+> catégorie lus dans les analyseurs de cette version. Régénéré le 2026-10-13.
 <!-- mirror:end -->
 
 > Non officiel. Sans affiliation avec SonarSource, ni approbation ni support de sa part. « Sonar » et

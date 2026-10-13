@@ -7,10 +7,10 @@ Les règles **NUnit.Analyzers** sous forme de constantes fortement référencée
 `SuppressMessageAttribute` prenne des références vérifiées à la compilation plutôt que des chaînes magiques.
 
 <!-- mirror:begin -->
-> ## 🪞 Reflète `NUnit.Analyzers 4.14.0`
+> ## 🪞 Reflète `NUnit.Analyzers 4.15.0`
 >
 > **99 règles, 3 catégories**, chaque identifiant et chaque
-> catégorie lus dans les analyseurs de cette version. Régénéré le 2026-08-05.
+> catégorie lus dans les analyseurs de cette version. Régénéré le 2026-10-13.
 <!-- mirror:end -->
 
 > Non officiel. Sans affiliation avec le projet NUnit, ni approbation ni support de sa part.

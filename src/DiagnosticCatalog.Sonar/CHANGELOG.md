@@ -17,7 +17,7 @@ number below.
 ## [Unreleased]
 
 <!-- mirror:begin -->
-**Mirrors `SonarAnalyzer.CSharp 10.31.0.145097`** — unchanged upstream.
+**Mirrors `SonarAnalyzer.CSharp 10.35.0.4138`** — upstream moved from `10.31.0.145097`.
 <!-- mirror:end -->
 
 _No other change yet._

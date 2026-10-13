@@ -7,10 +7,10 @@ The **.NET code analysis (CA) rules** as strongly referenced constants, so that
 `SuppressMessageAttribute` takes compile-checked references instead of magic strings.
 
 <!-- mirror:begin -->
-> ## 🪞 Mirrors `Microsoft.CodeAnalysis.NetAnalyzers 10.0.302`
+> ## 🪞 Mirrors `Microsoft.CodeAnalysis.NetAnalyzers 10.0.401`
 >
 > **318 rules, 10 categories**, every identifier and category read
-> from that release's own analyzers. Regenerated 2026-07-31.
+> from that release's own analyzers. Regenerated 2026-10-13.
 <!-- mirror:end -->
 
 ## Why

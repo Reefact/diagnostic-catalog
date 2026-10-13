@@ -7,10 +7,10 @@ The **.NET runtime source-generator diagnostics** (`SYSLIB1xxx`) as strongly ref
 so that `SuppressMessageAttribute` takes compile-checked references instead of magic strings.
 
 <!-- mirror:begin -->
-> ## 🪞 Mirrors `Microsoft.NETCore.App.Ref 10.0.10`
+> ## 🪞 Mirrors `Microsoft.NETCore.App.Ref 10.0.12`
 >
 > **13 rules, 4 categories**, every identifier and category read
-> from that release's own analyzers. Regenerated 2026-08-05.
+> from that release's own analyzers. Regenerated 2026-10-13.
 <!-- mirror:end -->
 
 > Unofficial. Not affiliated with, endorsed by, or supported by Microsoft.

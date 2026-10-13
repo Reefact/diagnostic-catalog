@@ -16,7 +16,7 @@ inferring it from the number below.
 ## [Unreleased]
 
 <!-- mirror:begin -->
-**Mirrors `Microsoft.AspNetCore.App.Ref 10.0.10`** — unchanged upstream.
+**Mirrors `Microsoft.AspNetCore.App.Ref 10.0.12`** — upstream moved from `10.0.10`.
 <!-- mirror:end -->
 
 _No other change yet._

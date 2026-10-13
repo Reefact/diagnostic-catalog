@@ -7,10 +7,10 @@ The **NUnit.Analyzers** rules as strongly referenced constants, so that
 `SuppressMessageAttribute` takes compile-checked references instead of magic strings.
 
 <!-- mirror:begin -->
-> ## 🪞 Mirrors `NUnit.Analyzers 4.14.0`
+> ## 🪞 Mirrors `NUnit.Analyzers 4.15.0`
 >
 > **99 rules, 3 categories**, every identifier and category read
-> from that release's own analyzers. Regenerated 2026-08-05.
+> from that release's own analyzers. Regenerated 2026-10-13.
 <!-- mirror:end -->
 
 > Unofficial. Not affiliated with, endorsed by, or supported by the NUnit project.
