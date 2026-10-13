@@ -152,7 +152,16 @@ jobs:
 
           # The catalogue content is derived, so the latest regeneration always wins over
           # whatever the branch held before.
-          git push --force-with-lease origin "$SYNC_BRANCH"
+          #
+          # The lease is spelled out. A bare --force-with-lease trusts only a remote-tracking
+          # ref that a configured fetch refspec covers, and actions/checkout configures none
+          # for this branch, so git sees no expected value and rejects the push as "stale
+          # info" whenever an earlier run left the branch behind. This has caused every
+          # subsequent run to fail since the sync branch was first created. The expected
+          # value is the tip as of now, or empty (the branch must not exist) when there
+          # is none.
+          EXPECTED="$(git ls-remote --heads origin "refs/heads/$SYNC_BRANCH" | cut -f1)"
+          git push --force-with-lease="$SYNC_BRANCH:$EXPECTED" origin "$SYNC_BRANCH"
 
           # Quoted heredocs ('EOF'), so the body is written verbatim: it is Markdown, and its
           # backticks and $ signs must reach the pull request rather than be read as command
