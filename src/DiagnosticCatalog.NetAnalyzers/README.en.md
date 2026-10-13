@@ -74,17 +74,17 @@ them.
 Unlike Sonar or StyleCop, the CA analyzers are **built into the .NET SDK**. Which rules
 your project actually gets is governed by your SDK version and by `AnalysisLevel`, not by
 a `PackageReference` you control. This catalogue mirrors
-`Microsoft.CodeAnalysis.NetAnalyzers 10.0.302`, the latest stable release at generation
+`Microsoft.CodeAnalysis.NetAnalyzers 10.0.401`, the latest stable release at generation
 time; the assembly records that exactly:
 
 ```csharp
 [assembly: CatalogSource(
     source:        "Microsoft.CodeAnalysis.NetAnalyzers",
-    sourceVersion: "10.0.302",
+    sourceVersion: "10.0.401",
     generatedOn:   "2026-07-30")]
 ```
 
-If your SDK ships a newer analyzer set, rules added since 10.0.302 will not be here yet.
+If your SDK ships a newer analyzer set, rules added since 10.0.401 will not be here yet.
 
 ## Categories declared once
 

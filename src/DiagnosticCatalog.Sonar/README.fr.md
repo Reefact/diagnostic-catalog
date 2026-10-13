@@ -158,7 +158,7 @@ L'assembly consigne sa propre provenance, lisible depuis les métadonnées sans 
 ```csharp
 [assembly: CatalogSource(
     source:        "SonarAnalyzer.CSharp",
-    sourceVersion: "10.31.0.145097",
+    sourceVersion: "10.35.0.4138",
     generatedOn:   "2026-07-30")]
 ```
 
@@ -166,7 +166,7 @@ L'assembly consigne sa propre provenance, lisible depuis les métadonnées sans 
 var source = typeof(SonarRule.S1144).Assembly
     .GetCustomAttributes<CatalogSourceAttribute>()
     .Single();
-// source.SourceVersion => "10.31.0.145097"
+// source.SourceVersion => "10.35.0.4138"
 // source.GeneratedOn   => "2026-07-30"
 ```
 

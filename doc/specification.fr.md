@@ -547,7 +547,7 @@ Appliqué par le catalogue généré :
 ```csharp
 [assembly: CatalogSource(
     source:        "SonarAnalyzer.CSharp",
-    sourceVersion: "10.31.0.145097",
+    sourceVersion: "10.35.0.4138",
     generatedOn:   "2026-07-30")]
 ```
 
@@ -1621,18 +1621,18 @@ retirée en amont.
 
 | Catalogue | Reflète | Règles vivantes | Constantes publiées | Catégories | Liens d'aide |
 | --- | --- | ---: | ---: | ---: | ---: |
-| `DiagnosticCatalog.Sonar` | `SonarAnalyzer.CSharp 10.31.0.145097` | 456 | 456 | 13 | 0 |
-| `DiagnosticCatalog.NetAnalyzers` | `Microsoft.CodeAnalysis.NetAnalyzers 10.0.302` | 318 | 318 | 10 | 318 |
+| `DiagnosticCatalog.Sonar` | `SonarAnalyzer.CSharp 10.35.0.4138` | 456 | 456 | 13 | 0 |
+| `DiagnosticCatalog.NetAnalyzers` | `Microsoft.CodeAnalysis.NetAnalyzers 10.0.401` | 318 | 318 | 10 | 318 |
 | `DiagnosticCatalog.StyleCop` | `StyleCop.Analyzers.Unstable 1.2.0.556` | 197 | 197 | 8 | 197 |
-| `DiagnosticCatalog.CodeStyle` | `Microsoft.CodeAnalysis.CSharp.CodeStyle 5.6.0` | 120 | 120 | 3 | 117 |
-| `DiagnosticCatalog.NUnit` | `NUnit.Analyzers 4.14.0` | 99 | 99 | 3 | 99 |
-| `DiagnosticCatalog.Xunit` | `xunit.analyzers 1.27.0` | 90 | 90 | 3 | 90 |
-| `DiagnosticCatalog.Trimming` | `Microsoft.NET.ILLink.Tasks 10.0.10` | 77 | 77 | 3 | 0 |
-| `DiagnosticCatalog.MSTest` | `MSTest.Analyzers 4.3.3` | 62 | 62 | 3 | 62 |
-| `DiagnosticCatalog.Roslyn` | `Microsoft.CodeAnalysis.Analyzers 5.6.0` | 52 | 52 | 9 | 13 |
-| `DiagnosticCatalog.AspNetCore` | `Microsoft.AspNetCore.App.Ref 10.0.10` | 35 | 35 | 3 | 26 |
+| `DiagnosticCatalog.CodeStyle` | `Microsoft.CodeAnalysis.CSharp.CodeStyle 5.9.0` | 121 | 121 | 3 | 118 |
+| `DiagnosticCatalog.NUnit` | `NUnit.Analyzers 4.15.0` | 99 | 99 | 3 | 99 |
+| `DiagnosticCatalog.Xunit` | `xunit.analyzers 2.2.0` | 114 | 114 | 3 | 114 |
+| `DiagnosticCatalog.Trimming` | `Microsoft.NET.ILLink.Tasks 10.0.12` | 77 | 77 | 3 | 0 |
+| `DiagnosticCatalog.MSTest` | `MSTest.Analyzers 4.5.1` | 80 | 80 | 3 | 80 |
+| `DiagnosticCatalog.Roslyn` | `Microsoft.CodeAnalysis.Analyzers 5.9.0` | 52 | 52 | 9 | 13 |
+| `DiagnosticCatalog.AspNetCore` | `Microsoft.AspNetCore.App.Ref 10.0.12` | 35 | 35 | 3 | 26 |
 | `DiagnosticCatalog.PublicApi` | `Microsoft.CodeAnalysis.PublicApiAnalyzers 5.6.0` | 23 | 23 | 1 | 23 |
-| `DiagnosticCatalog.Syslib` | `Microsoft.NETCore.App.Ref 10.0.10` | 13 | 13 | 4 | 13 |
+| `DiagnosticCatalog.Syslib` | `Microsoft.NETCore.App.Ref 10.0.12` | 13 | 13 | 4 | 13 |
 | `DiagnosticCatalog.BannedApi` | `Microsoft.CodeAnalysis.BannedApiAnalyzers 5.6.0` | 3 | 3 | 1 | 2 |
 
 <!-- catalogue-facts:end -->
