@@ -180,8 +180,15 @@ jobs:
             exit 1
           fi
 
+      # Restore with the version the build will be given. `dotnet build --no-restore` below stamps
+      # -p:Version onto every assembly but cannot change what restore already recorded, and the
+      # test projects read that record: their deps.json named DiagnosticCatalog 1.0.1.0 while the
+      # catalogues built against 1.1.0.0, so Assembly.Load could not find the one they asked for
+      # and the documentation tests failed on a clean checkout. Restore and build must agree.
       - name: Restore
-        run: dotnet restore
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: dotnet restore -p:Version="$VERSION"
 
       - name: Build
         env:
