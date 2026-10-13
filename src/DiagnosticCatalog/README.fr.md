@@ -314,7 +314,7 @@ consigne quelle version amont il reflète et à quelle date, lisible depuis les 
 ```csharp
 [assembly: CatalogSource(
     source:        "SonarAnalyzer.CSharp",
-    sourceVersion: "10.31.0.145097",
+    sourceVersion: "10.35.0.4138",
     generatedOn:   "2026-07-30")]
 ```
 

@@ -74,17 +74,17 @@ descriptions de règles ne sont pas redistribuées — le lien d'aide vous y con
 Contrairement à Sonar ou StyleCop, les analyseurs CA sont **intégrés au SDK .NET**. Quelles règles
 votre projet obtient réellement dépend de votre version du SDK et d'`AnalysisLevel`, pas d'un
 `PackageReference` que vous contrôlez. Ce catalogue reflète
-`Microsoft.CodeAnalysis.NetAnalyzers 10.0.302`, la dernière version stable au moment de la
+`Microsoft.CodeAnalysis.NetAnalyzers 10.0.401`, la dernière version stable au moment de la
 génération ; l'assembly le consigne exactement :
 
 ```csharp
 [assembly: CatalogSource(
     source:        "Microsoft.CodeAnalysis.NetAnalyzers",
-    sourceVersion: "10.0.302",
+    sourceVersion: "10.0.401",
     generatedOn:   "2026-07-30")]
 ```
 
-Si votre SDK livre un jeu d'analyseurs plus récent, les règles ajoutées depuis 10.0.302 n'y seront pas encore.
+Si votre SDK livre un jeu d'analyseurs plus récent, les règles ajoutées depuis 10.0.401 n'y seront pas encore.
 
 ## Catégories déclarées une seule fois
 
