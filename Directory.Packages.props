@@ -45,7 +45,7 @@
          DiagnosticAnalyzer is well formed and that every declared id appears in AnalyzerReleases.*.md.
          Build-time only (PrivateAssets=all) and NOT part of the load contract, so unlike
          Microsoft.CodeAnalysis.CSharp this one is free to track the newest version. -->
-    <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="5.6.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="5.9.0" />
     <!-- The Sonar C# rules, so the build reports what SonarQube Cloud would report instead of the
          dashboard being the first place anyone meets them (ADR-0021). Which rules are ON comes from
          build/sonar-profile.globalconfig, generated from the server's quality profile — the package's
