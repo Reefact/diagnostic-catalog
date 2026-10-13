@@ -7,10 +7,10 @@ The **Roslyn IDE code-style rules** as strongly referenced constants, so that
 `SuppressMessageAttribute` takes compile-checked references instead of magic strings.
 
 <!-- mirror:begin -->
-> ## 🪞 Mirrors `Microsoft.CodeAnalysis.CSharp.CodeStyle 5.6.0`
+> ## 🪞 Mirrors `Microsoft.CodeAnalysis.CSharp.CodeStyle 5.9.0`
 >
-> **120 rules, 3 categories**, every identifier and category read
-> from that release's own analyzers. Regenerated 2026-08-05.
+> **121 rules, 3 categories**, every identifier and category read
+> from that release's own analyzers. Regenerated 2026-10-13.
 <!-- mirror:end -->
 
 > Unofficial. Not affiliated with, endorsed by, or supported by Microsoft.

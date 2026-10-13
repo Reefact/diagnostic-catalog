@@ -7,10 +7,10 @@ The **SonarAnalyzer.CSharp** rules as strongly referenced constants, so that
 `SuppressMessageAttribute` takes compile-checked references instead of magic strings.
 
 <!-- mirror:begin -->
-> ## 🪞 Mirrors `SonarAnalyzer.CSharp 10.31.0.145097`
+> ## 🪞 Mirrors `SonarAnalyzer.CSharp 10.35.0.4138`
 >
 > **456 rules, 13 categories**, every identifier and category read
-> from that release's own analyzers. Regenerated 2026-07-31.
+> from that release's own analyzers. Regenerated 2026-10-13.
 <!-- mirror:end -->
 
 > Unofficial. Not affiliated with, endorsed by, or supported by SonarSource. "Sonar" and

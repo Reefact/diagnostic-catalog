@@ -7,10 +7,10 @@ The **Roslyn analyzer-authoring** rules (`RS1xxx`, `RS2xxx`) as strongly referen
 that `SuppressMessageAttribute` takes compile-checked references instead of magic strings.
 
 <!-- mirror:begin -->
-> ## 🪞 Mirrors `Microsoft.CodeAnalysis.Analyzers 5.6.0`
+> ## 🪞 Mirrors `Microsoft.CodeAnalysis.Analyzers 5.9.0`
 >
 > **52 rules, 9 categories**, every identifier and category read
-> from that release's own analyzers. Regenerated 2026-08-05.
+> from that release's own analyzers. Regenerated 2026-10-13.
 <!-- mirror:end -->
 
 > Unofficial. Not affiliated with, endorsed by, or supported by Microsoft.

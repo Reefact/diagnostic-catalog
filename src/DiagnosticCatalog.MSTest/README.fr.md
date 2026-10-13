@@ -7,10 +7,10 @@ Les règles **MSTest.Analyzers** sous forme de constantes fortement référencé
 `SuppressMessageAttribute` prenne des références vérifiées à la compilation plutôt que des chaînes magiques.
 
 <!-- mirror:begin -->
-> ## 🪞 Reflète `MSTest.Analyzers 4.3.3`
+> ## 🪞 Reflète `MSTest.Analyzers 4.5.1`
 >
-> **62 règles, 3 catégories**, chaque identifiant et chaque
-> catégorie lus dans les analyseurs de cette version. Régénéré le 2026-08-05.
+> **80 règles, 3 catégories**, chaque identifiant et chaque
+> catégorie lus dans les analyseurs de cette version. Régénéré le 2026-10-13.
 <!-- mirror:end -->
 
 > Non officiel. Sans affiliation avec Microsoft, ni approbation ni support de sa part.

@@ -16,7 +16,7 @@ inferring it from the number below.
 ## [Unreleased]
 
 <!-- mirror:begin -->
-**Mirrors `Microsoft.CodeAnalysis.Analyzers 5.6.0`** — unchanged upstream.
+**Mirrors `Microsoft.CodeAnalysis.Analyzers 5.9.0`** — upstream moved from `5.6.0`.
 <!-- mirror:end -->
 
 _No other change yet._

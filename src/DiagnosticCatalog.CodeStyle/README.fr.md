@@ -7,10 +7,10 @@ Les **règles de style de code IDE de Roslyn** sous forme de constantes fortemen
 `SuppressMessageAttribute` prenne des références vérifiées à la compilation plutôt que des chaînes magiques.
 
 <!-- mirror:begin -->
-> ## 🪞 Reflète `Microsoft.CodeAnalysis.CSharp.CodeStyle 5.6.0`
+> ## 🪞 Reflète `Microsoft.CodeAnalysis.CSharp.CodeStyle 5.9.0`
 >
-> **120 règles, 3 catégories**, chaque identifiant et chaque
-> catégorie lus dans les analyseurs de cette version. Régénéré le 2026-08-05.
+> **121 règles, 3 catégories**, chaque identifiant et chaque
+> catégorie lus dans les analyseurs de cette version. Régénéré le 2026-10-13.
 <!-- mirror:end -->
 
 > Non officiel. Sans affiliation avec Microsoft, ni approbation ni support de sa part.

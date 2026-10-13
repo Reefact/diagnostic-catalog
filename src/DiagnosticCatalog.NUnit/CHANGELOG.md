@@ -16,7 +16,7 @@ inferring it from the number below.
 ## [Unreleased]
 
 <!-- mirror:begin -->
-**Mirrors `NUnit.Analyzers 4.14.0`** — unchanged upstream.
+**Mirrors `NUnit.Analyzers 4.15.0`** — upstream moved from `4.14.0`.
 <!-- mirror:end -->
 
 _No other change yet._

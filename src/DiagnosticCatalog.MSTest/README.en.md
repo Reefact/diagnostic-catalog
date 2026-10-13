@@ -7,10 +7,10 @@ The **MSTest.Analyzers** rules as strongly referenced constants, so that
 `SuppressMessageAttribute` takes compile-checked references instead of magic strings.
 
 <!-- mirror:begin -->
-> ## 🪞 Mirrors `MSTest.Analyzers 4.3.3`
+> ## 🪞 Mirrors `MSTest.Analyzers 4.5.1`
 >
-> **62 rules, 3 categories**, every identifier and category read
-> from that release's own analyzers. Regenerated 2026-08-05.
+> **80 rules, 3 categories**, every identifier and category read
+> from that release's own analyzers. Regenerated 2026-10-13.
 <!-- mirror:end -->
 
 > Unofficial. Not affiliated with, endorsed by, or supported by Microsoft.
