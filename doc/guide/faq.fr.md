@@ -50,29 +50,30 @@ paquets que reflètent les catalogues, ressources satellites mises à part :
 
 | Paquet | Types publics | `public const` | Constantes d'identifiant ou de catégorie |
 | --- | ---: | ---: | ---: |
-| `SonarAnalyzer.CSharp` 10.31.0.145097 | 1801 | 861 | 0 |
+| `SonarAnalyzer.CSharp` 10.35.0.4138 | 2579 | 652 | 0 |
 | `StyleCop.Analyzers.Unstable` 1.2.0.556 | 6 | 12 | 0 |
-| `Microsoft.CodeAnalysis.NetAnalyzers` 10.0.302 | 740 | 128 | 9 |
-| `Microsoft.CodeAnalysis.CSharp.CodeStyle` 5.6.0 | 105 | 28 | 0 |
-| `xunit.analyzers` 1.27.0 | 178 | 219 | 0 |
-| `NUnit.Analyzers` 4.14.0 | 103 | 1 | 0 |
-| `MSTest.Analyzers` 4.3.3 | 182 | 0 | 0 |
-| `Microsoft.CodeAnalysis.Analyzers` 5.6.0 | 309 | 90 | 0 |
+| `Microsoft.CodeAnalysis.NetAnalyzers` 10.0.401 | 1241 | 256 | 18 |
+| `Microsoft.CodeAnalysis.CSharp.CodeStyle` 5.9.0 | 105 | 28 | 0 |
+| `xunit.analyzers` 2.2.0 | 218 | 268 | 0 |
+| `NUnit.Analyzers` 4.15.0 | 104 | 1 | 0 |
+| `MSTest.Analyzers` 4.5.1 | 222 | 0 | 0 |
+| `Microsoft.CodeAnalysis.Analyzers` 5.9.0 | 309 | 90 | 0 |
 | `Microsoft.CodeAnalysis.PublicApiAnalyzers` 5.6.0 | 115 | 38 | 0 |
 | `Microsoft.CodeAnalysis.BannedApiAnalyzers` 5.6.0 | 238 | 80 | 0 |
-| `Microsoft.NET.ILLink.Tasks` 10.0.10 | 80 | 262 | 0 |
-| `Microsoft.AspNetCore.App.Ref` 10.0.10 | 96 | 435 | 0 |
-| `Microsoft.NETCore.App.Ref` 10.0.10 | 260 | 369 | 37 |
+| `Microsoft.NET.ILLink.Tasks` 10.0.12 | 80 | 262 | 0 |
+| `Microsoft.AspNetCore.App.Ref` 10.0.12 | 96 | 435 | 0 |
+| `Microsoft.NETCore.App.Ref` 10.0.12 | 260 | 369 | 37 |
 
 StyleCop est le cas le plus net : 1314 types répartis sur ses deux assemblages, six publics, et
-aucun de ceux-là n'est un analyseur. MSTest est le plus plat : 182 types publics sans une seule
+aucun de ceux-là n'est un analyseur. MSTest est le plus plat : 222 types publics sans une seule
 constante publique parmi eux. `xunit.analyzers` est le plus tranchant : plus de constantes publiques
-que de types publics — 219 contre 178 — et pas une seule n'est un identifiant de règle.
+que de types publics — 268 contre 218 — et pas une seule n'est un identifiant de règle.
 
 Deux paquets fuient, et aucun ne fuit un contrat. NetAnalyzers déclare neuf identifiants de règle en
 constantes publiques — sept nommées `RuleId` (`CA1008`, `CA1052`, `CA1069`, `CA1708`, `CA1715`,
 `CA1821`, `CA2214`) et deux autres sur l'analyseur P/Invoke (`CA1401`, `CA2101`) — face aux 318
-règles que tient son catalogue. Le pack du runtime fuit dans l'autre sens : ses générateurs de source
+règles que tient son catalogue. Le tableau les compte dix-huit fois : le paquet livre désormais son
+assemblage principal sous `cs/` et sous `vb/`, et chaque copie compte. Le pack du runtime fuit dans l'autre sens : ses générateurs de source
 déclarent 37 constantes de ce genre, 31 identifiants `SYSLIB` distincts, face aux 13 règles que tient
 son catalogue. Plus d'identifiants que n'en porte le catalogue, et toujours rien à prendre : chacune
 siège dans un assemblage de générateur que le compilateur charge comme greffon, ce qui est le

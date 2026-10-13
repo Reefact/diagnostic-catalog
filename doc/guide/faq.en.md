@@ -47,29 +47,30 @@ packages the catalogues mirror, satellite resources aside:
 
 | Package | Public types | `public const` | Rule-id or category constants |
 | --- | ---: | ---: | ---: |
-| `SonarAnalyzer.CSharp` 10.31.0.145097 | 1801 | 861 | 0 |
+| `SonarAnalyzer.CSharp` 10.35.0.4138 | 2579 | 652 | 0 |
 | `StyleCop.Analyzers.Unstable` 1.2.0.556 | 6 | 12 | 0 |
-| `Microsoft.CodeAnalysis.NetAnalyzers` 10.0.302 | 740 | 128 | 9 |
-| `Microsoft.CodeAnalysis.CSharp.CodeStyle` 5.6.0 | 105 | 28 | 0 |
-| `xunit.analyzers` 1.27.0 | 178 | 219 | 0 |
-| `NUnit.Analyzers` 4.14.0 | 103 | 1 | 0 |
-| `MSTest.Analyzers` 4.3.3 | 182 | 0 | 0 |
-| `Microsoft.CodeAnalysis.Analyzers` 5.6.0 | 309 | 90 | 0 |
+| `Microsoft.CodeAnalysis.NetAnalyzers` 10.0.401 | 1241 | 256 | 18 |
+| `Microsoft.CodeAnalysis.CSharp.CodeStyle` 5.9.0 | 105 | 28 | 0 |
+| `xunit.analyzers` 2.2.0 | 218 | 268 | 0 |
+| `NUnit.Analyzers` 4.15.0 | 104 | 1 | 0 |
+| `MSTest.Analyzers` 4.5.1 | 222 | 0 | 0 |
+| `Microsoft.CodeAnalysis.Analyzers` 5.9.0 | 309 | 90 | 0 |
 | `Microsoft.CodeAnalysis.PublicApiAnalyzers` 5.6.0 | 115 | 38 | 0 |
 | `Microsoft.CodeAnalysis.BannedApiAnalyzers` 5.6.0 | 238 | 80 | 0 |
-| `Microsoft.NET.ILLink.Tasks` 10.0.10 | 80 | 262 | 0 |
-| `Microsoft.AspNetCore.App.Ref` 10.0.10 | 96 | 435 | 0 |
-| `Microsoft.NETCore.App.Ref` 10.0.10 | 260 | 369 | 37 |
+| `Microsoft.NET.ILLink.Tasks` 10.0.12 | 80 | 262 | 0 |
+| `Microsoft.AspNetCore.App.Ref` 10.0.12 | 96 | 435 | 0 |
+| `Microsoft.NETCore.App.Ref` 10.0.12 | 260 | 369 | 37 |
 
 StyleCop is the clearest: 1314 types across its two assemblies, six of them public, and not one of
-those an analyzer. MSTest is the flattest: 182 public types with not a single public constant among
-them. `xunit.analyzers` is the sharpest: more public constants than it has public types — 219
-against 178 — and not one of them a rule id.
+those an analyzer. MSTest is the flattest: 222 public types with not a single public constant among
+them. `xunit.analyzers` is the sharpest: more public constants than it has public types — 268
+against 218 — and not one of them a rule id.
 
 Two packages leak, and neither leaks a contract. NetAnalyzers declares nine rule ids as public
 constants — seven named `RuleId` (`CA1008`, `CA1052`, `CA1069`, `CA1708`, `CA1715`, `CA1821`,
 `CA2214`) and two more on the P/Invoke analyzer (`CA1401`, `CA2101`) — against the 318 rules its
-catalogue holds. The runtime pack leaks the other way round: its source generators declare 37 such
+catalogue holds. The table counts them eighteen times: the package now ships its main
+assembly under both `cs/` and `vb/`, and each copy counts. The runtime pack leaks the other way round: its source generators declare 37 such
 constants, 31 distinct `SYSLIB` ids, against the 13 rules its catalogue holds. More ids than the
 catalogue carries, and still nothing to take: every one of them sits in a generator assembly the
 compiler loads as a plugin, which is the paragraph above.
