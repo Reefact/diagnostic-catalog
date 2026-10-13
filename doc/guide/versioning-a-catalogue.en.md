@@ -86,15 +86,23 @@ Ordinary SemVer, with the shape a catalogue actually has:
 | A rule's *category* changed upstream | **minor**, and worth a release note — the value your consumers inline changes |
 | Removing anything published | **major** |
 | Renaming anything published | **major** |
-| Regenerating against a new upstream release, nothing moved | **no release** |
+| Regenerating against a new upstream release, no rule moved — only the mirrored version changed | **no release** |
 
 The third row is the one that catches people. A recategorisation changes what your consumers compile
 into their assemblies and produces no error anywhere — it is exactly the class of silent change this
 library exists to surface, so surface it in your notes even though SemVer does not force you to.
 
-The last row is not laziness. The generator compares its own previous output and leaves the file
-untouched when nothing moved, `generatedOn` stamp included, so a night where upstream did not move
-produces no diff and no release.
+The last row is not laziness, and it is a rule, not a default: **a train is tagged only when a rule
+moved.** An upstream release that adds, retires, recategorises or retitles nothing changes no published
+constant, so it moves no version ([specification §14.2](../specification.en.md#142-versioning-a-generated-catalogue)).
+The new `CatalogSource` — upstream version and date — is committed to `main` all the same and reaches
+consumers with the next release of that train that has something to say. The synchronisation pull
+request makes the call for you: it lists the trains to tag under *After merging* and the ones that only
+mirrored a new version under *Not to tag*.
+
+The generator also compares its own previous output and leaves the file untouched when nothing moved,
+`generatedOn` stamp included, so a night where upstream did not move produces no diff and no release
+either.
 
 ## Your version is not the vendor's
 
