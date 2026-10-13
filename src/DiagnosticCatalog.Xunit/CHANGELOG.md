@@ -16,10 +16,36 @@ inferring it from the number below.
 ## [Unreleased]
 
 <!-- mirror:begin -->
-**Mirrors `xunit.analyzers 2.2.0`** — upstream moved from `1.27.0`.
+**Mirrors `xunit.analyzers 2.2.0`** — unchanged upstream.
 <!-- mirror:end -->
 
 _No other change yet._
+
+## [1.1.0] - 2026-10-13
+
+**Mirrors `xunit.analyzers 2.2.0`** — upstream moved from `1.27.0`.
+
+### Added
+
+* **24 rules**: `xUnit1054` to `xUnit1072` (19, `Usage`), `xUnit2033` (`Assertions`) and
+  `xUnit3004` to `xUnit3007` (4, `Extensibility`), each with a help link. The catalogue now
+  holds **114 rules** in the same 3 categories: `Usage` on 73, `Assertions` on 33,
+  `Extensibility` on 8.
+
+### Changed
+
+* Four rules were retitled upstream, and the documentation comment of each follows:
+  `xUnit1037`, `xUnit1038`, `xUnit1039` and `xUnit1040` now say "arguments" or "argument
+  type" where they said "theory data type arguments". Identifiers and categories are
+  unchanged.
+
+### Notes
+
+* xunit.analyzers moved from 1.x to 2.x; this catalogue did not move to 2.0. Its version
+  runs on its own line
+  ([ADR-0015](../../doc/adr/0015-a-catalogues-version-runs-on-its-own-line.en.md)), and
+  nothing it published was removed or renamed.
+
 
 ## [1.0.0] - 2026-08-07
 

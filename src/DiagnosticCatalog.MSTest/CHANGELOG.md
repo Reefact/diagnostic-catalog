@@ -16,10 +16,26 @@ inferring it from the number below.
 ## [Unreleased]
 
 <!-- mirror:begin -->
-**Mirrors `MSTest.Analyzers 4.5.1`** — upstream moved from `4.3.3`.
+**Mirrors `MSTest.Analyzers 4.5.1`** — unchanged upstream.
 <!-- mirror:end -->
 
 _No other change yet._
+
+## [1.1.0] - 2026-10-13
+
+**Mirrors `MSTest.Analyzers 4.5.1`** — upstream moved from `4.3.3`.
+
+### Added
+
+* **18 rules** — `MSTEST0072` to `MSTEST0089`, all `Usage`, each with a help link. The
+  catalogue now holds **80 rules** in the same 3 categories: `Usage` on 64, `Design` on 14,
+  `Performance` on 2.
+
+### Notes
+
+* No rule is retired, recategorised or retitled, and no constant of 1.0.0 changes, so
+  nothing that compiled against it stops compiling.
+
 
 ## [1.0.0] - 2026-08-07
 
