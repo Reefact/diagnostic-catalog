@@ -75,7 +75,7 @@ jobs:
         env:
           VERSION: ${{ env.DRYRUN_VERSION }}
         run: |
-          dotnet restore
+          dotnet restore -p:Version="$VERSION"
           dotnet build -c Release --no-restore -p:Version="$VERSION"
 
       # One pack per train that actually has projects. A train whose project does not exist yet is
