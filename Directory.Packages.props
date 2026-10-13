@@ -28,7 +28,7 @@
     <PackageVersion Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" />
     <!-- Drives the "XPlat Code Coverage" collector configured in coverage.runsettings; every test project
          references it. -->
-    <PackageVersion Include="coverlet.collector" Version="10.0.1" />
+    <PackageVersion Include="coverlet.collector" Version="10.1.0" />
     <!-- xUnit.net v3 is the test framework. v3 test projects are executables on .NET Framework,
          which build/Net472TestFloor.props handles for the projects that join the floor. -->
     <PackageVersion Include="xunit.v3" Version="3.2.2" />
