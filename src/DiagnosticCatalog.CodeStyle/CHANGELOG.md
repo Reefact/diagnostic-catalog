@@ -18,10 +18,26 @@ inferring it from the number below.
 ## [Unreleased]
 
 <!-- mirror:begin -->
-**Mirrors `Microsoft.CodeAnalysis.CSharp.CodeStyle 5.9.0`** — upstream moved from `5.6.0`.
+**Mirrors `Microsoft.CodeAnalysis.CSharp.CodeStyle 5.9.0`** — unchanged upstream.
 <!-- mirror:end -->
 
 _No other change yet._
+
+## [1.1.0] - 2026-10-13
+
+**Mirrors `Microsoft.CodeAnalysis.CSharp.CodeStyle 5.9.0`** — upstream moved from `5.6.0`.
+
+### Added
+
+* **1 rule** — `IDE0410` *Use labeled jump statement*, in `Style`, with a help link into
+  Microsoft's style-rule reference. The catalogue now holds **121 rules**, 118 of them with a
+  help link: `Style` on 117, `CodeQuality` on three, `Compiler` on one.
+
+### Notes
+
+* No rule is retired, recategorised or retitled, and no constant of 1.0.0 changes, so
+  nothing that compiled against it stops compiling.
+
 
 ## [1.0.0] - 2026-08-07
 
