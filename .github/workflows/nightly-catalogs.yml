@@ -81,21 +81,37 @@ jobs:
           # pull request body names the trains and the command, so the next step is written
           # down at the moment it becomes necessary rather than remembered later.
           #
+          # Only a train whose RULES moved is tagged. A train whose mirrored upstream version
+          # moved and nothing else changes no published rule, so it moves no version
+          # (specification §14.2, ADR-0015): its new CatalogSource reaches consumers with the
+          # next release that has something to say. The two lists are kept apart so the body
+          # can say which is which instead of leaving every changed train looking taggable.
+          # A train counts as "rules moved" when its generated file differs by anything beyond
+          # the provenance stamp: the header comment, sourceVersion and generatedOn.
+          #
           # Computed here, while the changes are still unstaged and attributable to a
           # directory; by the time the body is written they are one commit.
           # shellcheck source=tools/trains.sh
           . tools/trains.sh
           trains=''
+          mirror_only=''
           for train in $(train_ids); do
             for project in $(projects_of "$train"); do
-              if [ -n "$(git status --porcelain -- "$(dirname "$project")")" ]; then
-                trains="${trains}${trains:+ }${train}"
+              dir="$(dirname "$project")"
+              if [ -n "$(git status --porcelain -- "$dir")" ]; then
+                if [ -n "$(git diff -U0 -- "$dir"/*.g.cs | grep -E '^[+-]' | grep -vE '^(\+\+\+|---)' | grep -vE '^[+-]//|sourceVersion:|generatedOn:' || true)" ]; then
+                  trains="${trains}${trains:+ }${train}"
+                else
+                  mirror_only="${mirror_only}${mirror_only:+ }${train}"
+                fi
                 break
               fi
             done
           done
           echo "trains=$trains" >> "$GITHUB_OUTPUT"
-          echo "trains touched: ${trains:-none}"
+          echo "mirror_only=$mirror_only" >> "$GITHUB_OUTPUT"
+          echo "trains to tag: ${trains:-none}"
+          echo "mirror only, not tagged: ${mirror_only:-none}"
 
           {
             echo "## Catalogue sync"
@@ -132,6 +148,9 @@ jobs:
           # Empty when force-pr opened a pull request with nothing changed, which is why the
           # reminder below is written only when it is not.
           TRAINS: ${{ steps.generate.outputs.trains }}
+          # Trains whose only change is the mirrored upstream version. Listed in the body as
+          # "not to tag", so the absence of a command reads as a decision and not an omission.
+          MIRROR_ONLY: ${{ steps.generate.outputs.mirror_only }}
         run: |
           set -euo pipefail
           # shellcheck source=tools/trains.sh
@@ -217,6 +236,18 @@ jobs:
             done
             printf '\nThe version is left blank on purpose: whether a sync is a patch or a minor\n' >> "$BODY_FILE"
             printf 'depends on what actually moved, and a pre-filled number invites pasting.\n' >> "$BODY_FILE"
+          fi
+
+          # Word splitting is the point: MIRROR_ONLY is a space-separated list of train ids.
+          # shellcheck disable=SC2016,SC2086
+          if [ -n "$MIRROR_ONLY" ]; then
+            {
+              printf '\n### Not to tag\n\n'
+              printf 'No rule moved in: %s.\n\n' "$(printf '`%s`, ' $MIRROR_ONLY | sed 's/, $//')"
+              printf 'Only the mirrored upstream version changed, which moves no version\n'
+              printf '(specification §14.2). It reaches consumers with the next release of the train\n'
+              printf 'that has something to say.\n'
+            } >> "$BODY_FILE"
           fi
 
           cat >> "$BODY_FILE" <<'EOF'
