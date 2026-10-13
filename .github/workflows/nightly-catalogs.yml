@@ -141,6 +141,30 @@ jobs:
             exit 1
           fi
 
+      # Part of what the documentation states is derived from the catalogues — the release each one
+      # mirrors, the rule counts of the specification's table, the package survey — and
+      # documentation tests hold it to them. Nothing connects a regenerated catalogue to those
+      # pages, so a sync that moves a mirrored version leaves them behind and the pull request
+      # opens red. Run the same tests here so the pull request SAYS so, in its body, naming the
+      # pages, instead of leaving a reviewer to decode a red check. It must not stop the job:
+      # the pull request is how a person finds out, and a failed job opens none.
+      - name: Check the documentation still agrees
+        id: docs
+        if: steps.generate.outputs.changed == 'true'
+        run: |
+          set -uo pipefail
+          if dotnet test tests/DiagnosticCatalog.Documentation.UnitTests -c Release --nologo \
+               > "$RUNNER_TEMP/docs-check.log" 2>&1; then
+            echo 'stale=false' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo 'stale=true' >> "$GITHUB_OUTPUT"
+          # One line per distinct complaint: the message follows its "Error Message:" marker.
+          awk '/Error Message:/ { getline; sub(/^[[:space:]]+/, ""); if (!seen[$0]++) print "- " $0 }' \
+            "$RUNNER_TEMP/docs-check.log" | head -30 > "$RUNNER_TEMP/docs-stale.md"
+          echo "::warning::The documentation no longer agrees with the regenerated catalogues."
+          cat "$RUNNER_TEMP/docs-stale.md"
+
       - name: Open or update the pull request
         if: steps.generate.outputs.changed == 'true' || inputs.force-pr
         env:
@@ -151,6 +175,8 @@ jobs:
           # Trains whose only change is the mirrored upstream version. Listed in the body as
           # "not to tag", so the absence of a command reads as a decision and not an omission.
           MIRROR_ONLY: ${{ steps.generate.outputs.mirror_only }}
+          # 'true' when the documentation tests failed against the regenerated catalogues.
+          DOCS_STALE: ${{ steps.docs.outputs.stale }}
         run: |
           set -euo pipefail
           # shellcheck source=tools/trains.sh
@@ -247,6 +273,17 @@ jobs:
               printf 'Only the mirrored upstream version changed, which moves no version\n'
               printf '(specification §14.2). It reaches consumers with the next release of the train\n'
               printf 'that has something to say.\n'
+            } >> "$BODY_FILE"
+          fi
+
+          if [ "${DOCS_STALE:-}" = 'true' ]; then
+            {
+              printf '\n### Documentation to update\n\n'
+              printf 'The documentation tests fail against these catalogues, so this pull request is\n'
+              printf 'red until the pages below follow them. Update them on this branch:\n\n'
+              cat "$RUNNER_TEMP/docs-stale.md"
+              printf '\nThe next run of this job rewrites the branch, so a fix pushed here is lost unless\n'
+              printf 'this pull request is merged first.\n'
             } >> "$BODY_FILE"
           fi
 
