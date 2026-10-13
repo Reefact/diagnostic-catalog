@@ -89,16 +89,25 @@ Du SemVer ordinaire, avec la forme qu'un catalogue a réellement :
 | La *catégorie* d'une règle a changé en amont | **mineur**, et cela mérite une note de version — la valeur que vos consommateurs incorporent change |
 | Retirer quoi que ce soit de publié | **majeur** |
 | Renommer quoi que ce soit de publié | **majeur** |
-| Régénérer contre une nouvelle version amont, rien n'a bougé | **aucune release** |
+| Régénérer contre une nouvelle version amont, aucune règle n'a bougé — seule la version reflétée change | **aucune release** |
 
 La troisième ligne est celle qui piège. Une recatégorisation change ce que vos consommateurs
 compilent dans leurs assemblages et ne produit d'erreur nulle part — c'est exactement la classe de
 changement silencieux que cette bibliothèque existe pour faire remonter, alors faites-la remonter
 dans vos notes même si le SemVer ne vous y oblige pas.
 
-La dernière ligne n'est pas de la paresse. Le générateur compare sa propre sortie précédente et laisse
-le fichier intact quand rien n'a bougé, estampille `generatedOn` comprise : une nuit où l'amont n'a
-pas bougé ne produit donc ni diff ni release.
+La dernière ligne n'est pas de la paresse, et c'est une règle, pas un défaut : **un train n'est tagué
+que lorsqu'une règle a bougé.** Une version amont qui n'ajoute, ne retire, ne recatégorise ni ne
+retitre rien ne change aucune constante publiée, donc ne fait bouger aucune version
+([spécification §14.2](../specification.fr.md#142-versionnement-dun-catalogue-généré)). Le nouveau
+`CatalogSource` — version amont et date — est tout de même committé sur `main` et parvient aux
+consommateurs avec la prochaine release de ce train qui a quelque chose à dire. La pull request de
+synchronisation tranche à votre place : elle liste les trains à tagger sous *After merging* et ceux qui
+n'ont fait que refléter une nouvelle version sous *Not to tag*.
+
+Le générateur compare aussi sa propre sortie précédente et laisse le fichier intact quand rien n'a
+bougé, estampille `generatedOn` comprise : une nuit où l'amont n'a pas bougé ne produit donc ni diff
+ni release non plus.
 
 ## Votre version n'est pas celle de l'éditeur
 
