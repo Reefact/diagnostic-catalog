@@ -341,6 +341,7 @@ jobs:
             exit 0
           fi
 
+          # shellcheck disable=SC2016  # the backticks are Slack's code markup, not a command substitution.
           text="$(printf ':rotating_light: *Nightly catalogue sync failed* in `%s`\n%s\nRun: <%s|#%s> (%s, commit `%s`)\nNo catalogue is regenerated and no pull request is opened until it passes again. Open the run and read the red step.' \
             "$REPOSITORY" 'The upstream analyzers are no longer being mirrored.' "$RUN_URL" "$RUN_NUMBER" "$EVENT" "${SHA:0:7}")"
 
