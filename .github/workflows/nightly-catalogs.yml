@@ -313,3 +313,38 @@ jobs:
       - name: Report no change
         if: steps.generate.outputs.changed != 'true'
         run: echo 'Every upstream package still resolves to the version already mirrored. Nothing to do.'
+
+      # This job ran red for 64 nights without anyone being told: nothing in it reaches a person when
+      # it fails, and a failed run opens no pull request, so the only trace was a column of red crosses
+      # in the Actions tab. This says so, in Slack, the moment it happens.
+      #
+      # The channel is not named here. An incoming webhook is bound to one channel when it is created in
+      # Slack, and its URL is the secret SLACK_WEBHOOK_URL of this repository. Without the secret the
+      # step says so in the log and passes: an alert that cannot be sent must not turn a failure that was
+      # already reported into a second one, and merging this before the secret exists breaks nothing.
+      #
+      # It names the run rather than the step that failed: listing a job's steps needs the `actions: read`
+      # scope, and this job is deliberately limited to the two it has.
+      - name: Tell Slack the sync failed
+        if: failure()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          REPOSITORY: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          RUN_NUMBER: ${{ github.run_number }}
+          EVENT: ${{ github.event_name }}
+          SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SLACK_WEBHOOK_URL:-}" ]; then
+            echo '::warning::SLACK_WEBHOOK_URL is not set, so nobody was told that the catalogue sync failed.'
+            exit 0
+          fi
+
+          text="$(printf ':rotating_light: *Nightly catalogue sync failed* in `%s`\n%s\nRun: <%s|#%s> (%s, commit `%s`)\nNo catalogue is regenerated and no pull request is opened until it passes again. Open the run and read the red step.' \
+            "$REPOSITORY" 'The upstream analyzers are no longer being mirrored.' "$RUN_URL" "$RUN_NUMBER" "$EVENT" "${SHA:0:7}")"
+
+          curl --silent --show-error --fail-with-body --max-time 30 \
+            --header 'Content-Type: application/json' \
+            --data "$(jq -n --arg text "$text" '{text: $text}')" \
+            "$SLACK_WEBHOOK_URL"
