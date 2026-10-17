@@ -8,10 +8,10 @@ fortement référencées, pour que `SuppressMessageAttribute` prenne des référ
 compilation plutôt que des chaînes magiques.
 
 <!-- mirror:begin -->
-> ## 🪞 Reflète `Microsoft.AspNetCore.App.Ref 10.0.12`
+> ## 🪞 Reflète `Microsoft.AspNetCore.App.Ref 10.0.13`
 >
 > **35 règles, 3 catégories**, chaque identifiant et chaque
-> catégorie lus dans les analyseurs de cette version. Régénéré le 2026-10-13.
+> catégorie lus dans les analyseurs de cette version. Régénéré le 2026-10-17.
 <!-- mirror:end -->
 
 > Non officiel. Sans affiliation avec Microsoft, ni approbation ni support de sa part.
