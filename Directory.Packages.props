@@ -74,7 +74,7 @@
          and credentials — including the encrypted and provider-supplied kinds, which cannot be read
          by hand at all. Version 7.6.0 and not 6.14.0: the latter carries advisory
          GHSA-g4vj-cjjj-v7hg. -->
-    <PackageVersion Include="NuGet.Protocol" Version="7.6.0" />
+    <PackageVersion Include="NuGet.Protocol" Version="7.9.0" />
     <!-- Reflection-only loading, so `dcat list` and `dcat explain` can read a compiled catalogue
          without executing any of it. A catalogue declares everything it publishes as metadata
          constants, so nothing has to run for them to be read — and a tool that loaded a stranger's
