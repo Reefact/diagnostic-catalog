@@ -7,10 +7,10 @@ Les **règles d'analyse de code .NET (CA)** sous forme de constantes fortement r
 `SuppressMessageAttribute` prenne des références vérifiées à la compilation plutôt que des chaînes magiques.
 
 <!-- mirror:begin -->
-> ## 🪞 Reflète `Microsoft.CodeAnalysis.NetAnalyzers 10.0.401`
+> ## 🪞 Reflète `Microsoft.CodeAnalysis.NetAnalyzers 10.0.402`
 >
 > **318 règles, 10 catégories**, chaque identifiant et chaque
-> catégorie lus dans les analyseurs de cette version. Régénéré le 2026-10-13.
+> catégorie lus dans les analyseurs de cette version. Régénéré le 2026-10-24.
 <!-- mirror:end -->
 
 ## Pourquoi
