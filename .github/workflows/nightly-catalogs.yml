@@ -298,11 +298,22 @@ jobs:
           - No package is published by this job.
           EOF
 
-          if gh pr view "$SYNC_BRANCH" --json number --jq .number >/dev/null 2>&1; then
-            gh pr edit "$SYNC_BRANCH" \
+          # Only an OPEN pull request is the one to update. `gh pr view <branch>`, which this used,
+          # falls back to a merged or closed pull request when the branch has none open, and that is
+          # the normal state here the night after a merge: the job recreates the branch, and the
+          # only pull request it ever had is the merged one. So every run after the first sync pull
+          # request was merged edited that one instead of opening a new one — eleven nights of
+          # upstream releases reported on a page nobody opens again, with the job green throughout.
+          #
+          # The pull request must come from this repository's own branch. A fork can open one from
+          # a branch of the same name, and the job would otherwise write its report there.
+          OPEN_PR="$(gh pr list --head "$SYNC_BRANCH" --state open --json number,isCrossRepository \
+                       --jq 'map(select(.isCrossRepository | not)) | .[0].number // empty')"
+          if [ -n "$OPEN_PR" ]; then
+            gh pr edit "$OPEN_PR" \
               --title 'chore: sync generated catalogues with upstream analyzers' \
               --body-file "$BODY_FILE"
-            echo "Updated existing pull request."
+            echo "Updated existing pull request #$OPEN_PR."
           else
             gh pr create \
               --head "$SYNC_BRANCH" \
