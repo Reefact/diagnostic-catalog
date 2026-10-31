@@ -8,10 +8,10 @@ fortement référencées, pour que `UnconditionalSuppressMessageAttribute` prenn
 à la compilation plutôt que des chaînes magiques.
 
 <!-- mirror:begin -->
-> ## 🪞 Reflète `Microsoft.NET.ILLink.Tasks 10.0.12`
+> ## 🪞 Reflète `Microsoft.NET.ILLink.Tasks 10.0.14`
 >
 > **77 règles, 3 catégories**, chaque identifiant et chaque
-> catégorie lus dans les analyseurs de cette version. Régénéré le 2026-10-13.
+> catégorie lus dans les analyseurs de cette version. Régénéré le 2026-10-31.
 <!-- mirror:end -->
 
 > Non officiel. Sans affiliation avec Microsoft, ni approbation ni support de sa part.

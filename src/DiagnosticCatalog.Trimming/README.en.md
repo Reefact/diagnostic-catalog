@@ -8,10 +8,10 @@ so that `UnconditionalSuppressMessageAttribute` takes compile-checked references
 strings.
 
 <!-- mirror:begin -->
-> ## 🪞 Mirrors `Microsoft.NET.ILLink.Tasks 10.0.12`
+> ## 🪞 Mirrors `Microsoft.NET.ILLink.Tasks 10.0.14`
 >
 > **77 rules, 3 categories**, every identifier and category read
-> from that release's own analyzers. Regenerated 2026-10-13.
+> from that release's own analyzers. Regenerated 2026-10-31.
 <!-- mirror:end -->
 
 > Unofficial. Not affiliated with, endorsed by, or supported by Microsoft.
