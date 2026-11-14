@@ -18,7 +18,7 @@ inferring it from the number below.
 ## [Unreleased]
 
 <!-- mirror:begin -->
-**Mirrors `Microsoft.CodeAnalysis.CSharp.CodeStyle 5.9.0`** — unchanged upstream.
+**Mirrors `Microsoft.CodeAnalysis.CSharp.CodeStyle 5.12.0`** — upstream moved from `5.9.0`.
 <!-- mirror:end -->
 
 _No other change yet._

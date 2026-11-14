@@ -16,7 +16,7 @@ inferring it from the number below.
 ## [Unreleased]
 
 <!-- mirror:begin -->
-**Mirrors `xunit.analyzers 2.2.0`** — unchanged upstream.
+**Mirrors `xunit.analyzers 2.3.0`** — upstream moved from `2.2.0`.
 <!-- mirror:end -->
 
 _No other change yet._

@@ -7,10 +7,10 @@ Les règles **xunit.analyzers** sous forme de constantes fortement référencée
 `SuppressMessageAttribute` prenne des références vérifiées à la compilation plutôt que des chaînes magiques.
 
 <!-- mirror:begin -->
-> ## 🪞 Reflète `xunit.analyzers 2.2.0`
+> ## 🪞 Reflète `xunit.analyzers 2.3.0`
 >
-> **114 règles, 3 catégories**, chaque identifiant et chaque
-> catégorie lus dans les analyseurs de cette version. Régénéré le 2026-10-13.
+> **115 règles, 3 catégories**, chaque identifiant et chaque
+> catégorie lus dans les analyseurs de cette version. Régénéré le 2026-11-14.
 <!-- mirror:end -->
 
 > Non officiel. Sans affiliation avec le projet xUnit.net, ni approbation ni support de sa part.

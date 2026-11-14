@@ -8,10 +8,10 @@ constants, so that `SuppressMessageAttribute` takes compile-checked references i
 strings.
 
 <!-- mirror:begin -->
-> ## 🪞 Mirrors `Microsoft.AspNetCore.App.Ref 10.0.12`
+> ## 🪞 Mirrors `Microsoft.AspNetCore.App.Ref 11.0.0`
 >
-> **35 rules, 3 categories**, every identifier and category read
-> from that release's own analyzers. Regenerated 2026-10-13.
+> **48 rules, 3 categories**, every identifier and category read
+> from that release's own analyzers. Regenerated 2026-11-14.
 <!-- mirror:end -->
 
 > Unofficial. Not affiliated with, endorsed by, or supported by Microsoft.
